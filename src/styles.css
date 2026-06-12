@@ -89,6 +89,33 @@
   --foreground: oklch(0.98 0.005 250);
 }
 
+/* LIGHT THEME — "Alpine Paper": warm porcelain, deep ink, loden teal */
+.light {
+  --background: oklch(0.98 0.008 80);          /* warm porcelain */
+  --foreground: oklch(0.18 0.02 250);          /* deep slate ink */
+  --card: oklch(0.995 0.005 80);
+  --card-foreground: oklch(0.18 0.02 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 250);
+  --primary: oklch(0.2 0.025 250);
+  --primary-foreground: oklch(0.98 0.008 80);
+  --secondary: oklch(0.94 0.012 80);
+  --secondary-foreground: oklch(0.2 0.025 250);
+  --muted: oklch(0.94 0.01 80);
+  --muted-foreground: oklch(0.45 0.02 250);
+  --accent: oklch(0.92 0.025 200);
+  --accent-foreground: oklch(0.18 0.02 250);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.98 0.005 80);
+  --border: oklch(0.2 0.02 250 / 0.1);
+  --input: oklch(0.2 0.02 250 / 0.08);
+  --ring: oklch(0.48 0.13 200);
+  --signal: oklch(0.48 0.13 200);              /* deep loden teal */
+  --signal-foreground: oklch(0.98 0.008 80);
+  --surface: oklch(1 0 0 / 0.55);
+  --surface-elevated: oklch(1 0 0 / 0.8);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -106,6 +133,17 @@
       radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.25 0.08 235 / 0.25), transparent),
       radial-gradient(ellipse 60% 50% at 80% 100%, oklch(0.25 0.08 280 / 0.15), transparent);
     background-attachment: fixed;
+  }
+  .light body {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.48 0.13 200 / 0.10), transparent),
+      radial-gradient(ellipse 60% 50% at 80% 100%, oklch(0.6 0.12 60 / 0.08), transparent);
+  }
+  .light .text-gradient {
+    background: linear-gradient(180deg, oklch(0.18 0.02 250) 0%, oklch(0.38 0.04 240) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);

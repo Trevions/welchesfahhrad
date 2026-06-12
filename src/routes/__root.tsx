@@ -15,6 +15,7 @@ import { Header } from "@/components/Header";
 import { MobileHeader } from "@/components/MobileHeader";
 import { MobileNav } from "@/components/MobileNav";
 import { Footer } from "@/components/Footer";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 function NotFoundComponent() {
   return (
@@ -118,15 +119,17 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen">
-        <Header />
-        <MobileHeader />
-        <main className="pb-24 md:pb-0">
-          <Outlet />
-        </main>
-        <Footer />
-        <MobileNav />
-      </div>
+      <ThemeProvider>
+        <div className="min-h-screen">
+          <Header />
+          <MobileHeader />
+          <main className="pb-24 md:pb-0">
+            <Outlet />
+          </main>
+          <Footer />
+          <MobileNav />
+        </div>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
