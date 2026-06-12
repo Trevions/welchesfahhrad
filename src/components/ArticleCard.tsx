@@ -72,7 +72,8 @@ export function ArticleCard({ article, featured, index = 0, size = "md" }: Props
     <Link
       to="/artikel/$slug"
       params={{ slug: article.slug }}
-      className="group flex flex-col animate-fade-up"
+      className="group flex flex-col animate-fade-up hover-lift"
+      data-reveal
       style={{ animationDelay: `${index * 60}ms` }}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-card">
