@@ -159,7 +159,7 @@
 }
 
 @utility text-gradient {
-  background: linear-gradient(180deg, oklch(1 0 0) 0%, oklch(0.7 0.02 250) 100%);
+  background: linear-gradient(180deg, var(--text-gradient-from) 0%, var(--text-gradient-to) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
