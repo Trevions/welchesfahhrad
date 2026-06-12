@@ -9,38 +9,155 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TestsRouteImport } from './routes/tests'
+import { Route as RatgeberRouteImport } from './routes/ratgeber'
+import { Route as NachrichtenRouteImport } from './routes/nachrichten'
+import { Route as EBikesRouteImport } from './routes/e-bikes'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 
+const TestsRoute = TestsRouteImport.update({
+  id: '/tests',
+  path: '/tests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RatgeberRoute = RatgeberRouteImport.update({
+  id: '/ratgeber',
+  path: '/ratgeber',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NachrichtenRoute = NachrichtenRouteImport.update({
+  id: '/nachrichten',
+  path: '/nachrichten',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EBikesRoute = EBikesRouteImport.update({
+  id: '/e-bikes',
+  path: '/e-bikes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
+  id: '/artikel/$slug',
+  path: '/artikel/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/e-bikes': typeof EBikesRoute
+  '/nachrichten': typeof NachrichtenRoute
+  '/ratgeber': typeof RatgeberRoute
+  '/tests': typeof TestsRoute
+  '/artikel/$slug': typeof ArtikelSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/e-bikes': typeof EBikesRoute
+  '/nachrichten': typeof NachrichtenRoute
+  '/ratgeber': typeof RatgeberRoute
+  '/tests': typeof TestsRoute
+  '/artikel/$slug': typeof ArtikelSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/e-bikes': typeof EBikesRoute
+  '/nachrichten': typeof NachrichtenRoute
+  '/ratgeber': typeof RatgeberRoute
+  '/tests': typeof TestsRoute
+  '/artikel/$slug': typeof ArtikelSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/e-bikes'
+    | '/nachrichten'
+    | '/ratgeber'
+    | '/tests'
+    | '/artikel/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/e-bikes'
+    | '/nachrichten'
+    | '/ratgeber'
+    | '/tests'
+    | '/artikel/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/e-bikes'
+    | '/nachrichten'
+    | '/ratgeber'
+    | '/tests'
+    | '/artikel/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  EBikesRoute: typeof EBikesRoute
+  NachrichtenRoute: typeof NachrichtenRoute
+  RatgeberRoute: typeof RatgeberRoute
+  TestsRoute: typeof TestsRoute
+  ArtikelSlugRoute: typeof ArtikelSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tests': {
+      id: '/tests'
+      path: '/tests'
+      fullPath: '/tests'
+      preLoaderRoute: typeof TestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ratgeber': {
+      id: '/ratgeber'
+      path: '/ratgeber'
+      fullPath: '/ratgeber'
+      preLoaderRoute: typeof RatgeberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nachrichten': {
+      id: '/nachrichten'
+      path: '/nachrichten'
+      fullPath: '/nachrichten'
+      preLoaderRoute: typeof NachrichtenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e-bikes': {
+      id: '/e-bikes'
+      path: '/e-bikes'
+      fullPath: '/e-bikes'
+      preLoaderRoute: typeof EBikesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +165,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/artikel/$slug': {
+      id: '/artikel/$slug'
+      path: '/artikel/$slug'
+      fullPath: '/artikel/$slug'
+      preLoaderRoute: typeof ArtikelSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  EBikesRoute: EBikesRoute,
+  NachrichtenRoute: NachrichtenRoute,
+  RatgeberRoute: RatgeberRoute,
+  TestsRoute: TestsRoute,
+  ArtikelSlugRoute: ArtikelSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
