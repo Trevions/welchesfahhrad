@@ -30,7 +30,7 @@ export const articles: Article[] = [
     source: "Tagesspiegel",
     body: [
       "Berlin macht ernst: Mit einem Investitionsvolumen von 240 Millionen Euro sollen bis Ende 2027 über 180 Kilometer neuer, geschützter Radwege entstehen. Das Programm umfasst breite Protected Bike Lanes auf allen Hauptverkehrsachsen sowie eine vollständige Erneuerung des Radwegenetzes in den Innenstadtbezirken.",
-      "Besonders ambitioniert: Die geplante Nord-Süd-Magistrale soll als erste deutsche „Fahrrad-Autobahn" Berlin von Pankow bis Tempelhof durchqueren – kreuzungsfrei, beleuchtet und mit Servicestationen. Verkehrssenatorin Bonde sprach von einem „Paradigmenwechsel in der Mobilitätsplanung".",
+      "Besonders ambitioniert: Die geplante Nord-Süd-Magistrale soll als erste deutsche »Fahrrad-Autobahn" Berlin von Pankow bis Tempelhof durchqueren – kreuzungsfrei, beleuchtet und mit Servicestationen. Verkehrssenatorin Bonde sprach von einem »Paradigmenwechsel in der Mobilitätsplanung".",
       "Für E-Bike-Fahrer besonders interessant: Entlang der neuen Routen entstehen 1.200 öffentliche Ladepunkte sowie 45 sichere Sammelabstellanlagen mit Videoüberwachung.",
     ],
   },
@@ -61,8 +61,8 @@ export const articles: Article[] = [
     source: "BIKE Magazin",
     body: [
       "Die bayerischen Alpen gehören zu den besten MTB-Destinationen Europas. Wir stellen die zehn lohnendsten Trails vor – von Einsteiger-freundlich bis Hardcore-Enduro.",
-      "Platz 1 geht ungeschlagen an den „Geißkopf Freeride" bei Bischofsmais. 12,8 Kilometer reine Abfahrt, perfekt geshapt, mit Liftanbindung und einem der besten Bikeparks Deutschlands direkt am Einstieg.",
-      "Besonders empfehlenswert für Genussbiker: Der „Karwendel-Höhenweg" mit traumhaften Ausblicken auf das Inntal.",
+      "Platz 1 geht ungeschlagen an den »Geißkopf Freeride" bei Bischofsmais. 12,8 Kilometer reine Abfahrt, perfekt geshapt, mit Liftanbindung und einem der besten Bikeparks Deutschlands direkt am Einstieg.",
+      "Besonders empfehlenswert für Genussbiker: Der »Karwendel-Höhenweg" mit traumhaften Ausblicken auf das Inntal.",
     ],
   },
   {
