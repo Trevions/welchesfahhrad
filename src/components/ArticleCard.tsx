@@ -14,7 +14,7 @@ export function ArticleCard({ article, featured, index = 0 }: Props) {
       <Link
         to="/artikel/$slug"
         params={{ slug: article.slug }}
-        className="group relative block overflow-hidden rounded-3xl shadow-glass transition-all duration-500 hover:-translate-y-1 hover:shadow-elevated animate-fade-up md:col-span-2 md:row-span-2 min-h-[420px] md:min-h-[640px]"
+        className="group relative block overflow-hidden rounded-3xl shadow-glass transition-all duration-500 hover:-translate-y-1 hover:shadow-elevated animate-fade-up md:col-span-2 md:row-span-2 min-h-[440px] md:min-h-[640px]"
         style={{ animationDelay: `${index * 80}ms` }}
       >
         <img
