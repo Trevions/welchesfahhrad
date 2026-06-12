@@ -6,9 +6,12 @@ export function MobileHeader() {
   return (
     <header className="sticky top-0 z-40 md:hidden pt-[env(safe-area-inset-top)] bg-background/90 backdrop-blur-xl border-b border-border">
       <div className="flex h-14 items-center justify-between px-5">
-        <Link to="/" className="flex items-baseline">
+        <Link to="/" className="flex items-baseline gap-1.5">
           <span className="font-display text-xl font-black italic leading-none">
             Radmap<span className="text-signal">.</span>
+          </span>
+          <span className="font-display text-xl font-black italic leading-none text-signal">
+            DE
           </span>
         </Link>
         <div className="flex items-center gap-1">
