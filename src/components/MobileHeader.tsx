@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Bike, Search } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function MobileHeader() {
   return (

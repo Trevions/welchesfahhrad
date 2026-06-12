@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Bike } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 const nav = [
   { to: "/", label: "Start" },
@@ -50,12 +51,15 @@ export function Header() {
             })}
           </ul>
 
-          <Link
-            to="/admin"
-            className="rounded-full bg-signal px-4 py-2 text-sm font-semibold text-signal-foreground transition-transform hover:scale-105"
-          >
-            Admin
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link
+              to="/admin"
+              className="rounded-full bg-signal px-4 py-2 text-sm font-semibold text-signal-foreground transition-transform hover:scale-105"
+            >
+              Admin
+            </Link>
+          </div>
         </nav>
       </div>
     </header>
