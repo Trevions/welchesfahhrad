@@ -164,7 +164,7 @@ function ArticlePage() {
 
           {/* Prose */}
           <div className="text-lg md:text-xl leading-[1.7] text-foreground/90 space-y-7 font-light">
-            {a.body.map((p, i) =>
+            {a.body.map((p: string, i: number) =>
               i === 0 ? (
                 <p
                   key={i}
