@@ -1,50 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CategoryHero } from "@/components/CategoryHero";
-import { ArticleCard } from "@/components/ArticleCard";
-import { getArticlesByCategory } from "@/lib/articles";
+import { CategoryPage, buildCategoryJsonLd } from "@/components/CategoryPage";
+import { categoryMeta, getArticlesByCategory } from "@/lib/articles";
+
+const cat = "Nachrichten" as const;
+const meta = categoryMeta[cat];
 
 export const Route = createFileRoute("/nachrichten")({
-  head: () => ({
-    meta: [
-      { title: "Fahrrad-Nachrichten aus Deutschland & der Welt | radmap.de" },
-      {
-        name: "description",
-        content:
-          "Tagesaktuelle Nachrichten rund um Fahrrad, E-Bike und Radsport aus deutschen und internationalen Quellen. Schnell, recherchiert, kompakt.",
-      },
-      { property: "og:title", content: "Fahrrad-Nachrichten | radmap.de" },
-      { property: "og:description", content: "Tagesaktuelle Nachrichten rund um Fahrrad und Radsport." },
-      { property: "og:url", content: "/nachrichten" },
-    ],
-    links: [{ rel: "canonical", href: "/nachrichten" }],
-  }),
-  component: Nachrichten,
+  head: () => {
+    const lead = getArticlesByCategory(cat)[0];
+    return {
+      meta: [
+        { title: `${meta.title} | radmap.de` },
+        { name: "description", content: meta.description },
+        { name: "keywords", content: "Fahrrad Nachrichten, E-Bike News, Radsport, ADFC, Radwege Deutschland, Tour de France, Eurobike" },
+        { property: "og:title", content: `${meta.title} | radmap.de` },
+        { property: "og:description", content: meta.description },
+        { property: "og:url", content: meta.slug },
+        { property: "og:type", content: "website" },
+        ...(lead ? [{ property: "og:image", content: lead.image } as const] : []),
+        ...(lead ? [{ name: "twitter:image", content: lead.image } as const] : []),
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: meta.slug }],
+      scripts: buildCategoryJsonLd(cat),
+    };
+  },
+  component: () => <CategoryPage category={cat} />,
 });
-
-function Nachrichten() {
-  const items = getArticlesByCategory("Nachrichten");
-  const [lead, ...rest] = items;
-  return (
-    <>
-      <CategoryHero
-        eyebrow="Nachrichten"
-        title="Was die Radwelt bewegt"
-        description="Tagesaktuelle Meldungen aus Deutschland, Europa und der Welt — kuratiert aus über 80 Fachquellen und neu aufbereitet."
-      />
-      {lead && (
-        <section className="border-b border-border">
-          <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-12 border-x border-border">
-            <ArticleCard article={lead} featured size="lg" index={0} />
-          </div>
-        </section>
-      )}
-      <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
-          {rest.map((a, i) => (
-            <ArticleCard key={a.slug} article={a} index={i} />
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
