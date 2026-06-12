@@ -32,7 +32,7 @@ function Index() {
   return (
     <>
       {/* HERO */}
-      <section className="relative min-h-screen overflow-hidden pt-24 md:pt-28">
+      <section className="relative overflow-hidden pt-4 md:pt-28 min-h-[80vh] md:min-h-screen">
         <div className="absolute inset-0 -z-10">
           <img
             src={hero}
@@ -44,48 +44,49 @@ function Index() {
           <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
         </div>
 
-        <div className="mx-auto max-w-6xl px-6 pt-16 md:pt-24">
-          <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-semibold tracking-widest uppercase text-signal animate-fade-in">
+        <div className="mx-auto max-w-6xl px-5 md:px-6 pt-8 md:pt-24">
+          <div className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-[10px] md:text-xs font-semibold tracking-widest uppercase text-signal animate-fade-in">
             <Sparkles className="h-3 w-3" />
-            Deutschlands Fahrrad-Magazin Nr. 1
+            <span className="md:hidden">Magazin Nr. 1</span>
+            <span className="hidden md:inline">Deutschlands Fahrrad-Magazin Nr. 1</span>
           </div>
 
-          <h1 className="mt-6 max-w-4xl font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gradient animate-fade-up">
+          <h1 className="mt-5 max-w-4xl font-display text-[2.5rem] leading-[1.05] md:text-7xl lg:text-8xl font-bold tracking-tight text-gradient animate-fade-up">
             Alles über das Fahrrad.<br />
             <span className="text-signal">Jeden Tag neu.</span>
           </h1>
 
-          <p className="mt-6 max-w-2xl text-lg md:text-xl text-muted-foreground animate-fade-up" style={{ animationDelay: "100ms" }}>
+          <p className="mt-4 max-w-2xl text-base md:text-xl text-muted-foreground animate-fade-up" style={{ animationDelay: "100ms" }}>
             Nachrichten, Tests und Ratgeber aus der Welt der Räder — kuratiert
             von Experten, geschrieben für Menschen, die das Radfahren lieben.
           </p>
 
-          <div className="mt-10 flex flex-wrap gap-3 animate-fade-up" style={{ animationDelay: "200ms" }}>
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 animate-fade-up" style={{ animationDelay: "200ms" }}>
             <Link
               to="/nachrichten"
-              className="group inline-flex items-center gap-2 rounded-full bg-signal px-6 py-3 text-sm font-semibold text-signal-foreground shadow-glow transition-all hover:scale-105"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-signal px-6 py-3.5 text-sm font-semibold text-signal-foreground shadow-glow transition-all active:scale-95 md:hover:scale-105"
             >
               Aktuelle Nachrichten
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
               to="/e-bikes"
-              className="inline-flex items-center gap-2 rounded-full glass-strong px-6 py-3 text-sm font-semibold transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 rounded-full glass-strong px-6 py-3.5 text-sm font-semibold transition-transform active:scale-95 md:hover:scale-105"
             >
               E-Bike Kaufberatung
             </Link>
           </div>
 
           {/* stat strip */}
-          <div className="mt-20 grid grid-cols-3 gap-6 max-w-2xl animate-fade-up" style={{ animationDelay: "300ms" }}>
+          <div className="mt-12 md:mt-20 grid grid-cols-3 gap-3 md:gap-6 max-w-2xl animate-fade-up" style={{ animationDelay: "300ms" }}>
             {[
               { v: "2.4M", l: "Leser monatlich" },
               { v: "150+", l: "Tests pro Jahr" },
               { v: "24/7", l: "Live News" },
             ].map((s) => (
-              <div key={s.l} className="glass rounded-2xl p-4 md:p-6">
-                <div className="font-display text-2xl md:text-4xl font-bold text-gradient">{s.v}</div>
-                <div className="mt-1 text-xs md:text-sm text-muted-foreground">{s.l}</div>
+              <div key={s.l} className="glass rounded-2xl p-3 md:p-6">
+                <div className="font-display text-xl md:text-4xl font-bold text-gradient">{s.v}</div>
+                <div className="mt-1 text-[10px] md:text-sm text-muted-foreground leading-tight">{s.l}</div>
               </div>
             ))}
           </div>
@@ -93,17 +94,17 @@ function Index() {
       </section>
 
       {/* CATEGORIES */}
-      <section className="mx-auto max-w-6xl px-6 py-24">
-        <div className="flex items-end justify-between gap-4 mb-10">
+      <section className="mx-auto max-w-6xl px-5 md:px-6 py-12 md:py-24">
+        <div className="flex items-end justify-between gap-4 mb-6 md:mb-10">
           <div>
-            <div className="text-xs font-semibold tracking-widest uppercase text-signal">Entdecken</div>
+            <div className="text-[10px] md:text-xs font-semibold tracking-widest uppercase text-signal">Entdecken</div>
             <h2 className="mt-2 font-display text-3xl md:text-5xl font-bold tracking-tight text-gradient">
               Themenwelten
             </h2>
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-4">
           {[
             { to: "/nachrichten", title: "Nachrichten", desc: "Tagesaktuell aus DE & Welt", icon: TrendingUp },
             { to: "/e-bikes", title: "E-Bikes", desc: "Tests, Kaufberatung & Trends", icon: Zap },
@@ -113,14 +114,14 @@ function Index() {
             <Link
               key={c.to}
               to={c.to}
-              className="group glass rounded-3xl p-6 transition-all hover:-translate-y-1 hover:shadow-elevated animate-fade-up"
+              className="group glass rounded-2xl md:rounded-3xl p-4 md:p-6 transition-all active:scale-[0.97] md:hover:-translate-y-1 md:hover:shadow-elevated animate-fade-up"
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-signal/10 text-signal mb-4 transition-all group-hover:bg-signal group-hover:text-signal-foreground group-hover:shadow-glow">
-                <c.icon className="h-5 w-5" />
+              <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl md:rounded-2xl bg-signal/10 text-signal mb-3 md:mb-4 transition-all group-hover:bg-signal group-hover:text-signal-foreground group-hover:shadow-glow">
+                <c.icon className="h-4 w-4 md:h-5 md:w-5" />
               </div>
-              <h3 className="font-display text-xl font-semibold">{c.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{c.desc}</p>
+              <h3 className="font-display text-base md:text-xl font-semibold">{c.title}</h3>
+              <p className="mt-1 text-xs md:text-sm text-muted-foreground line-clamp-2">{c.desc}</p>
             </Link>
           ))}
         </div>
