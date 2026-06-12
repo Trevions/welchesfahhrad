@@ -37,11 +37,11 @@ export function Header() {
       <div className="mx-auto max-w-[1400px] px-8">
         <div className="flex h-16 items-center justify-between gap-8">
           {/* Wordmark */}
-          <Link to="/" className="flex items-baseline gap-0">
+          <Link to="/" className="flex items-baseline">
             <span className="font-display text-2xl font-black italic tracking-tight leading-none">
               Radmap<span className="text-signal">.</span>
             </span>
-            <span className="ml-2 font-display text-2xl font-black italic leading-none text-signal">
+            <span className="ml-1 font-display text-2xl font-black italic leading-none text-signal">
               DE
             </span>
           </Link>
