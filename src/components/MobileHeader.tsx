@@ -15,13 +15,16 @@ export function MobileHeader() {
               radmap<span className="text-signal">.</span>de
             </span>
           </Link>
-          <button
-            type="button"
-            aria-label="Suchen"
-            className="flex h-9 w-9 items-center justify-center rounded-full glass active:scale-95 transition-transform"
-          >
-            <Search className="h-4 w-4" strokeWidth={2.25} />
-          </button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              type="button"
+              aria-label="Suchen"
+              className="flex h-9 w-9 items-center justify-center rounded-full glass active:scale-95 transition-transform"
+            >
+              <Search className="h-4 w-4" strokeWidth={2.25} />
+            </button>
+          </div>
         </div>
       </div>
     </header>
