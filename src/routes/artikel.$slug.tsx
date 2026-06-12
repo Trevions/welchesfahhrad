@@ -94,7 +94,7 @@ function ArticlePage() {
 
         <div className="mt-10 max-w-3xl text-lg leading-relaxed text-foreground/90 space-y-6">
           <p className="text-xl text-foreground font-medium">{a.excerpt}</p>
-          {a.body.map((p, i) => (
+          {a.body.map((p: string, i: number) => (
             <p key={i} className="animate-fade-up" style={{ animationDelay: `${i * 60}ms` }}>
               {p}
             </p>
