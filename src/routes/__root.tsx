@@ -133,6 +133,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <div className="min-h-screen">
+          <MotionLayer />
           <Header />
           <MobileHeader />
           <main className="pb-24 md:pb-0">
