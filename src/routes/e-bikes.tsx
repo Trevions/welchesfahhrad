@@ -1,42 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CategoryHero } from "@/components/CategoryHero";
-import { ArticleCard } from "@/components/ArticleCard";
-import { getArticlesByCategory } from "@/lib/articles";
+import { CategoryPage, buildCategoryJsonLd } from "@/components/CategoryPage";
+import { categoryMeta, getArticlesByCategory } from "@/lib/articles";
+
+const cat = "E-Bikes" as const;
+const meta = categoryMeta[cat];
 
 export const Route = createFileRoute("/e-bikes")({
-  head: () => ({
-    meta: [
-      { title: "E-Bike News, Tests & Kaufberatung 2026 | radmap.de" },
-      {
-        name: "description",
-        content:
-          "Alles rund um E-Bikes: aktuelle Modelle, Tests, Akku-Technik, Motoren und Kaufberatung für Deutschland. Unabhängig & detailliert.",
-      },
-      { property: "og:title", content: "E-Bike News & Tests | radmap.de" },
-      { property: "og:description", content: "E-Bike Tests, Modelle, Akku-Technik und Kaufberatung." },
-      { property: "og:url", content: "/e-bikes" },
-    ],
-    links: [{ rel: "canonical", href: "/e-bikes" }],
-  }),
-  component: EBikes,
+  head: () => {
+    const lead = getArticlesByCategory(cat)[0];
+    return {
+      meta: [
+        { title: `${meta.title} | radmap.de` },
+        { name: "description", content: meta.description },
+        { name: "keywords", content: "E-Bike Test, Pedelec, Bosch Performance CX, E-MTB, Lastenrad, E-Bike Kaufberatung, E-Bike 2026" },
+        { property: "og:title", content: `${meta.title} | radmap.de` },
+        { property: "og:description", content: meta.description },
+        { property: "og:url", content: meta.slug },
+        { property: "og:type", content: "website" },
+        ...(lead ? [{ property: "og:image", content: lead.image } as const] : []),
+        ...(lead ? [{ name: "twitter:image", content: lead.image } as const] : []),
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: meta.slug }],
+      scripts: buildCategoryJsonLd(cat),
+    };
+  },
+  component: () => <CategoryPage category={cat} />,
 });
-
-function EBikes() {
-  const items = getArticlesByCategory("E-Bikes");
-  return (
-    <>
-      <CategoryHero
-        eyebrow="E-Bikes"
-        title="Elektrisch unterwegs"
-        description="Die wichtigsten E-Bike-Trends, Tests und Kaufempfehlungen — vom City-Pendler bis zum Premium-SUV."
-      />
-      <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((a, i) => (
-            <ArticleCard key={a.slug} article={a} index={i} />
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
