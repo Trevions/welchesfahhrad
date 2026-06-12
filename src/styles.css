@@ -139,12 +139,6 @@
       radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.48 0.13 200 / 0.10), transparent),
       radial-gradient(ellipse 60% 50% at 80% 100%, oklch(0.6 0.12 60 / 0.08), transparent);
   }
-  .light .text-gradient {
-    background: linear-gradient(180deg, oklch(0.18 0.02 250) 0%, oklch(0.38 0.04 240) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     letter-spacing: -0.025em;
