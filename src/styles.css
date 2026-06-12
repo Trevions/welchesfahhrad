@@ -117,14 +117,12 @@
 @utility glass {
   background: var(--surface);
   backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--border);
 }
 
 @utility glass-strong {
   background: var(--surface-elevated);
   backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
   border: 1px solid var(--border);
 }
 

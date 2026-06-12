@@ -13,26 +13,23 @@ export function MobileNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden pb-[env(safe-area-inset-bottom)]">
-      <div className="mx-auto max-w-md px-3 pb-3">
-        <div className="glass-strong shadow-glass flex items-center justify-around rounded-3xl px-2 py-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+      <div className="glass-strong border-t border-white/5 pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-stretch justify-around px-1 pt-1.5 pb-1.5">
           {items.map(({ to, label, Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
             return (
               <Link
                 key={to}
                 to={to}
-                className="relative flex flex-1 flex-col items-center gap-1 rounded-2xl px-2 py-2 transition-all active:scale-95"
+                className="group relative flex flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 active:scale-[0.92] transition-transform"
               >
-                <div
-                  className={`flex h-9 w-9 items-center justify-center rounded-xl transition-all ${
-                    active
-                      ? "bg-signal text-signal-foreground shadow-glow"
-                      : "text-muted-foreground"
+                <Icon
+                  className={`h-[22px] w-[22px] transition-colors ${
+                    active ? "text-signal" : "text-muted-foreground"
                   }`}
-                >
-                  <Icon className="h-[18px] w-[18px]" strokeWidth={2.25} />
-                </div>
+                  strokeWidth={active ? 2.5 : 2}
+                />
                 <span
                   className={`text-[10px] font-medium tracking-tight transition-colors ${
                     active ? "text-foreground" : "text-muted-foreground"
@@ -40,6 +37,9 @@ export function MobileNav() {
                 >
                   {label}
                 </span>
+                {active && (
+                  <span className="absolute -top-1.5 h-0.5 w-6 rounded-full bg-signal shadow-glow" />
+                )}
               </Link>
             );
           })}
