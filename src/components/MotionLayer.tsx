@@ -128,8 +128,7 @@ export function MotionLayer() {
       io.disconnect();
       magnetHandlers.forEach((fn) => fn());
     };
-    // Re-run on route changes via pathname dep at mount level
-  }, []);
+  }, [pathname]);
 
   return null;
 }
