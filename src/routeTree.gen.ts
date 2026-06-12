@@ -15,7 +15,6 @@ import { Route as RatgeberRouteImport } from './routes/ratgeber'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
@@ -55,11 +54,6 @@ const EBikesRoute = EBikesRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -117,13 +111,13 @@ const AuthenticatedAdminArticlesIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/e-bikes': typeof EBikesRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/admin/articles': typeof AuthenticatedAdminArticlesRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
@@ -134,7 +128,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AuthenticatedAdminIndexRoute
   '/auth': typeof AuthRoute
   '/e-bikes': typeof EBikesRoute
   '/nachrichten': typeof NachrichtenRoute
@@ -145,6 +138,7 @@ export interface FileRoutesByTo {
   '/admin/articles': typeof AuthenticatedAdminArticlesRoute
   '/admin/media': typeof AuthenticatedAdminMediaRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/articles/$id': typeof AuthenticatedAdminArticlesIdRoute
   '/admin/articles/new': typeof AuthenticatedAdminArticlesNewRoute
 }
@@ -152,7 +146,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/e-bikes': typeof EBikesRoute
   '/nachrichten': typeof NachrichtenRoute
@@ -172,13 +165,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/auth'
     | '/e-bikes'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
     | '/tests'
+    | '/admin'
     | '/artikel/$slug'
     | '/admin/articles'
     | '/admin/media'
@@ -189,7 +182,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/auth'
     | '/e-bikes'
     | '/nachrichten'
@@ -200,13 +192,13 @@ export interface FileRouteTypes {
     | '/admin/articles'
     | '/admin/media'
     | '/admin/users'
+    | '/admin'
     | '/admin/articles/$id'
     | '/admin/articles/new'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/admin'
     | '/auth'
     | '/e-bikes'
     | '/nachrichten'
@@ -226,7 +218,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   EBikesRoute: typeof EBikesRoute
   NachrichtenRoute: typeof NachrichtenRoute
@@ -278,13 +269,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -395,7 +379,6 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   EBikesRoute: EBikesRoute,
   NachrichtenRoute: NachrichtenRoute,
