@@ -23,6 +23,7 @@ export const Route = createFileRoute("/nachrichten")({
 
 function Nachrichten() {
   const items = getArticlesByCategory("Nachrichten");
+  const [lead, ...rest] = items;
   return (
     <>
       <CategoryHero
@@ -30,9 +31,16 @@ function Nachrichten() {
         title="Was die Radwelt bewegt"
         description="Tagesaktuelle Meldungen aus Deutschland, Europa und der Welt — kuratiert aus über 80 Fachquellen und neu aufbereitet."
       />
-      <section className="mx-auto max-w-6xl px-6 pb-24">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((a, i) => (
+      {lead && (
+        <section className="border-b border-border">
+          <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-12 border-x border-border">
+            <ArticleCard article={lead} featured size="lg" index={0} />
+          </div>
+        </section>
+      )}
+      <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+          {rest.map((a, i) => (
             <ArticleCard key={a.slug} article={a} index={i} />
           ))}
         </div>
