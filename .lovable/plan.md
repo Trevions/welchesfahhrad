@@ -1,102 +1,125 @@
-## Какво ще се промени
+## Какво ще построим
 
-Цялостен ре-дизайн на radmap.de към премиум немско cycling списание в "Split Magazine" посока (избраното направление v2). Без backend промени — само визуален слой и presentation код.
+Истински, професионален Admin Cockpit за **radmap.de** — на ниво Linear/Vercel/Notion, с реална база, login защита и пълно управление на съдържанието. Не презентация, а работещ инструмент.
 
-### 1. Дизайн система (`src/styles.css`)
+### 1. Lovable Cloud (backend)
 
-Нова палитра, заменя текущата:
-- `--background` → `#050505` (deep noir)
-- `--foreground` → `oklch(0.96 0.005 80)` (warm bone)
-- `--card` / `--surface` → `oklch(0.10 0.005 250)` (zinc-950)
-- `--border` → `oklch(0.25 0.005 250 / 0.6)` (zinc-800)
-- `--signal` (акцент) → `#FF6A1A` (живо оранжево като в прототипа)
-- `--muted-foreground` → zinc-500
-- Светла тема: топла хартия (`#F5F2EC`), черно мастило, същият оранжев акцент
+Активирам Lovable Cloud и създавам:
 
-Типография — нови шрифтове през `<link>` в `__root.tsx`:
-- `--font-display: "Playfair Display"` (черен 900, italic) — заглавия
-- `--font-sans: "Inter"` (300/400/600/700) — body
-- Заглавия с `tracking-tighter`, `leading-[0.85]`, поддръжка на italic accent (както в прототипа: "Die *Evolution* des Vortriebs")
+**Tables:**
+- `profiles` (id → auth.users, display_name, avatar_url, created_at) + RLS + trigger за auto-create при signup
+- `user_roles` (id, user_id, role enum: 'admin'|'editor'|'user') + security definer `has_role()` функция (анти-recursive RLS pattern)
+- `articles` (id, slug unique, title, excerpt, body, cover_image, category enum: nachrichten|ratgeber|e-bikes|tests, author_id, status: draft|published, published_at, read_time, seo_title, seo_description, seo_keywords, og_image, created_at, updated_at, view_count) + RLS: публикуваните се четат от всички; чернови и mutations само admin/editor
+- Storage bucket `article-images` (public read, admin write) за cover-и и inline снимки
 
-Премахвам неона/glow ефектите. Добавям нови utilities: `editorial-rule` (тънка 1px линия с отстъп), `eyebrow` (10px uppercase tracking-[0.4em]).
+**Seed:** мигрирам текущите статии от `src/lib/articles.ts` в таблицата при първа стъпка.
 
-### 2. Home page (`src/routes/index.tsx`)
+**Auth:** Email+password и Google sign-in (през Lovable broker). Първият регистриран user получава автоматично admin рола (one-time trigger). Останалите регистрации са обикновени users.
 
-Пълно пренаписване по split layout:
+### 2. Архитектура на маршрутите
 
 ```text
-┌─────────────────────────────────────────┬─────────────┐
-│                                         │  Radmap.    │
-│                                         ├─────────────┤
-│      cinematic hero image               │  Urban      │
-│      (zinc-950 vignette gradient)       │  headline 1 │
-│                                         │  · 4 Min    │
-│      ─── EXKLUSIV TEST                  ├─────────────┤
-│                                         │  Technik    │
-│      Die Evolution                      │  headline 2 │
-│      des Vortriebs.                     ├─────────────┤
-│      (Playfair 8xl, italic accent)      │  Lifestyle  │
-│                                         │  headline 3 │
-│      Lead + [Vollständiger Bericht →]   ├─────────────┤
-│                                         │  Magazin    │
-│                                         │  Ausgabe 24 │
-└─────────────────────────────────────────┴─────────────┘
+src/routes/
+  auth.tsx                          # public login/signup (email + Google)
+  _authenticated/
+    route.tsx                       # integration-managed gate
+    admin.tsx                       # layout с sidebar (само admin/editor — has_role check)
+    admin.index.tsx                 # dashboard
+    admin.articles.tsx              # списък/таблица
+    admin.articles.new.tsx          # нов
+    admin.articles.$id.edit.tsx     # редакция
+    admin.media.tsx                 # библиотека
+    admin.users.tsx                 # потребители + роли
+    admin.settings.tsx              # SEO defaults, site config
 ```
 
-- 12-колонна grid: 8 cols cinematic feature + 4 cols editorial feed
-- Под този split — broken-grid секция с 6 статии (mixed размери, overlapping eyebrow tags, rule lines)
-- Хоризонтално-скрол ред "Tests & Reviews" с рейтинг chips
-- Ratgeber блок (3 големи карти с номера 01/02/03)
-- Newsletter capture (минимален, 1 input + бутон, без gradient)
-- Премахва се "stat strip" (2.4M / 150+ / 24/7) — изглежда фалшиво
+Frontend route файловете (`/nachrichten`, `/artikel/$slug`, и т.н.) се преписват да четат от Supabase server fns вместо от `articles.ts`.
 
-### 3. Компоненти
+### 3. Admin UI (професионален dashboard стил)
 
-- `Header.tsx` — нов sticky desktop header: ляво wordmark `Radmap.` (Playfair italic с оранжева точка), център категории (NACHRICHTEN · RATGEBER · E-BIKES · TESTS, eyebrow стил), дясно търсене + Admin + theme toggle
-- `MobileHeader.tsx` — компактен: wordmark вляво, theme toggle + търсене вдясно, тънък border-bottom
-- `MobileNav.tsx` — bottom tab bar пренаписан: плосък черен (`bg-zinc-950/95 backdrop-blur`), активен item с оранжева 2px top-rule (не glow), 5 таба
-- `ArticleCard.tsx` — пренаписан: image отгоре с grayscale → hover color, eyebrow категория, Playfair заглавие, мета ред с rule line, без glass ефект
-- Нов `EditorialFeed.tsx` — вертикалните divide-y списъчни елементи от split-а
-- Нов `MagazineBlock.tsx` — corner блок с magazine cover thumbnail
-- Нов `CategoryRule.tsx` — стандартния "─── EYEBROW" patterns
-- `Footer.tsx` — преработен: 4-колонен, тънки rule линии, малки caps, без emoji/gradient
+**Layout:**
+- Lq sidebar 240px: лого "Radmap. **Admin**", навигация (Dashboard, Artikel, Medien, Benutzer, Einstellungen) с lucide icons, активен item с лява оранжева 2px линия. Долу: avatar + email + logout.
+- Главен content area: top bar (breadcrumb + search + "New article" CTA + theme toggle), след това page content. Тъмен dense layout (`bg-zinc-950`, `border-zinc-800`), но с същите оранжеви акценти за consistency.
+- Responsive: на mobile sidebar става drawer (Sheet от shadcn).
 
-### 4. Други страници (същия език)
+**Dashboard (`/admin`):**
+- 4 stat карти: общо статии, публикувани, чернови, views (последни 30 дни) — с малки sparkline/trend индикатори
+- "Recent articles" таблица (последни 10) с inline status badges и quick actions
+- "By category" donut chart (recharts)
+- "Activity feed" — последни 8 промени (created/updated/published)
 
-- `nachrichten.tsx`, `ratgeber.tsx`, `e-bikes.tsx`, `tests.tsx` — нов pattern: голям category masthead (eyebrow + Playfair заглавие + lead), под него 2-колонен список feature + side editorial list
-- `artikel.$slug.tsx` — нова article shell: голям cinematic cover, eyebrow + Playfair заглавие (както в screenshot но с правилен контраст), мета ред (дата · време · автор), drop cap на първи параграф, ширина max-w-2xl за прозата, share rail отстрани (desktop), повече bottom padding за mobile (за bottom tab bar)
-- `admin.tsx` — пасва стила (Playfair masthead, плоски форми)
+**Articles list (`/admin/articles`):**
+- Pro data table: cover thumb, title + slug, category badge, status pill (draft/published), author, дата, views, actions
+- Filters: search (debounced), category dropdown, status tabs (All/Published/Draft), sort by date/views
+- Bulk actions (select rows → publish/unpublish/delete)
+- Pagination + URL-synced search params
+- Hover row reveals row actions (Edit, View, Duplicate, Delete с AlertDialog)
 
-### 5. Анимации (леки, без претрупване)
+**Article editor (`/admin/articles/new` и `/edit`):**
+- Split: ляво форма, дясно live preview (мини-карта as it'd render)
+- Полета: title (auto-slug с manual override), category, excerpt, cover image (drag-drop upload към bucket с crop preview), body (rich-text editor — Tiptap с toolbar: H2/H3, bold/italic, link, list, quote, image insert от media library, code), read time (auto-calc от word count)
+- Sticky right rail: status toggle, scheduled publish date picker, author select
+- Collapsible "SEO" секция: SEO title (с char counter / 60), meta description (160), keywords tags input, OG image override, slug, canonical preview ("radmap.de/artikel/...")
+- Autosave на drafts всеки 5s (toast indicator), keyboard shortcuts (⌘S save, ⌘⏎ publish)
+- Form validation с zod + react-hook-form, inline errors
 
-- Hero headline: mask-reveal на load (clip-path по линии)
-- Feature image: subtle parallax при scroll (transform: translateY) + grayscale → color при hover
-- Cards: image scale 1→1.04 + eyebrow цвят промяна при hover
-- Bottom nav active state: оранжев top-rule с smooth transition
-- Editorial feed items: leftborder rule расте при hover
+**Media library (`/admin/media`):**
+- Grid от качените снимки в storage bucket
+- Drag & drop upload (multi-file), progress bars
+- Click → details panel с URL copy, dimensions, size, "Use as cover" бутон, delete
+- Search по filename
 
-### 6. Снимки
+**Users (`/admin/users`):**
+- Таблица: avatar, email, display name, роли (badges), joined, last sign-in
+- Action: promote to admin/editor, demote, view profile
+- Само super-admin (първият user) може да променя роли
 
-Генерирам 6 нови cinematic снимки през `imagegen` (premium model за heroes):
-- Нов hero: matte black e-bike frame, dramatic studio lighting, high contrast (16:9 кинематографично)
-- Magazine cover thumbnail (portrait)
-- 4 нови thumbnail-а за категориите (нов news image, нов e-bike, нов ratgeber, нов test). Стилът: high-contrast, grain, single light source — премахва текущите "vivid blue" stock-looking снимки
+**Settings (`/admin/settings`):**
+- Site-wide SEO defaults (default OG image, default meta description fallback)
+- Newsletter integration placeholder
+- Theme preferences
 
-### 7. Технически файлове
+### 4. Server functions (`src/lib/admin.functions.ts`)
 
-Без промени по: `routeTree.gen.ts` (авто), API/backend, `lib/articles.ts` (данните остават), маршрутизация.
+Всички защитени с `requireSupabaseAuth` + проверка `has_role(userId, 'admin' | 'editor')`:
+- `listArticles({ filters, pagination })`, `getArticle(id)`, `createArticle`, `updateArticle`, `deleteArticle`, `bulkUpdateStatus`
+- `uploadMedia`, `listMedia`, `deleteMedia` (signed upload през supabaseAdmin вътре в handler)
+- `listUsers`, `assignRole`, `revokeRole` (само admin)
+- `getDashboardStats` (counts + 30d trend)
 
-Промени по: всички файлове в `src/components/`, всички route файлове, `src/styles.css`, `__root.tsx` (добавям `<link>` за Playfair + Inter в head).
+Public reads за frontend (`getPublishedArticles`, `getArticleBySlug`, `getArticlesByCategory`) — без auth, използват supabaseAdmin със safe column projection.
 
-### Извън обхват (за следващ етап)
+### 5. Дизайн детайли
 
-- Свързване на Perplexity + Lovable AI за автоматично теглене и пренаписване на новини
-- Admin login защита и реален CRUD за статии
-- Database (Lovable Cloud)
-- Image scraping / auto-thumbnail генерация за новини
+- Семантични CSS токени: добавям `--admin-bg`, `--admin-surface`, `--admin-border`, `--admin-sidebar` в `styles.css` (тъмна Linear-like палитра, оранжев signal остава)
+- Типография: Inter sans за UI dense текст, Playfair само за logo/page titles
+- Микро-анимации: Motion за sidebar item hover, status badge pulse при publish, toast slide-in
+- Shadcn компоненти: Table, Dialog, Sheet, AlertDialog, Tabs, Badge, Toast (Sonner), Select, Tooltip, Progress, Avatar, Command (за ⌘K търсене)
+- Loading states: skeleton rows за таблици, spinner за бутони
+- Empty states: илюстрирани placeholder-и с CTA
+- Keyboard: ⌘K command palette за бърза навигация и actions
+- Toast notifications за всяко действие (success/error)
 
-Тези ще ги направим в Етап 2 след като приемеш визуалния резултат.
+### 6. SEO & frontend integration
+
+- Frontend категорийните страници и `/artikel/$slug` четат от Supabase
+- `head()` метаданни се генерират от `seo_title`/`seo_description`/`og_image` полетата
+- `sitemap.xml` route се обновява да pull-ва published статии от базата
+- View counter increment при visit на статия (server fn)
+
+### 7. Извън обхват за тази итерация
+
+- AI pipeline (Perplexity auto-news + AI rewrite) — следваща стъпка след като CRUD-а работи
+- Real-time collaboration на editor
+- Comments система
+- Multi-language
+
+### Файлове
+
+**Нови:** ~14 route файла под `_authenticated/admin.*`, `auth.tsx`, `src/components/admin/` (Sidebar, TopBar, StatCard, ArticlesTable, ArticleEditor, MediaGrid, MediaUploader, RichTextEditor, CommandPalette, UserRolesTable), `src/lib/admin.functions.ts`, `src/lib/public-articles.functions.ts`, migration файл
+
+**Променени:** `src/styles.css` (admin токени), `src/routes/__root.tsx` (auth listener), `src/start.ts` (attachSupabaseAuth ако още не е), `src/routes/nachrichten.tsx` / `ratgeber.tsx` / `e-bikes.tsx` / `tests.tsx` / `artikel.$slug.tsx` / `index.tsx` (четене от Supabase), `src/routes/sitemap[.]xml.ts`, остарелият `src/routes/admin.tsx` се премахва
 
 ### Резултат
 
-Сайт с editorial premium усещане (Monocle × Rapha × Apple Newsroom), нула gradient заглавия с лош контраст, оранжев акцент вместо неонова cyan, magazine-grade типография на немски, mobile bottom tab bar който изглежда professional.
+Реален admin кокпит, на който можеш всеки ден да създаваш и публикуваш статии с rich text, snimки, SEO полета и schedule, да виждаш статистики и да управляваш потребители — всичко зад истински login, с дизайн на ниво модерен SaaS dashboard.
