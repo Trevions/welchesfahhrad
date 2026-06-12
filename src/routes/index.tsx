@@ -140,10 +140,15 @@ function Index() {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 md:grid-rows-2 md:auto-rows-fr">
+        <div className="grid gap-6 md:grid-cols-3 md:auto-rows-fr">
           <ArticleCard article={featured} featured index={0} />
-          {rest.map((a, i) => (
+          {rest.slice(0, 2).map((a, i) => (
             <ArticleCard key={a.slug} article={a} index={i + 1} />
+          ))}
+        </div>
+        <div className="mt-6 grid gap-6 md:grid-cols-3">
+          {rest.slice(2).map((a, i) => (
+            <ArticleCard key={a.slug} article={a} index={i + 3} />
           ))}
         </div>
       </section>
