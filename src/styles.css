@@ -253,3 +253,172 @@
 @utility animate-marquee {
   animation: marquee 38s linear infinite;
 }
+
+/* ========================================================== */
+/* 2027 MOTION LAYER — modern editorial micro-interactions   */
+/* ========================================================== */
+
+@keyframes text-shine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+@utility text-shine {
+  background: linear-gradient(
+    100deg,
+    var(--foreground) 0%,
+    var(--foreground) 40%,
+    var(--signal) 50%,
+    var(--foreground) 60%,
+    var(--foreground) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-shine 6s linear infinite;
+}
+
+@utility glow-signal {
+  transition: box-shadow 500ms var(--ease-apple), transform 500ms var(--ease-apple);
+  &:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--signal) 40%, transparent),
+      0 20px 60px -20px color-mix(in oklab, var(--signal) 35%, transparent),
+      0 0 80px -10px color-mix(in oklab, var(--signal) 25%, transparent);
+  }
+}
+
+@utility hover-lift {
+  transition: transform 600ms var(--ease-apple), box-shadow 600ms var(--ease-apple);
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px -25px oklch(0 0 0 / 0.6);
+  }
+}
+
+@utility tilt-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 700ms var(--ease-apple);
+  &:hover {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateZ(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@utility shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--foreground) 8%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.4s linear infinite;
+}
+
+@utility link-sweep {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: var(--signal);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 500ms var(--ease-apple);
+  }
+  &:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* Scroll-driven reveals (JS toggles .is-visible) */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 900ms var(--ease-apple), transform 900ms var(--ease-apple),
+    clip-path 1100ms var(--ease-apple), filter 900ms var(--ease-apple);
+  will-change: opacity, transform;
+}
+[data-reveal="mask"] {
+  clip-path: inset(0 100% 0 0);
+  transform: none;
+}
+[data-reveal="blur"] {
+  filter: blur(14px);
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  clip-path: inset(0 0 0 0);
+  filter: blur(0);
+}
+
+/* Kinetic split text */
+@keyframes char-rise {
+  0% { opacity: 0; transform: translateY(110%) rotate(6deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0); }
+}
+.kinetic .char {
+  display: inline-block;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.kinetic.is-visible .char {
+  animation: char-rise 0.9s var(--ease-apple) both;
+  animation-delay: calc(var(--i, 0) * 28ms);
+}
+
+/* Magnetic */
+[data-magnetic] {
+  display: inline-block;
+  transition: transform 500ms var(--ease-apple);
+  will-change: transform;
+}
+
+/* Scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: var(--scroll, 0%);
+  background: linear-gradient(90deg, var(--signal), color-mix(in oklab, var(--signal) 40%, white));
+  z-index: 100;
+  pointer-events: none;
+  box-shadow: 0 0 12px color-mix(in oklab, var(--signal) 60%, transparent);
+  transition: width 80ms linear;
+}
+
+/* Spotlight cursor */
+.spotlight {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    600px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in oklab, var(--signal) 10%, transparent),
+    transparent 60%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+.spotlight.is-active { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-reveal] { opacity: 1; transform: none; clip-path: none; filter: none; }
+  .spotlight { display: none; }
+}
