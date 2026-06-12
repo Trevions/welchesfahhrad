@@ -1,42 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CategoryHero } from "@/components/CategoryHero";
-import { ArticleCard } from "@/components/ArticleCard";
-import { getArticlesByCategory } from "@/lib/articles";
+import { CategoryPage, buildCategoryJsonLd } from "@/components/CategoryPage";
+import { categoryMeta, getArticlesByCategory } from "@/lib/articles";
+
+const cat = "Tests" as const;
+const meta = categoryMeta[cat];
 
 export const Route = createFileRoute("/tests")({
-  head: () => ({
-    meta: [
-      { title: "Fahrrad- & E-Bike-Tests 2026 | radmap.de" },
-      {
-        name: "description",
-        content:
-          "Detaillierte und unabhängige Tests aktueller Fahrräder, E-Bikes und Komponenten. Mit Bewertung, Stärken und Schwächen.",
-      },
-      { property: "og:title", content: "Fahrrad-Tests | radmap.de" },
-      { property: "og:description", content: "Unabhängige Tests von Fahrrädern, E-Bikes und Komponenten." },
-      { property: "og:url", content: "/tests" },
-    ],
-    links: [{ rel: "canonical", href: "/tests" }],
-  }),
-  component: Tests,
+  head: () => {
+    const lead = getArticlesByCategory(cat)[0];
+    return {
+      meta: [
+        { title: `${meta.title} | radmap.de` },
+        { name: "description", content: meta.description },
+        { name: "keywords", content: "Fahrrad Test, Rennrad Test, Canyon Aeroad, Shimano Dura-Ace, SRAM Red AXS, Garmin Edge, Komponenten Test" },
+        { property: "og:title", content: `${meta.title} | radmap.de` },
+        { property: "og:description", content: meta.description },
+        { property: "og:url", content: meta.slug },
+        { property: "og:type", content: "website" },
+        ...(lead ? [{ property: "og:image", content: lead.image } as const] : []),
+        ...(lead ? [{ name: "twitter:image", content: lead.image } as const] : []),
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: meta.slug }],
+      scripts: buildCategoryJsonLd(cat),
+    };
+  },
+  component: () => <CategoryPage category={cat} />,
 });
-
-function Tests() {
-  const items = getArticlesByCategory("Tests");
-  return (
-    <>
-      <CategoryHero
-        eyebrow="Tests & Reviews"
-        title="Geprüft Bewertet Empfohlen"
-        description="Wir testen über 150 Räder, E-Bikes und Komponenten pro Jahr — auf deutschen Straßen, in den Alpen und im Labor."
-      />
-      <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((a, i) => (
-            <ArticleCard key={a.slug} article={a} index={i} />
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
