@@ -75,9 +75,14 @@ export function Header() {
             <button
               type="button"
               aria-label="Suchen"
-              className="flex h-9 w-9 items-center justify-center border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+              onClick={() => setSearchOpen(true)}
+              className="group flex h-9 items-center gap-2 border border-border px-3 text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
             >
               <Search className="h-3.5 w-3.5" />
+              <span className="eyebrow-sm hidden lg:inline">Suchen</span>
+              <kbd className="hidden lg:inline-flex items-center border border-border px-1 py-0.5 text-[9px] uppercase tracking-widest">
+                ⌘K
+              </kbd>
             </button>
             <ThemeToggle />
             <Link
@@ -90,5 +95,7 @@ export function Header() {
         </div>
       </div>
     </header>
+    <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+    </>
   );
 }
