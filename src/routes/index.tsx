@@ -128,10 +128,10 @@ function Index() {
       </section>
 
       {/* FEATURED */}
-      <section className="mx-auto max-w-6xl px-6 py-12">
-        <div className="flex items-end justify-between gap-4 mb-10">
+      <section className="mx-auto max-w-6xl px-5 md:px-6 py-8 md:py-12">
+        <div className="flex items-end justify-between gap-4 mb-6 md:mb-10">
           <div>
-            <div className="text-xs font-semibold tracking-widest uppercase text-signal">Top-Stories</div>
+            <div className="text-[10px] md:text-xs font-semibold tracking-widest uppercase text-signal">Top-Stories</div>
             <h2 className="mt-2 font-display text-3xl md:text-5xl font-bold tracking-tight text-gradient">
               Aktuell empfohlen
             </h2>
@@ -141,13 +141,13 @@ function Index() {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 md:auto-rows-fr">
+        <div className="grid gap-4 md:gap-6 md:grid-cols-3 md:auto-rows-fr">
           <ArticleCard article={featured} featured index={0} />
           {rest.slice(0, 2).map((a, i) => (
             <ArticleCard key={a.slug} article={a} index={i + 1} />
           ))}
         </div>
-        <div className="mt-6 grid gap-6 md:grid-cols-3">
+        <div className="mt-4 md:mt-6 grid gap-4 md:gap-6 md:grid-cols-3">
           {rest.slice(2).map((a, i) => (
             <ArticleCard key={a.slug} article={a} index={i + 3} />
           ))}
