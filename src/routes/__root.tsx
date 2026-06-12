@@ -16,6 +16,7 @@ import { MobileHeader } from "@/components/MobileHeader";
 import { MobileNav } from "@/components/MobileNav";
 import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { MotionLayer } from "@/components/MotionLayer";
 
 function NotFoundComponent() {
   return (
@@ -132,6 +133,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <div className="min-h-screen">
+          <MotionLayer />
           <Header />
           <MobileHeader />
           <main className="pb-24 md:pb-0">
