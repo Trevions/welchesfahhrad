@@ -15,6 +15,7 @@ import { Header } from "@/components/Header";
 import { MobileHeader } from "@/components/MobileHeader";
 import { MobileNav } from "@/components/MobileNav";
 import { Footer } from "@/components/Footer";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 function NotFoundComponent() {
   return (
