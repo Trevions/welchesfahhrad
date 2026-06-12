@@ -210,24 +210,32 @@ function Index() {
           </Link>
         </div>
 
-        {/* Broken grid: 1 large feature + 5 mixed */}
+        {/* Broken grid: 1 large feature + mixed */}
         <div className="grid grid-cols-12 gap-8 md:gap-10">
-          <div className="col-span-12 lg:col-span-7">
-            <ArticleCard article={broken[0]} featured size="lg" index={0} />
-          </div>
+          {broken[0] && (
+            <div className="col-span-12 lg:col-span-7">
+              <ArticleCard article={broken[0]} featured size="lg" index={0} />
+            </div>
+          )}
           <div className="col-span-12 lg:col-span-5 flex flex-col gap-8 md:gap-10">
-            <ArticleCard article={broken[1]} size="md" index={1} />
-            <ArticleCard article={broken[2]} size="md" index={2} />
+            {broken[1] && <ArticleCard article={broken[1]} size="md" index={1} />}
+            {broken[2] && <ArticleCard article={broken[2]} size="md" index={2} />}
           </div>
-          <div className="col-span-12 md:col-span-4">
-            <ArticleCard article={broken[3]} size="md" index={3} />
-          </div>
-          <div className="col-span-12 md:col-span-4 md:mt-12">
-            <ArticleCard article={broken[4]} size="md" index={4} />
-          </div>
-          <div className="col-span-12 md:col-span-4">
-            <ArticleCard article={broken[5]} size="md" index={5} />
-          </div>
+          {broken[3] && (
+            <div className="col-span-12 md:col-span-4">
+              <ArticleCard article={broken[3]} size="md" index={3} />
+            </div>
+          )}
+          {broken[4] && (
+            <div className="col-span-12 md:col-span-4 md:mt-12">
+              <ArticleCard article={broken[4]} size="md" index={4} />
+            </div>
+          )}
+          {broken[5] && (
+            <div className="col-span-12 md:col-span-4">
+              <ArticleCard article={broken[5]} size="md" index={5} />
+            </div>
+          )}
         </div>
       </section>
 
