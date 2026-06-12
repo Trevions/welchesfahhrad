@@ -93,40 +93,6 @@ function Index() {
         </div>
       </section>
 
-      {/* CATEGORIES */}
-      <section className="mx-auto max-w-6xl px-5 md:px-6 py-12 md:py-24">
-        <div className="flex items-end justify-between gap-4 mb-6 md:mb-10">
-          <div>
-            <div className="text-[10px] md:text-xs font-semibold tracking-widest uppercase text-signal">Entdecken</div>
-            <h2 className="mt-2 font-display text-3xl md:text-5xl font-bold tracking-tight text-gradient">
-              Themenwelten
-            </h2>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-4">
-          {[
-            { to: "/nachrichten", title: "Nachrichten", desc: "Tagesaktuell aus DE & Welt", icon: TrendingUp },
-            { to: "/e-bikes", title: "E-Bikes", desc: "Tests, Kaufberatung & Trends", icon: Zap },
-            { to: "/ratgeber", title: "Ratgeber", desc: "Praxiswissen vom Profi", icon: Sparkles },
-            { to: "/tests", title: "Tests", desc: "Unabhängig & detailliert", icon: ArrowRight },
-          ].map((c, i) => (
-            <Link
-              key={c.to}
-              to={c.to}
-              className="group glass rounded-2xl md:rounded-3xl p-4 md:p-6 transition-all active:scale-[0.97] md:hover:-translate-y-1 md:hover:shadow-elevated animate-fade-up"
-              style={{ animationDelay: `${i * 80}ms` }}
-            >
-              <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl md:rounded-2xl bg-signal/10 text-signal mb-3 md:mb-4 transition-all group-hover:bg-signal group-hover:text-signal-foreground group-hover:shadow-glow">
-                <c.icon className="h-4 w-4 md:h-5 md:w-5" />
-              </div>
-              <h3 className="font-display text-base md:text-xl font-semibold">{c.title}</h3>
-              <p className="mt-1 text-xs md:text-sm text-muted-foreground line-clamp-2">{c.desc}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* FEATURED */}
       <section className="mx-auto max-w-6xl px-5 md:px-6 py-8 md:py-12">
         <div className="flex items-end justify-between gap-4 mb-6 md:mb-10">
