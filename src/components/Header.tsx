@@ -13,8 +13,26 @@ const nav = [
 
 export function Header() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // Global ⌘K / Ctrl+K
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+      if (e.key === "/" && document.activeElement?.tagName !== "INPUT") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
+    <>
     <header className="sticky top-0 z-50 hidden md:block bg-background/85 backdrop-blur-xl border-b border-border">
       <div className="mx-auto max-w-[1400px] px-8">
         <div className="flex h-16 items-center justify-between gap-8">
