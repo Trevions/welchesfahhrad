@@ -10,6 +10,7 @@ import { useRouterState } from "@tanstack/react-router";
  *  - Auto-splits .kinetic text into chars
  */
 export function MotionLayer() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
     if (typeof window === "undefined") return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
