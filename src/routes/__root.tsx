@@ -85,7 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#050505" },
-      { title: "radmap.de — Das deutsche Magazin für Fahrräder & E-Bikes" },
+      { title: "radmap.de – Fahrrad-News, Tests & Ratgeber" },
       {
         name: "description",
         content:
@@ -95,17 +95,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "radmap.de" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "RAD MAP" },
-      { name: "application-name", content: "RAD MAP" },
+      { property: "og:title", content: "radmap.de – Fahrrad-News, Tests & Ratgeber" },
+      { name: "twitter:title", content: "radmap.de – Fahrrad-News, Tests & Ratgeber" },
+      { name: "description", content: "Aktuelle News, ehrliche Tests, Kaufberatung und Praxis-Tipps rund ums Rad und E-Bike. Täglich neu, immer unabhängig." },
+      { property: "og:description", content: "Aktuelle News, ehrliche Tests, Kaufberatung und Praxis-Tipps rund ums Rad und E-Bike. Täglich neu, immer unabhängig." },
+      { name: "twitter:description", content: "Aktuelle News, ehrliche Tests, Kaufberatung und Praxis-Tipps rund ums Rad und E-Bike. Täglich neu, immer unabhängig." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DQfUar8YcyQZOSMZV6R2J2trAoX2/social-images/social-1781289587892-ChatGPT_Image_12.06.2026_г.,_21_39_33.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DQfUar8YcyQZOSMZV6R2J2trAoX2/social-images/social-1781289587892-ChatGPT_Image_12.06.2026_г.,_21_39_33.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "icon", type: "image/png", sizes: "32x32", href: "/icons/favicon-32.png" },
-      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icons/icon-192.png" },
-      { rel: "apple-touch-icon", sizes: "180x180", href: "/icons/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
