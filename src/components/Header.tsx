@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
+import { SearchOverlay } from "./SearchOverlay";
 
 const nav = [
   { to: "/nachrichten", label: "Nachrichten" },
