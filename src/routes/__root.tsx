@@ -16,6 +16,7 @@ import { MobileHeader } from "@/components/MobileHeader";
 import { MobileNav } from "@/components/MobileNav";
 import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { MotionLayer } from "@/components/MotionLayer";
 
 function NotFoundComponent() {
   return (
