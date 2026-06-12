@@ -1,0 +1,11 @@
+# radmap.de
+
+> Das deutsche Premium-Magazin für Fahrräder, E-Bikes und Radsport. Tagesaktuelle Nachrichten, unabhängige Tests und Ratgeber für Radfahrer in Deutschland.
+
+## Hauptseiten
+
+- [Startseite](/): Übersicht der aktuellen Top-Stories
+- [Nachrichten](/nachrichten): Tagesaktuelle Fahrrad-Nachrichten aus Deutschland und der Welt
+- [E-Bikes](/e-bikes): Tests, Kaufberatung und Trends rund um E-Bikes
+- [Ratgeber](/ratgeber): Praxiswissen, Wartung, Pflege und Sicherheit
+- [Tests](/tests): Unabhängige Tests von Fahrrädern, E-Bikes und Komponenten

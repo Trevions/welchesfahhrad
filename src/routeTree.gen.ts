@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestsRouteImport } from './routes/tests'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
@@ -20,6 +21,11 @@ import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 const TestsRoute = TestsRouteImport.update({
   id: '/tests',
   path: '/tests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RatgeberRoute = RatgeberRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/e-bikes': typeof EBikesRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/e-bikes': typeof EBikesRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/e-bikes': typeof EBikesRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/e-bikes'
     | '/nachrichten'
     | '/ratgeber'
+    | '/sitemap.xml'
     | '/tests'
     | '/artikel/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/e-bikes'
     | '/nachrichten'
     | '/ratgeber'
+    | '/sitemap.xml'
     | '/tests'
     | '/artikel/$slug'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/e-bikes'
     | '/nachrichten'
     | '/ratgeber'
+    | '/sitemap.xml'
     | '/tests'
     | '/artikel/$slug'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   EBikesRoute: typeof EBikesRoute
   NachrichtenRoute: typeof NachrichtenRoute
   RatgeberRoute: typeof RatgeberRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestsRoute: typeof TestsRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
 }
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/tests'
       fullPath: '/tests'
       preLoaderRoute: typeof TestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ratgeber': {
@@ -181,9 +201,20 @@ const rootRouteChildren: RootRouteChildren = {
   EBikesRoute: EBikesRoute,
   NachrichtenRoute: NachrichtenRoute,
   RatgeberRoute: RatgeberRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestsRoute: TestsRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
