@@ -1,62 +1,66 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import type { Article } from "@/lib/articles";
 
 interface Props {
   article: Article;
   featured?: boolean;
   index?: number;
+  size?: "sm" | "md" | "lg";
 }
 
-export function ArticleCard({ article, featured, index = 0 }: Props) {
+export function ArticleCard({ article, featured, index = 0, size = "md" }: Props) {
+  const titleSize =
+    size === "lg"
+      ? "text-3xl md:text-5xl"
+      : size === "sm"
+      ? "text-lg md:text-xl"
+      : "text-xl md:text-2xl";
+
   if (featured) {
     return (
       <Link
         to="/artikel/$slug"
         params={{ slug: article.slug }}
-        className="group relative block overflow-hidden rounded-3xl shadow-glass transition-all duration-500 hover:-translate-y-1 hover:shadow-elevated animate-fade-up md:col-span-2 md:row-span-2 min-h-[440px] md:min-h-[640px]"
+        className="group relative block overflow-hidden bg-card border border-border animate-fade-up"
         style={{ animationDelay: `${index * 80}ms` }}
       >
-        <img
-          src={article.image}
-          alt={article.title}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/10" />
-
-        <div className="absolute top-5 left-5">
-          <span className="rounded-full glass-strong px-3 py-1 text-xs font-semibold tracking-widest uppercase text-signal">
-            {article.category}
-          </span>
+        <div className="relative aspect-[16/10] md:aspect-[16/9] overflow-hidden">
+          <img
+            src={article.image}
+            alt={article.title}
+            className="absolute inset-0 h-full w-full object-cover grayscale-[40%] transition-all duration-[1400ms] ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:grayscale-0 group-hover:scale-[1.04]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 p-6 md:p-10">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+        <div className="relative -mt-24 md:-mt-32 p-6 md:p-10">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-8 bg-signal" />
+            <span className="eyebrow text-signal">{article.category}</span>
+          </div>
+
+          <h3 className="mt-5 font-display font-black tracking-tight text-foreground text-3xl md:text-5xl lg:text-6xl leading-[0.95] max-w-3xl">
+            {article.title}
+          </h3>
+
+          <p className="mt-5 max-w-2xl text-base md:text-lg text-muted-foreground font-light leading-relaxed line-clamp-2">
+            {article.excerpt}
+          </p>
+
+          <div className="mt-6 flex items-center gap-3 text-xs text-muted-foreground">
             <span>{article.date}</span>
-            <span className="h-1 w-1 rounded-full bg-muted-foreground/60" />
+            <span className="h-1 w-1 rounded-full bg-muted-foreground/50" />
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {article.readTime}
             </span>
             {article.source && (
               <>
-                <span className="h-1 w-1 rounded-full bg-muted-foreground/60" />
+                <span className="h-1 w-1 rounded-full bg-muted-foreground/50" />
                 <span>Quelle: {article.source}</span>
               </>
             )}
-          </div>
-
-          <h3 className="font-display font-bold tracking-tight text-foreground text-2xl md:text-4xl lg:text-5xl max-w-3xl leading-[1.05]">
-            {article.title}
-          </h3>
-
-          <p className="mt-4 max-w-2xl text-sm md:text-base text-muted-foreground line-clamp-2">
-            {article.excerpt}
-          </p>
-
-          <div className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-signal">
-            Weiterlesen
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </div>
         </div>
       </Link>
@@ -67,45 +71,40 @@ export function ArticleCard({ article, featured, index = 0 }: Props) {
     <Link
       to="/artikel/$slug"
       params={{ slug: article.slug }}
-      className="group relative flex flex-col overflow-hidden rounded-3xl glass shadow-glass transition-all duration-500 hover:-translate-y-1 hover:shadow-elevated animate-fade-up"
-      style={{ animationDelay: `${index * 80}ms` }}
+      className="group flex flex-col animate-fade-up"
+      style={{ animationDelay: `${index * 60}ms` }}
     >
-      <div className="relative overflow-hidden aspect-[16/10]">
+      <div className="relative aspect-[4/3] overflow-hidden bg-card">
         <img
           src={article.image}
           alt={article.title}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+          className="h-full w-full object-cover grayscale-[35%] transition-all duration-[1100ms] ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:grayscale-0 group-hover:scale-[1.05]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-        <div className="absolute top-4 left-4">
-          <span className="rounded-full glass-strong px-3 py-1 text-[10px] font-semibold tracking-widest uppercase text-signal">
+        <div className="absolute top-3 left-3">
+          <span className="eyebrow bg-background/85 backdrop-blur-md text-signal px-2.5 py-1.5">
             {article.category}
           </span>
         </div>
       </div>
 
-      <div className="relative flex flex-1 flex-col p-5 md:p-6">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-          <span>{article.date}</span>
-          <span className="h-1 w-1 rounded-full bg-muted-foreground/50" />
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {article.readTime}
-          </span>
-        </div>
-
-        <h3 className="font-display font-semibold tracking-tight text-foreground text-lg md:text-xl leading-snug line-clamp-2">
+      <div className="flex flex-1 flex-col pt-5">
+        <h3
+          className={`font-display font-bold tracking-tight text-foreground ${titleSize} leading-tight line-clamp-3 transition-colors group-hover:text-signal`}
+        >
           {article.title}
         </h3>
 
-        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-          {article.excerpt}
-        </p>
+        {size !== "sm" && (
+          <p className="mt-3 text-sm text-muted-foreground font-light leading-relaxed line-clamp-2">
+            {article.excerpt}
+          </p>
+        )}
 
-        <div className="mt-auto pt-4 inline-flex items-center gap-1 text-sm font-medium text-signal">
-          Weiterlesen
-          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        <div className="mt-auto pt-4 flex items-center gap-2 text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
+          <span>{article.date}</span>
+          <span className="h-px w-3 bg-muted-foreground/40" />
+          <span>{article.readTime}</span>
         </div>
       </div>
     </Link>

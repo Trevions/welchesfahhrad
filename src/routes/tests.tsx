@@ -27,11 +27,11 @@ function Tests() {
     <>
       <CategoryHero
         eyebrow="Tests & Reviews"
-        title="Geprüft. Bewertet. Empfohlen."
+        title="Geprüft Bewertet Empfohlen"
         description="Wir testen über 150 Räder, E-Bikes und Komponenten pro Jahr — auf deutschen Straßen, in den Alpen und im Labor."
       />
-      <section className="mx-auto max-w-6xl px-6 pb-24">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
           {items.map((a, i) => (
             <ArticleCard key={a.slug} article={a} index={i} />
           ))}

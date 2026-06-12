@@ -14,37 +14,37 @@ export const Route = createFileRoute("/admin")({
 
 function AdminPage() {
   return (
-    <div className="pt-32 px-6 pb-24">
-      <div className="mx-auto max-w-4xl">
-        <div className="glass-strong rounded-3xl p-8 md:p-12 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-signal/10 text-signal">
-            <Lock className="h-7 w-7" />
-          </div>
-          <h1 className="mt-6 font-display text-3xl md:text-4xl font-bold tracking-tight text-gradient">
-            Admin-Bereich
-          </h1>
-          <p className="mt-3 text-muted-foreground max-w-md mx-auto">
-            Hier werden Sie Artikel verwalten, neue Beiträge veröffentlichen
-            und die AI-Pipeline (Perplexity + Claude) steuern.
-          </p>
-          <p className="mt-2 text-xs text-muted-foreground">
-            In Etappe 2 wird ein sicherer Login mit Lovable Cloud aktiviert.
-          </p>
+    <div className="mx-auto max-w-[1100px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
+      <div className="flex items-center gap-3">
+        <span className="h-px w-10 bg-signal" />
+        <span className="eyebrow text-signal">Redaktion</span>
+      </div>
+      <h1 className="mt-6 font-display text-5xl md:text-7xl font-black leading-[0.95]">
+        Admin <span className="italic text-muted-foreground">Cockpit.</span>
+      </h1>
+      <p className="mt-6 max-w-2xl text-lg text-muted-foreground font-light">
+        Hier werden Sie Artikel verwalten, neue Beiträge veröffentlichen
+        und die AI-Pipeline (Perplexity + Lovable AI) steuern.
+        In Etappe 2 wird ein sicherer Login mit Lovable Cloud aktiviert.
+      </p>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-3 text-left">
-            {[
-              { Icon: Plus, t: "Artikel erstellen", d: "Eigene Ratgeber & Beiträge mit SEO-Optimierung" },
-              { Icon: FileText, t: "AI-News verwalten", d: "Perplexity-Quellen + Claude-Rewrites freigeben" },
-              { Icon: BarChart3, t: "Statistiken", d: "Reichweite, Ranking & beliebte Artikel" },
-            ].map((f) => (
-              <div key={f.t} className="glass rounded-2xl p-5">
-                <f.Icon className="h-5 w-5 text-signal" />
-                <h3 className="mt-3 font-semibold">{f.t}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{f.d}</p>
-              </div>
-            ))}
+      <div className="mt-12 inline-flex items-center gap-3 border border-border bg-card px-5 py-3">
+        <Lock className="h-4 w-4 text-signal" />
+        <span className="eyebrow text-muted-foreground">Login folgt in Etappe 2</span>
+      </div>
+
+      <div className="mt-14 grid gap-px bg-border md:grid-cols-3 border border-border">
+        {[
+          { Icon: Plus, t: "Artikel erstellen", d: "Eigene Ratgeber & Beiträge mit SEO-Optimierung." },
+          { Icon: FileText, t: "AI-News verwalten", d: "Perplexity-Quellen und Lovable AI Rewrites freigeben." },
+          { Icon: BarChart3, t: "Statistiken", d: "Reichweite, Ranking und beliebte Artikel auf einen Blick." },
+        ].map((f) => (
+          <div key={f.t} className="bg-background p-8">
+            <f.Icon className="h-6 w-6 text-signal" />
+            <h3 className="mt-4 font-display text-xl font-bold">{f.t}</h3>
+            <p className="mt-2 text-sm text-muted-foreground font-light leading-relaxed">{f.d}</p>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

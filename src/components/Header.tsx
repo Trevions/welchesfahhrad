@@ -1,9 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bike } from "lucide-react";
+import { Search } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
 const nav = [
-  { to: "/", label: "Start" },
   { to: "/nachrichten", label: "Nachrichten" },
   { to: "/ratgeber", label: "Ratgeber" },
   { to: "/e-bikes", label: "E-Bikes" },
@@ -14,53 +13,61 @@ export function Header() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 hidden md:block">
-      <div className="mx-auto mt-4 max-w-6xl px-6">
-        <nav className="glass-strong shadow-glass flex items-center justify-between rounded-full px-6 py-3">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="relative">
-              <Bike className="h-6 w-6 text-signal transition-transform group-hover:rotate-12" />
-              <div className="absolute inset-0 bg-signal blur-xl opacity-40 -z-10" />
-            </div>
-            <span className="font-display text-lg font-bold tracking-tight">
-              radmap<span className="text-signal">.</span>de
+    <header className="sticky top-0 z-50 hidden md:block bg-background/85 backdrop-blur-xl border-b border-border">
+      <div className="mx-auto max-w-[1400px] px-8">
+        <div className="flex h-16 items-center justify-between gap-8">
+          {/* Wordmark */}
+          <Link to="/" className="flex items-baseline gap-0">
+            <span className="font-display text-2xl font-black italic tracking-tight leading-none">
+              Radmap<span className="text-signal">.</span>
+            </span>
+            <span className="ml-2 eyebrow-sm text-muted-foreground hidden lg:inline">
+              Deutsches Fahrrad-Magazin
             </span>
           </Link>
 
+          {/* Center nav */}
           <ul className="flex items-center gap-1">
             {nav.map((item) => {
-              const active =
-                item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
+              const active = pathname.startsWith(item.to);
               return (
                 <li key={item.to}>
                   <Link
                     to={item.to}
-                    className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                      active
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
+                    className={`group relative px-4 py-2 eyebrow transition-colors ${
+                      active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    {active && (
-                      <span className="absolute inset-0 rounded-full bg-white/10" />
-                    )}
-                    <span className="relative">{item.label}</span>
+                    {item.label}
+                    <span
+                      className={`absolute left-4 right-4 -bottom-px h-px bg-signal transition-transform origin-left ${
+                        active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                      }`}
+                    />
                   </Link>
                 </li>
               );
             })}
           </ul>
 
+          {/* Right cluster */}
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Suchen"
+              className="flex h-9 w-9 items-center justify-center border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+            >
+              <Search className="h-3.5 w-3.5" />
+            </button>
             <ThemeToggle />
             <Link
               to="/admin"
-              className="rounded-full bg-signal px-4 py-2 text-sm font-semibold text-signal-foreground transition-transform hover:scale-105"
+              className="hidden lg:inline-flex items-center bg-foreground px-4 py-2 eyebrow text-background hover:bg-signal hover:text-signal-foreground transition-colors"
             >
               Admin
             </Link>
           </div>
-        </nav>
+        </div>
       </div>
     </header>
   );
