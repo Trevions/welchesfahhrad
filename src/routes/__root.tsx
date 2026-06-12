@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/Header";
+import { MobileHeader } from "@/components/MobileHeader";
 import { MobileNav } from "@/components/MobileNav";
 import { Footer } from "@/components/Footer";
 
@@ -119,7 +120,8 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen">
         <Header />
-        <main className="pb-20 md:pb-0">
+        <MobileHeader />
+        <main className="pb-24 md:pb-0">
           <Outlet />
         </main>
         <Footer />
