@@ -21,8 +21,8 @@ export function Header() {
             <span className="font-display text-2xl font-black italic tracking-tight leading-none">
               Radmap<span className="text-signal">.</span>
             </span>
-            <span className="ml-2 eyebrow-sm text-muted-foreground hidden lg:inline">
-              Deutsches Fahrrad-Magazin
+            <span className="ml-2 font-display text-2xl font-black italic leading-none text-signal">
+              DE
             </span>
           </Link>
 
