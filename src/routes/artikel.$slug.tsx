@@ -114,7 +114,9 @@ function ArticlePage() {
           {a.excerpt}
         </p>
 
-        <div className="mt-10 flex items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground">
+        <div className="mt-10 flex flex-wrap items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground">
+          <span className="text-foreground font-semibold">Von Redaktion radmap.de</span>
+          <span className="h-px w-3 bg-muted-foreground/40" />
           <span>{a.date}</span>
           <span className="h-px w-3 bg-muted-foreground/40" />
           <span className="inline-flex items-center gap-1.5">
