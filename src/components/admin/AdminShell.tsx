@@ -50,6 +50,15 @@ export function AdminShell({
     queryFn: () => fetchAccess(),
   });
 
+  const fetchUnread = useServerFn(getUnreadContactCount);
+  const { data: unreadData } = useQuery({
+    queryKey: ["contact-unread"],
+    queryFn: () => fetchUnread(),
+    enabled: !!access && (access.isAdmin || access.isEditor),
+    refetchInterval: 30_000,
+  });
+  const unread = unreadData?.unread ?? 0;
+
   useEffect(() => {
     if (!isLoading && access && !access.isAdmin && !access.isEditor) {
       toast.error("Kein Zugriff auf den Admin-Bereich");
