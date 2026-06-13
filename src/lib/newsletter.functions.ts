@@ -182,8 +182,10 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
     const siteUrl = getSiteUrl();
     const confirmUrl = `${siteUrl}/newsletter/bestaetigen?token=${confirmToken}`;
     const unsubUrl = `${siteUrl}/newsletter/abmelden?token=${unsubToken}`;
+    // RFC 8058 one-click endpoint (used by Gmail/Outlook "Unsubscribe" button)
+    const oneClickUnsubUrl = `${siteUrl}/api/public/newsletter/unsubscribe?token=${unsubToken}`;
 
-    await sendDoiEmail(data.email, confirmUrl, unsubUrl);
+    await sendDoiEmail(data.email, confirmUrl, unsubUrl, oneClickUnsubUrl);
 
     return { ok: true };
   });
