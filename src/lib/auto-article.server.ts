@@ -805,3 +805,114 @@ export async function runAutoGeneratePipeline(
 
   return { ok: true, runId, status: finalStatus, sourcesFound, articlesCreated, errors };
 }
+
+// ---------- Manual research: find latest cycling news, cluster duplicates ----------
+export type NewsResearchScope = "de" | "world" | "all";
+
+export type NewsClusterItem = {
+  topic_title: string;
+  summary: string;
+  sources: Array<{ title: string; url: string; domain: string; published_date?: string }>;
+};
+
+export type NewsResearchResult = {
+  scope: NewsResearchScope;
+  clusters: NewsClusterItem[];
+};
+
+const RESEARCH_PROMPTS: Record<NewsResearchScope, { system: string; user: string }> = {
+  de: {
+    system:
+      "Du bist Recherche-Assistent für ein deutsches Fahrrad-Magazin. Finde die wichtigsten und aktuellsten deutschsprachigen Nachrichten der letzten 5 Tage rund um Fahrrad, Radsport, E-Bikes, Pedelecs, Radverkehr, Verkehrsrecht/StVO, Hersteller (Bosch, Canyon, Cube, Riese & Müller, …), Rennen und Tests. Bevorzuge Original-Redaktionen (radmarkt.de, pd-f.de, radzeit.de, ebike-news.de, fazradkultur, velomotion.de, ADAC, ADFC).",
+    user:
+      "Finde 10 verschiedene aktuelle deutsche Fahrrad-Nachrichten. Für JEDE Geschichte: sammle ALLE deutschsprachigen Quellen/Websites, die über genau diese Geschichte berichten (mindestens 1, gerne 2–5).",
+  },
+  world: {
+    system:
+      "You are a research assistant for a German cycling magazine. Find the most important and recent international cycling news from the last 5 days: pro racing (UCI, Grand Tours, classics), e-bike industry, manufacturers (Specialized, Trek, Giant, Cannondale), bike tech, recalls, safety. Prefer original outlets (cyclingnews.com, velonews, cyclingweekly, bicycleretailer, bikeradar, gcn, road.cc).",
+    user:
+      "Find 10 distinct recent international cycling news stories. For EACH story: gather ALL the websites that cover exactly this same story (minimum 1, ideally 2–5).",
+  },
+  all: {
+    system:
+      "Du bist Recherche-Assistent für ein deutsches Fahrrad-Magazin. Finde die wichtigsten Fahrrad-Nachrichten der letzten 5 Tage — Mischung aus deutschen UND internationalen Quellen. Themen: Radsport (UCI, Tour), E-Bikes, Hersteller, Technik, Rückrufe, Politik/Verkehrsrecht.",
+    user:
+      "Finde 12 verschiedene aktuelle Fahrrad-Nachrichten (Mischung Deutsch + International). Für JEDE Geschichte: alle Original-Quellen/Websites, die genau diese Geschichte bringen (1–5 Links pro Geschichte).",
+  },
+};
+
+export async function researchNewsManual(scope: NewsResearchScope): Promise<NewsResearchResult> {
+  const key = process.env.PERPLEXITY_API_KEY;
+  if (!key) throw new Error("PERPLEXITY_API_KEY missing");
+
+  const { system, user } = RESEARCH_PROMPTS[scope];
+
+  const resp = await fetch(PERPLEXITY_URL, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "sonar",
+      messages: [
+        { role: "system", content: system + " Antworte ausschließlich mit gültigem JSON nach dem Schema." },
+        { role: "user", content: user },
+      ],
+      search_recency_filter: "week",
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          schema: {
+            type: "object",
+            properties: {
+              clusters: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    topic_title: { type: "string" },
+                    summary: { type: "string" },
+                    sources: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          title: { type: "string" },
+                          url: { type: "string" },
+                          published_date: { type: "string" },
+                        },
+                        required: ["title", "url"],
+                      },
+                    },
+                  },
+                  required: ["topic_title", "summary", "sources"],
+                },
+              },
+            },
+            required: ["clusters"],
+          },
+        },
+      },
+      max_tokens: 3000,
+    }),
+  });
+
+  if (!resp.ok) {
+    const t = await resp.text();
+    throw new Error(`Perplexity ${resp.status}: ${t.slice(0, 300)}`);
+  }
+  const json = (await resp.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  const content = json.choices?.[0]?.message?.content ?? "{}";
+  let parsed: { clusters?: NewsClusterItem[] } = {};
+  try { parsed = JSON.parse(content); } catch { /* empty */ }
+  const clusters = (parsed.clusters ?? [])
+    .map((c) => ({
+      topic_title: c.topic_title ?? "",
+      summary: c.summary ?? "",
+      sources: (c.sources ?? [])
+        .filter((s) => s && s.url && /^https?:\/\//i.test(s.url))
+        .filter((s) => !s.url.includes("radmap.de"))
+        .map((s) => ({ ...s, domain: domainOf(s.url) })),
+    }))
+    .filter((c) => c.topic_title && c.sources.length > 0);
+
+  return { scope, clusters };
+}
