@@ -28,6 +28,7 @@ import { Route as BarrierefreiheitRouteImport } from './routes/barrierefreiheit'
 import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NewsletterBestaetigenRouteImport } from './routes/newsletter.bestaetigen'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AuthenticatedMnvRouteImport } from './routes/_authenticated/mnv'
 import { Route as AuthenticatedMnvIndexRouteImport } from './routes/_authenticated/mnv.index'
@@ -132,6 +133,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewsletterBestaetigenRoute = NewsletterBestaetigenRouteImport.update({
+  id: '/newsletter/bestaetigen',
+  path: '/newsletter/bestaetigen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
   id: '/artikel/$slug',
   path: '/artikel/$slug',
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/ueber-uns': typeof UeberUnsRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
@@ -231,6 +238,7 @@ export interface FileRoutesByTo {
   '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
@@ -262,6 +270,7 @@ export interface FileRoutesById {
   '/ueber-uns': typeof UeberUnsRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/_authenticated/mnv/messages': typeof AuthenticatedMnvMessagesRoute
@@ -293,6 +302,7 @@ export interface FileRouteTypes {
     | '/ueber-uns'
     | '/mnv'
     | '/artikel/$slug'
+    | '/newsletter/bestaetigen'
     | '/mnv/articles'
     | '/mnv/media'
     | '/mnv/messages'
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/tests'
     | '/ueber-uns'
     | '/artikel/$slug'
+    | '/newsletter/bestaetigen'
     | '/mnv/articles'
     | '/mnv/media'
     | '/mnv/messages'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/ueber-uns'
     | '/_authenticated/mnv'
     | '/artikel/$slug'
+    | '/newsletter/bestaetigen'
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/media'
     | '/_authenticated/mnv/messages'
@@ -381,6 +393,7 @@ export interface RootRouteChildren {
   TestsRoute: typeof TestsRoute
   UeberUnsRoute: typeof UeberUnsRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
+  NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -518,6 +531,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/newsletter/bestaetigen': {
+      id: '/newsletter/bestaetigen'
+      path: '/newsletter/bestaetigen'
+      fullPath: '/newsletter/bestaetigen'
+      preLoaderRoute: typeof NewsletterBestaetigenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/artikel/$slug': {
       id: '/artikel/$slug'
       path: '/artikel/$slug'
@@ -639,7 +659,18 @@ const rootRouteChildren: RootRouteChildren = {
   TestsRoute: TestsRoute,
   UeberUnsRoute: UeberUnsRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
+  NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
