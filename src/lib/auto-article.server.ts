@@ -157,6 +157,8 @@ HARTE REGELN:
 9. read_time: "X min" basierend auf ~200 Wörtern/min.
 10. slug: kurz, deutsch (Umlaute aufgelöst), keine Sonderzeichen.
 
+WICHTIG: Wenn skip=false, MÜSSEN alle Felder (slug, title, excerpt, body_markdown, category, seo_title, seo_description, seo_keywords, read_time, image_prompt, image_alt) vollständig ausgefüllt sein. Wenn skip=true, fülle die anderen Felder mit Leerstring "".
+
 Liefere AUSSCHLIESSLICH gültiges JSON.`;
 
   const userInput = `Kategorie: ${category}
