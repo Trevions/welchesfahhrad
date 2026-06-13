@@ -19,12 +19,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const NAV = [
+const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
   { to: "/mnv", label: "Übersicht", icon: LayoutDashboard, exact: true },
   { to: "/mnv/articles", label: "Artikel", icon: FileText },
   { to: "/mnv/media", label: "Medien", icon: ImageIcon },
   { to: "/mnv/users", label: "Benutzer", icon: Users },
-] as const;
+];
 
 export function AdminShell({
   children,
