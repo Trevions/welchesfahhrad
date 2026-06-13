@@ -25,7 +25,118 @@ export type RewrittenArticle = {
   read_time: string;
   image_prompt: string;
   image_alt: string;
+  key_facts: string[];
 };
+
+// ---------- Firecrawl: scrape full source article ----------
+export type ScrapedSource = { text: string; wordCount: number };
+
+export async function fetchSourceArticle(url: string): Promise<ScrapedSource> {
+  const key = process.env.FIRECRAWL_API_KEY;
+  if (!key) throw new Error("FIRECRAWL_API_KEY missing");
+
+  const resp = await fetch("https://api.firecrawl.dev/v2/scrape", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      url,
+      formats: ["markdown"],
+      onlyMainContent: true,
+      timeout: 30000,
+    }),
+  });
+
+  if (!resp.ok) {
+    const t = await resp.text();
+    throw new Error(`Firecrawl ${resp.status}: ${t.slice(0, 200)}`);
+  }
+  const json = (await resp.json()) as {
+    data?: { markdown?: string };
+    markdown?: string;
+  };
+  const md = (json.data?.markdown ?? json.markdown ?? "").trim();
+  const wordCount = md ? md.split(/\s+/).length : 0;
+  return { text: md, wordCount };
+}
+
+// ---------- Anti-hallucination validation ----------
+const ENTITY_STOPWORDS = new Set([
+  "Der","Die","Das","Ein","Eine","Einer","Eines","Einem","Den","Dem","Des",
+  "Und","Oder","Aber","Nicht","Auch","Noch","Schon","Sehr","Mehr","Hier","Dort",
+  "Wie","Was","Wer","Wo","Wann","Warum","Bei","Mit","Von","Aus","Auf","In","Im",
+  "Zu","Zum","Zur","Für","Gegen","Über","Unter","Nach","Vor","Seit","Während",
+  "Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag",
+  "Januar","Februar","März","April","Mai","Juni","Juli","August","September",
+  "Oktober","November","Dezember","Heute","Gestern","Morgen","Jahr","Jahre","Tag","Tage",
+  "Radmap","Nachrichten","Ratgeber","Tests","Foto","Fotos","Bild","Quelle","Redaktion",
+]);
+
+function normalizeForMatch(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractProperNouns(text: string): string[] {
+  const clean = text
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#*_>`\[\]()]/g, " ");
+  const matches = clean.match(
+    /\b[A-ZÄÖÜ][A-Za-zÄÖÜäöüß0-9-]+(?:\s+(?:de|van|von|der|den|le|la|du)\s+[A-ZÄÖÜ][A-Za-zÄÖÜäöüß0-9-]+|\s+[A-ZÄÖÜ][A-Za-zÄÖÜäöüß0-9-]+){0,3}\b/g,
+  ) ?? [];
+  const out = new Set<string>();
+  for (const m of matches) {
+    const first = m.split(/\s+/)[0];
+    if (ENTITY_STOPWORDS.has(first)) continue;
+    if (m.length < 3) continue;
+    out.add(m.trim());
+  }
+  return [...out];
+}
+
+export type ValidationResult = {
+  ok: boolean;
+  missingEntities: string[];
+  missingFacts: string[];
+};
+
+export function validateAgainstSource(
+  rewritten: Pick<RewrittenArticle, "title" | "body_markdown" | "key_facts">,
+  sourceText: string,
+): ValidationResult {
+  const haystack = normalizeForMatch(sourceText);
+  const generated = `${rewritten.title}\n\n${rewritten.body_markdown}`;
+  const entities = extractProperNouns(generated);
+
+  const missingEntities: string[] = [];
+  for (const e of entities) {
+    if (!haystack.includes(normalizeForMatch(e))) missingEntities.push(e);
+  }
+
+  const missingFacts: string[] = [];
+  const factStop = new Set(["dass","auch","sich","sind","wird","wurde","haben","einen","einem","einer","oder","aber","nicht","sehr","mehr"]);
+  for (const fact of rewritten.key_facts ?? []) {
+    const first = (fact || "").split(/[.!?]/)[0].trim();
+    if (first.length < 8) continue;
+    const tokens = normalizeForMatch(first)
+      .split(" ")
+      .filter((t) => t.length >= 4 && !factStop.has(t));
+    if (tokens.length < 4) continue;
+    const hits = tokens.filter((t) => haystack.includes(t)).length;
+    if (hits / tokens.length < 0.6) missingFacts.push(fact.slice(0, 120));
+  }
+
+  const ok = missingEntities.length <= 2 && missingFacts.length === 0;
+  return { ok, missingEntities, missingFacts };
+}
 
 // ---------- Slug helpers ----------
 const UMLAUT_MAP: Record<string, string> = {
@@ -138,33 +249,53 @@ const LOVABLE_AI = "https://ai.gateway.lovable.dev/v1";
 export async function rewriteArticle(
   source: DiscoveredSource,
   category: Category,
+  sourceText: string,
 ): Promise<RewrittenArticle> {
   const key = process.env.LOVABLE_API_KEY;
   if (!key) throw new Error("LOVABLE_API_KEY missing");
 
   const system = `Du bist Senior-Redakteur:in bei radmap.de, einem deutschen Fahrrad-Magazin.
-DEINE AUFGABE: Aus einem Quell-Titel und einer kurzen Zusammenfassung einen vollständigen, eigenständigen deutschsprachigen Artikel schreiben.
 
-HARTE REGELN:
-1. NIEMALS wörtlich aus der Quelle übernehmen. Komplett neu formuliert.
-2. NIEMALS die Original-Publikation oder Medien-Quelle namentlich erwähnen ("laut X-Magazin", "wie X berichtet", "im Interview mit X-Redaktion"). Marken, Hersteller und Firmennamen (z. B. Bosch, Cube, Shimano, Canyon) DÜRFEN und SOLLEN genannt werden, wenn sie zur Sache gehören – sie sind keine Medien.
-3. Skip NUR wenn der Artikel ausdrücklich als "exklusiv für [Magazin XY] geschrieben" o.ä. ausgewiesen ist, also untrennbar an eine Medien-Marke gebunden ist (z. B. exklusives Magazin-Interview als alleiniger Inhalt). Produkt-News, Tests, Releases und Hersteller-Ankündigungen sind NICHT zu skippen.
-4. Tonalität: faktisch, präzise, leicht journalistisch, deutsche Leser:innen.
-5. SEO-First: Titel ≤ 60 Zeichen, Meta-Description 140–155 Zeichen, body_markdown 600–900 Wörter, klare H2/H3-Struktur, gerne Listen.
-6. seo_keywords: 5–8 kommagetrennte deutsche Long-Tail-Keywords.
-7. image_alt: 80–120 Zeichen, beschreibend, mit Haupt-Keyword (kein Stuffing).
-8. image_prompt: detaillierter englischer Prompt für ein fotorealistisches Header-Bild (kein Text im Bild, keine Logos im Bild). Produkt-/Markenkontext im Bildmotiv ist okay, aber keine eingeblendeten Logos/Schriftzüge.
-9. read_time: "X min" basierend auf ~200 Wörtern/min.
-10. slug: kurz, deutsch (Umlaute aufgelöst), keine Sonderzeichen.
+DEINE EINZIGE INFORMATIONSQUELLE ist der unten gelieferte Quelltext (QUELLTEXT). Schreibe einen eigenständigen deutschen Artikel, der AUSSCHLIESSLICH Fakten aus diesem Quelltext verwendet.
 
-WICHTIG: Wenn skip=false, MÜSSEN alle Felder (slug, title, excerpt, body_markdown, category, seo_title, seo_description, seo_keywords, read_time, image_prompt, image_alt) vollständig ausgefüllt sein. Wenn skip=true, fülle die anderen Felder mit Leerstring "".
+ABSOLUT VERBOTEN:
+- Erfinden von Namen, Teams, Ergebnissen, Zeiten, Orten, Daten oder Zitaten, die NICHT im Quelltext stehen.
+- Spekulative taktische Analysen ("die Mannschaft kontrollierte das Tempo…") wenn das nicht im Quelltext steht.
+- Prognosen oder Ausblicke auf zukünftige Rennen, Saisonverlauf, Form, Tour de France usw., außer sie stehen WÖRTLICH im Quelltext.
+- Generische Sportblog-Phrasen wie "ein positives Signal", "wertvolle Daten zur Formkurve", "gut aufgestellt für die großen Rundfahrten".
+- Wenn ein Fakt nicht im Quelltext steht → weglassen. Lieber kurz und korrekt als lang und ausgedacht.
 
-Liefere AUSSCHLIESSLICH gültiges JSON.`;
+PFLICHT:
+1. Jeder Name (Fahrer, Team, Ort, Veranstaltung) MUSS wörtlich im Quelltext vorkommen.
+2. Komplett neue Formulierungen — niemals wörtlich aus dem Quelltext kopieren.
+3. Tonalität: sachlich, präzise, journalistisch (Nachrichtenstil), keine Werbung, keine Emotion.
+4. Länge body_markdown: 350–550 Wörter. Wenn die Quelle nur 200 Wörter Fakten hergibt, schreibe lieber 350 als gestreckte 550.
+5. Struktur: 2–4 H2-Überschriften, kurze Absätze, gerne 1 Liste mit echten Fakten.
+6. NIEMALS Medien-Quellen namentlich nennen ("laut Magazin XY"). Marken/Hersteller (Bosch, Shimano, Canyon usw.) DÜRFEN genannt werden, wenn sie im Quelltext stehen.
+7. SEO: seo_title ≤ 60 Zeichen, seo_description 140–155 Zeichen, seo_keywords 5–8 deutsche Long-Tail.
+8. image_prompt: detaillierter ENGLISCHER Prompt für ein fotorealistisches Header-Bild zum Thema. Keine Logos, keine eingeblendete Schrift.
+9. image_alt: 80–120 Zeichen, beschreibend.
+10. read_time: "X min" basierend auf ~200 Wörtern/min.
+11. slug: kurz, deutsch (Umlaute aufgelöst), keine Sonderzeichen.
+12. key_facts: 5–10 kurze deutsche Stichpunkte mit den wichtigsten überprüfbaren Fakten, die du aus dem QUELLTEXT entnommen hast (Namen, Zahlen, Orte). JEDER Stichpunkt MUSS sich im Quelltext nachweisen lassen.
+
+SKIP-REGEL:
+- skip=true NUR wenn der Quelltext keine sachliche Berichterstattung enthält (z. B. nur ein Magazin-Inhaltsverzeichnis, ein Paywall-Anriss von < 100 Wörtern Fakten, ein reines Interview, das ohne Medien-Marke nicht funktioniert) ODER wenn das Thema nichts mit Fahrrad/Radsport/E-Bike/Radverkehr zu tun hat.
+- Bei skip=true → alle anderen Felder mit Leerstring "" bzw. key_facts mit [].
+
+Liefere AUSSCHLIESSLICH gültiges JSON nach dem vorgegebenen Schema.`;
+
+  // Trim source text to keep prompt within sensible limits
+  const trimmedSource = sourceText.length > 18000 ? sourceText.slice(0, 18000) + "\n...[gekürzt]" : sourceText;
 
   const userInput = `Kategorie: ${category}
-Quell-Titel: ${source.title}
-Quell-Zusammenfassung: ${source.summary}
-Quell-Domain (NUR zur Info, NICHT erwähnen): ${source.domain}`;
+Quell-Domain (NUR zur Info, NICHT erwähnen): ${source.domain}
+Quell-URL: ${source.url}
+
+QUELLTEXT (deine einzige Faktengrundlage):
+"""
+${trimmedSource}
+"""`;
 
   const resp = await fetch(`${LOVABLE_AI}/chat/completions`, {
     method: "POST",
@@ -173,7 +304,7 @@ Quell-Domain (NUR zur Info, NICHT erwähnen): ${source.domain}`;
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-2.5-pro",
       messages: [
         { role: "system", content: system },
         { role: "user", content: userInput },
@@ -198,8 +329,9 @@ Quell-Domain (NUR zur Info, NICHT erwähnen): ${source.domain}`;
               read_time: { type: "string" },
               image_prompt: { type: "string" },
               image_alt: { type: "string" },
+              key_facts: { type: "array", items: { type: "string" } },
             },
-            required: ["skip", "slug", "title", "excerpt", "body_markdown", "category", "seo_title", "seo_description", "seo_keywords", "read_time", "image_prompt", "image_alt"],
+            required: ["skip", "slug", "title", "excerpt", "body_markdown", "category", "seo_title", "seo_description", "seo_keywords", "read_time", "image_prompt", "image_alt", "key_facts"],
           },
         },
       },
@@ -213,9 +345,9 @@ Quell-Domain (NUR zur Info, NICHT erwähnen): ${source.domain}`;
   const json = (await resp.json()) as { choices?: Array<{ message?: { content?: string } }> };
   const content = json.choices?.[0]?.message?.content ?? "{}";
   const out = JSON.parse(content) as RewrittenArticle;
-  // Ensure slug is safe
   if (out.slug) out.slug = slugify(out.slug);
   else if (out.title) out.slug = slugify(out.title);
+  if (!Array.isArray(out.key_facts)) out.key_facts = [];
   return out;
 }
 
@@ -348,7 +480,38 @@ export async function runAutoGeneratePipeline(
 
       for (const source of fresh.slice(0, 3)) {
         try {
-          const rewritten = await rewriteArticle(source, category);
+          // 1) Scrape full source text — no scrape, no article.
+          let scraped: ScrapedSource;
+          try {
+            scraped = await fetchSourceArticle(source.url);
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              skip_reason: `scrape failed: ${msg.slice(0, 240)}`,
+            });
+            continue;
+          }
+
+          if (scraped.wordCount < 120) {
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              scraped_text: scraped.text || null,
+              skip_reason: `source too short (${scraped.wordCount} words) — refusing to fabricate`,
+            });
+            continue;
+          }
+
+          // 2) Rewrite using ONLY the scraped text.
+          const rewritten = await rewriteArticle(source, category, scraped.text);
 
           if (rewritten.skip) {
             await supabaseAdmin.from("article_sources").insert({
@@ -357,7 +520,8 @@ export async function runAutoGeneratePipeline(
               source_domain: source.domain,
               category,
               status: "skipped_brand_mention",
-              skip_reason: rewritten.skip_reason ?? "Brand-dependent story",
+              scraped_text: scraped.text,
+              skip_reason: rewritten.skip_reason ?? "Not suitable for rewrite",
             });
             continue;
           }
@@ -369,10 +533,29 @@ export async function runAutoGeneratePipeline(
               source_domain: source.domain,
               category,
               status: "failed",
+              scraped_text: scraped.text,
               skip_reason: "AI returned incomplete article",
             });
             continue;
           }
+
+          // 3) Validate generated text against the source — block hallucinations.
+          const validation = validateAgainstSource(rewritten, scraped.text);
+          if (!validation.ok) {
+            const reason = `hallucination detected — missing entities: [${validation.missingEntities.slice(0, 6).join(", ")}]; missing facts: [${validation.missingFacts.slice(0, 3).join(" | ")}]`;
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              scraped_text: scraped.text,
+              skip_reason: reason.slice(0, 500),
+            });
+            errors.push(`validation (${category}): ${reason.slice(0, 200)}`);
+            continue;
+          }
+
 
           const baseSlug = rewritten.slug || slugify(rewritten.title);
           const slug = await ensureUniqueSlug(baseSlug);
@@ -432,6 +615,7 @@ export async function runAutoGeneratePipeline(
             source_domain: source.domain,
             category,
             status: "processed",
+            scraped_text: scraped.text,
           });
 
           articlesCreated++;
