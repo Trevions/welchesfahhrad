@@ -354,11 +354,10 @@ export const triggerNewsletterDispatch = createServerFn({ method: "POST" })
       body: JSON.stringify({ force: true }),
     });
     const text = await resp.text();
-    let payload: unknown;
-    try { payload = JSON.parse(text); } catch { payload = { raw: text }; }
     if (!resp.ok) {
       throw new Error(`Dispatch fehlgeschlagen (${resp.status}): ${text.slice(0, 300)}`);
     }
-    return { ok: true, result: payload };
+    return { ok: true as const, raw: text.slice(0, 1000) };
   });
+
 
