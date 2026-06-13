@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { LegalPage, Section, SubSection } from "@/components/LegalPage";
 
 export const Route = createFileRoute("/datenschutz")({
