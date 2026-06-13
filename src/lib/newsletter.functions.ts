@@ -33,13 +33,8 @@ async function hashIp(ip: string | null): Promise<string | null> {
 }
 
 function getSiteUrl() {
-  const origin = getRequestHeader("origin");
-  if (origin?.startsWith("https://")) return origin.replace(/\/$/, "");
-
-  const forwardedHost = getRequestHeader("x-forwarded-host");
-  const host = forwardedHost ?? getRequestHeader("host");
-  if (host) return `https://${host}`.replace(/\/$/, "");
-
+  // Confirmation/Abmelde-Links müssen IMMER auf die Produktions-Domain zeigen,
+  // unabhängig davon, von welcher Vorschau-URL die Anmeldung kam.
   return "https://radmap.de";
 }
 
