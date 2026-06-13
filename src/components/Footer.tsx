@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useCookieConsent } from "@/hooks/use-cookie-consent";
 import { subscribeNewsletter } from "@/lib/newsletter.functions";
+import { UnsubscribeDialog } from "@/components/UnsubscribeDialog";
+
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
