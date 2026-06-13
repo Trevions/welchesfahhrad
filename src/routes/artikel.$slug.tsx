@@ -1,62 +1,78 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Clock } from "lucide-react";
-import { getArticleBySlug, articles } from "@/lib/articles";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { getPublicArticleBySlug, getPublicArticles } from "@/lib/articles.functions";
 import { ShareMenu } from "@/components/ShareMenu";
 import { BookmarkButton } from "@/components/BookmarkButton";
-
 
 const SITE = "https://radmap.de";
 const abs = (u: string) => (/^https?:\/\//i.test(u) ? u : SITE + (u.startsWith("/") ? u : "/" + u));
 
+const articleQuery = (slug: string) =>
+  queryOptions({
+    queryKey: ["public-article", slug],
+    queryFn: () => getPublicArticleBySlug({ data: { slug } }),
+    staleTime: 60_000,
+  });
+
+const relatedQuery = queryOptions({
+  queryKey: ["public-articles"],
+  queryFn: () => getPublicArticles(),
+  staleTime: 60_000,
+});
+
 export const Route = createFileRoute("/artikel/$slug")({
-  loader: ({ params }) => {
-    const article = getArticleBySlug(params.slug);
-    if (!article) throw notFound();
-    return article;
+  loader: async ({ params, context }) => {
+    const res = await context.queryClient.ensureQueryData(articleQuery(params.slug));
+    if (!res.article) throw notFound();
+    return res;
   },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.title} | radmap.de` },
-          { name: "description", content: loaderData.excerpt },
-          { property: "og:title", content: loaderData.title },
-          { property: "og:description", content: loaderData.excerpt },
-          { property: "og:type", content: "article" },
-          { property: "og:site_name", content: "radmap.de" },
-          { property: "og:locale", content: "de_DE" },
-          { property: "og:image", content: abs(loaderData.image) },
-          { property: "og:image:alt", content: loaderData.title },
-          { property: "og:image:width", content: "1200" },
-          { property: "og:image:height", content: "630" },
-          { property: "og:url", content: abs(`/artikel/${loaderData.slug}`) },
-          { name: "twitter:card", content: "summary_large_image" },
-          { name: "twitter:title", content: loaderData.title },
-          { name: "twitter:description", content: loaderData.excerpt },
-          { name: "twitter:image", content: abs(loaderData.image) },
-          { name: "twitter:image:alt", content: loaderData.title },
-        ]
-      : [],
-    links: loaderData
-      ? [{ rel: "canonical", href: abs(`/artikel/${loaderData.slug}`) }]
-      : [],
-    scripts: loaderData
-      ? [
-          {
-            type: "application/ld+json",
-            children: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Article",
-              headline: loaderData.title,
-              description: loaderData.excerpt,
-              image: [loaderData.image],
-              datePublished: loaderData.date,
-              author: { "@type": "Organization", name: "radmap.de" },
-              publisher: { "@type": "Organization", name: "radmap.de" },
-            }),
-          },
-        ]
-      : [],
-  }),
+  head: ({ loaderData }) => {
+    const a = loaderData?.article;
+    const seo = loaderData?.seo;
+    if (!a) return { meta: [] };
+    const title = seo?.seo_title || a.title;
+    const description = seo?.seo_description || a.excerpt;
+    const image = abs(seo?.og_image || a.image);
+    return {
+      meta: [
+        { title: `${title} | radmap.de` },
+        { name: "description", content: description },
+        ...(seo?.seo_keywords ? [{ name: "keywords", content: seo.seo_keywords }] : []),
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:site_name", content: "radmap.de" },
+        { property: "og:locale", content: "de_DE" },
+        { property: "og:image", content: image },
+        { property: "og:image:alt", content: a.title },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { property: "og:url", content: abs(`/artikel/${a.slug}`) },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: image },
+        { name: "twitter:image:alt", content: a.title },
+      ],
+      links: [{ rel: "canonical", href: abs(`/artikel/${a.slug}`) }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: a.title,
+            description: a.excerpt,
+            image: [image],
+            datePublished: a.date,
+            author: { "@type": "Organization", name: "radmap.de" },
+            publisher: { "@type": "Organization", name: "radmap.de" },
+          }),
+        },
+      ],
+    };
+  },
   notFoundComponent: () => (
     <div className="pt-32 px-6 text-center">
       <div className="eyebrow text-signal">Fehler</div>
@@ -66,21 +82,24 @@ export const Route = createFileRoute("/artikel/$slug")({
       </Link>
     </div>
   ),
-  errorComponent: () => (
+  errorComponent: ({ error }) => (
     <div className="pt-32 px-6 text-center">
       <h1 className="font-display text-3xl font-black">Fehler beim Laden</h1>
+      <p className="mt-3 text-muted-foreground text-sm">{error.message}</p>
     </div>
   ),
   component: ArticlePage,
 });
 
 function ArticlePage() {
-  const a = Route.useLoaderData();
-  const related = articles.filter((x) => x.slug !== a.slug).slice(0, 3);
+  const params = Route.useParams();
+  const { data } = useSuspenseQuery(articleQuery(params.slug));
+  const { data: relData } = useSuspenseQuery(relatedQuery);
+  const a = data.article!;
+  const related = relData.articles.filter((x) => x.slug !== a.slug).slice(0, 3);
 
   return (
     <article>
-      {/* Top meta bar */}
       <div className="border-b border-border bg-card">
         <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-4 flex items-center justify-between">
           <Link
@@ -108,11 +127,9 @@ function ArticlePage() {
               }}
             />
           </div>
-
         </div>
       </div>
 
-      {/* Title block */}
       <header className="mx-auto max-w-[1100px] px-6 md:px-8 pt-10 md:pt-20 pb-10">
         <div className="flex items-center gap-3 animate-fade-in">
           <span className="h-px w-10 bg-signal animate-rule-grow" />
@@ -120,10 +137,7 @@ function ArticlePage() {
         </div>
 
         <h1 className="mt-6 font-display font-black tracking-tight leading-[0.95] text-4xl md:text-6xl lg:text-7xl text-foreground animate-fade-up">
-          {a.title.split(" ").slice(0, -2).join(" ")}{" "}
-          <span className="italic text-muted-foreground">
-            {a.title.split(" ").slice(-2).join(" ")}
-          </span>
+          {a.title}
         </h1>
 
         <p
@@ -151,21 +165,20 @@ function ArticlePage() {
         </div>
       </header>
 
-      {/* Cover image */}
-      <div className="mx-auto max-w-[1400px] px-6 md:px-8">
-        <div className="relative overflow-hidden bg-card border border-border animate-scale-in">
-          <img
-            src={a.image}
-            alt={a.title}
-            className="aspect-[16/9] w-full object-cover"
-          />
+      {a.image && (
+        <div className="mx-auto max-w-[1400px] px-6 md:px-8">
+          <div className="relative overflow-hidden bg-card border border-border animate-scale-in">
+            <img
+              src={a.image}
+              alt={a.title}
+              className="aspect-[16/9] w-full object-cover"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Body */}
       <div className="mx-auto max-w-[1100px] px-6 md:px-8 py-16 md:py-24">
         <div className="grid lg:grid-cols-[1fr_2.5fr] gap-12">
-          {/* Side rail (desktop) */}
           <aside className="hidden lg:block">
             <div className="sticky top-24 space-y-6">
               <div>
@@ -183,9 +196,8 @@ function ArticlePage() {
             </div>
           </aside>
 
-          {/* Prose */}
           <div className="text-lg md:text-xl leading-[1.7] text-foreground/90 space-y-7 font-light">
-            {a.body.map((p: string, i: number) =>
+            {a.body.map((p, i) =>
               i === 0 ? (
                 <p
                   key={i}
@@ -197,7 +209,7 @@ function ArticlePage() {
               ) : (
                 <p
                   key={i}
-                  className="animate-fade-up"
+                  className="animate-fade-up whitespace-pre-line"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
                   {p}
@@ -208,39 +220,40 @@ function ArticlePage() {
         </div>
       </div>
 
-      {/* Related */}
-      <section className="border-t border-border bg-card">
-        <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-16">
-          <div className="flex items-center gap-3 mb-10">
-            <span className="h-px w-10 bg-signal" />
-            <span className="eyebrow text-signal">Weiterlesen</span>
-          </div>
-          <div className="grid md:grid-cols-3 gap-10">
-            {related.map((r, i) => (
-              <Link
-                key={r.slug}
-                to="/artikel/$slug"
-                params={{ slug: r.slug }}
-                className="group block border-t border-border pt-6"
-              >
-                <div className="eyebrow-sm text-signal">{r.category}</div>
-                <h3 className="mt-3 font-display text-2xl font-bold leading-tight transition-colors group-hover:text-signal">
-                  {r.title}
-                </h3>
-                <div className="mt-4 eyebrow-sm text-muted-foreground">
-                  {r.date} · {r.readTime}
-                </div>
-                <span
-                  className="mt-4 inline-block text-xs font-semibold uppercase tracking-widest group-hover:underline"
-                  style={{ animationDelay: `${i * 80}ms` }}
+      {related.length > 0 && (
+        <section className="border-t border-border bg-card">
+          <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-16">
+            <div className="flex items-center gap-3 mb-10">
+              <span className="h-px w-10 bg-signal" />
+              <span className="eyebrow text-signal">Weiterlesen</span>
+            </div>
+            <div className="grid md:grid-cols-3 gap-10">
+              {related.map((r, i) => (
+                <Link
+                  key={r.slug}
+                  to="/artikel/$slug"
+                  params={{ slug: r.slug }}
+                  className="group block border-t border-border pt-6"
                 >
-                  Artikel lesen →
-                </span>
-              </Link>
-            ))}
+                  <div className="eyebrow-sm text-signal">{r.category}</div>
+                  <h3 className="mt-3 font-display text-2xl font-bold leading-tight transition-colors group-hover:text-signal">
+                    {r.title}
+                  </h3>
+                  <div className="mt-4 eyebrow-sm text-muted-foreground">
+                    {r.date} · {r.readTime}
+                  </div>
+                  <span
+                    className="mt-4 inline-block text-xs font-semibold uppercase tracking-widest group-hover:underline"
+                    style={{ animationDelay: `${i * 80}ms` }}
+                  >
+                    Artikel lesen →
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </article>
   );
 }

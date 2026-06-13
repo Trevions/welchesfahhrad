@@ -1,12 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import hero from "@/assets/hero-bike.jpg";
 import magazineCover from "@/assets/magazine-cover.jpg";
 import { ArticleCard } from "@/components/ArticleCard";
-import { EditorialFeed } from "@/components/EditorialFeed";
-import { articles } from "@/lib/articles";
+import { getPublicArticles } from "@/lib/articles.functions";
+
+const publicArticlesQuery = queryOptions({
+  queryKey: ["public-articles"],
+  queryFn: () => getPublicArticles(),
+  staleTime: 60_000,
+});
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(publicArticlesQuery),
   head: () => ({
     meta: [
       { title: "radmap.de — Das Magazin für Fahrräder, E-Bikes & Radsport" },
@@ -26,10 +33,19 @@ export const Route = createFileRoute("/")({
     ],
     links: [{ rel: "canonical", href: "/" }],
   }),
+  errorComponent: ({ error }) => (
+    <div className="pt-32 px-6 text-center">
+      <h1 className="font-display text-3xl font-black">Fehler beim Laden</h1>
+      <p className="mt-3 text-muted-foreground text-sm">{error.message}</p>
+    </div>
+  ),
+  notFoundComponent: () => null,
   component: Index,
 });
 
 function Index() {
+  const { data } = useSuspenseQuery(publicArticlesQuery);
+  const articles = data.articles;
   const featured = articles[0];
   const feed = articles.slice(1, 4);
   const broken = articles.slice(1, 7);
@@ -38,13 +54,10 @@ function Index() {
 
   return (
     <>
-      {/* ========================================================== */}
-      {/* SPLIT HERO                                                  */}
-      {/* ========================================================== */}
+      {/* SPLIT HERO */}
       {featured && (
       <section className="border-b border-border">
         <div className="mx-auto max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 border-x border-border">
-          {/* LEFT — cinematic feature */}
           <Link
             to="/artikel/$slug"
             params={{ slug: featured.slug }}
@@ -52,7 +65,7 @@ function Index() {
           >
             <div className="relative aspect-[16/10] lg:aspect-auto lg:h-[78vh] min-h-[520px]">
               <img
-                src={hero}
+                src={featured.image || hero}
                 alt={featured.title}
                 width={1920}
                 height={1280}
@@ -100,9 +113,7 @@ function Index() {
             </div>
           </Link>
 
-          {/* RIGHT — editorial curation */}
           <aside className="lg:col-span-4 flex flex-col bg-card">
-            {/* Issue header */}
             <div className="px-6 py-5 border-b border-border flex items-center justify-between">
               <div>
                 <div className="eyebrow-sm text-muted-foreground">Issue No. 24 · 2026</div>
@@ -116,7 +127,6 @@ function Index() {
               </div>
             </div>
 
-            {/* feed items */}
             <div className="flex-1 divide-y divide-border">
               {feed.map((a, i) => (
                 <Link
@@ -143,7 +153,6 @@ function Index() {
               ))}
             </div>
 
-            {/* Magazine block */}
             <div className="border-t border-border bg-background p-6">
               <div className="flex gap-5">
                 <img
@@ -170,9 +179,7 @@ function Index() {
       </section>
       )}
 
-      {/* ========================================================== */}
-      {/* LIVE TICKER                                                 */}
-      {/* ========================================================== */}
+      {/* LIVE TICKER */}
       {broken.length > 0 && (
       <div className="border-b border-border bg-signal text-signal-foreground overflow-hidden">
         <div className="flex items-center">
@@ -193,9 +200,7 @@ function Index() {
       </div>
       )}
 
-      {/* ========================================================== */}
-      {/* BROKEN GRID — NEW EDITION                                   */}
-      {/* ========================================================== */}
+      {/* BROKEN GRID */}
       {broken.length > 0 && (
       <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
         <div className="flex flex-wrap items-end justify-between gap-6 mb-12 md:mb-16">
@@ -216,7 +221,6 @@ function Index() {
           </Link>
         </div>
 
-        {/* Broken grid: 1 large feature + mixed */}
         <div className="grid grid-cols-12 gap-8 md:gap-10">
           {broken[0] && (
             <div className="col-span-12 lg:col-span-7">
@@ -246,9 +250,7 @@ function Index() {
       </section>
       )}
 
-      {/* ========================================================== */}
-      {/* RATGEBER STRIP                                              */}
-      {/* ========================================================== */}
+      {/* RATGEBER STRIP */}
       {ratgeber.length > 0 && (
         <section className="border-t border-border bg-card">
           <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
@@ -304,9 +306,7 @@ function Index() {
         </section>
       )}
 
-      {/* ========================================================== */}
-      {/* TESTS HORIZONTAL                                            */}
-      {/* ========================================================== */}
+      {/* TESTS HORIZONTAL */}
       {tests.length > 0 && (
         <section className="border-t border-border">
           <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
@@ -334,15 +334,6 @@ function Index() {
                   <ArticleCard article={a} size="sm" index={i} />
                 </div>
               ))}
-              {/* Swipe hint — shown only on mobile */}
-              <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 sm:hidden">
-                <div className="swipe-hint flex items-center justify-center w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-foreground">
-                    <path d="M5 12h14" />
-                    <path d="m12 5 7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
             </div>
           </div>
         </section>
