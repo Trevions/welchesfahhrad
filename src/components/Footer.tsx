@@ -33,13 +33,14 @@ export function Footer() {
 
           <div className="md:col-span-2">
             <h4 className="eyebrow text-foreground">Verlag</h4>
-            <ul className="mt-5 space-y-2.5 text-sm text-muted-foreground">
-              <li>Über uns</li>
-              <li>Redaktion</li>
-              <li>Mediadaten</li>
-              <li>Kontakt</li>
+            <ul className="mt-5 space-y-2.5 text-sm">
+              <li><Link to="/ueber-uns" className="text-muted-foreground hover:text-signal transition-colors">Über uns</Link></li>
+              <li><Link to="/redaktion" className="text-muted-foreground hover:text-signal transition-colors">Redaktion</Link></li>
+              <li><Link to="/mediadaten" className="text-muted-foreground hover:text-signal transition-colors">Mediadaten</Link></li>
+              <li><Link to="/kontakt" className="text-muted-foreground hover:text-signal transition-colors">Kontakt</Link></li>
             </ul>
           </div>
+
 
           <div className="md:col-span-3">
             <h4 className="eyebrow text-foreground">Newsletter</h4>
@@ -66,11 +67,12 @@ export function Footer() {
         <div className="mt-14 pt-6 border-t border-border flex flex-wrap items-center justify-between gap-4 text-xs text-muted-foreground">
           <div>© {new Date().getFullYear()} radmap.de — Alle Rechte vorbehalten.</div>
           <div className="flex gap-6">
-            <span className="hover:text-foreground transition-colors cursor-pointer">Impressum</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">Datenschutz</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">AGB</span>
+            <Link to="/impressum" className="hover:text-foreground transition-colors">Impressum</Link>
+            <Link to="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</Link>
+            <Link to="/agb" className="hover:text-foreground transition-colors">AGB</Link>
           </div>
         </div>
+
       </div>
     </footer>
   );

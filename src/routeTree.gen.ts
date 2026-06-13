@@ -9,12 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UeberUnsRouteImport } from './routes/ueber-uns'
 import { Route as TestsRouteImport } from './routes/tests'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RedaktionRouteImport } from './routes/redaktion'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
 import { Route as MerklisteRouteImport } from './routes/merkliste'
+import { Route as MediadatenRouteImport } from './routes/mediadaten'
+import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
+import { Route as DatenschutzRouteImport } from './routes/datenschutz'
+import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
@@ -26,6 +33,11 @@ import { Route as AuthenticatedMnvArticlesRouteImport } from './routes/_authenti
 import { Route as AuthenticatedMnvArticlesNewRouteImport } from './routes/_authenticated/mnv.articles_.new'
 import { Route as AuthenticatedMnvArticlesIdRouteImport } from './routes/_authenticated/mnv.articles_.$id'
 
+const UeberUnsRoute = UeberUnsRouteImport.update({
+  id: '/ueber-uns',
+  path: '/ueber-uns',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TestsRoute = TestsRouteImport.update({
   id: '/tests',
   path: '/tests',
@@ -34,6 +46,11 @@ const TestsRoute = TestsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RedaktionRoute = RedaktionRouteImport.update({
+  id: '/redaktion',
+  path: '/redaktion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RatgeberRoute = RatgeberRouteImport.update({
@@ -51,9 +68,34 @@ const MerklisteRoute = MerklisteRouteImport.update({
   path: '/merkliste',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MediadatenRoute = MediadatenRouteImport.update({
+  id: '/mediadaten',
+  path: '/mediadaten',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KontaktRoute = KontaktRouteImport.update({
+  id: '/kontakt',
+  path: '/kontakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpressumRoute = ImpressumRouteImport.update({
+  id: '/impressum',
+  path: '/impressum',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EBikesRoute = EBikesRouteImport.update({
   id: '/e-bikes',
   path: '/e-bikes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatenschutzRoute = DatenschutzRouteImport.update({
+  id: '/datenschutz',
+  path: '/datenschutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgbRoute = AgbRouteImport.update({
+  id: '/agb',
+  path: '/agb',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -111,12 +153,19 @@ const AuthenticatedMnvArticlesIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agb': typeof AgbRoute
+  '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
+  '/impressum': typeof ImpressumRoute
+  '/kontakt': typeof KontaktRoute
+  '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
+  '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/ueber-uns': typeof UeberUnsRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
@@ -128,12 +177,19 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agb': typeof AgbRoute
+  '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
+  '/impressum': typeof ImpressumRoute
+  '/kontakt': typeof KontaktRoute
+  '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
+  '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/ueber-uns': typeof UeberUnsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
@@ -146,12 +202,19 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/agb': typeof AgbRoute
+  '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
+  '/impressum': typeof ImpressumRoute
+  '/kontakt': typeof KontaktRoute
+  '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
+  '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/ueber-uns': typeof UeberUnsRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
@@ -165,12 +228,19 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agb'
+    | '/datenschutz'
     | '/e-bikes'
+    | '/impressum'
+    | '/kontakt'
+    | '/mediadaten'
     | '/merkliste'
     | '/nachrichten'
     | '/ratgeber'
+    | '/redaktion'
     | '/sitemap.xml'
     | '/tests'
+    | '/ueber-uns'
     | '/mnv'
     | '/artikel/$slug'
     | '/mnv/articles'
@@ -182,12 +252,19 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/agb'
+    | '/datenschutz'
     | '/e-bikes'
+    | '/impressum'
+    | '/kontakt'
+    | '/mediadaten'
     | '/merkliste'
     | '/nachrichten'
     | '/ratgeber'
+    | '/redaktion'
     | '/sitemap.xml'
     | '/tests'
+    | '/ueber-uns'
     | '/artikel/$slug'
     | '/mnv/articles'
     | '/mnv/media'
@@ -199,12 +276,19 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/agb'
+    | '/datenschutz'
     | '/e-bikes'
+    | '/impressum'
+    | '/kontakt'
+    | '/mediadaten'
     | '/merkliste'
     | '/nachrichten'
     | '/ratgeber'
+    | '/redaktion'
     | '/sitemap.xml'
     | '/tests'
+    | '/ueber-uns'
     | '/_authenticated/mnv'
     | '/artikel/$slug'
     | '/_authenticated/mnv/articles'
@@ -218,17 +302,31 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AgbRoute: typeof AgbRoute
+  DatenschutzRoute: typeof DatenschutzRoute
   EBikesRoute: typeof EBikesRoute
+  ImpressumRoute: typeof ImpressumRoute
+  KontaktRoute: typeof KontaktRoute
+  MediadatenRoute: typeof MediadatenRoute
   MerklisteRoute: typeof MerklisteRoute
   NachrichtenRoute: typeof NachrichtenRoute
   RatgeberRoute: typeof RatgeberRoute
+  RedaktionRoute: typeof RedaktionRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestsRoute: typeof TestsRoute
+  UeberUnsRoute: typeof UeberUnsRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/ueber-uns': {
+      id: '/ueber-uns'
+      path: '/ueber-uns'
+      fullPath: '/ueber-uns'
+      preLoaderRoute: typeof UeberUnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tests': {
       id: '/tests'
       path: '/tests'
@@ -241,6 +339,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/redaktion': {
+      id: '/redaktion'
+      path: '/redaktion'
+      fullPath: '/redaktion'
+      preLoaderRoute: typeof RedaktionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ratgeber': {
@@ -264,11 +369,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MerklisteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mediadaten': {
+      id: '/mediadaten'
+      path: '/mediadaten'
+      fullPath: '/mediadaten'
+      preLoaderRoute: typeof MediadatenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kontakt': {
+      id: '/kontakt'
+      path: '/kontakt'
+      fullPath: '/kontakt'
+      preLoaderRoute: typeof KontaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impressum': {
+      id: '/impressum'
+      path: '/impressum'
+      fullPath: '/impressum'
+      preLoaderRoute: typeof ImpressumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/e-bikes': {
       id: '/e-bikes'
       path: '/e-bikes'
       fullPath: '/e-bikes'
       preLoaderRoute: typeof EBikesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/datenschutz': {
+      id: '/datenschutz'
+      path: '/datenschutz'
+      fullPath: '/datenschutz'
+      preLoaderRoute: typeof DatenschutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agb': {
+      id: '/agb'
+      path: '/agb'
+      fullPath: '/agb'
+      preLoaderRoute: typeof AgbRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -379,12 +519,19 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AgbRoute: AgbRoute,
+  DatenschutzRoute: DatenschutzRoute,
   EBikesRoute: EBikesRoute,
+  ImpressumRoute: ImpressumRoute,
+  KontaktRoute: KontaktRoute,
+  MediadatenRoute: MediadatenRoute,
   MerklisteRoute: MerklisteRoute,
   NachrichtenRoute: NachrichtenRoute,
   RatgeberRoute: RatgeberRoute,
+  RedaktionRoute: RedaktionRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestsRoute: TestsRoute,
+  UeberUnsRoute: UeberUnsRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
 }
 export const routeTree = rootRouteImport
