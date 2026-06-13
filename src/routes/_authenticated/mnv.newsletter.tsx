@@ -8,7 +8,11 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import {
   listNewsletterSubscribers,
   deleteNewsletterSubscriber,
+  listNewsletterIssues,
+  triggerNewsletterDispatch,
 } from "@/lib/newsletter.functions";
+import { Send } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/mnv/newsletter")({
   head: () => ({ meta: [{ title: "Newsletter — Admin" }, { name: "robots", content: "noindex" }] }),
