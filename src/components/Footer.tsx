@@ -158,8 +158,8 @@ export function Footer() {
   return (
     <footer className="mt-24 border-t border-border bg-card pb-28 md:pb-12 pt-16">
       <div className="mx-auto max-w-[1400px] px-6 md:px-8">
-        <div className="grid gap-12 md:grid-cols-12">
-          <div className="md:col-span-5">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:gap-12 md:grid-cols-12">
+          <div className="col-span-2 md:col-span-5">
             <Link to="/" className="flex items-baseline">
               <span className="font-display text-3xl font-black italic">
                 Radmap<span className="text-signal">.</span>
@@ -195,7 +195,8 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="col-span-2 md:col-span-3">
+
             <h4 className="eyebrow text-foreground">Newsletter</h4>
             <p className="mt-5 text-sm text-muted-foreground font-light">
               Die wichtigsten Geschichten der Woche — jeden Freitag in Ihrem Postfach.
