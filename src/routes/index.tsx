@@ -36,10 +36,12 @@ function Index() {
   const ratgeber = articles.filter((a) => a.category === "Ratgeber");
   const tests = articles.filter((a) => a.category === "Tests" || a.category === "E-Bikes");
 
+  return (
     <>
       {/* ========================================================== */}
       {/* SPLIT HERO                                                  */}
       {/* ========================================================== */}
+      {featured && (
       <section className="border-b border-border">
         <div className="mx-auto max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 border-x border-border">
           {/* LEFT — cinematic feature */}
