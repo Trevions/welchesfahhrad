@@ -148,7 +148,7 @@ export function ArticleEditor({ initial }: { initial?: Partial<ArticleFormState>
       qc.invalidateQueries({ queryKey: ["admin-articles"] });
       qc.invalidateQueries({ queryKey: ["admin-stats"] });
       if (!form.id && !initial?.id) {
-        navigate({ to: "/admin/articles/$id", params: { id: res.id }, replace: true });
+        navigate({ to: "/mnv/articles/$id", params: { id: res.id }, replace: true });
       } else {
         setField("status", payload.status);
       }

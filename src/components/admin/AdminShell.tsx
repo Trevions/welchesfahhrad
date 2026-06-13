@@ -20,10 +20,10 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/admin", label: "Übersicht", icon: LayoutDashboard, exact: true },
-  { to: "/admin/articles", label: "Artikel", icon: FileText },
-  { to: "/admin/media", label: "Medien", icon: ImageIcon },
-  { to: "/admin/users", label: "Benutzer", icon: Users },
+  { to: "/mnv", label: "Übersicht", icon: LayoutDashboard, exact: true },
+  { to: "/mnv/articles", label: "Artikel", icon: FileText },
+  { to: "/mnv/media", label: "Medien", icon: ImageIcon },
+  { to: "/mnv/users", label: "Benutzer", icon: Users },
 ] as const;
 
 export function AdminShell({
@@ -70,7 +70,7 @@ export function AdminShell({
         )}
       >
         <div className="h-16 px-6 flex items-center justify-between border-b border-zinc-900">
-          <Link to="/admin" className="flex items-baseline gap-1.5">
+          <Link to="/mnv" className="flex items-baseline gap-1.5">
             <span className="font-display text-xl font-black italic">
               Radmap<span className="text-[#FF6A1A]">.</span>
             </span>
