@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/select";
 import {
   listGenerationRuns, listArticleSources, triggerAutoGenerate,
+  getAutoGenSettings, setAutoGenEnabled, researchNews,
 } from "@/lib/auto-article.functions";
-import { Loader2, Play, RefreshCw, ExternalLink } from "lucide-react";
+import { Loader2, Play, RefreshCw, ExternalLink, Search, Power } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/mnv/auto-articles")({
