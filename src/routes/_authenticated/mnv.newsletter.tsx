@@ -24,6 +24,8 @@ type Status = "all" | "pending" | "confirmed" | "unsubscribed";
 function NewsletterAdminPage() {
   const list = useServerFn(listNewsletterSubscribers);
   const remove = useServerFn(deleteNewsletterSubscriber);
+  const listIssues = useServerFn(listNewsletterIssues);
+  const dispatch = useServerFn(triggerNewsletterDispatch);
   const qc = useQueryClient();
   const [filter, setFilter] = useState<Status>("all");
   const [search, setSearch] = useState("");
@@ -39,6 +41,11 @@ function NewsletterAdminPage() {
       }),
   });
 
+  const issuesQ = useQuery({
+    queryKey: ["newsletter-issues"],
+    queryFn: () => listIssues(),
+  });
+
   const del = useMutation({
     mutationFn: (id: string) => remove({ data: { id } }),
     onSuccess: () => {
@@ -47,6 +54,16 @@ function NewsletterAdminPage() {
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Fehler"),
   });
+
+  const sendNow = useMutation({
+    mutationFn: () => dispatch(),
+    onSuccess: () => {
+      toast.success("Newsletter-Versand gestartet");
+      qc.invalidateQueries({ queryKey: ["newsletter-issues"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Fehler"),
+  });
+
 
   const subs = data?.subscribers ?? [];
   const counts = subs.reduce(
