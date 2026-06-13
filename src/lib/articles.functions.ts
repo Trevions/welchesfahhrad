@@ -9,8 +9,15 @@ function bodyToParagraphs(md: string | null | undefined): string[] {
     .replace(/\r\n/g, "\n")
     .split(/\n{2,}/)
     .map((b) => b.trim())
-    // strip leading markdown heading/list markers — visual prose only
-    .map((b) => b.replace(/^#{1,6}\s+/, "").replace(/^[-*]\s+/gm, "• "))
+    // strip markdown markers — visual prose only
+    .map((b) =>
+      b
+        .replace(/^#{1,6}\s+/gm, "")
+        .replace(/^\s*[-*]\s+/gm, "• ")
+        .replace(/\*\*(.+?)\*\*/g, "$1")
+        .replace(/(?<!\*)\*(?!\s)(.+?)(?<!\s)\*(?!\*)/g, "$1")
+        .replace(/__(.+?)__/g, "$1"),
+    )
     .filter((b) => b.length > 0);
 }
 
