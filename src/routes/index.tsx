@@ -190,11 +190,12 @@ function Index() {
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ========================================================== */}
       {/* BROKEN GRID — NEW EDITION                                   */}
       {/* ========================================================== */}
+      {broken.length > 0 && (
       <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
         <div className="flex flex-wrap items-end justify-between gap-6 mb-12 md:mb-16">
           <div className="max-w-2xl">
