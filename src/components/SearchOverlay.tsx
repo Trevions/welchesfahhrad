@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Search, X, CornerDownLeft, ArrowRight } from "lucide-react";
-import { articles } from "@/lib/articles";
+import { getPublicArticles } from "@/lib/articles.functions";
 
 type Props = {
   open: boolean;
@@ -33,6 +34,13 @@ export function SearchOverlay({ open, onClose }: Props) {
     }
   }, [open]);
 
+  const { data } = useQuery({
+    queryKey: ["public-articles"],
+    queryFn: () => getPublicArticles(),
+    staleTime: 60_000,
+  });
+  const articles = data?.articles ?? [];
+
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return articles.slice(0, 6);
@@ -44,7 +52,7 @@ export function SearchOverlay({ open, onClose }: Props) {
           .includes(term),
       )
       .slice(0, 8);
-  }, [q]);
+  }, [q, articles]);
 
   // Keyboard nav
   useEffect(() => {
