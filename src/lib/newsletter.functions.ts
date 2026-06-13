@@ -34,11 +34,10 @@ async function hashIp(ip: string | null): Promise<string | null> {
 }
 
 async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    // Email provider not configured — log and continue silently.
-    // Admin can manually confirm via dashboard.
-    console.warn("[newsletter] RESEND_API_KEY not set — DOI email skipped for", email);
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!lovableKey || !resendKey) {
+    console.warn("[newsletter] Resend connector not configured — DOI email skipped for", email);
     return { sent: false };
   }
 
@@ -76,11 +75,12 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string)
 
   const text = `Newsletter-Anmeldung bestätigen\n\nVielen Dank für Ihr Interesse am Radmap-Newsletter.\n\nBitte bestätigen Sie Ihre E-Mail-Adresse:\n${confirmUrl}\n\nWenn Sie diese Anmeldung nicht ausgelöst haben, ignorieren Sie diese E-Mail.\n\nDigiMarket Bulgaria, 6400 Dimitrovgrad, support@radmap.de`;
 
-  const resp = await fetch("https://api.resend.com/emails", {
+  const resp = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${lovableKey}`,
+      "X-Connection-Api-Key": resendKey,
     },
     body: JSON.stringify({
       from: FROM_EMAIL,
