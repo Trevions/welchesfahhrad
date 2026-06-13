@@ -149,6 +149,7 @@ function RootComponent() {
           </main>
           <Footer />
           <MobileNav />
+          <CookieConsentBanner />
         </div>
       </ThemeProvider>
     </QueryClientProvider>
