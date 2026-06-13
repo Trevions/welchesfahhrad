@@ -11,8 +11,10 @@ import {
 } from "@/components/ui/select";
 import {
   listGenerationRuns, listArticleSources, triggerAutoGenerate,
+  getAutoGenSettings, setAutoGenEnabled, researchNews,
 } from "@/lib/auto-article.functions";
-import { Loader2, Play, RefreshCw, ExternalLink } from "lucide-react";
+import { Loader2, Play, RefreshCw, ExternalLink, Search, Power } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/mnv/auto-articles")({
@@ -28,6 +30,44 @@ function AutoArticlesPage() {
   const qc = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
+
+  const fetchSettings = useServerFn(getAutoGenSettings);
+  const saveEnabled = useServerFn(setAutoGenEnabled);
+  const research = useServerFn(researchNews);
+
+  const settings = useQuery({
+    queryKey: ["autogen-settings"],
+    queryFn: () => fetchSettings(),
+  });
+
+  const [scope, setScope] = useState<"de" | "world" | "all">("de");
+  const [researching, setResearching] = useState(false);
+  const [clusters, setClusters] = useState<Array<{ topic_title: string; summary: string; sources: Array<{ title: string; url: string; domain: string; published_date?: string }> }>>([]);
+
+  const onToggle = async (next: boolean) => {
+    try {
+      await saveEnabled({ data: { enabled: next } });
+      toast.success(next ? "Auto-Generierung aktiviert" : "Auto-Generierung pausiert");
+      qc.invalidateQueries({ queryKey: ["autogen-settings"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Fehler");
+    }
+  };
+
+  const onResearch = async () => {
+    setResearching(true);
+    setClusters([]);
+    try {
+      const res = await research({ data: { scope } });
+      setClusters(res.clusters ?? []);
+      if (!res.clusters?.length) toast.info("Keine Treffer gefunden");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Fehler");
+    } finally {
+      setResearching(false);
+    }
+  };
+
 
   const runs = useQuery({
     queryKey: ["autogen-runs"],
@@ -75,6 +115,84 @@ function AutoArticlesPage() {
         </Button>
       }
     >
+      {/* Kill-switch: pause/resume automatic cron generation */}
+      <div className="mb-6 bg-zinc-900/40 border border-zinc-800 rounded-lg p-4 flex items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <Power className={`h-5 w-5 mt-0.5 ${settings.data?.enabled ? "text-emerald-400" : "text-rose-400"}`} />
+          <div>
+            <div className="text-sm font-semibold text-zinc-100">
+              Automatische Generierung {settings.data?.enabled ? "aktiv" : "pausiert"}
+            </div>
+            <div className="text-xs text-zinc-500 mt-0.5">
+              Steuert den 3-Stunden-Cron. Manuelle Auslöser funktionieren unabhängig davon.
+            </div>
+          </div>
+        </div>
+        <Switch
+          checked={settings.data?.enabled ?? true}
+          disabled={settings.isLoading}
+          onCheckedChange={onToggle}
+        />
+      </div>
+
+      {/* Manual news research — list-only, for hand-written articles */}
+      <div className="mb-6 bg-zinc-900/40 border border-zinc-800 rounded-lg p-4">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <div className="text-sm font-semibold text-zinc-100">News-Recherche</div>
+            <div className="text-xs text-zinc-500 mt-0.5">
+              Findet aktuelle Fahrrad-Nachrichten und gruppiert gleiche Themen aus mehreren Quellen — zum manuellen Kopieren.
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Select value={scope} onValueChange={(v) => setScope(v as "de" | "world" | "all")}>
+              <SelectTrigger className="w-36 h-8 bg-zinc-950 border-zinc-800 text-zinc-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="de">Deutschland</SelectItem>
+                <SelectItem value="world">International</SelectItem>
+                <SelectItem value="all">Beides</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={onResearch}
+              disabled={researching}
+              className="bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 font-medium"
+            >
+              {researching ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Search className="h-4 w-4 mr-1.5" />}
+              Nachrichten suchen
+            </Button>
+          </div>
+        </div>
+
+        {clusters.length > 0 && (
+          <div className="mt-3 space-y-3">
+            {clusters.map((c, i) => (
+              <div key={i} className="bg-zinc-950/60 border border-zinc-800 rounded-md p-3">
+                <div className="text-sm font-semibold text-zinc-100">{c.topic_title}</div>
+                {c.summary && <div className="text-xs text-zinc-400 mt-1">{c.summary}</div>}
+                <div className="mt-2 space-y-1">
+                  {c.sources.map((s, j) => (
+                    <a
+                      key={j}
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-xs text-zinc-300 hover:text-[#FF6A1A] group"
+                    >
+                      <ExternalLink className="h-3 w-3 text-zinc-600 group-hover:text-[#FF6A1A]" />
+                      <span className="truncate flex-1">{s.title}</span>
+                      <span className="text-zinc-600">{s.domain}</span>
+                    </a>
+                  ))}
+                </div>
+                <div className="mt-2 text-[10px] text-zinc-600">{c.sources.length} Quelle{c.sources.length === 1 ? "" : "n"}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Manual triggers per category */}
       <div className="mb-6 bg-zinc-900/40 border border-zinc-800 rounded-lg p-4">
         <div className="text-xs uppercase tracking-wider text-zinc-500 mb-3">Manuelle Tests pro Kategorie</div>

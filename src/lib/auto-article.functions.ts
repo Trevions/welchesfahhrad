@@ -59,3 +59,41 @@ export const triggerAutoGenerate = createServerFn({ method: "POST" })
     });
     return result;
   });
+
+export const getAutoGenSettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { data, error } = await context.supabase
+      .from("app_settings")
+      .select("auto_generate_enabled, updated_at")
+      .eq("id", 1)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return { enabled: data?.auto_generate_enabled ?? true, updated_at: data?.updated_at ?? null };
+  });
+
+export const setAutoGenEnabled = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ enabled: z.boolean() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("app_settings")
+      .upsert({ id: 1, auto_generate_enabled: data.enabled, updated_by: context.userId, updated_at: new Date().toISOString() });
+    if (error) throw new Error(error.message);
+    return { ok: true, enabled: data.enabled };
+  });
+
+export const researchNews = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ scope: z.enum(["de", "world", "all"]).default("de") }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { researchNewsManual } = await import("@/lib/auto-article.server");
+    return await researchNewsManual(data.scope);
+  });
+
