@@ -36,25 +36,6 @@ function Index() {
   const ratgeber = articles.filter((a) => a.category === "Ratgeber");
   const tests = articles.filter((a) => a.category === "Tests" || a.category === "E-Bikes");
 
-  if (!featured) {
-    return (
-      <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-24 md:py-40 border-x border-border text-center">
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <span className="h-px w-10 bg-signal" />
-          <span className="eyebrow text-signal">radmap.de</span>
-          <span className="h-px w-10 bg-signal" />
-        </div>
-        <h1 className="font-display text-4xl md:text-6xl font-black tracking-tight leading-[0.95]">
-          Bald geht's los.
-        </h1>
-        <p className="mt-6 text-muted-foreground font-light max-w-xl mx-auto">
-          Neue Artikel werden in Kürze automatisch veröffentlicht. Schauen Sie bald wieder vorbei.
-        </p>
-      </section>
-    );
-  }
-
-  return (
     <>
       {/* ========================================================== */}
       {/* SPLIT HERO                                                  */}
