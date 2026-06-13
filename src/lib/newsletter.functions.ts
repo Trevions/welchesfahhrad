@@ -117,7 +117,7 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string,
 export const subscribeNewsletter = createServerFn({ method: "POST" })
   .inputValidator((d) => subscribeInput.parse(d))
   .handler(async ({ data }) => {
-    if (data.website && data.website.length > 0) {
+    if (data.hp_field && data.hp_field.length > 0) {
       // Honeypot — pretend success
       return { ok: true };
     }
