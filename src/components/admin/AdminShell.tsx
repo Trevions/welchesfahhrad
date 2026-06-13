@@ -10,21 +10,25 @@ import {
   X,
   Plus,
   Search as SearchIcon,
+  Inbox,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyAccess } from "@/lib/admin.functions";
+import { getUnreadContactCount } from "@/lib/contact.functions";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
+const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; key?: string }[] = [
   { to: "/mnv", label: "Übersicht", icon: LayoutDashboard, exact: true },
   { to: "/mnv/articles", label: "Artikel", icon: FileText },
+  { to: "/mnv/messages", label: "Nachrichten", icon: Inbox, key: "messages" },
   { to: "/mnv/media", label: "Medien", icon: ImageIcon },
   { to: "/mnv/users", label: "Benutzer", icon: Users },
 ];
+
 
 export function AdminShell({
   children,
