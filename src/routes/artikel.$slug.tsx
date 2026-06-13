@@ -1,6 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Clock, Share2, Bookmark } from "lucide-react";
+import { ArrowLeft, Clock, Bookmark } from "lucide-react";
 import { getArticleBySlug, articles } from "@/lib/articles";
+import { ShareMenu } from "@/components/ShareMenu";
+
+const SITE = "https://radmap.de";
+const abs = (u: string) => (/^https?:\/\//i.test(u) ? u : SITE + (u.startsWith("/") ? u : "/" + u));
 
 export const Route = createFileRoute("/artikel/$slug")({
   loader: ({ params }) => {
@@ -16,13 +20,22 @@ export const Route = createFileRoute("/artikel/$slug")({
           { property: "og:title", content: loaderData.title },
           { property: "og:description", content: loaderData.excerpt },
           { property: "og:type", content: "article" },
-          { property: "og:image", content: loaderData.image },
-          { property: "og:url", content: `/artikel/${loaderData.slug}` },
-          { name: "twitter:image", content: loaderData.image },
+          { property: "og:site_name", content: "radmap.de" },
+          { property: "og:locale", content: "de_DE" },
+          { property: "og:image", content: abs(loaderData.image) },
+          { property: "og:image:alt", content: loaderData.title },
+          { property: "og:image:width", content: "1200" },
+          { property: "og:image:height", content: "630" },
+          { property: "og:url", content: abs(`/artikel/${loaderData.slug}`) },
+          { name: "twitter:card", content: "summary_large_image" },
+          { name: "twitter:title", content: loaderData.title },
+          { name: "twitter:description", content: loaderData.excerpt },
+          { name: "twitter:image", content: abs(loaderData.image) },
+          { name: "twitter:image:alt", content: loaderData.title },
         ]
       : [],
     links: loaderData
-      ? [{ rel: "canonical", href: `/artikel/${loaderData.slug}` }]
+      ? [{ rel: "canonical", href: abs(`/artikel/${loaderData.slug}`) }]
       : [],
     scripts: loaderData
       ? [
@@ -75,13 +88,12 @@ function ArticlePage() {
             <ArrowLeft className="h-3 w-3" /> Zurück
           </Link>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              aria-label="Teilen"
-              className="flex h-8 w-8 items-center justify-center border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
-            >
-              <Share2 className="h-3 w-3" />
-            </button>
+            <ShareMenu
+              url={`/artikel/${a.slug}`}
+              title={a.title}
+              text={a.excerpt}
+              image={a.image}
+            />
             <button
               type="button"
               aria-label="Merken"
