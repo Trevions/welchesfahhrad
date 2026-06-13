@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Upload, Copy, Trash2, Loader2, Image as ImageIcon } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin/media")({
+export const Route = createFileRoute("/_authenticated/mnv/media")({
   component: MediaLibrary,
 });
 
@@ -60,7 +60,7 @@ function MediaLibrary() {
   return (
     <AdminShell
       title="Medienbibliothek"
-      breadcrumbs={[{ label: "Admin", to: "/admin" }, { label: "Medien" }]}
+      breadcrumbs={[{ label: "Admin", to: "/mnv" }, { label: "Medien" }]}
       actions={
         <label>
           <div className="inline-flex items-center gap-2 h-9 px-3 rounded bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 text-sm font-medium cursor-pointer transition">

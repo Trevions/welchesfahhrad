@@ -6,7 +6,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { ArticleEditor } from "@/components/admin/ArticleEditor";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const Route = createFileRoute("/_authenticated/admin/articles_/$id")({
+export const Route = createFileRoute("/_authenticated/mnv/articles_/$id")({
   component: EditArticle,
 });
 
@@ -24,8 +24,8 @@ function EditArticle() {
     <AdminShell
       title={a?.title ?? "Artikel bearbeiten"}
       breadcrumbs={[
-        { label: "Admin", to: "/admin" },
-        { label: "Artikel", to: "/admin/articles" },
+        { label: "Admin", to: "/mnv" },
+        { label: "Artikel", to: "/mnv/articles" },
         { label: a?.title ?? "…" },
       ]}
     >

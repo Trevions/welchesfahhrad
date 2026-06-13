@@ -118,8 +118,8 @@ export const upsertArticle = createServerFn({ method: "POST" })
     if (!data.id) payload.author_id = context.userId;
 
     const query = data.id
-      ? context.supabase.from("articles").update(payload).eq("id", data.id).select("id, slug").single()
-      : context.supabase.from("articles").insert(payload).select("id, slug").single();
+      ? context.supabase.from("articles").update(payload as never).eq("id", data.id).select("id, slug").single()
+      : context.supabase.from("articles").insert(payload as never).select("id, slug").single();
 
     const { data: row, error } = await query;
     if (error) throw new Error(error.message);

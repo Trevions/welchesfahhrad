@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/admin/users")({
+export const Route = createFileRoute("/_authenticated/mnv/users")({
   component: UsersPage,
 });
 
@@ -37,7 +37,7 @@ function UsersPage() {
   return (
     <AdminShell
       title="Benutzer & Rollen"
-      breadcrumbs={[{ label: "Admin", to: "/admin" }, { label: "Benutzer" }]}
+      breadcrumbs={[{ label: "Admin", to: "/mnv" }, { label: "Benutzer" }]}
     >
       <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg overflow-hidden">
         <table className="w-full text-sm">
