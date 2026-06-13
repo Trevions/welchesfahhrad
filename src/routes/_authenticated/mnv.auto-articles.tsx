@@ -31,6 +31,44 @@ function AutoArticlesPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [sourceFilter, setSourceFilter] = useState<string>("all");
 
+  const fetchSettings = useServerFn(getAutoGenSettings);
+  const saveEnabled = useServerFn(setAutoGenEnabled);
+  const research = useServerFn(researchNews);
+
+  const settings = useQuery({
+    queryKey: ["autogen-settings"],
+    queryFn: () => fetchSettings(),
+  });
+
+  const [scope, setScope] = useState<"de" | "world" | "all">("de");
+  const [researching, setResearching] = useState(false);
+  const [clusters, setClusters] = useState<Array<{ topic_title: string; summary: string; sources: Array<{ title: string; url: string; domain: string; published_date?: string }> }>>([]);
+
+  const onToggle = async (next: boolean) => {
+    try {
+      await saveEnabled({ data: { enabled: next } });
+      toast.success(next ? "Auto-Generierung aktiviert" : "Auto-Generierung pausiert");
+      qc.invalidateQueries({ queryKey: ["autogen-settings"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Fehler");
+    }
+  };
+
+  const onResearch = async () => {
+    setResearching(true);
+    setClusters([]);
+    try {
+      const res = await research({ data: { scope } });
+      setClusters(res.clusters ?? []);
+      if (!res.clusters?.length) toast.info("Keine Treffer gefunden");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Fehler");
+    } finally {
+      setResearching(false);
+    }
+  };
+
+
   const runs = useQuery({
     queryKey: ["autogen-runs"],
     queryFn: () => fetchRuns(),
