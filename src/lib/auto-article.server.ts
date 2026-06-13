@@ -29,7 +29,11 @@ export type RewrittenArticle = {
 };
 
 // ---------- Firecrawl: scrape full source article ----------
-export type ScrapedSource = { text: string; wordCount: number };
+export type ScrapedSource = {
+  text: string;
+  wordCount: number;
+  imageCandidates: string[]; // ordered, best first (og:image, then in-article)
+};
 
 export async function fetchSourceArticle(url: string): Promise<ScrapedSource> {
   const key = process.env.FIRECRAWL_API_KEY;
@@ -43,7 +47,7 @@ export async function fetchSourceArticle(url: string): Promise<ScrapedSource> {
     },
     body: JSON.stringify({
       url,
-      formats: ["markdown"],
+      formats: ["markdown", "html"],
       onlyMainContent: true,
       timeout: 30000,
     }),
@@ -54,12 +58,94 @@ export async function fetchSourceArticle(url: string): Promise<ScrapedSource> {
     throw new Error(`Firecrawl ${resp.status}: ${t.slice(0, 200)}`);
   }
   const json = (await resp.json()) as {
-    data?: { markdown?: string };
+    data?: { markdown?: string; html?: string; metadata?: Record<string, unknown> };
     markdown?: string;
+    html?: string;
+    metadata?: Record<string, unknown>;
   };
-  const md = (json.data?.markdown ?? json.markdown ?? "").trim();
+  const payload = json.data ?? json;
+  const md = (payload.markdown ?? "").trim();
+  const html = payload.html ?? "";
+  const metadata = (payload.metadata ?? {}) as Record<string, unknown>;
   const wordCount = md ? md.split(/\s+/).length : 0;
-  return { text: md, wordCount };
+  const imageCandidates = collectImageCandidates(url, md, html, metadata);
+  return { text: md, wordCount, imageCandidates };
+}
+
+function absolutize(href: string, base: string): string | null {
+  try { return new URL(href, base).toString(); } catch { return null; }
+}
+
+function collectImageCandidates(
+  pageUrl: string,
+  md: string,
+  html: string,
+  metadata: Record<string, unknown>,
+): string[] {
+  const out: string[] = [];
+  const push = (raw: unknown) => {
+    if (typeof raw !== "string") return;
+    const abs = absolutize(raw.trim(), pageUrl);
+    if (!abs) return;
+    if (!/^https?:\/\//i.test(abs)) return;
+    if (/\.(svg|gif|ico)(\?|#|$)/i.test(abs)) return;
+    if (/(sprite|logo|icon|avatar|placeholder|blank|1x1|pixel|tracking)/i.test(abs)) return;
+    if (!out.includes(abs)) out.push(abs);
+  };
+
+  for (const k of ["ogImage", "og:image", "twitterImage", "twitter:image", "image"]) {
+    push(metadata[k]);
+  }
+  const metaRe = /<meta[^>]+(?:property|name)=["'](og:image(?::secure_url)?|twitter:image)["'][^>]*content=["']([^"']+)["']/gi;
+  for (const m of html.matchAll(metaRe)) push(m[2]);
+  const metaRe2 = /<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](og:image(?::secure_url)?|twitter:image)["']/gi;
+  for (const m of html.matchAll(metaRe2)) push(m[1]);
+
+  const mdImg = /!\[[^\]]*\]\(([^)\s]+)/g;
+  for (const m of md.matchAll(mdImg)) push(m[1]);
+
+  const imgRe = /<img[^>]+(?:data-src|src)=["']([^"']+)["']/gi;
+  for (const m of html.matchAll(imgRe)) push(m[1]);
+  const srcsetRe = /<img[^>]+srcset=["']([^"']+)["']/gi;
+  for (const m of html.matchAll(srcsetRe)) {
+    const first = m[1].split(",")[0]?.trim().split(/\s+/)[0];
+    push(first);
+  }
+
+  return out.slice(0, 10);
+}
+
+// ---------- Download an original image from the source page ----------
+export type FetchedImage = { bytes: Uint8Array; contentType: string; ext: string };
+
+export async function fetchOriginalImage(candidates: string[]): Promise<FetchedImage | null> {
+  for (const url of candidates) {
+    try {
+      const resp = await fetch(url, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; RadmapBot/1.0; +https://radmap.de)",
+          Accept: "image/avif,image/webp,image/png,image/jpeg,image/*;q=0.8,*/*;q=0.5",
+          Referer: new URL(url).origin,
+        },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!resp.ok) continue;
+      const ct = (resp.headers.get("content-type") ?? "").toLowerCase();
+      if (!ct.startsWith("image/")) continue;
+      if (ct.includes("svg") || ct.includes("gif")) continue;
+      const buf = new Uint8Array(await resp.arrayBuffer());
+      if (buf.byteLength < 15_000) continue; // skip tiny icons/trackers
+      const ext =
+        ct.includes("webp") ? "webp" :
+        ct.includes("png") ? "png" :
+        ct.includes("avif") ? "avif" :
+        "jpg";
+      return { bytes: buf, contentType: ct.split(";")[0].trim(), ext };
+    } catch {
+      // try next
+    }
+  }
+  return null;
 }
 
 // ---------- Anti-hallucination validation ----------
@@ -394,13 +480,16 @@ const TEN_YEARS_SECONDS = 60 * 60 * 24 * 365 * 10;
 
 export async function uploadImageAndGetUrl(
   slug: string,
-  png: Uint8Array,
+  bytes: Uint8Array,
+  opts?: { ext?: string; contentType?: string },
 ): Promise<string> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const path = `auto/${Date.now()}-${slug}.png`;
+  const ext = opts?.ext ?? "png";
+  const contentType = opts?.contentType ?? "image/png";
+  const path = `auto/${Date.now()}-${slug}.${ext}`;
   const { error } = await supabaseAdmin.storage
     .from("article-images")
-    .upload(path, png, { contentType: "image/png", upsert: true });
+    .upload(path, bytes, { contentType, upsert: true });
   if (error) throw new Error(`Upload failed: ${error.message}`);
 
   const { data, error: urlErr } = await supabaseAdmin.storage
@@ -561,12 +650,27 @@ export async function runAutoGeneratePipeline(
           const slug = await ensureUniqueSlug(baseSlug);
 
           let coverImage: string | null = null;
+          // 4a) Prefer the ORIGINAL image from the source page (real product/brand photo).
           try {
-            const png = await generateImagePng(rewritten.image_prompt || rewritten.title);
-            coverImage = await uploadImageAndGetUrl(slug, png);
+            const original = await fetchOriginalImage(scraped.imageCandidates);
+            if (original) {
+              coverImage = await uploadImageAndGetUrl(slug, original.bytes, {
+                ext: original.ext,
+                contentType: original.contentType,
+              });
+            }
           } catch (e) {
-            const msg = e instanceof Error ? e.message : String(e);
-            errors.push(`image (${category}): ${msg}`);
+            errors.push(`original image (${category}): ${e instanceof Error ? e.message : String(e)}`);
+          }
+          // 4b) Fallback: generate a photorealistic image only if no original was found.
+          if (!coverImage) {
+            try {
+              const png = await generateImagePng(rewritten.image_prompt || rewritten.title);
+              coverImage = await uploadImageAndGetUrl(slug, png, { ext: "png", contentType: "image/png" });
+            } catch (e) {
+              const msg = e instanceof Error ? e.message : String(e);
+              errors.push(`image (${category}): ${msg}`);
+            }
           }
 
           if (!coverImage) {
