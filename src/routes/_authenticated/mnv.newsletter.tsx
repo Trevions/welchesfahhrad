@@ -184,10 +184,78 @@ function NewsletterAdminPage() {
         <p className="text-xs text-zinc-500">
           Hinweis: Newsletter werden im Double-Opt-In-Verfahren versandt (§ 7 UWG). Nur Einträge mit Status „bestätigt" haben einer Verarbeitung wirksam zugestimmt.
         </p>
+
+        {/* Newsletter-Ausgaben */}
+        <div className="pt-6 border-t border-zinc-900">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-zinc-100">Wochenausgaben</h2>
+              <p className="text-xs text-zinc-500 mt-1">
+                Automatischer Versand: jeden Sonntag um 12:00 Uhr (Europe/Berlin) an alle bestätigten Abonnenten.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                if (confirm("Newsletter jetzt sofort an alle bestätigten Abonnenten senden?")) {
+                  sendNow.mutate();
+                }
+              }}
+              disabled={sendNow.isPending}
+              className="inline-flex items-center gap-2 bg-[#FF6A1A] hover:bg-[#FF6A1A]/90 disabled:opacity-50 text-zinc-950 text-xs font-semibold px-4 py-2 rounded"
+            >
+              <Send className="h-3.5 w-3.5" />
+              {sendNow.isPending ? "Sende…" : "Jetzt manuell versenden"}
+            </button>
+          </div>
+
+          <div className="border border-zinc-900 rounded overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-zinc-950 text-zinc-400 text-xs uppercase tracking-wider">
+                <tr>
+                  <th className="text-left px-4 py-3 font-medium">Datum</th>
+                  <th className="text-left px-4 py-3 font-medium">Betreff</th>
+                  <th className="text-left px-4 py-3 font-medium">Status</th>
+                  <th className="text-right px-4 py-3 font-medium">Empfänger</th>
+                  <th className="text-right px-4 py-3 font-medium">Gesendet</th>
+                  <th className="text-right px-4 py-3 font-medium">Fehler</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-900">
+                {issuesQ.isLoading && (
+                  <tr><td colSpan={6} className="px-4 py-6 text-center text-zinc-500">Wird geladen…</td></tr>
+                )}
+                {!issuesQ.isLoading && (issuesQ.data?.issues.length ?? 0) === 0 && (
+                  <tr><td colSpan={6} className="px-4 py-6 text-center text-zinc-500">Noch keine Ausgaben versendet.</td></tr>
+                )}
+                {issuesQ.data?.issues.map((i) => (
+                  <tr key={i.id} className="hover:bg-zinc-900/50">
+                    <td className="px-4 py-3 text-zinc-300 text-xs">{new Date(i.issue_date).toLocaleDateString("de-DE")}</td>
+                    <td className="px-4 py-3 text-zinc-100 text-xs">{i.subject}</td>
+                    <td className="px-4 py-3">
+                      <span className={
+                        "text-xs px-2 py-0.5 rounded " +
+                        (i.status === "sent" ? "bg-emerald-500/10 text-emerald-400" :
+                         i.status === "sending" ? "bg-amber-500/10 text-amber-400" :
+                         i.status === "failed" ? "bg-red-500/10 text-red-400" :
+                         "bg-zinc-800 text-zinc-400")
+                      }>
+                        {i.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right text-zinc-300 text-xs tabular-nums">{i.recipients_total}</td>
+                    <td className="px-4 py-3 text-right text-emerald-400 text-xs tabular-nums">{i.recipients_sent}</td>
+                    <td className="px-4 py-3 text-right text-red-400 text-xs tabular-nums">{i.recipients_failed}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </AdminShell>
   );
 }
+
 
 function StatCard({ label, value, accent }: { label: string; value: number; accent?: "emerald" | "amber" }) {
   const color =
