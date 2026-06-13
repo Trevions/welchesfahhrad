@@ -23,13 +23,8 @@ function AgbPage() {
       lead="Diese AGB regeln die Nutzung von radmap.de sowie die Erbringung von Werbe- und Kooperationsleistungen."
       updated="13. Juni 2026"
     >
-      <InfoBox tone="signal">
-        <strong className="text-foreground">Hinweis für den Betreiber:</strong>{" "}
-        Dieser Text ist eine sorgfältig formulierte Grundlage. Bitte vor
-        Veröffentlichung durch eine:n Rechts­anwält:in prüfen lassen — die
-        Anforderungen an AGB hängen vom konkreten Geschäftsmodell ab
-        (Werbung, Bezahlinhalte, B2B/B2C).
-      </InfoBox>
+
+
 
       <Section title="§ 1 Geltungsbereich">
         <p>
