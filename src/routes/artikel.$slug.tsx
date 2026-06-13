@@ -1,7 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Clock, Bookmark } from "lucide-react";
+import { ArrowLeft, Clock } from "lucide-react";
 import { getArticleBySlug, articles } from "@/lib/articles";
 import { ShareMenu } from "@/components/ShareMenu";
+import { BookmarkButton } from "@/components/BookmarkButton";
+
 
 const SITE = "https://radmap.de";
 const abs = (u: string) => (/^https?:\/\//i.test(u) ? u : SITE + (u.startsWith("/") ? u : "/" + u));
@@ -94,14 +96,19 @@ function ArticlePage() {
               text={a.excerpt}
               image={a.image}
             />
-            <button
-              type="button"
-              aria-label="Merken"
-              className="flex h-8 w-8 items-center justify-center border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
-            >
-              <Bookmark className="h-3 w-3" />
-            </button>
+            <BookmarkButton
+              article={{
+                slug: a.slug,
+                title: a.title,
+                excerpt: a.excerpt,
+                image: a.image,
+                category: a.category,
+                date: a.date,
+                readTime: a.readTime,
+              }}
+            />
           </div>
+
         </div>
       </div>
 

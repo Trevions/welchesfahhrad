@@ -13,6 +13,7 @@ import { Route as TestsRouteImport } from './routes/tests'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
+import { Route as MerklisteRouteImport } from './routes/merkliste'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -43,6 +44,11 @@ const RatgeberRoute = RatgeberRouteImport.update({
 const NachrichtenRoute = NachrichtenRouteImport.update({
   id: '/nachrichten',
   path: '/nachrichten',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MerklisteRoute = MerklisteRouteImport.update({
+  id: '/merkliste',
+  path: '/merkliste',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EBikesRoute = EBikesRouteImport.update({
@@ -106,6 +112,7 @@ const AuthenticatedMnvArticlesIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/e-bikes': typeof EBikesRoute
+  '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/e-bikes': typeof EBikesRoute
+  '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/e-bikes': typeof EBikesRoute
+  '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/e-bikes'
+    | '/merkliste'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/e-bikes'
+    | '/merkliste'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/e-bikes'
+    | '/merkliste'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   EBikesRoute: typeof EBikesRoute
+  MerklisteRoute: typeof MerklisteRoute
   NachrichtenRoute: typeof NachrichtenRoute
   RatgeberRoute: typeof RatgeberRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -242,6 +255,13 @@ declare module '@tanstack/react-router' {
       path: '/nachrichten'
       fullPath: '/nachrichten'
       preLoaderRoute: typeof NachrichtenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/merkliste': {
+      id: '/merkliste'
+      path: '/merkliste'
+      fullPath: '/merkliste'
+      preLoaderRoute: typeof MerklisteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/e-bikes': {
@@ -360,6 +380,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   EBikesRoute: EBikesRoute,
+  MerklisteRoute: MerklisteRoute,
   NachrichtenRoute: NachrichtenRoute,
   RatgeberRoute: RatgeberRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

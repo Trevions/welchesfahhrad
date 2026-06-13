@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { Search, Bookmark } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { SearchOverlay } from "./SearchOverlay";
+import { useBookmarks } from "@/hooks/use-bookmarks";
+
 
 export function MobileHeader() {
   const [open, setOpen] = useState(false);
+  const { bookmarks } = useBookmarks();
+
   return (
     <>
       <header className="sticky top-0 z-40 md:hidden pt-[env(safe-area-inset-top)] bg-background/90 backdrop-blur-xl border-b border-border">
@@ -20,6 +24,18 @@ export function MobileHeader() {
           </Link>
           <div className="flex items-center gap-1">
             <ThemeToggle />
+            <Link
+              to="/merkliste"
+              aria-label="Merkliste"
+              className="relative flex h-9 w-9 items-center justify-center text-muted-foreground active:text-foreground transition-colors"
+            >
+              <Bookmark className="h-4 w-4" />
+              {bookmarks.length > 0 && (
+                <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 inline-flex items-center justify-center bg-signal text-[9px] font-bold text-background">
+                  {bookmarks.length}
+                </span>
+              )}
+            </Link>
             <button
               type="button"
               aria-label="Suchen"
@@ -28,6 +44,7 @@ export function MobileHeader() {
             >
               <Search className="h-4 w-4" />
             </button>
+
           </div>
         </div>
       </header>
