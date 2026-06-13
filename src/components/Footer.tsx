@@ -66,9 +66,11 @@ export function Footer() {
 
         <div className="mt-14 pt-6 border-t border-border flex flex-wrap items-center justify-between gap-4 text-xs text-muted-foreground">
           <div>© {new Date().getFullYear()} radmap.de — Alle Rechte vorbehalten.</div>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
             <Link to="/impressum" className="hover:text-foreground transition-colors">Impressum</Link>
             <Link to="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</Link>
+            <Link to="/cookies" className="hover:text-foreground transition-colors">Cookies</Link>
+            <Link to="/nutzungsbedingungen" className="hover:text-foreground transition-colors">Nutzungsbedingungen</Link>
             <Link to="/agb" className="hover:text-foreground transition-colors">AGB</Link>
           </div>
         </div>

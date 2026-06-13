@@ -14,6 +14,7 @@ import { Route as TestsRouteImport } from './routes/tests'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RedaktionRouteImport } from './routes/redaktion'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
+import { Route as NutzungsbedingungenRouteImport } from './routes/nutzungsbedingungen'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
 import { Route as MerklisteRouteImport } from './routes/merkliste'
 import { Route as MediadatenRouteImport } from './routes/mediadaten'
@@ -21,6 +22,7 @@ import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -59,6 +61,11 @@ const RatgeberRoute = RatgeberRouteImport.update({
   path: '/ratgeber',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NutzungsbedingungenRoute = NutzungsbedingungenRouteImport.update({
+  id: '/nutzungsbedingungen',
+  path: '/nutzungsbedingungen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NachrichtenRoute = NachrichtenRouteImport.update({
   id: '/nachrichten',
   path: '/nachrichten',
@@ -92,6 +99,11 @@ const EBikesRoute = EBikesRouteImport.update({
 const DatenschutzRoute = DatenschutzRouteImport.update({
   id: '/datenschutz',
   path: '/datenschutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgbRoute = AgbRouteImport.update({
@@ -161,6 +173,7 @@ const AuthenticatedMnvArticlesIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
   '/impressum': typeof ImpressumRoute
@@ -168,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
+  '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -186,6 +200,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
   '/impressum': typeof ImpressumRoute
@@ -193,6 +208,7 @@ export interface FileRoutesByTo {
   '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
+  '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -212,6 +228,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/agb': typeof AgbRoute
+  '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
   '/impressum': typeof ImpressumRoute
@@ -219,6 +236,7 @@ export interface FileRoutesById {
   '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
+  '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -239,6 +257,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agb'
+    | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
     | '/impressum'
@@ -246,6 +265,7 @@ export interface FileRouteTypes {
     | '/mediadaten'
     | '/merkliste'
     | '/nachrichten'
+    | '/nutzungsbedingungen'
     | '/ratgeber'
     | '/redaktion'
     | '/sitemap.xml'
@@ -264,6 +284,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/agb'
+    | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
     | '/impressum'
@@ -271,6 +292,7 @@ export interface FileRouteTypes {
     | '/mediadaten'
     | '/merkliste'
     | '/nachrichten'
+    | '/nutzungsbedingungen'
     | '/ratgeber'
     | '/redaktion'
     | '/sitemap.xml'
@@ -289,6 +311,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/agb'
+    | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
     | '/impressum'
@@ -296,6 +319,7 @@ export interface FileRouteTypes {
     | '/mediadaten'
     | '/merkliste'
     | '/nachrichten'
+    | '/nutzungsbedingungen'
     | '/ratgeber'
     | '/redaktion'
     | '/sitemap.xml'
@@ -316,6 +340,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AgbRoute: typeof AgbRoute
+  CookiesRoute: typeof CookiesRoute
   DatenschutzRoute: typeof DatenschutzRoute
   EBikesRoute: typeof EBikesRoute
   ImpressumRoute: typeof ImpressumRoute
@@ -323,6 +348,7 @@ export interface RootRouteChildren {
   MediadatenRoute: typeof MediadatenRoute
   MerklisteRoute: typeof MerklisteRoute
   NachrichtenRoute: typeof NachrichtenRoute
+  NutzungsbedingungenRoute: typeof NutzungsbedingungenRoute
   RatgeberRoute: typeof RatgeberRoute
   RedaktionRoute: typeof RedaktionRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -366,6 +392,13 @@ declare module '@tanstack/react-router' {
       path: '/ratgeber'
       fullPath: '/ratgeber'
       preLoaderRoute: typeof RatgeberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nutzungsbedingungen': {
+      id: '/nutzungsbedingungen'
+      path: '/nutzungsbedingungen'
+      fullPath: '/nutzungsbedingungen'
+      preLoaderRoute: typeof NutzungsbedingungenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nachrichten': {
@@ -415,6 +448,13 @@ declare module '@tanstack/react-router' {
       path: '/datenschutz'
       fullPath: '/datenschutz'
       preLoaderRoute: typeof DatenschutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agb': {
@@ -542,6 +582,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AgbRoute: AgbRoute,
+  CookiesRoute: CookiesRoute,
   DatenschutzRoute: DatenschutzRoute,
   EBikesRoute: EBikesRoute,
   ImpressumRoute: ImpressumRoute,
@@ -549,6 +590,7 @@ const rootRouteChildren: RootRouteChildren = {
   MediadatenRoute: MediadatenRoute,
   MerklisteRoute: MerklisteRoute,
   NachrichtenRoute: NachrichtenRoute,
+  NutzungsbedingungenRoute: NutzungsbedingungenRoute,
   RatgeberRoute: RatgeberRoute,
   RedaktionRoute: RedaktionRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
