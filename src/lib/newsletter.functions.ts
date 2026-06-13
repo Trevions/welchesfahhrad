@@ -3,7 +3,7 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const FROM_EMAIL = "Radmap Newsletter <newsletter@radmap.de>";
+const FROM_EMAIL = "Radmap.de <hallo@radmap.de>";
 const REPLY_TO = "support@radmap.de";
 
 const subscribeInput = z.object({
@@ -91,13 +91,16 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string,
       from: FROM_EMAIL,
       to: email,
       reply_to: REPLY_TO,
-      subject: "Bitte bestätigen Sie Ihre Newsletter-Anmeldung",
+      subject: "Bitte E-Mail-Adresse bestätigen",
       html,
       text,
       headers: {
         // RFC 2369 + RFC 8058: prefer the one-click POST endpoint, fall back to the page URL.
         "List-Unsubscribe": `<${oneClickUnsubUrl ?? unsubUrl}>, <${unsubUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        "List-Id": "Radmap.de Updates <updates.radmap.de>",
+        "Precedence": "bulk",
+        "X-Entity-Ref-ID": crypto.randomUUID(),
       },
     }),
   });
