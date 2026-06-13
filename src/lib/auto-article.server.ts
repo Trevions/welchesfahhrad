@@ -650,12 +650,27 @@ export async function runAutoGeneratePipeline(
           const slug = await ensureUniqueSlug(baseSlug);
 
           let coverImage: string | null = null;
+          // 4a) Prefer the ORIGINAL image from the source page (real product/brand photo).
           try {
-            const png = await generateImagePng(rewritten.image_prompt || rewritten.title);
-            coverImage = await uploadImageAndGetUrl(slug, png);
+            const original = await fetchOriginalImage(scraped.imageCandidates);
+            if (original) {
+              coverImage = await uploadImageAndGetUrl(slug, original.bytes, {
+                ext: original.ext,
+                contentType: original.contentType,
+              });
+            }
           } catch (e) {
-            const msg = e instanceof Error ? e.message : String(e);
-            errors.push(`image (${category}): ${msg}`);
+            errors.push(`original image (${category}): ${e instanceof Error ? e.message : String(e)}`);
+          }
+          // 4b) Fallback: generate a photorealistic image only if no original was found.
+          if (!coverImage) {
+            try {
+              const png = await generateImagePng(rewritten.image_prompt || rewritten.title);
+              coverImage = await uploadImageAndGetUrl(slug, png, { ext: "png", contentType: "image/png" });
+            } catch (e) {
+              const msg = e instanceof Error ? e.message : String(e);
+              errors.push(`image (${category}): ${msg}`);
+            }
           }
 
           if (!coverImage) {
