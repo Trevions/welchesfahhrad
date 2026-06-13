@@ -85,16 +85,46 @@ function ContactPage() {
       </Section>
 
       <Section title="Nachricht senden">
+        {sent ? (
+          <div className="not-prose border border-border bg-card p-8 text-center">
+            <CheckCircle2 className="h-10 w-10 mx-auto text-signal" />
+            <h3 className="mt-4 text-lg font-semibold text-foreground">Danke für deine Nachricht</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Wir haben deine Anfrage erhalten und melden uns so schnell wie möglich
+              unter der angegebenen E-Mail-Adresse.
+            </p>
+            <button
+              type="button"
+              onClick={() => setSent(false)}
+              className="mt-5 inline-flex items-center gap-2 border border-border px-4 py-2 eyebrow-sm hover:border-foreground hover:text-foreground text-muted-foreground transition-colors"
+            >
+              Weitere Nachricht senden
+            </button>
+          </div>
+        ) : (
         <form onSubmit={onSubmit} className="not-prose space-y-4">
+          {/* Honeypot — hidden from humans */}
+          <div className="hidden" aria-hidden="true">
+            <label>Website
+              <input
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+              />
+            </label>
+          </div>
+
           <div>
             <label className="eyebrow-sm text-muted-foreground">Anliegen</label>
             <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {[
+              {([
                 { id: "redaktion", label: "Redaktion" },
                 { id: "presse", label: "Presse" },
                 { id: "werbung", label: "Werbung" },
                 { id: "sonstiges", label: "Sonstiges" },
-              ].map((t) => (
+              ] as const).map((t) => (
                 <button
                   key={t.id}
                   type="button"
@@ -118,6 +148,9 @@ function ContactPage() {
               <input
                 id="k-name"
                 required
+                maxLength={120}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="mt-2 w-full bg-background border border-border px-4 py-3 text-sm focus:outline-none focus:border-foreground transition-colors"
               />
             </div>
@@ -127,6 +160,9 @@ function ContactPage() {
                 id="k-mail"
                 type="email"
                 required
+                maxLength={254}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-2 w-full bg-background border border-border px-4 py-3 text-sm focus:outline-none focus:border-foreground transition-colors"
               />
             </div>
@@ -137,6 +173,9 @@ function ContactPage() {
             <input
               id="k-betreff"
               required
+              maxLength={200}
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
               className="mt-2 w-full bg-background border border-border px-4 py-3 text-sm focus:outline-none focus:border-foreground transition-colors"
             />
           </div>
@@ -147,8 +186,15 @@ function ContactPage() {
               id="k-msg"
               required
               rows={6}
+              minLength={5}
+              maxLength={5000}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               className="mt-2 w-full bg-background border border-border px-4 py-3 text-sm focus:outline-none focus:border-foreground transition-colors resize-y"
             />
+            <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground text-right tabular-nums">
+              {message.length} / 5000
+            </div>
           </div>
 
           <label className="flex items-start gap-3 text-xs text-muted-foreground">
@@ -163,20 +209,25 @@ function ContactPage() {
 
           <button
             type="submit"
-            className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-3 eyebrow-sm hover:bg-signal hover:text-signal-foreground transition-colors"
+            disabled={submitting}
+            className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-3 eyebrow-sm hover:bg-signal hover:text-signal-foreground transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <Send className="h-3.5 w-3.5" />
-            Nachricht senden
+            {submitting ? (
+              <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Wird gesendet…</>
+            ) : (
+              <><Send className="h-3.5 w-3.5" /> Nachricht senden</>
+            )}
           </button>
         </form>
+        )}
 
         <InfoBox>
-          Bis zur technischen Freischaltung des Formular-Versands erreichst du
-          uns am schnellsten per E-Mail an{" "}
+          Alternativ erreichst du uns jederzeit per E-Mail an{" "}
           <a href="mailto:support@radmap.de" className="text-signal hover:underline">
             support@radmap.de
           </a>.
         </InfoBox>
+
 
       </Section>
     </LegalPage>
