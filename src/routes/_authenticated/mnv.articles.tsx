@@ -29,7 +29,7 @@ import {
 import { Plus, Search, Edit3, Trash2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/admin/articles")({
+export const Route = createFileRoute("/_authenticated/mnv/articles")({
   component: ArticlesList,
 });
 
