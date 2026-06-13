@@ -29,6 +29,7 @@ import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NewsletterBestaetigenRouteImport } from './routes/newsletter.bestaetigen'
+import { Route as NewsletterAbmeldenRouteImport } from './routes/newsletter.abmelden'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AuthenticatedMnvRouteImport } from './routes/_authenticated/mnv'
 import { Route as AuthenticatedMnvIndexRouteImport } from './routes/_authenticated/mnv.index'
@@ -138,6 +139,11 @@ const NewsletterBestaetigenRoute = NewsletterBestaetigenRouteImport.update({
   path: '/newsletter/bestaetigen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewsletterAbmeldenRoute = NewsletterAbmeldenRouteImport.update({
+  id: '/newsletter/abmelden',
+  path: '/newsletter/abmelden',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
   id: '/artikel/$slug',
   path: '/artikel/$slug',
@@ -209,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/ueber-uns': typeof UeberUnsRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
@@ -238,6 +245,7 @@ export interface FileRoutesByTo {
   '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
@@ -270,6 +278,7 @@ export interface FileRoutesById {
   '/ueber-uns': typeof UeberUnsRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
@@ -302,6 +311,7 @@ export interface FileRouteTypes {
     | '/ueber-uns'
     | '/mnv'
     | '/artikel/$slug'
+    | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/mnv/articles'
     | '/mnv/media'
@@ -331,6 +341,7 @@ export interface FileRouteTypes {
     | '/tests'
     | '/ueber-uns'
     | '/artikel/$slug'
+    | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/mnv/articles'
     | '/mnv/media'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/ueber-uns'
     | '/_authenticated/mnv'
     | '/artikel/$slug'
+    | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/media'
@@ -393,6 +405,7 @@ export interface RootRouteChildren {
   TestsRoute: typeof TestsRoute
   UeberUnsRoute: typeof UeberUnsRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
+  NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
   NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
 }
 
@@ -538,6 +551,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsletterBestaetigenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/newsletter/abmelden': {
+      id: '/newsletter/abmelden'
+      path: '/newsletter/abmelden'
+      fullPath: '/newsletter/abmelden'
+      preLoaderRoute: typeof NewsletterAbmeldenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/artikel/$slug': {
       id: '/artikel/$slug'
       path: '/artikel/$slug'
@@ -659,6 +679,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestsRoute: TestsRoute,
   UeberUnsRoute: UeberUnsRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
+  NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,
   NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
 }
 export const routeTree = rootRouteImport
