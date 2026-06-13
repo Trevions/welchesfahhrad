@@ -1,5 +1,109 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { useCookieConsent } from "@/hooks/use-cookie-consent";
+import { subscribeNewsletter } from "@/lib/newsletter.functions";
+
+function NewsletterForm() {
+  const subscribe = useServerFn(subscribeNewsletter);
+  const [email, setEmail] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [website, setWebsite] = useState(""); // honeypot
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!consent || !email) return;
+    setStatus("loading");
+    setErrorMsg("");
+    try {
+      await subscribe({
+        data: { email, consent: true, source: "footer", website },
+      });
+      setStatus("success");
+      setEmail("");
+      setConsent(false);
+    } catch (err) {
+      setStatus("error");
+      setErrorMsg(err instanceof Error ? err.message : "Bitte erneut versuchen.");
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <div className="mt-4 surface-strong rounded-sm p-4 flex items-start gap-3">
+        <CheckCircle2 className="h-5 w-5 text-signal shrink-0 mt-0.5" />
+        <div>
+          <div className="text-sm font-semibold text-foreground">Fast geschafft!</div>
+          <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+            Wir haben Ihnen eine Bestätigungs-E-Mail gesendet. Bitte klicken Sie
+            auf den Link darin, um Ihre Anmeldung abzuschließen (Double-Opt-In).
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="mt-4 space-y-3" noValidate>
+      <div className="flex border border-border bg-background">
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="ihre@email.de"
+          aria-label="E-Mail Adresse"
+          className="flex-1 bg-transparent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+        />
+        <button
+          type="submit"
+          disabled={!consent || !email || status === "loading"}
+          className="bg-foreground px-4 py-3 eyebrow-sm text-background hover:bg-signal hover:text-signal-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          {status === "loading" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+          Abonnieren
+        </button>
+      </div>
+
+      {/* Honeypot — hidden from users */}
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        value={website}
+        onChange={(e) => setWebsite(e.target.value)}
+        className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden"
+        aria-hidden="true"
+      />
+
+      <label className="flex items-start gap-2 text-[11px] text-muted-foreground leading-snug cursor-pointer">
+        <input
+          type="checkbox"
+          required
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+          className="mt-0.5 h-3.5 w-3.5 accent-signal shrink-0"
+        />
+        <span>
+          Ich willige ein, den Newsletter zu erhalten. Eine Abmeldung ist
+          jederzeit möglich. Hinweise:{" "}
+          <Link to="/datenschutz" className="text-signal hover:underline">
+            Datenschutz
+          </Link>
+          .
+        </span>
+      </label>
+
+      {status === "error" && (
+        <p className="text-xs text-destructive">{errorMsg || "Bitte erneut versuchen."}</p>
+      )}
+    </form>
+  );
+}
 
 export function Footer() {
   const { openBanner } = useCookieConsent();
@@ -43,26 +147,12 @@ export function Footer() {
             </ul>
           </div>
 
-
           <div className="md:col-span-3">
             <h4 className="eyebrow text-foreground">Newsletter</h4>
             <p className="mt-5 text-sm text-muted-foreground font-light">
               Die wichtigsten Geschichten der Woche — jeden Freitag in Ihrem Postfach.
             </p>
-            <form className="mt-4 flex border border-border bg-background">
-              <input
-                type="email"
-                placeholder="ihre@email.de"
-                aria-label="E-Mail Adresse"
-                className="flex-1 bg-transparent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="bg-foreground px-4 py-3 eyebrow-sm text-background hover:bg-signal hover:text-signal-foreground transition-colors"
-              >
-                Abonnieren
-              </button>
-            </form>
+            <NewsletterForm />
           </div>
         </div>
 
@@ -79,7 +169,6 @@ export function Footer() {
             <button onClick={openBanner} className="hover:text-foreground transition-colors bg-transparent border-none p-0 m-0 cursor-pointer text-inherit">Datenschutzeinstellungen</button>
           </div>
         </div>
-
       </div>
     </footer>
   );
