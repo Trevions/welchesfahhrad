@@ -50,7 +50,7 @@ export function Header() {
           {/* Center nav */}
           <ul className="flex items-center gap-1">
             {nav.map((item) => {
-              const active = pathname.startsWith(item.to);
+              const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
               return (
                 <li key={item.to}>
                   <Link
