@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { Search, Bookmark } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { SearchOverlay } from "./SearchOverlay";
+import { useBookmarks } from "@/hooks/use-bookmarks";
+
 
 const nav = [
   { to: "/", label: "Startseite", exact: true },
@@ -15,6 +17,8 @@ const nav = [
 export function Header() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [searchOpen, setSearchOpen] = useState(false);
+  const { bookmarks } = useBookmarks();
+
 
   // Global ⌘K / Ctrl+K
   useEffect(() => {
@@ -85,7 +89,20 @@ export function Header() {
                 ⌘K
               </kbd>
             </button>
+            <Link
+              to="/merkliste"
+              aria-label="Merkliste"
+              className="relative flex h-9 w-9 items-center justify-center border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+            >
+              <Bookmark className="h-3.5 w-3.5" />
+              {bookmarks.length > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center bg-signal text-[10px] font-bold text-background">
+                  {bookmarks.length}
+                </span>
+              )}
+            </Link>
             <ThemeToggle />
+
           </div>
         </div>
       </div>
