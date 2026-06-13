@@ -74,6 +74,8 @@ export function Footer() {
             <Link to="/cookies" className="hover:text-foreground transition-colors">Cookies</Link>
             <Link to="/nutzungsbedingungen" className="hover:text-foreground transition-colors">Nutzungsbedingungen</Link>
             <Link to="/agb" className="hover:text-foreground transition-colors">AGB</Link>
+            <Link to="/barrierefreiheit" className="hover:text-foreground transition-colors">Barrierefreiheit</Link>
+            <Link to="/bildnachweise" className="hover:text-foreground transition-colors">Bildnachweise</Link>
             <button onClick={openBanner} className="hover:text-foreground transition-colors bg-transparent border-none p-0 m-0 cursor-pointer text-inherit">Datenschutzeinstellungen</button>
           </div>
         </div>
