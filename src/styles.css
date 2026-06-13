@@ -422,3 +422,25 @@
   [data-reveal] { opacity: 1; transform: none; clip-path: none; filter: none; }
   .spotlight { display: none; }
 }
+
+/* Swipe hint animation for mobile carousels */
+@keyframes swipe-hint {
+  0%   { opacity: 0; transform: translateX(0); }
+  15%  { opacity: 1; transform: translateX(0); }
+  40%  { opacity: 1; transform: translateX(-12px); }
+  60%  { opacity: 1; transform: translateX(6px); }
+  80%  { opacity: 0; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+.swipe-hint {
+  animation: swipe-hint 2.5s ease-in-out 0.5s both;
+}
+
+/* Hide scrollbar on mobile carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
