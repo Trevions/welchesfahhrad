@@ -13,8 +13,8 @@ import { Route as TestsRouteImport } from './routes/tests'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
+import { Route as MnvRouteImport } from './routes/mnv'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
@@ -46,14 +46,14 @@ const NachrichtenRoute = NachrichtenRouteImport.update({
   path: '/nachrichten',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MnvRoute = MnvRouteImport.update({
+  id: '/mnv',
+  path: '/mnv',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EBikesRoute = EBikesRouteImport.update({
   id: '/e-bikes',
   path: '/e-bikes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -111,8 +111,8 @@ const AuthenticatedAdminArticlesIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/e-bikes': typeof EBikesRoute
+  '/mnv': typeof MnvRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -128,8 +128,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/e-bikes': typeof EBikesRoute
+  '/mnv': typeof MnvRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -146,8 +146,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
   '/e-bikes': typeof EBikesRoute
+  '/mnv': typeof MnvRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -165,8 +165,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
     | '/e-bikes'
+    | '/mnv'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
@@ -182,8 +182,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
     | '/e-bikes'
+    | '/mnv'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
@@ -199,8 +199,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/auth'
     | '/e-bikes'
+    | '/mnv'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
@@ -218,8 +218,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
   EBikesRoute: typeof EBikesRoute
+  MnvRoute: typeof MnvRoute
   NachrichtenRoute: typeof NachrichtenRoute
   RatgeberRoute: typeof RatgeberRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -257,18 +257,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NachrichtenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mnv': {
+      id: '/mnv'
+      path: '/mnv'
+      fullPath: '/mnv'
+      preLoaderRoute: typeof MnvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/e-bikes': {
       id: '/e-bikes'
       path: '/e-bikes'
       fullPath: '/e-bikes'
       preLoaderRoute: typeof EBikesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -379,8 +379,8 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
   EBikesRoute: EBikesRoute,
+  MnvRoute: MnvRoute,
   NachrichtenRoute: NachrichtenRoute,
   RatgeberRoute: RatgeberRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

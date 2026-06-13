@@ -11,7 +11,7 @@ import { Loader2, ArrowLeft } from "lucide-react";
 
 const searchSchema = z.object({ redirect: z.string().optional() });
 
-export const Route = createFileRoute("/auth")({
+export const Route = createFileRoute("/mnv")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
