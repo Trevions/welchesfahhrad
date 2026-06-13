@@ -10,21 +10,25 @@ import {
   X,
   Plus,
   Search as SearchIcon,
+  Inbox,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyAccess } from "@/lib/admin.functions";
+import { getUnreadContactCount } from "@/lib/contact.functions";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
+const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; key?: string }[] = [
   { to: "/mnv", label: "Übersicht", icon: LayoutDashboard, exact: true },
   { to: "/mnv/articles", label: "Artikel", icon: FileText },
+  { to: "/mnv/messages", label: "Nachrichten", icon: Inbox, key: "messages" },
   { to: "/mnv/media", label: "Medien", icon: ImageIcon },
   { to: "/mnv/users", label: "Benutzer", icon: Users },
 ];
+
 
 export function AdminShell({
   children,
@@ -45,6 +49,15 @@ export function AdminShell({
     queryKey: ["admin-access"],
     queryFn: () => fetchAccess(),
   });
+
+  const fetchUnread = useServerFn(getUnreadContactCount);
+  const { data: unreadData } = useQuery({
+    queryKey: ["contact-unread"],
+    queryFn: () => fetchUnread(),
+    enabled: !!access && (access.isAdmin || access.isEditor),
+    refetchInterval: 30_000,
+  });
+  const unread = unreadData?.unread ?? 0;
 
   useEffect(() => {
     if (!isLoading && access && !access.isAdmin && !access.isEditor) {
@@ -99,7 +112,12 @@ export function AdminShell({
                   <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 bg-[#FF6A1A] rounded-r" />
                 )}
                 <item.icon className="h-4 w-4" />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.key === "messages" && unread > 0 && (
+                  <span className="ml-auto bg-[#FF6A1A] text-zinc-950 text-[10px] font-bold tabular-nums px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                    {unread > 99 ? "99+" : unread}
+                  </span>
+                )}
               </Link>
             );
           })}
