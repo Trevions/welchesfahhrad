@@ -5,6 +5,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { SearchOverlay } from "./SearchOverlay";
 
 const nav = [
+  { to: "/", label: "Startseite", exact: true },
   { to: "/nachrichten", label: "Nachrichten" },
   { to: "/ratgeber", label: "Ratgeber" },
   { to: "/e-bikes", label: "E-Bikes" },
