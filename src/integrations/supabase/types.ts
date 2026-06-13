@@ -58,6 +58,8 @@ export type Database = {
           created_at: string
           discovered_at: string
           id: string
+          related_sources: Json | null
+          scraped_text: string | null
           skip_reason: string | null
           source_domain: string | null
           source_title: string | null
@@ -71,6 +73,8 @@ export type Database = {
           created_at?: string
           discovered_at?: string
           id?: string
+          related_sources?: Json | null
+          scraped_text?: string | null
           skip_reason?: string | null
           source_domain?: string | null
           source_title?: string | null
@@ -84,6 +88,8 @@ export type Database = {
           created_at?: string
           discovered_at?: string
           id?: string
+          related_sources?: Json | null
+          scraped_text?: string | null
           skip_reason?: string | null
           source_domain?: string | null
           source_title?: string | null
