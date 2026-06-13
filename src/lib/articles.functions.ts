@@ -83,6 +83,7 @@ export const getPublicArticleBySlug = createServerFn({ method: "POST" })
       )
       .eq("slug", data.slug)
       .eq("status", "published")
+      .not("cover_image", "is", null)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!row) return { article: null as Article | null, seo: null };
