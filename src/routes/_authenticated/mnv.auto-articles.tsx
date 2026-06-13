@@ -115,6 +115,84 @@ function AutoArticlesPage() {
         </Button>
       }
     >
+      {/* Kill-switch: pause/resume automatic cron generation */}
+      <div className="mb-6 bg-zinc-900/40 border border-zinc-800 rounded-lg p-4 flex items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <Power className={`h-5 w-5 mt-0.5 ${settings.data?.enabled ? "text-emerald-400" : "text-rose-400"}`} />
+          <div>
+            <div className="text-sm font-semibold text-zinc-100">
+              Automatische Generierung {settings.data?.enabled ? "aktiv" : "pausiert"}
+            </div>
+            <div className="text-xs text-zinc-500 mt-0.5">
+              Steuert den 3-Stunden-Cron. Manuelle Auslöser funktionieren unabhängig davon.
+            </div>
+          </div>
+        </div>
+        <Switch
+          checked={settings.data?.enabled ?? true}
+          disabled={settings.isLoading}
+          onCheckedChange={onToggle}
+        />
+      </div>
+
+      {/* Manual news research — list-only, for hand-written articles */}
+      <div className="mb-6 bg-zinc-900/40 border border-zinc-800 rounded-lg p-4">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <div className="text-sm font-semibold text-zinc-100">News-Recherche</div>
+            <div className="text-xs text-zinc-500 mt-0.5">
+              Findet aktuelle Fahrrad-Nachrichten und gruppiert gleiche Themen aus mehreren Quellen — zum manuellen Kopieren.
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Select value={scope} onValueChange={(v) => setScope(v as "de" | "world" | "all")}>
+              <SelectTrigger className="w-36 h-8 bg-zinc-950 border-zinc-800 text-zinc-200 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="de">Deutschland</SelectItem>
+                <SelectItem value="world">International</SelectItem>
+                <SelectItem value="all">Beides</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={onResearch}
+              disabled={researching}
+              className="bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 font-medium"
+            >
+              {researching ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Search className="h-4 w-4 mr-1.5" />}
+              Nachrichten suchen
+            </Button>
+          </div>
+        </div>
+
+        {clusters.length > 0 && (
+          <div className="mt-3 space-y-3">
+            {clusters.map((c, i) => (
+              <div key={i} className="bg-zinc-950/60 border border-zinc-800 rounded-md p-3">
+                <div className="text-sm font-semibold text-zinc-100">{c.topic_title}</div>
+                {c.summary && <div className="text-xs text-zinc-400 mt-1">{c.summary}</div>}
+                <div className="mt-2 space-y-1">
+                  {c.sources.map((s, j) => (
+                    <a
+                      key={j}
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-xs text-zinc-300 hover:text-[#FF6A1A] group"
+                    >
+                      <ExternalLink className="h-3 w-3 text-zinc-600 group-hover:text-[#FF6A1A]" />
+                      <span className="truncate flex-1">{s.title}</span>
+                      <span className="text-zinc-600">{s.domain}</span>
+                    </a>
+                  ))}
+                </div>
+                <div className="mt-2 text-[10px] text-zinc-600">{c.sources.length} Quelle{c.sources.length === 1 ? "" : "n"}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Manual triggers per category */}
       <div className="mb-6 bg-zinc-900/40 border border-zinc-800 rounded-lg p-4">
         <div className="text-xs uppercase tracking-wider text-zinc-500 mb-3">Manuelle Tests pro Kategorie</div>
