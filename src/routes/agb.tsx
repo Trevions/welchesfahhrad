@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LegalPage, Section, InfoBox } from "@/components/LegalPage";
+import { LegalPage, Section } from "@/components/LegalPage";
 
 export const Route = createFileRoute("/agb")({
   head: () => ({
