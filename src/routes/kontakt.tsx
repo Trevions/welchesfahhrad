@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Mail, MapPin, Send } from "lucide-react";
+import { Mail, MapPin, Send, Loader2, CheckCircle2 } from "lucide-react";
 import { LegalPage, Section, InfoBox } from "@/components/LegalPage";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { submitContactMessage } from "@/lib/contact.functions";
 
 export const Route = createFileRoute("/kontakt")({
   head: () => ({
@@ -19,13 +21,37 @@ export const Route = createFileRoute("/kontakt")({
 });
 
 function ContactPage() {
-  const [topic, setTopic] = useState("redaktion");
+  const [topic, setTopic] = useState<"redaktion" | "presse" | "werbung" | "sonstiges">("redaktion");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const submit = useServerFn(submitContactMessage);
+
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Nachricht vorgemerkt", {
-      description: "Bitte sende deine Anfrage an die im Impressum hinterlegte E-Mail-Adresse — das Kontaktformular wird in Kürze freigeschaltet.",
-    });
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await submit({
+        data: { topic, name, email, subject, message, consent: true as const, website },
+      });
+      setSent(true);
+      setName(""); setEmail(""); setSubject(""); setMessage("");
+      toast.success("Nachricht gesendet", {
+        description: "Wir haben deine Anfrage erhalten und melden uns in Kürze.",
+      });
+    } catch (err) {
+      toast.error("Senden fehlgeschlagen", {
+        description: err instanceof Error ? err.message : "Bitte versuche es erneut.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
