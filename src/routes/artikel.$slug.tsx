@@ -88,13 +88,12 @@ function ArticlePage() {
             <ArrowLeft className="h-3 w-3" /> Zurück
           </Link>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              aria-label="Teilen"
-              className="flex h-8 w-8 items-center justify-center border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
-            >
-              <Share2 className="h-3 w-3" />
-            </button>
+            <ShareMenu
+              url={`/artikel/${a.slug}`}
+              title={a.title}
+              text={a.excerpt}
+              image={a.image}
+            />
             <button
               type="button"
               aria-label="Merken"
