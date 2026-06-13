@@ -33,12 +33,18 @@ function PrivacyPage() {
 
       <Section title="1. Verantwortlicher">
         <p>
-          Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne
-          der Datenschutz-Grundverordnung (DSGVO) ist die im{" "}
-          <Link to="/impressum" className="text-signal hover:underline">Impressum</Link>{" "}
-          genannte natürliche oder juristische Person.
+          Verantwortlicher im Sinne der Datenschutz-Grundverordnung (DSGVO):
+        </p>
+        <p>
+          <strong className="text-foreground">DigiMarket Bulgaria</strong><br />
+          6400 Dimitrovgrad, Bulgarien<br />
+          E-Mail:{" "}
+          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
+            support@radmap.de
+          </a>
         </p>
       </Section>
+
 
       <Section title="2. Allgemeines zur Datenverarbeitung">
         <SubSection title="Umfang der Verarbeitung">
