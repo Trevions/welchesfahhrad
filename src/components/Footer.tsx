@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { useCookieConsent } from "@/hooks/use-cookie-consent";
 
 export function Footer() {
+  const { openBanner } = useCookieConsent();
   return (
     <footer className="mt-24 border-t border-border bg-card pb-28 md:pb-12 pt-16">
       <div className="mx-auto max-w-[1400px] px-6 md:px-8">
@@ -72,6 +74,7 @@ export function Footer() {
             <Link to="/cookies" className="hover:text-foreground transition-colors">Cookies</Link>
             <Link to="/nutzungsbedingungen" className="hover:text-foreground transition-colors">Nutzungsbedingungen</Link>
             <Link to="/agb" className="hover:text-foreground transition-colors">AGB</Link>
+            <button onClick={openBanner} className="hover:text-foreground transition-colors bg-transparent border-none p-0 m-0 cursor-pointer text-inherit">Datenschutzeinstellungen</button>
           </div>
         </div>
 

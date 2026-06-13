@@ -17,6 +17,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { MotionLayer } from "@/components/MotionLayer";
+import { CookieConsentBanner } from "@/components/CookieConsent";
 
 function NotFoundComponent() {
   return (
@@ -148,6 +149,7 @@ function RootComponent() {
           </main>
           <Footer />
           <MobileNav />
+          <CookieConsentBanner />
         </div>
       </ThemeProvider>
     </QueryClientProvider>
