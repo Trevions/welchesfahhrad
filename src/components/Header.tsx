@@ -5,6 +5,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { SearchOverlay } from "./SearchOverlay";
 
 const nav = [
+  { to: "/", label: "Startseite", exact: true },
   { to: "/nachrichten", label: "Nachrichten" },
   { to: "/ratgeber", label: "Ratgeber" },
   { to: "/e-bikes", label: "E-Bikes" },
@@ -49,7 +50,7 @@ export function Header() {
           {/* Center nav */}
           <ul className="flex items-center gap-1">
             {nav.map((item) => {
-              const active = pathname.startsWith(item.to);
+              const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
               return (
                 <li key={item.to}>
                   <Link
