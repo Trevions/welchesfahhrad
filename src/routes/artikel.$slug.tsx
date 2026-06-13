@@ -20,13 +20,22 @@ export const Route = createFileRoute("/artikel/$slug")({
           { property: "og:title", content: loaderData.title },
           { property: "og:description", content: loaderData.excerpt },
           { property: "og:type", content: "article" },
-          { property: "og:image", content: loaderData.image },
-          { property: "og:url", content: `/artikel/${loaderData.slug}` },
-          { name: "twitter:image", content: loaderData.image },
+          { property: "og:site_name", content: "radmap.de" },
+          { property: "og:locale", content: "de_DE" },
+          { property: "og:image", content: abs(loaderData.image) },
+          { property: "og:image:alt", content: loaderData.title },
+          { property: "og:image:width", content: "1200" },
+          { property: "og:image:height", content: "630" },
+          { property: "og:url", content: abs(`/artikel/${loaderData.slug}`) },
+          { name: "twitter:card", content: "summary_large_image" },
+          { name: "twitter:title", content: loaderData.title },
+          { name: "twitter:description", content: loaderData.excerpt },
+          { name: "twitter:image", content: abs(loaderData.image) },
+          { name: "twitter:image:alt", content: loaderData.title },
         ]
       : [],
     links: loaderData
-      ? [{ rel: "canonical", href: `/artikel/${loaderData.slug}` }]
+      ? [{ rel: "canonical", href: abs(`/artikel/${loaderData.slug}`) }]
       : [],
     scripts: loaderData
       ? [
