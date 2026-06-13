@@ -23,13 +23,8 @@ function PrivacyPage() {
       lead="Wir nehmen den Schutz deiner persönlichen Daten ernst. Diese Datenschutzerklärung informiert dich über Art, Umfang und Zweck der Verarbeitung personenbezogener Daten auf radmap.de — gemäß DSGVO und BDSG."
       updated="13. Juni 2026"
     >
-      <InfoBox tone="signal">
-        <strong className="text-foreground">Hinweis für den Betreiber:</strong> Diese Vorlage deckt typische
-        Verarbeitungen einer Magazin-Website ab. Vor Veröffentlichung müssen
-        die Angaben zum Verantwortlichen (Impressum), zu eingesetzten Diensten
-        (z. B. Analyse, Hosting, Newsletter) und ggf. zum
-        Datenschutzbeauftragten ergänzt bzw. angepasst werden.
-      </InfoBox>
+
+
 
       <Section title="1. Verantwortlicher">
         <p>
