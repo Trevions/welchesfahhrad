@@ -25,10 +25,8 @@ export const Route = createFileRoute("/mnv")({
 function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -41,24 +39,10 @@ function AuthPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: { display_name: displayName || email.split("@")[0] },
-          },
-        });
-        if (error) throw error;
-        toast.success("Konto erstellt — willkommen!");
-        navigate({ to: search.redirect ?? "/admin", replace: true });
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("Angemeldet");
-        navigate({ to: search.redirect ?? "/admin", replace: true });
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("Angemeldet");
+      navigate({ to: search.redirect ?? "/admin", replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Anmeldung fehlgeschlagen");
     } finally {
@@ -114,15 +98,13 @@ function AuthPage() {
               </Link>
             </div>
             <div className="text-xs uppercase tracking-[0.35em] text-[#FF6A1A] mb-3">
-              {mode === "signin" ? "Anmelden" : "Konto erstellen"}
+              Anmelden
             </div>
             <h2 className="font-display text-4xl font-black leading-tight">
-              {mode === "signin" ? "Willkommen zurück." : "Erste Anmeldung."}
+              Willkommen zurück.
             </h2>
             <p className="mt-3 text-sm text-muted-foreground">
-              {mode === "signin"
-                ? "Melden Sie sich an, um Inhalte zu verwalten."
-                : "Der erste registrierte Benutzer erhält automatisch Admin-Rechte."}
+              Melden Sie sich an, um Inhalte zu verwalten.
             </p>
           </div>
 
@@ -150,12 +132,6 @@ function AuthPage() {
           </div>
 
           <form onSubmit={onSubmit} className="space-y-4">
-            {mode === "signup" && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Anzeigename</Label>
-                <Input id="name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Max Mustermann" />
-              </div>
-            )}
             <div className="space-y-2">
               <Label htmlFor="email">E-Mail</Label>
               <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="redaktion@radmap.de" />
@@ -166,20 +142,9 @@ function AuthPage() {
             </div>
 
             <Button type="submit" className="w-full h-11" disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : mode === "signin" ? "Anmelden" : "Konto erstellen"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Anmelden"}
             </Button>
           </form>
-
-          <p className="text-center text-sm text-muted-foreground">
-            {mode === "signin" ? "Noch kein Konto?" : "Bereits ein Konto?"}{" "}
-            <button
-              type="button"
-              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-              className="text-foreground font-medium hover:text-[#FF6A1A] transition"
-            >
-              {mode === "signin" ? "Registrieren" : "Anmelden"}
-            </button>
-          </p>
         </div>
       </div>
     </div>
