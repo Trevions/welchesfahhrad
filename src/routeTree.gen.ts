@@ -37,6 +37,7 @@ import { Route as AuthenticatedMnvUsersRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMnvNewsletterRouteImport } from './routes/_authenticated/mnv.newsletter'
 import { Route as AuthenticatedMnvMessagesRouteImport } from './routes/_authenticated/mnv.messages'
 import { Route as AuthenticatedMnvMediaRouteImport } from './routes/_authenticated/mnv.media'
+import { Route as AuthenticatedMnvAutoArticlesRouteImport } from './routes/_authenticated/mnv.auto-articles'
 import { Route as AuthenticatedMnvArticlesRouteImport } from './routes/_authenticated/mnv.articles'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicNewsletterUnsubscribeRouteImport } from './routes/api.public.newsletter.unsubscribe'
@@ -186,6 +187,12 @@ const AuthenticatedMnvMediaRoute = AuthenticatedMnvMediaRouteImport.update({
   path: '/media',
   getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
+const AuthenticatedMnvAutoArticlesRoute =
+  AuthenticatedMnvAutoArticlesRouteImport.update({
+    id: '/auto-articles',
+    path: '/auto-articles',
+    getParentRoute: () => AuthenticatedMnvRoute,
+  } as any)
 const AuthenticatedMnvArticlesRoute =
   AuthenticatedMnvArticlesRouteImport.update({
     id: '/articles',
@@ -253,6 +260,7 @@ export interface FileRoutesByFullPath {
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
+  '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
@@ -288,6 +296,7 @@ export interface FileRoutesByTo {
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
+  '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
@@ -326,6 +335,7 @@ export interface FileRoutesById {
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
+  '/_authenticated/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/_authenticated/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/_authenticated/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
@@ -364,6 +374,7 @@ export interface FileRouteTypes {
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/mnv/articles'
+    | '/mnv/auto-articles'
     | '/mnv/media'
     | '/mnv/messages'
     | '/mnv/newsletter'
@@ -399,6 +410,7 @@ export interface FileRouteTypes {
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/mnv/articles'
+    | '/mnv/auto-articles'
     | '/mnv/media'
     | '/mnv/messages'
     | '/mnv/newsletter'
@@ -436,6 +448,7 @@ export interface FileRouteTypes {
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/_authenticated/mnv/articles'
+    | '/_authenticated/mnv/auto-articles'
     | '/_authenticated/mnv/media'
     | '/_authenticated/mnv/messages'
     | '/_authenticated/mnv/newsletter'
@@ -676,6 +689,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMnvMediaRouteImport
       parentRoute: typeof AuthenticatedMnvRoute
     }
+    '/_authenticated/mnv/auto-articles': {
+      id: '/_authenticated/mnv/auto-articles'
+      path: '/auto-articles'
+      fullPath: '/mnv/auto-articles'
+      preLoaderRoute: typeof AuthenticatedMnvAutoArticlesRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
     '/_authenticated/mnv/articles': {
       id: '/_authenticated/mnv/articles'
       path: '/articles'
@@ -730,6 +750,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedMnvRouteChildren {
   AuthenticatedMnvArticlesRoute: typeof AuthenticatedMnvArticlesRoute
+  AuthenticatedMnvAutoArticlesRoute: typeof AuthenticatedMnvAutoArticlesRoute
   AuthenticatedMnvMediaRoute: typeof AuthenticatedMnvMediaRoute
   AuthenticatedMnvMessagesRoute: typeof AuthenticatedMnvMessagesRoute
   AuthenticatedMnvNewsletterRoute: typeof AuthenticatedMnvNewsletterRoute
@@ -741,6 +762,7 @@ interface AuthenticatedMnvRouteChildren {
 
 const AuthenticatedMnvRouteChildren: AuthenticatedMnvRouteChildren = {
   AuthenticatedMnvArticlesRoute: AuthenticatedMnvArticlesRoute,
+  AuthenticatedMnvAutoArticlesRoute: AuthenticatedMnvAutoArticlesRoute,
   AuthenticatedMnvMediaRoute: AuthenticatedMnvMediaRoute,
   AuthenticatedMnvMessagesRoute: AuthenticatedMnvMessagesRoute,
   AuthenticatedMnvNewsletterRoute: AuthenticatedMnvNewsletterRoute,
@@ -795,3 +817,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
