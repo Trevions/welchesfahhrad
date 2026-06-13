@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; key?: string }[] = [
   { to: "/mnv", label: "Übersicht", icon: LayoutDashboard, exact: true },
   { to: "/mnv/articles", label: "Artikel", icon: FileText },
+  { to: "/mnv/auto-articles", label: "Auto-Artikel", icon: Sparkles },
   { to: "/mnv/messages", label: "Nachrichten", icon: Inbox, key: "messages" },
   { to: "/mnv/newsletter", label: "Newsletter", icon: Mail },
   { to: "/mnv/media", label: "Medien", icon: ImageIcon },
