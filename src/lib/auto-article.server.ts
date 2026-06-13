@@ -615,6 +615,7 @@ export async function runAutoGeneratePipeline(
             source_domain: source.domain,
             category,
             status: "processed",
+            scraped_text: scraped.text,
           });
 
           articlesCreated++;
