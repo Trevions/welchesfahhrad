@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { useCookieConsent } from "@/hooks/use-cookie-consent";
 
 export function Footer() {
+  const { openBanner } = useCookieConsent();
   return (
     <footer className="mt-24 border-t border-border bg-card pb-28 md:pb-12 pt-16">
       <div className="mx-auto max-w-[1400px] px-6 md:px-8">
