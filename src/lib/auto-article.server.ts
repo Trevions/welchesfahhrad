@@ -197,7 +197,7 @@ Quell-Domain (NUR zur Info, NICHT erwähnen): ${source.domain}`;
               image_prompt: { type: "string" },
               image_alt: { type: "string" },
             },
-            required: ["skip"],
+            required: ["skip", "slug", "title", "excerpt", "body_markdown", "category", "seo_title", "seo_description", "seo_keywords", "read_time", "image_prompt", "image_alt"],
           },
         },
       },
