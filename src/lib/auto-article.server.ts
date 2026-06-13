@@ -157,6 +157,8 @@ HARTE REGELN:
 9. read_time: "X min" basierend auf ~200 Wörtern/min.
 10. slug: kurz, deutsch (Umlaute aufgelöst), keine Sonderzeichen.
 
+WICHTIG: Wenn skip=false, MÜSSEN alle Felder (slug, title, excerpt, body_markdown, category, seo_title, seo_description, seo_keywords, read_time, image_prompt, image_alt) vollständig ausgefüllt sein. Wenn skip=true, fülle die anderen Felder mit Leerstring "".
+
 Liefere AUSSCHLIESSLICH gültiges JSON.`;
 
   const userInput = `Kategorie: ${category}
@@ -171,7 +173,7 @@ Quell-Domain (NUR zur Info, NICHT erwähnen): ${source.domain}`;
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-pro",
+      model: "google/gemini-2.5-flash",
       messages: [
         { role: "system", content: system },
         { role: "user", content: userInput },
@@ -197,7 +199,7 @@ Quell-Domain (NUR zur Info, NICHT erwähnen): ${source.domain}`;
               image_prompt: { type: "string" },
               image_alt: { type: "string" },
             },
-            required: ["skip"],
+            required: ["skip", "slug", "title", "excerpt", "body_markdown", "category", "seo_title", "seo_description", "seo_keywords", "read_time", "image_prompt", "image_alt"],
           },
         },
       },
