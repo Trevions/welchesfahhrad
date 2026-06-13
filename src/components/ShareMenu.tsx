@@ -69,7 +69,7 @@ export function ShareMenu({ url, title, text, image, className }: Props) {
     }
   };
 
-  const targets: { label: string; href: string; brand: string; icon: JSX.Element }[] = [
+  const targets: { label: string; href: string; brand: string; icon: ReactNode }[] = [
     {
       label: "Facebook",
       brand: "#1877F2",
