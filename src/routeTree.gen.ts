@@ -18,13 +18,13 @@ import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
-import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
-import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authenticated/admin.media'
-import { Route as AuthenticatedAdminArticlesRouteImport } from './routes/_authenticated/admin.articles'
-import { Route as AuthenticatedAdminArticlesNewRouteImport } from './routes/_authenticated/admin.articles_.new'
-import { Route as AuthenticatedAdminArticlesIdRouteImport } from './routes/_authenticated/admin.articles_.$id'
+import { Route as AuthenticatedMnvRouteImport } from './routes/_authenticated/mnv'
+import { Route as AuthenticatedMnvIndexRouteImport } from './routes/_authenticated/mnv.index'
+import { Route as AuthenticatedMnvUsersRouteImport } from './routes/_authenticated/mnv.users'
+import { Route as AuthenticatedMnvMediaRouteImport } from './routes/_authenticated/mnv.media'
+import { Route as AuthenticatedMnvArticlesRouteImport } from './routes/_authenticated/mnv.articles'
+import { Route as AuthenticatedMnvArticlesNewRouteImport } from './routes/_authenticated/mnv.articles_.new'
+import { Route as AuthenticatedMnvArticlesIdRouteImport } from './routes/_authenticated/mnv.articles_.$id'
 
 const TestsRoute = TestsRouteImport.update({
   id: '/tests',
@@ -70,77 +70,75 @@ const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
   path: '/artikel/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthenticatedMnvRoute = AuthenticatedMnvRouteImport.update({
+  id: '/mnv',
+  path: '/mnv',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+const AuthenticatedMnvIndexRoute = AuthenticatedMnvIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthenticatedAdminRoute,
+  getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
-const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+const AuthenticatedMnvUsersRoute = AuthenticatedMnvUsersRouteImport.update({
   id: '/users',
   path: '/users',
-  getParentRoute: () => AuthenticatedAdminRoute,
+  getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
-const AuthenticatedAdminMediaRoute = AuthenticatedAdminMediaRouteImport.update({
+const AuthenticatedMnvMediaRoute = AuthenticatedMnvMediaRouteImport.update({
   id: '/media',
   path: '/media',
-  getParentRoute: () => AuthenticatedAdminRoute,
+  getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
-const AuthenticatedAdminArticlesRoute =
-  AuthenticatedAdminArticlesRouteImport.update({
+const AuthenticatedMnvArticlesRoute =
+  AuthenticatedMnvArticlesRouteImport.update({
     id: '/articles',
     path: '/articles',
-    getParentRoute: () => AuthenticatedAdminRoute,
+    getParentRoute: () => AuthenticatedMnvRoute,
   } as any)
-const AuthenticatedAdminArticlesNewRoute =
-  AuthenticatedAdminArticlesNewRouteImport.update({
+const AuthenticatedMnvArticlesNewRoute =
+  AuthenticatedMnvArticlesNewRouteImport.update({
     id: '/articles_/new',
     path: '/articles/new',
-    getParentRoute: () => AuthenticatedAdminRoute,
+    getParentRoute: () => AuthenticatedMnvRoute,
   } as any)
-const AuthenticatedAdminArticlesIdRoute =
-  AuthenticatedAdminArticlesIdRouteImport.update({
+const AuthenticatedMnvArticlesIdRoute =
+  AuthenticatedMnvArticlesIdRouteImport.update({
     id: '/articles_/$id',
     path: '/articles/$id',
-    getParentRoute: () => AuthenticatedAdminRoute,
+    getParentRoute: () => AuthenticatedMnvRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/e-bikes': typeof EBikesRoute
-  '/mnv': typeof MnvRoute
+  '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
-  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
-  '/admin/articles': typeof AuthenticatedAdminArticlesRoute
-  '/admin/media': typeof AuthenticatedAdminMediaRoute
-  '/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/admin/': typeof AuthenticatedAdminIndexRoute
-  '/admin/articles/$id': typeof AuthenticatedAdminArticlesIdRoute
-  '/admin/articles/new': typeof AuthenticatedAdminArticlesNewRoute
+  '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
+  '/mnv/media': typeof AuthenticatedMnvMediaRoute
+  '/mnv/users': typeof AuthenticatedMnvUsersRoute
+  '/mnv/': typeof AuthenticatedMnvIndexRoute
+  '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
+  '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/e-bikes': typeof EBikesRoute
-  '/mnv': typeof MnvRoute
+  '/mnv': typeof AuthenticatedMnvIndexRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
-  '/admin/articles': typeof AuthenticatedAdminArticlesRoute
-  '/admin/media': typeof AuthenticatedAdminMediaRoute
-  '/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/admin': typeof AuthenticatedAdminIndexRoute
-  '/admin/articles/$id': typeof AuthenticatedAdminArticlesIdRoute
-  '/admin/articles/new': typeof AuthenticatedAdminArticlesNewRoute
+  '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
+  '/mnv/media': typeof AuthenticatedMnvMediaRoute
+  '/mnv/users': typeof AuthenticatedMnvUsersRoute
+  '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
+  '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,14 +150,14 @@ export interface FileRoutesById {
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
-  '/_authenticated/admin/articles': typeof AuthenticatedAdminArticlesRoute
-  '/_authenticated/admin/media': typeof AuthenticatedAdminMediaRoute
-  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
-  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
-  '/_authenticated/admin/articles_/$id': typeof AuthenticatedAdminArticlesIdRoute
-  '/_authenticated/admin/articles_/new': typeof AuthenticatedAdminArticlesNewRoute
+  '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
+  '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
+  '/_authenticated/mnv/users': typeof AuthenticatedMnvUsersRoute
+  '/_authenticated/mnv/': typeof AuthenticatedMnvIndexRoute
+  '/_authenticated/mnv/articles_/$id': typeof AuthenticatedMnvArticlesIdRoute
+  '/_authenticated/mnv/articles_/new': typeof AuthenticatedMnvArticlesNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,14 +169,13 @@ export interface FileRouteTypes {
     | '/ratgeber'
     | '/sitemap.xml'
     | '/tests'
-    | '/admin'
     | '/artikel/$slug'
-    | '/admin/articles'
-    | '/admin/media'
-    | '/admin/users'
-    | '/admin/'
-    | '/admin/articles/$id'
-    | '/admin/articles/new'
+    | '/mnv/articles'
+    | '/mnv/media'
+    | '/mnv/users'
+    | '/mnv/'
+    | '/mnv/articles/$id'
+    | '/mnv/articles/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -189,12 +186,11 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/tests'
     | '/artikel/$slug'
-    | '/admin/articles'
-    | '/admin/media'
-    | '/admin/users'
-    | '/admin'
-    | '/admin/articles/$id'
-    | '/admin/articles/new'
+    | '/mnv/articles'
+    | '/mnv/media'
+    | '/mnv/users'
+    | '/mnv/articles/$id'
+    | '/mnv/articles/new'
   id:
     | '__root__'
     | '/'
@@ -205,14 +201,14 @@ export interface FileRouteTypes {
     | '/ratgeber'
     | '/sitemap.xml'
     | '/tests'
-    | '/_authenticated/admin'
+    | '/_authenticated/mnv'
     | '/artikel/$slug'
-    | '/_authenticated/admin/articles'
-    | '/_authenticated/admin/media'
-    | '/_authenticated/admin/users'
-    | '/_authenticated/admin/'
-    | '/_authenticated/admin/articles_/$id'
-    | '/_authenticated/admin/articles_/new'
+    | '/_authenticated/mnv/articles'
+    | '/_authenticated/mnv/media'
+    | '/_authenticated/mnv/users'
+    | '/_authenticated/mnv/'
+    | '/_authenticated/mnv/articles_/$id'
+    | '/_authenticated/mnv/articles_/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -292,85 +288,85 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArtikelSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+    '/_authenticated/mnv': {
+      id: '/_authenticated/mnv'
+      path: '/mnv'
+      fullPath: '/mnv'
+      preLoaderRoute: typeof AuthenticatedMnvRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/': {
-      id: '/_authenticated/admin/'
+    '/_authenticated/mnv/': {
+      id: '/_authenticated/mnv/'
       path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
+      fullPath: '/mnv/'
+      preLoaderRoute: typeof AuthenticatedMnvIndexRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
     }
-    '/_authenticated/admin/users': {
-      id: '/_authenticated/admin/users'
+    '/_authenticated/mnv/users': {
+      id: '/_authenticated/mnv/users'
       path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
+      fullPath: '/mnv/users'
+      preLoaderRoute: typeof AuthenticatedMnvUsersRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
     }
-    '/_authenticated/admin/media': {
-      id: '/_authenticated/admin/media'
+    '/_authenticated/mnv/media': {
+      id: '/_authenticated/mnv/media'
       path: '/media'
-      fullPath: '/admin/media'
-      preLoaderRoute: typeof AuthenticatedAdminMediaRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
+      fullPath: '/mnv/media'
+      preLoaderRoute: typeof AuthenticatedMnvMediaRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
     }
-    '/_authenticated/admin/articles': {
-      id: '/_authenticated/admin/articles'
+    '/_authenticated/mnv/articles': {
+      id: '/_authenticated/mnv/articles'
       path: '/articles'
-      fullPath: '/admin/articles'
-      preLoaderRoute: typeof AuthenticatedAdminArticlesRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
+      fullPath: '/mnv/articles'
+      preLoaderRoute: typeof AuthenticatedMnvArticlesRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
     }
-    '/_authenticated/admin/articles_/new': {
-      id: '/_authenticated/admin/articles_/new'
+    '/_authenticated/mnv/articles_/new': {
+      id: '/_authenticated/mnv/articles_/new'
       path: '/articles/new'
-      fullPath: '/admin/articles/new'
-      preLoaderRoute: typeof AuthenticatedAdminArticlesNewRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
+      fullPath: '/mnv/articles/new'
+      preLoaderRoute: typeof AuthenticatedMnvArticlesNewRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
     }
-    '/_authenticated/admin/articles_/$id': {
-      id: '/_authenticated/admin/articles_/$id'
+    '/_authenticated/mnv/articles_/$id': {
+      id: '/_authenticated/mnv/articles_/$id'
       path: '/articles/$id'
-      fullPath: '/admin/articles/$id'
-      preLoaderRoute: typeof AuthenticatedAdminArticlesIdRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
+      fullPath: '/mnv/articles/$id'
+      preLoaderRoute: typeof AuthenticatedMnvArticlesIdRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
     }
   }
 }
 
-interface AuthenticatedAdminRouteChildren {
-  AuthenticatedAdminArticlesRoute: typeof AuthenticatedAdminArticlesRoute
-  AuthenticatedAdminMediaRoute: typeof AuthenticatedAdminMediaRoute
-  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
-  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
-  AuthenticatedAdminArticlesIdRoute: typeof AuthenticatedAdminArticlesIdRoute
-  AuthenticatedAdminArticlesNewRoute: typeof AuthenticatedAdminArticlesNewRoute
+interface AuthenticatedMnvRouteChildren {
+  AuthenticatedMnvArticlesRoute: typeof AuthenticatedMnvArticlesRoute
+  AuthenticatedMnvMediaRoute: typeof AuthenticatedMnvMediaRoute
+  AuthenticatedMnvUsersRoute: typeof AuthenticatedMnvUsersRoute
+  AuthenticatedMnvIndexRoute: typeof AuthenticatedMnvIndexRoute
+  AuthenticatedMnvArticlesIdRoute: typeof AuthenticatedMnvArticlesIdRoute
+  AuthenticatedMnvArticlesNewRoute: typeof AuthenticatedMnvArticlesNewRoute
 }
 
-const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
-  AuthenticatedAdminArticlesRoute: AuthenticatedAdminArticlesRoute,
-  AuthenticatedAdminMediaRoute: AuthenticatedAdminMediaRoute,
-  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
-  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
-  AuthenticatedAdminArticlesIdRoute: AuthenticatedAdminArticlesIdRoute,
-  AuthenticatedAdminArticlesNewRoute: AuthenticatedAdminArticlesNewRoute,
+const AuthenticatedMnvRouteChildren: AuthenticatedMnvRouteChildren = {
+  AuthenticatedMnvArticlesRoute: AuthenticatedMnvArticlesRoute,
+  AuthenticatedMnvMediaRoute: AuthenticatedMnvMediaRoute,
+  AuthenticatedMnvUsersRoute: AuthenticatedMnvUsersRoute,
+  AuthenticatedMnvIndexRoute: AuthenticatedMnvIndexRoute,
+  AuthenticatedMnvArticlesIdRoute: AuthenticatedMnvArticlesIdRoute,
+  AuthenticatedMnvArticlesNewRoute: AuthenticatedMnvArticlesNewRoute,
 }
 
-const AuthenticatedAdminRouteWithChildren =
-  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+const AuthenticatedMnvRouteWithChildren =
+  AuthenticatedMnvRoute._addFileChildren(AuthenticatedMnvRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedMnvRoute: typeof AuthenticatedMnvRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedMnvRoute: AuthenticatedMnvRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -390,13 +386,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

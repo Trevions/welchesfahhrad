@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FileText, Eye, FilePlus, Archive, Plus, ArrowUpRight } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin/")({
+export const Route = createFileRoute("/_authenticated/mnv/")({
   component: AdminDashboard,
 });
 
@@ -31,7 +31,7 @@ function AdminDashboard() {
       title="Übersicht"
       breadcrumbs={[{ label: "Admin" }]}
       actions={
-        <Link to="/admin/articles/new">
+        <Link to="/mnv/articles/new">
           <Button size="sm" className="bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 font-medium">
             <Plus className="h-4 w-4 mr-1.5" /> Neuer Artikel
           </Button>
@@ -56,7 +56,7 @@ function AdminDashboard() {
         <div className="lg:col-span-2 bg-zinc-900/40 border border-zinc-800 rounded-lg">
           <div className="flex items-center justify-between p-5 border-b border-zinc-800">
             <h2 className="text-sm font-semibold text-zinc-200">Letzte Aktivität</h2>
-            <Link to="/admin/articles" className="text-xs text-zinc-400 hover:text-zinc-100 flex items-center gap-1">
+            <Link to="/mnv/articles" className="text-xs text-zinc-400 hover:text-zinc-100 flex items-center gap-1">
               Alle anzeigen <ArrowUpRight className="h-3 w-3" />
             </Link>
           </div>
@@ -71,13 +71,13 @@ function AdminDashboard() {
               : (data?.recent ?? []).length === 0
               ? (
                 <div className="p-10 text-center text-sm text-zinc-500">
-                  Noch keine Artikel. <Link to="/admin/articles/new" className="text-[#FF6A1A] hover:underline">Jetzt erstellen →</Link>
+                  Noch keine Artikel. <Link to="/mnv/articles/new" className="text-[#FF6A1A] hover:underline">Jetzt erstellen →</Link>
                 </div>
               )
               : (data?.recent ?? []).map((r: any) => (
                   <Link
                     key={r.id}
-                    to="/admin/articles/$id"
+                    to="/mnv/articles/$id"
                     params={{ id: r.id }}
                     className="flex items-center gap-4 p-4 hover:bg-zinc-900/60 transition group"
                   >

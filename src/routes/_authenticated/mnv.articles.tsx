@@ -70,9 +70,9 @@ function ArticlesList() {
   return (
     <AdminShell
       title="Artikel"
-      breadcrumbs={[{ label: "Admin", to: "/admin" }, { label: "Artikel" }]}
+      breadcrumbs={[{ label: "Admin", to: "/mnv" }, { label: "Artikel" }]}
       actions={
-        <Link to="/admin/articles/new">
+        <Link to="/mnv/articles/new">
           <Button size="sm" className="bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 font-medium">
             <Plus className="h-4 w-4 mr-1.5" /> Neuer Artikel
           </Button>
@@ -135,7 +135,7 @@ function ArticlesList() {
                   <tr>
                     <td colSpan={7} className="px-4 py-16 text-center text-sm text-zinc-500">
                       Keine Artikel gefunden.{" "}
-                      <Link to="/admin/articles/new" className="text-[#FF6A1A] hover:underline">
+                      <Link to="/mnv/articles/new" className="text-[#FF6A1A] hover:underline">
                         Ersten Artikel erstellen →
                       </Link>
                     </td>
@@ -145,7 +145,7 @@ function ArticlesList() {
                   <tr
                     key={a.id}
                     className="border-b border-zinc-900 hover:bg-zinc-900/40 transition group cursor-pointer"
-                    onClick={() => navigate({ to: "/admin/articles/$id", params: { id: a.id } })}
+                    onClick={() => navigate({ to: "/mnv/articles/$id", params: { id: a.id } })}
                   >
                     <td className="px-4 py-3">
                       <div className="h-10 w-14 bg-zinc-900 rounded overflow-hidden">
@@ -190,7 +190,7 @@ function ArticlesList() {
                           </a>
                         )}
                         <Link
-                          to="/admin/articles/$id"
+                          to="/mnv/articles/$id"
                           params={{ id: a.id }}
                           className="h-8 w-8 grid place-items-center rounded hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100"
                         >
