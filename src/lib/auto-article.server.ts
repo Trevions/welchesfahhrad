@@ -540,6 +540,38 @@ export async function runAutoGeneratePipeline(
   const categories: Category[] = input.category ? [input.category] : ALL_CATEGORIES;
   const trigger = input.trigger ?? "manual";
 
+  // Respect the admin kill-switch for cron runs. Manual runs override.
+  if (trigger === "cron") {
+    const { data: settings } = await supabaseAdmin
+      .from("app_settings")
+      .select("auto_generate_enabled")
+      .eq("id", 1)
+      .maybeSingle();
+    if (settings && settings.auto_generate_enabled === false) {
+      const { data: runRow } = await supabaseAdmin
+        .from("article_generation_runs")
+        .insert({
+          status: "failed",
+          trigger,
+          sources_found: 0,
+          articles_created: 0,
+          errors_count: 0,
+          error_summary: "Auto-Generierung im Admin deaktiviert",
+          finished_at: new Date().toISOString(),
+        })
+        .select("id")
+        .single();
+      return {
+        ok: true,
+        runId: (runRow?.id as string) ?? "",
+        status: "failed",
+        sourcesFound: 0,
+        articlesCreated: 0,
+        errors: ["auto-generation disabled by admin"],
+      };
+    }
+  }
+
   const { data: runRow, error: runErr } = await supabaseAdmin
     .from("article_generation_runs")
     .insert({ status: "running", trigger })
