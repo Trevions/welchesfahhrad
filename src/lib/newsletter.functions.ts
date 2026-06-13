@@ -78,7 +78,7 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string)
   </div>
 </body></html>`;
 
-  const text = `Newsletter-Anmeldung bestätigen\n\nVielen Dank für Ihr Interesse am Radmap-Newsletter.\n\nBitte bestätigen Sie Ihre E-Mail-Adresse:\n${confirmUrl}\n\nWenn Sie diese Anmeldung nicht ausgelöst haben, ignorieren Sie diese E-Mail.\n\nDigiMarket Bulgaria, 6400 Dimitrovgrad, support@radmap.de`;
+  const text = `Newsletter-Anmeldung bestätigen\n\nVielen Dank für Ihr Interesse am Radmap-Newsletter.\n\nBitte bestätigen Sie Ihre E-Mail-Adresse:\n${confirmUrl}\n\nWenn Sie diese Anmeldung nicht ausgelöst haben, ignorieren Sie diese E-Mail.\n\nDigiMarket · support@radmap.de`;
 
   const resp = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
     method: "POST",
