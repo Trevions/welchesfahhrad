@@ -25,7 +25,118 @@ export type RewrittenArticle = {
   read_time: string;
   image_prompt: string;
   image_alt: string;
+  key_facts: string[];
 };
+
+// ---------- Firecrawl: scrape full source article ----------
+export type ScrapedSource = { text: string; wordCount: number };
+
+export async function fetchSourceArticle(url: string): Promise<ScrapedSource> {
+  const key = process.env.FIRECRAWL_API_KEY;
+  if (!key) throw new Error("FIRECRAWL_API_KEY missing");
+
+  const resp = await fetch("https://api.firecrawl.dev/v2/scrape", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      url,
+      formats: ["markdown"],
+      onlyMainContent: true,
+      timeout: 30000,
+    }),
+  });
+
+  if (!resp.ok) {
+    const t = await resp.text();
+    throw new Error(`Firecrawl ${resp.status}: ${t.slice(0, 200)}`);
+  }
+  const json = (await resp.json()) as {
+    data?: { markdown?: string };
+    markdown?: string;
+  };
+  const md = (json.data?.markdown ?? json.markdown ?? "").trim();
+  const wordCount = md ? md.split(/\s+/).length : 0;
+  return { text: md, wordCount };
+}
+
+// ---------- Anti-hallucination validation ----------
+const ENTITY_STOPWORDS = new Set([
+  "Der","Die","Das","Ein","Eine","Einer","Eines","Einem","Den","Dem","Des",
+  "Und","Oder","Aber","Nicht","Auch","Noch","Schon","Sehr","Mehr","Hier","Dort",
+  "Wie","Was","Wer","Wo","Wann","Warum","Bei","Mit","Von","Aus","Auf","In","Im",
+  "Zu","Zum","Zur","Für","Gegen","Über","Unter","Nach","Vor","Seit","Während",
+  "Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag",
+  "Januar","Februar","März","April","Mai","Juni","Juli","August","September",
+  "Oktober","November","Dezember","Heute","Gestern","Morgen","Jahr","Jahre","Tag","Tage",
+  "Radmap","Nachrichten","Ratgeber","Tests","Foto","Fotos","Bild","Quelle","Redaktion",
+]);
+
+function normalizeForMatch(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractProperNouns(text: string): string[] {
+  const clean = text
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#*_>`\[\]()]/g, " ");
+  const matches = clean.match(
+    /\b[A-ZÄÖÜ][A-Za-zÄÖÜäöüß0-9-]+(?:\s+(?:de|van|von|der|den|le|la|du)\s+[A-ZÄÖÜ][A-Za-zÄÖÜäöüß0-9-]+|\s+[A-ZÄÖÜ][A-Za-zÄÖÜäöüß0-9-]+){0,3}\b/g,
+  ) ?? [];
+  const out = new Set<string>();
+  for (const m of matches) {
+    const first = m.split(/\s+/)[0];
+    if (ENTITY_STOPWORDS.has(first)) continue;
+    if (m.length < 3) continue;
+    out.add(m.trim());
+  }
+  return [...out];
+}
+
+export type ValidationResult = {
+  ok: boolean;
+  missingEntities: string[];
+  missingFacts: string[];
+};
+
+export function validateAgainstSource(
+  rewritten: Pick<RewrittenArticle, "title" | "body_markdown" | "key_facts">,
+  sourceText: string,
+): ValidationResult {
+  const haystack = normalizeForMatch(sourceText);
+  const generated = `${rewritten.title}\n\n${rewritten.body_markdown}`;
+  const entities = extractProperNouns(generated);
+
+  const missingEntities: string[] = [];
+  for (const e of entities) {
+    if (!haystack.includes(normalizeForMatch(e))) missingEntities.push(e);
+  }
+
+  const missingFacts: string[] = [];
+  const factStop = new Set(["dass","auch","sich","sind","wird","wurde","haben","einen","einem","einer","oder","aber","nicht","sehr","mehr"]);
+  for (const fact of rewritten.key_facts ?? []) {
+    const first = (fact || "").split(/[.!?]/)[0].trim();
+    if (first.length < 8) continue;
+    const tokens = normalizeForMatch(first)
+      .split(" ")
+      .filter((t) => t.length >= 4 && !factStop.has(t));
+    if (tokens.length < 4) continue;
+    const hits = tokens.filter((t) => haystack.includes(t)).length;
+    if (hits / tokens.length < 0.6) missingFacts.push(fact.slice(0, 120));
+  }
+
+  const ok = missingEntities.length <= 2 && missingFacts.length === 0;
+  return { ok, missingEntities, missingFacts };
+}
 
 // ---------- Slug helpers ----------
 const UMLAUT_MAP: Record<string, string> = {
