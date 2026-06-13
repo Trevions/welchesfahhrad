@@ -1,142 +1,146 @@
 ## Ziel
-Jeden Sonntag um 12:00 Uhr (Europe/Berlin) wird automatisch ein professioneller Newsletter mit den Top-Artikeln der Woche an **ausschließlich bestätigte** Abonnenten verschickt. Bei Fehlern wird bis zu 3× erneut versucht. Vollständige Nachvollziehbarkeit im Admin-Panel.
+
+Alle **3 Stunden** läuft ein Cron, der über **Perplexity** echte deutsche Fahrrad-News, neue Gesetze, E-Bike-Releases & Ratgeber-Anlässe findet, jede Story durch **Lovable AI (Gemini 2.5 Pro)** komplett neu, SEO-optimiert und unverwechselbar umschreiben lässt, ein **KI-Bild** generiert (Nano-Banana) mit perfektem Alt-Text, und den Artikel **sofort live** veröffentlicht.
 
 ---
 
 ## Architektur
 
 ```text
-pg_cron (jeden Sonntag 12:00 Berlin)
-    │
-    ▼
-/api/public/newsletter/dispatch  (öffentlicher Endpoint, mit Shared-Secret)
-    │
-    ├─ Ausgabe erstellen (newsletter_issues)
-    │   - Top 5–7 Artikel der letzten 7 Tage
-    │   - HTML einmalig rendern und speichern
-    │
-    ├─ Empfänger laden: status = 'confirmed' (strenger Filter)
-    │
-    └─ Pro Empfänger: in pgmq-Queue 'transactional_emails' einreihen
-            │
-            ▼
-        Bestehende Queue-Verarbeitung sendet via Resend
-        (Retry bis 3×, danach DLQ; alles in email_send_log)
+pg_cron (alle 3h)
+   │
+   ▼
+POST /api/public/articles/auto-generate  (Shared-Secret)
+   │
+   ├─ 1. Perplexity sucht 4 Kategorien parallel
+   │     (Nachrichten · Gesetze · E-Bikes · Ratgeber)
+   │     → JSON-Liste mit Quellen-URLs + Snippets
+   │
+   ├─ 2. Dedup: skip wenn source_url bereits in
+   │     article_sources Tabelle (oder Titel-Hash matcht)
+   │
+   ├─ 3. Pro Story: Claude/Gemini schreibt um
+   │     - komplett neu formuliert (Plagiats-frei)
+   │     - SEO-optimiert (Titel, Meta, Keywords, H2/H3)
+   │     - 600–900 Wörter, deutsche Tonalität Radmap
+   │     - Quellen werden NICHT namentlich genannt
+   │       (außer wenn das in der Story zentral ist
+   │        → dann Story komplett überspringen)
+   │
+   ├─ 4. Bild generieren (google/gemini-2.5-flash-image)
+   │     - Prompt aus Titel + Kategorie abgeleitet
+   │     - in article-images Bucket hochladen
+   │     - SEO-Alt-Text vom selben AI-Call (deutsch,
+   │       beschreibend, mit primärem Keyword)
+   │
+   └─ 5. Insert in articles als status='published',
+         setze published_at = now(),
+         logge source in article_sources
 ```
 
-**Wichtig:** Wir verwenden die bereits eingerichtete pgmq-Email-Infrastruktur (Queue + Cron-Verarbeitung alle 5 Sek.). Retry, DLQ, Suppression und Logging sind dadurch automatisch abgedeckt. Wir bauen keinen eigenen Send-Loop.
+Ein Lauf verarbeitet **max. 1 Artikel pro Kategorie** (also bis zu 4/Lauf, faktisch meist 1–2 nach Dedup). Bei 8 Läufen/Tag → realistisch ~4–8 neue Artikel täglich.
 
 ---
 
-## 1. Datenbank (Migration)
+## 1. Connector & Secrets
 
-**Neue Tabelle `newsletter_issues`** — eine Zeile pro Wochenausgabe:
-- `id` (uuid), `issue_date` (date, unique), `subject`, `preheader`
-- `html`, `text` (gerendert, gespeichert für Reproduzierbarkeit)
-- `article_ids` (uuid[]) — welche Artikel enthalten waren
-- `status`: `pending` | `sending` | `sent` | `failed`
-- `recipients_total`, `recipients_queued`
-- `created_at`, `sent_at`
-
-**Neue Tabelle `newsletter_deliveries`** — eine Zeile pro Empfänger pro Ausgabe (Idempotenz + Tracking):
-- `id`, `issue_id` (fk), `subscriber_id` (fk), `email`
-- `status`: `queued` | `sent` | `failed` | `skipped`
-- `message_id` (Korrelation mit `email_send_log`), `error`, `attempts`
-- Unique `(issue_id, subscriber_id)` → verhindert Doppelversand bei Cron-Wiederholungen
-
-GRANTs + RLS: nur `service_role` schreibt; `authenticated` mit Admin-Rolle liest.
-
-**Neues Secret `NEWSLETTER_DISPATCH_SECRET`** schützt den öffentlichen Dispatch-Endpoint (header-basiert).
+**Perplexity-Connector** verbinden (du bekommst nach Plan-Bestätigung den Connect-Button).
+Neues Secret: **`ARTICLE_AUTOGEN_SECRET`** schützt den öffentlichen Endpoint.
+Bereits vorhanden: `LOVABLE_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, Bucket `article-images`.
 
 ---
 
-## 2. Dispatch-Endpoint
+## 2. Datenbank
 
-`src/routes/api/public/newsletter.dispatch.ts` (POST):
-- Verifiziert `x-dispatch-secret` gegen `NEWSLETTER_DISPATCH_SECRET`.
-- Idempotent: erstellt `newsletter_issues`-Zeile für die aktuelle Woche, oder bricht ab, falls bereits `sent`.
-- Wählt Top-Artikel: `articles` der letzten 7 Tage, sortiert nach `published_at` desc, limit 6, status `published`.
-- Wenn weniger als 1 Artikel → Status `skipped`, keine Mail. (Kein leerer Newsletter.)
-- Rendert E-Mail (Radmap-Branding, dunkel, gleiches Design wie DOI-Mail).
-- Lädt **ausschließlich** `status = 'confirmed'` aus `newsletter_subscribers`.
-- Filtert zusätzlich gegen `suppressed_emails`.
-- Erstellt `newsletter_deliveries`-Zeilen mit `ON CONFLICT DO NOTHING` (Idempotenz).
-- Reiht jede neue Lieferung in pgmq `transactional_emails` ein (mit `unsubscribe_token` → `List-Unsubscribe`-Header + One-Click).
-- Aktualisiert `recipients_total` / `recipients_queued`, setzt Status auf `sent`.
+Neue Tabelle **`article_sources`** (Dedup-Index):
+- `id`, `article_id` (fk articles, nullable bei skipped), `source_url` (unique), `source_title`, `source_domain`, `content_hash`, `category`, `discovered_at`, `status` (`processed` | `skipped_brand_mention` | `skipped_duplicate` | `failed`), `skip_reason`.
+
+Neue Tabelle **`article_generation_runs`** (Audit/Monitoring im Admin):
+- `id`, `started_at`, `finished_at`, `status` (`running` | `success` | `partial` | `failed`), `sources_found`, `articles_created`, `errors_count`, `error_summary` (text), `trigger` (`cron` | `manual`).
+
+GRANTs + RLS (service_role schreibt; Admin-Rolle liest).
 
 ---
 
-## 3. Cron-Job
+## 3. Endpoint `/api/public/articles/auto-generate`
 
-```sql
-SELECT cron.schedule(
-  'newsletter-weekly',
-  '0 10 * * 0', -- Sonntag 10:00 UTC = 12:00 Berlin im Winter; 11:00 BST im Sommer
-  ...
-);
-```
+POST, verifiziert `x-autogen-secret`. Optional `?category=...&force=true` für manuelle Tests.
 
-**DST-Hinweis (Europe/Berlin):** pg_cron unterstützt nur UTC. Damit es ganzjährig **12:00 Berliner Zeit** bleibt, planen wir **zwei** Cron-Jobs:
-- `0 11 * * 0` — aktiv nur in Winterzeit (CET, UTC+1)
-- `0 10 * * 0` — aktiv nur in Sommerzeit (CEST, UTC+2)
-
-Der Dispatch-Endpoint prüft selbst die aktuelle Berliner Stunde (`Intl.DateTimeFormat('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', hourCycle: 'h23' })`) und bricht ab, falls ≠ 12. So fired immer nur der richtige Job; der andere ist No-Op. Saubere, wartungsfreie Lösung.
-
-Der Cron-Aufruf nutzt die stabile URL `https://project--32d31ab7-6004-41bb-92c7-f09f96939f53.lovable.app/api/public/newsletter/dispatch` und sendet `x-dispatch-secret`.
+Ablauf pro Lauf:
+1. Run-Zeile erstellen (`running`).
+2. Für jede Kategorie: Perplexity `sonar` mit `search_recency_filter: 'day'`, deutscher Sprachfilter, domain-exclude `radmap.de`, strukturierter JSON-Output (Liste von `{title, url, summary, published_date}`).
+3. Top-Kandidat pro Kategorie wählen, der **nicht** in `article_sources` ist.
+4. **Plagiats-Schutz-Prompt** an Gemini 2.5 Pro:
+   - Input: Originaltitel + Snippet + Quell-URL
+   - System: „Du bist Senior-Redakteur bei Radmap. Schreibe einen komplett eigenständigen Artikel. NIE wörtlich übernehmen. Falls die Story untrennbar von einer Markennennung der Original-Publikation abhängt (z. B. ‚Exklusiv-Interview von X mit Y') → antworte mit `{skip: true, reason}`. Sonst: liefere JSON mit `slug, title, excerpt, body_markdown, category, seo_title, seo_description, seo_keywords, read_time, image_prompt, image_alt`."
+   - Strukturierter Output via `response_format` (json_schema).
+5. Bei `skip:true` → in `article_sources` als `skipped_brand_mention` loggen, weiter.
+6. Bild generieren: `google/gemini-2.5-flash-image` mit `image_prompt`, 1024×1024, Base64 → in `article-images` Bucket als `auto/{slug}.png` uploaden → public URL.
+7. Artikel insert (`status='published'`, `published_at=now()`, `source='Radmap Redaktion'`).
+8. `article_sources` insert mit `article_id`.
+9. Errors aggregieren, Run abschließen (`success`/`partial`/`failed`).
 
 ---
 
-## 4. E-Mail-Template
+## 4. Cron
 
-Professionelles HTML im Radmap-Stil (dunkles Layout, Orange-Akzent, wie DOI-Mail):
-- Header: Radmap-Logo + Datum „Ausgabe vom DD.MM.YYYY"
-- Preheader-Text (für Inbox-Vorschau)
-- 1 Hero-Artikel (großes Bild + Titel + Auszug + „Weiterlesen")
-- Weitere Artikel als Liste (Bild + Titel + Auszug)
-- Footer: Impressum-Link, Datenschutz-Link, **Abmelde-Link** + RFC-8058 One-Click-Header
-- Text-Version (Multipart) für nicht-HTML-Clients
-
-Personalisiertes `List-Unsubscribe` pro Empfänger (eigener Token aus `newsletter_subscribers.unsubscribe_token`).
+pg_cron Job `articles-auto-generate-3h`, Schedule `0 */3 * * *`, ruft via `net.http_post` die stabile URL `https://project--32d31ab7-6004-41bb-92c7-f09f96939f53.lovable.app/api/public/articles/auto-generate` mit Header `x-autogen-secret`.
 
 ---
 
 ## 5. Admin-Panel-Erweiterung
 
-Neue Sektion auf `/mnv/newsletter`:
-- Tab/Karte „Ausgaben" zeigt die letzten Newsletter-Issues (Datum, Status, Empfänger gesamt/gesendet/fehlgeschlagen).
-- Pro Ausgabe: Link „HTML-Vorschau anzeigen" + „Lieferdetails" (Tabelle mit Empfänger-Status, fehlende werden mit Fehlergrund angezeigt).
-- Button „Jetzt manuell versenden" (Admin-only, ruft denselben Dispatch-Endpoint mit `force=true` auf — überspringt die Stunden-Prüfung). Nützlich für Tests und Notfall-Versand.
+Neue Sektion **`/mnv/auto-articles`**:
+- Tabelle der letzten 30 Runs (Datum, Status, gefunden/erstellt/Fehler).
+- Liste `article_sources` mit Filter (verarbeitet / übersprungen / fehlgeschlagen) + Skip-Grund.
+- Button **„Jetzt manuell auslösen"** (ruft Endpoint mit `force=true`).
+- Button **„Nur Kategorie X testen"** pro Kategorie.
 
 ---
 
-## 6. Sicherheits- & Compliance-Garantien
+## 6. SEO-Qualitäts-Garantien (im AI-Prompt verankert)
 
-- **Strenge Empfänger-Auswahl:** SQL-Filter `WHERE status = 'confirmed' AND email NOT IN (SELECT email FROM suppressed_emails)`. Doppelt geprüft im Code.
-- **Suppression-Liste:** Bounces/Complaints von Resend landen automatisch dort und werden bei jeder Ausgabe ausgeschlossen.
-- **Idempotenz:** Unique-Constraint `(issue_id, subscriber_id)` macht es unmöglich, denselben Empfänger zweimal für dieselbe Ausgabe zu queuen.
-- **Retry-Logik:** pgmq verarbeitet bis zu 5× automatisch (wir nutzen das, kappen aber sichtbar bei 3 echten Sende-Versuchen via `attempts`-Counter — danach `failed` in `newsletter_deliveries`).
-- **Audit:** Jeder Versand ist in `newsletter_issues`, `newsletter_deliveries` und `email_send_log` nachvollziehbar.
-
----
-
-## Zu erstellende/zu ändernde Dateien
-
-- **Migration**: `newsletter_issues`, `newsletter_deliveries`, GRANTs, RLS, pg_cron-Jobs.
-- **Secret**: `NEWSLETTER_DISPATCH_SECRET` (per `add_secret`).
-- `src/routes/api/public/newsletter.dispatch.ts` — Dispatch-Endpoint
-- `src/lib/newsletter-render.server.ts` — HTML/Text-Rendering der Ausgabe
-- `src/lib/newsletter.functions.ts` — neue Admin-Server-Functions: `listNewsletterIssues`, `getNewsletterIssue`, `triggerNewsletterDispatch`
-- `src/routes/_authenticated/mnv.newsletter.tsx` — Tab „Ausgaben" + Manuell-Versand-Button
+- Titel ≤ 60 Zeichen, primäres Keyword vorne.
+- Meta-Description 140–155 Zeichen, mit Call-to-Action.
+- Body in Markdown, H2/H3-Struktur, Listen wo sinnvoll.
+- `seo_keywords`: 5–8 deutsche Long-Tail-Keywords.
+- `image_alt`: 80–120 Zeichen, beschreibend, mit Keyword (nicht keyword-stuffing).
+- Slug aus Titel (deutsche Umlaute → ae/oe/ue, eindeutig, max. 80 Zeichen).
+- Read-Time aus Wortzahl berechnet.
 
 ---
 
-## Validierung
+## 7. Sicherheits- & Compliance-Garantien
 
-1. Migration läuft sauber durch, RLS aktiv.
-2. Manueller Dispatch (Admin-Button) erstellt eine Ausgabe, queued nur `confirmed` Adressen, E-Mail kommt im Posteingang an.
-3. Zweiter Aufruf desselben Tages erstellt keine doppelte Ausgabe und sendet nicht erneut (Idempotenz).
-4. Eine Test-Adresse auf `unsubscribed` wird übersprungen.
-5. Admin-Panel zeigt die Ausgabe mit korrekten Empfänger-Zahlen.
-6. Cron-Job in `cron.job` sichtbar; manueller `SELECT net.http_post(...)` triggert erfolgreich.
+- **Plagiats-Schutz**: AI bekommt nur **Titel + kurzes Snippet** (kein Volltext) → erzwingt eigenständige Formulierung. Zusätzliche Heuristik: wenn 3+ aufeinanderfolgende 5-Wort-Sequenzen mit dem Snippet matchen → verwerfen & neu generieren (max. 2 Retries).
+- **Markennennung-Skip**: harte Regel im System-Prompt + JSON-Schema-`skip`-Feld.
+- **Bilder rechtssicher**: ausschließlich KI-generierte Bilder (Nano-Banana) → keine Urheberrechtsprobleme.
+- **Rate-Limit & Kosten**: max. 4 Stories pro Lauf, Token-Budget pro Story gekappt, Bilder mit `quality: 'low'` (für News ausreichend, ~3× billiger).
+- **Idempotenz**: `source_url` UNIQUE; Cron-Doppelaufrufe können nichts duplizieren.
+- **Vollständiges Audit**: jeder Lauf in `article_generation_runs`, jede Quelle in `article_sources`.
 
-Nach Genehmigung implementiere ich alles in einem Rutsch und teste mit einem manuellen Dispatch.
+---
+
+## 8. Zu erstellende/zu ändernde Dateien
+
+- Migration: `article_sources`, `article_generation_runs`, GRANTs, RLS, pg_cron-Job.
+- Secret: `ARTICLE_AUTOGEN_SECRET`.
+- Connector: Perplexity verbinden (Button erscheint nach Bestätigung).
+- `src/routes/api.public.articles.auto-generate.ts` — Orchestrierungs-Endpoint.
+- `src/lib/auto-article.server.ts` — Perplexity-Suche, AI-Rewrite, Bild-Gen, Upload (server-only).
+- `src/lib/auto-article.functions.ts` — Admin-Server-Functions (`listGenerationRuns`, `listArticleSources`, `triggerAutoGenerate`).
+- `src/routes/_authenticated/mnv.auto-articles.tsx` — Admin-UI.
+- Sidebar-Link in `AdminShell` ergänzen.
+
+---
+
+## 9. Validierung nach Bau
+
+1. Manueller Trigger erzeugt 1 Artikel pro Kategorie (oder Skip mit Grund).
+2. Zweiter Trigger derselben Quelle → wird sauber übersprungen.
+3. Generierter Artikel: SEO-Title <60, Meta 140–155, Bild im Bucket, Alt-Text vorhanden, Body komplett neu (Stichprobe gegen Original).
+4. Story mit Markennennung-Trigger → `skipped_brand_mention` mit Grund.
+5. Cron-Job in `cron.job` sichtbar, Schedule `0 */3 * * *`.
+6. Admin-Panel zeigt Runs & Quellen mit korrekten Zählern.
+
+Nach deiner Bestätigung baue ich alles in einem Rutsch, verbinde den Perplexity-Connector und teste mit einem manuellen Trigger.
