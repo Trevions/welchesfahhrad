@@ -28,6 +28,7 @@ import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AuthenticatedMnvRouteImport } from './routes/_authenticated/mnv'
 import { Route as AuthenticatedMnvIndexRouteImport } from './routes/_authenticated/mnv.index'
 import { Route as AuthenticatedMnvUsersRouteImport } from './routes/_authenticated/mnv.users'
+import { Route as AuthenticatedMnvMessagesRouteImport } from './routes/_authenticated/mnv.messages'
 import { Route as AuthenticatedMnvMediaRouteImport } from './routes/_authenticated/mnv.media'
 import { Route as AuthenticatedMnvArticlesRouteImport } from './routes/_authenticated/mnv.articles'
 import { Route as AuthenticatedMnvArticlesNewRouteImport } from './routes/_authenticated/mnv.articles_.new'
@@ -127,6 +128,12 @@ const AuthenticatedMnvUsersRoute = AuthenticatedMnvUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
+const AuthenticatedMnvMessagesRoute =
+  AuthenticatedMnvMessagesRouteImport.update({
+    id: '/messages',
+    path: '/messages',
+    getParentRoute: () => AuthenticatedMnvRoute,
+  } as any)
 const AuthenticatedMnvMediaRoute = AuthenticatedMnvMediaRouteImport.update({
   id: '/media',
   path: '/media',
@@ -170,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
+  '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/users': typeof AuthenticatedMnvUsersRoute
   '/mnv/': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
@@ -193,6 +201,7 @@ export interface FileRoutesByTo {
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
+  '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/users': typeof AuthenticatedMnvUsersRoute
   '/mnv': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
@@ -219,6 +228,7 @@ export interface FileRoutesById {
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
+  '/_authenticated/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/_authenticated/mnv/users': typeof AuthenticatedMnvUsersRoute
   '/_authenticated/mnv/': typeof AuthenticatedMnvIndexRoute
   '/_authenticated/mnv/articles_/$id': typeof AuthenticatedMnvArticlesIdRoute
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
     | '/artikel/$slug'
     | '/mnv/articles'
     | '/mnv/media'
+    | '/mnv/messages'
     | '/mnv/users'
     | '/mnv/'
     | '/mnv/articles/$id'
@@ -268,6 +279,7 @@ export interface FileRouteTypes {
     | '/artikel/$slug'
     | '/mnv/articles'
     | '/mnv/media'
+    | '/mnv/messages'
     | '/mnv/users'
     | '/mnv'
     | '/mnv/articles/$id'
@@ -293,6 +305,7 @@ export interface FileRouteTypes {
     | '/artikel/$slug'
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/media'
+    | '/_authenticated/mnv/messages'
     | '/_authenticated/mnv/users'
     | '/_authenticated/mnv/'
     | '/_authenticated/mnv/articles_/$id'
@@ -453,6 +466,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMnvUsersRouteImport
       parentRoute: typeof AuthenticatedMnvRoute
     }
+    '/_authenticated/mnv/messages': {
+      id: '/_authenticated/mnv/messages'
+      path: '/messages'
+      fullPath: '/mnv/messages'
+      preLoaderRoute: typeof AuthenticatedMnvMessagesRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
     '/_authenticated/mnv/media': {
       id: '/_authenticated/mnv/media'
       path: '/media'
@@ -487,6 +507,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedMnvRouteChildren {
   AuthenticatedMnvArticlesRoute: typeof AuthenticatedMnvArticlesRoute
   AuthenticatedMnvMediaRoute: typeof AuthenticatedMnvMediaRoute
+  AuthenticatedMnvMessagesRoute: typeof AuthenticatedMnvMessagesRoute
   AuthenticatedMnvUsersRoute: typeof AuthenticatedMnvUsersRoute
   AuthenticatedMnvIndexRoute: typeof AuthenticatedMnvIndexRoute
   AuthenticatedMnvArticlesIdRoute: typeof AuthenticatedMnvArticlesIdRoute
@@ -496,6 +517,7 @@ interface AuthenticatedMnvRouteChildren {
 const AuthenticatedMnvRouteChildren: AuthenticatedMnvRouteChildren = {
   AuthenticatedMnvArticlesRoute: AuthenticatedMnvArticlesRoute,
   AuthenticatedMnvMediaRoute: AuthenticatedMnvMediaRoute,
+  AuthenticatedMnvMessagesRoute: AuthenticatedMnvMessagesRoute,
   AuthenticatedMnvUsersRoute: AuthenticatedMnvUsersRoute,
   AuthenticatedMnvIndexRoute: AuthenticatedMnvIndexRoute,
   AuthenticatedMnvArticlesIdRoute: AuthenticatedMnvArticlesIdRoute,
@@ -537,3 +559,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
