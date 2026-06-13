@@ -52,22 +52,10 @@ export const triggerAutoGenerate = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
-    const secret = process.env.ARTICLE_AUTOGEN_SECRET;
-    if (!secret) throw new Error("ARTICLE_AUTOGEN_SECRET nicht konfiguriert");
-
-    const resp = await fetch("https://radmap.de/api/public/articles/auto-generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-autogen-secret": secret,
-      },
-      body: JSON.stringify({
-        force: true,
-        trigger: "manual",
-        ...(data?.category ? { category: data.category } : {}),
-      }),
+    const { runAutoGeneratePipeline } = await import("@/lib/auto-article.server");
+    const result = await runAutoGeneratePipeline({
+      category: data?.category,
+      trigger: "manual",
     });
-    const text = await resp.text();
-    if (!resp.ok) throw new Error(`Auto-Generate fehlgeschlagen (${resp.status}): ${text.slice(0, 300)}`);
-    return { ok: true as const, raw: text.slice(0, 2000) };
+    return result;
   });
