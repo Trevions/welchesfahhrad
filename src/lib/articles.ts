@@ -1,9 +1,3 @@
-import news1 from "@/assets/news-1.jpg";
-import news2 from "@/assets/news-2.jpg";
-import news3 from "@/assets/news-3.jpg";
-import ebike from "@/assets/ebike.jpg";
-import ratgeber from "@/assets/ratgeber.jpg";
-import hero from "@/assets/hero-bike.jpg";
 
 export type Article = {
   slug: string;
