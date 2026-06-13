@@ -38,7 +38,7 @@ function getSiteUrl() {
   return "https://radmap.de";
 }
 
-async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string) {
+async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string, oneClickUnsubUrl?: string) {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const resendKey = process.env.RESEND_API_KEY;
   if (!lovableKey || !resendKey) {
