@@ -16,6 +16,7 @@ function NewsletterForm() {
   const hpRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [unsubOpen, setUnsubOpen] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,86 +53,105 @@ function NewsletterForm() {
     }
   }
 
+  const unsubLink = (
+    <button
+      type="button"
+      onClick={() => setUnsubOpen(true)}
+      className="text-[11px] text-muted-foreground hover:text-signal underline underline-offset-2 transition-colors bg-transparent border-none p-0 cursor-pointer"
+    >
+      Newsletter bereits abonniert? Hier abbestellen.
+    </button>
+  );
+
   if (status === "success") {
     return (
-      <div className="mt-4 surface-strong rounded-sm p-4 flex items-start gap-3">
-        <CheckCircle2 className="h-5 w-5 text-signal shrink-0 mt-0.5" />
-        <div>
-          <div className="text-sm font-semibold text-foreground">Fast geschafft!</div>
-          <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-            Wir haben Ihnen eine Bestätigungs-E-Mail gesendet. Bitte klicken Sie
-            auf den Link darin, um Ihre Anmeldung abzuschließen (Double-Opt-In).
-          </p>
+      <>
+        <div className="mt-4 surface-strong rounded-sm p-4 flex items-start gap-3">
+          <CheckCircle2 className="h-5 w-5 text-signal shrink-0 mt-0.5" />
+          <div>
+            <div className="text-sm font-semibold text-foreground">Fast geschafft!</div>
+            <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+              Wir haben Ihnen eine Bestätigungs-E-Mail gesendet. Bitte klicken Sie
+              auf den Link darin, um Ihre Anmeldung abzuschließen (Double-Opt-In).
+            </p>
+          </div>
         </div>
-      </div>
+        <div className="mt-3">{unsubLink}</div>
+        <UnsubscribeDialog open={unsubOpen} onOpenChange={setUnsubOpen} />
+      </>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-4 space-y-3" noValidate>
-      <div className="flex border border-border bg-background">
-        <input
-          type="email"
-          name="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="ihre@email.de"
-          aria-label="E-Mail Adresse"
-          className="flex-1 bg-transparent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
-        />
-        <button
-          type="submit"
-          disabled={!consent || !email || status === "loading"}
-          className="bg-foreground px-4 py-3 eyebrow-sm text-background hover:bg-signal hover:text-signal-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-        >
-          {status === "loading" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-          Abonnieren
-        </button>
-      </div>
-
-      {/* Honeypot — off-screen, ignored by autofill */}
-      <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", top: "-9999px", height: 0, width: 0, overflow: "hidden" }}>
-        <label>
-          Bitte dieses Feld leer lassen
+    <>
+      <form onSubmit={onSubmit} className="mt-4 space-y-3" noValidate>
+        <div className="flex border border-border bg-background">
           <input
-            ref={hpRef}
-            type="text"
-            name="hp_field"
-            id="hp_field"
-            tabIndex={-1}
-            autoComplete="new-password"
-            defaultValue=""
+            type="email"
+            name="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="ihre@email.de"
+            aria-label="E-Mail Adresse"
+            className="flex-1 bg-transparent px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
           />
+          <button
+            type="submit"
+            disabled={!consent || !email || status === "loading"}
+            className="bg-foreground px-4 py-3 eyebrow-sm text-background hover:bg-signal hover:text-signal-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {status === "loading" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+            Abonnieren
+          </button>
+        </div>
+
+        {/* Honeypot — off-screen, ignored by autofill */}
+        <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", top: "-9999px", height: 0, width: 0, overflow: "hidden" }}>
+          <label>
+            Bitte dieses Feld leer lassen
+            <input
+              ref={hpRef}
+              type="text"
+              name="hp_field"
+              id="hp_field"
+              tabIndex={-1}
+              autoComplete="new-password"
+              defaultValue=""
+            />
+          </label>
+        </div>
+
+        <label className="flex items-start gap-2 text-[11px] text-muted-foreground leading-snug cursor-pointer">
+          <input
+            type="checkbox"
+            required
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            className="mt-0.5 h-3.5 w-3.5 accent-signal shrink-0"
+          />
+          <span>
+            Ich willige ein, den Newsletter zu erhalten. Eine Abmeldung ist
+            jederzeit möglich. Hinweise:{" "}
+            <Link to="/datenschutz" className="text-signal hover:underline">
+              Datenschutz
+            </Link>
+            .
+          </span>
         </label>
-      </div>
 
+        {status === "error" && (
+          <p className="text-xs text-destructive">{errorMsg || "Bitte erneut versuchen."}</p>
+        )}
+      </form>
 
-      <label className="flex items-start gap-2 text-[11px] text-muted-foreground leading-snug cursor-pointer">
-        <input
-          type="checkbox"
-          required
-          checked={consent}
-          onChange={(e) => setConsent(e.target.checked)}
-          className="mt-0.5 h-3.5 w-3.5 accent-signal shrink-0"
-        />
-        <span>
-          Ich willige ein, den Newsletter zu erhalten. Eine Abmeldung ist
-          jederzeit möglich. Hinweise:{" "}
-          <Link to="/datenschutz" className="text-signal hover:underline">
-            Datenschutz
-          </Link>
-          .
-        </span>
-      </label>
-
-      {status === "error" && (
-        <p className="text-xs text-destructive">{errorMsg || "Bitte erneut versuchen."}</p>
-      )}
-    </form>
+      <div className="mt-3 pt-3 border-t border-border/50">{unsubLink}</div>
+      <UnsubscribeDialog open={unsubOpen} onOpenChange={setUnsubOpen} />
+    </>
   );
 }
+
 
 export function Footer() {
   const { openBanner } = useCookieConsent();
