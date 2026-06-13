@@ -14,6 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
+      article_generation_runs: {
+        Row: {
+          articles_created: number
+          error_summary: string | null
+          errors_count: number
+          finished_at: string | null
+          id: string
+          sources_found: number
+          started_at: string
+          status: string
+          trigger: string
+        }
+        Insert: {
+          articles_created?: number
+          error_summary?: string | null
+          errors_count?: number
+          finished_at?: string | null
+          id?: string
+          sources_found?: number
+          started_at?: string
+          status?: string
+          trigger?: string
+        }
+        Update: {
+          articles_created?: number
+          error_summary?: string | null
+          errors_count?: number
+          finished_at?: string | null
+          id?: string
+          sources_found?: number
+          started_at?: string
+          status?: string
+          trigger?: string
+        }
+        Relationships: []
+      }
+      article_sources: {
+        Row: {
+          article_id: string | null
+          category: string
+          content_hash: string | null
+          created_at: string
+          discovered_at: string
+          id: string
+          skip_reason: string | null
+          source_domain: string | null
+          source_title: string | null
+          source_url: string
+          status: string
+        }
+        Insert: {
+          article_id?: string | null
+          category: string
+          content_hash?: string | null
+          created_at?: string
+          discovered_at?: string
+          id?: string
+          skip_reason?: string | null
+          source_domain?: string | null
+          source_title?: string | null
+          source_url: string
+          status?: string
+        }
+        Update: {
+          article_id?: string | null
+          category?: string
+          content_hash?: string | null
+          created_at?: string
+          discovered_at?: string
+          id?: string
+          skip_reason?: string | null
+          source_domain?: string | null
+          source_title?: string | null
+          source_url?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_sources_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       articles: {
         Row: {
           author_id: string | null
