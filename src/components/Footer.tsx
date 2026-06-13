@@ -1,33 +1,52 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useCookieConsent } from "@/hooks/use-cookie-consent";
 import { subscribeNewsletter } from "@/lib/newsletter.functions";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 function NewsletterForm() {
   const subscribe = useServerFn(subscribeNewsletter);
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
-  const [website, setWebsite] = useState(""); // honeypot
+  const hpRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!consent || !email) return;
+    if (status === "loading") return;
+
+    const trimmed = email.trim();
+    if (!consent || !trimmed) return;
+
+    if (!EMAIL_RE.test(trimmed)) {
+      setStatus("error");
+      setErrorMsg("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
+      return;
+    }
+
     setStatus("loading");
     setErrorMsg("");
     try {
       await subscribe({
-        data: { email, consent: true, source: "footer", website },
+        data: {
+          email: trimmed,
+          consent: true,
+          source: "footer",
+          hp_field: hpRef.current?.value ?? "",
+        },
       });
       setStatus("success");
       setEmail("");
       setConsent(false);
+      if (hpRef.current) hpRef.current.value = "";
     } catch (err) {
+      console.error("[newsletter] subscribe failed", err);
       setStatus("error");
-      setErrorMsg(err instanceof Error ? err.message : "Bitte erneut versuchen.");
+      setErrorMsg("Etwas ist schiefgegangen. Bitte versuchen Sie es später erneut.");
     }
   }
 
@@ -51,6 +70,8 @@ function NewsletterForm() {
       <div className="flex border border-border bg-background">
         <input
           type="email"
+          name="email"
+          autoComplete="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -68,17 +89,22 @@ function NewsletterForm() {
         </button>
       </div>
 
-      {/* Honeypot — hidden from users */}
-      <input
-        type="text"
-        name="website"
-        tabIndex={-1}
-        autoComplete="off"
-        value={website}
-        onChange={(e) => setWebsite(e.target.value)}
-        className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden"
-        aria-hidden="true"
-      />
+      {/* Honeypot — off-screen, ignored by autofill */}
+      <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", top: "-9999px", height: 0, width: 0, overflow: "hidden" }}>
+        <label>
+          Bitte dieses Feld leer lassen
+          <input
+            ref={hpRef}
+            type="text"
+            name="hp_field"
+            id="hp_field"
+            tabIndex={-1}
+            autoComplete="new-password"
+            defaultValue=""
+          />
+        </label>
+      </div>
+
 
       <label className="flex items-start gap-2 text-[11px] text-muted-foreground leading-snug cursor-pointer">
         <input

@@ -10,8 +10,8 @@ const subscribeInput = z.object({
   email: z.string().trim().email().max(254),
   consent: z.literal(true),
   source: z.string().max(40).optional().default("footer"),
-  // honeypot
-  website: z.string().max(0).optional().default(""),
+  // honeypot — accept anything, validate length only to bound payload
+  hp_field: z.string().max(200).optional().default(""),
 });
 
 async function assertAdmin(context: { supabase: any; userId: string }) {
@@ -117,7 +117,7 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string,
 export const subscribeNewsletter = createServerFn({ method: "POST" })
   .inputValidator((d) => subscribeInput.parse(d))
   .handler(async ({ data }) => {
-    if (data.website && data.website.length > 0) {
+    if (data.hp_field && data.hp_field.length > 0) {
       // Honeypot — pretend success
       return { ok: true };
     }
