@@ -122,6 +122,57 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_subscribers: {
+        Row: {
+          confirm_token: string
+          confirmed_at: string | null
+          consent_text: string | null
+          created_at: string
+          email: string
+          id: string
+          ip_hash: string | null
+          source: string
+          status: string
+          subscribed_at: string
+          unsubscribe_token: string
+          unsubscribed_at: string | null
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          confirm_token?: string
+          confirmed_at?: string | null
+          consent_text?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          ip_hash?: string | null
+          source?: string
+          status?: string
+          subscribed_at?: string
+          unsubscribe_token?: string
+          unsubscribed_at?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          confirm_token?: string
+          confirmed_at?: string | null
+          consent_text?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          ip_hash?: string | null
+          source?: string
+          status?: string
+          subscribed_at?: string
+          unsubscribe_token?: string
+          unsubscribed_at?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
