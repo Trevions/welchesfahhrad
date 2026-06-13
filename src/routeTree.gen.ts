@@ -23,13 +23,18 @@ import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as BildnachweiseRouteImport } from './routes/bildnachweise'
+import { Route as BarrierefreiheitRouteImport } from './routes/barrierefreiheit'
 import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NewsletterBestaetigenRouteImport } from './routes/newsletter.bestaetigen'
+import { Route as NewsletterAbmeldenRouteImport } from './routes/newsletter.abmelden'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AuthenticatedMnvRouteImport } from './routes/_authenticated/mnv'
 import { Route as AuthenticatedMnvIndexRouteImport } from './routes/_authenticated/mnv.index'
 import { Route as AuthenticatedMnvUsersRouteImport } from './routes/_authenticated/mnv.users'
+import { Route as AuthenticatedMnvNewsletterRouteImport } from './routes/_authenticated/mnv.newsletter'
 import { Route as AuthenticatedMnvMessagesRouteImport } from './routes/_authenticated/mnv.messages'
 import { Route as AuthenticatedMnvMediaRouteImport } from './routes/_authenticated/mnv.media'
 import { Route as AuthenticatedMnvArticlesRouteImport } from './routes/_authenticated/mnv.articles'
@@ -106,6 +111,16 @@ const CookiesRoute = CookiesRouteImport.update({
   path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BildnachweiseRoute = BildnachweiseRouteImport.update({
+  id: '/bildnachweise',
+  path: '/bildnachweise',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BarrierefreiheitRoute = BarrierefreiheitRouteImport.update({
+  id: '/barrierefreiheit',
+  path: '/barrierefreiheit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgbRoute = AgbRouteImport.update({
   id: '/agb',
   path: '/agb',
@@ -118,6 +133,16 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsletterBestaetigenRoute = NewsletterBestaetigenRouteImport.update({
+  id: '/newsletter/bestaetigen',
+  path: '/newsletter/bestaetigen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsletterAbmeldenRoute = NewsletterAbmeldenRouteImport.update({
+  id: '/newsletter/abmelden',
+  path: '/newsletter/abmelden',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
@@ -140,6 +165,12 @@ const AuthenticatedMnvUsersRoute = AuthenticatedMnvUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
+const AuthenticatedMnvNewsletterRoute =
+  AuthenticatedMnvNewsletterRouteImport.update({
+    id: '/newsletter',
+    path: '/newsletter',
+    getParentRoute: () => AuthenticatedMnvRoute,
+  } as any)
 const AuthenticatedMnvMessagesRoute =
   AuthenticatedMnvMessagesRouteImport.update({
     id: '/messages',
@@ -173,6 +204,8 @@ const AuthenticatedMnvArticlesIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/barrierefreiheit': typeof BarrierefreiheitRoute
+  '/bildnachweise': typeof BildnachweiseRoute
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
@@ -189,9 +222,12 @@ export interface FileRoutesByFullPath {
   '/ueber-uns': typeof UeberUnsRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
+  '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
+  '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
   '/mnv/users': typeof AuthenticatedMnvUsersRoute
   '/mnv/': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
@@ -200,6 +236,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/barrierefreiheit': typeof BarrierefreiheitRoute
+  '/bildnachweise': typeof BildnachweiseRoute
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
@@ -215,9 +253,12 @@ export interface FileRoutesByTo {
   '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
+  '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
+  '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
   '/mnv/users': typeof AuthenticatedMnvUsersRoute
   '/mnv': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
@@ -228,6 +269,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/agb': typeof AgbRoute
+  '/barrierefreiheit': typeof BarrierefreiheitRoute
+  '/bildnachweise': typeof BildnachweiseRoute
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
@@ -244,9 +287,12 @@ export interface FileRoutesById {
   '/ueber-uns': typeof UeberUnsRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
+  '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/_authenticated/mnv/messages': typeof AuthenticatedMnvMessagesRoute
+  '/_authenticated/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
   '/_authenticated/mnv/users': typeof AuthenticatedMnvUsersRoute
   '/_authenticated/mnv/': typeof AuthenticatedMnvIndexRoute
   '/_authenticated/mnv/articles_/$id': typeof AuthenticatedMnvArticlesIdRoute
@@ -257,6 +303,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agb'
+    | '/barrierefreiheit'
+    | '/bildnachweise'
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
@@ -273,9 +321,12 @@ export interface FileRouteTypes {
     | '/ueber-uns'
     | '/mnv'
     | '/artikel/$slug'
+    | '/newsletter/abmelden'
+    | '/newsletter/bestaetigen'
     | '/mnv/articles'
     | '/mnv/media'
     | '/mnv/messages'
+    | '/mnv/newsletter'
     | '/mnv/users'
     | '/mnv/'
     | '/mnv/articles/$id'
@@ -284,6 +335,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/agb'
+    | '/barrierefreiheit'
+    | '/bildnachweise'
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
@@ -299,9 +352,12 @@ export interface FileRouteTypes {
     | '/tests'
     | '/ueber-uns'
     | '/artikel/$slug'
+    | '/newsletter/abmelden'
+    | '/newsletter/bestaetigen'
     | '/mnv/articles'
     | '/mnv/media'
     | '/mnv/messages'
+    | '/mnv/newsletter'
     | '/mnv/users'
     | '/mnv'
     | '/mnv/articles/$id'
@@ -311,6 +367,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/agb'
+    | '/barrierefreiheit'
+    | '/bildnachweise'
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
@@ -327,9 +385,12 @@ export interface FileRouteTypes {
     | '/ueber-uns'
     | '/_authenticated/mnv'
     | '/artikel/$slug'
+    | '/newsletter/abmelden'
+    | '/newsletter/bestaetigen'
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/media'
     | '/_authenticated/mnv/messages'
+    | '/_authenticated/mnv/newsletter'
     | '/_authenticated/mnv/users'
     | '/_authenticated/mnv/'
     | '/_authenticated/mnv/articles_/$id'
@@ -340,6 +401,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AgbRoute: typeof AgbRoute
+  BarrierefreiheitRoute: typeof BarrierefreiheitRoute
+  BildnachweiseRoute: typeof BildnachweiseRoute
   CookiesRoute: typeof CookiesRoute
   DatenschutzRoute: typeof DatenschutzRoute
   EBikesRoute: typeof EBikesRoute
@@ -355,6 +418,8 @@ export interface RootRouteChildren {
   TestsRoute: typeof TestsRoute
   UeberUnsRoute: typeof UeberUnsRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
+  NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
+  NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -457,6 +522,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bildnachweise': {
+      id: '/bildnachweise'
+      path: '/bildnachweise'
+      fullPath: '/bildnachweise'
+      preLoaderRoute: typeof BildnachweiseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/barrierefreiheit': {
+      id: '/barrierefreiheit'
+      path: '/barrierefreiheit'
+      fullPath: '/barrierefreiheit'
+      preLoaderRoute: typeof BarrierefreiheitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agb': {
       id: '/agb'
       path: '/agb'
@@ -476,6 +555,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/newsletter/bestaetigen': {
+      id: '/newsletter/bestaetigen'
+      path: '/newsletter/bestaetigen'
+      fullPath: '/newsletter/bestaetigen'
+      preLoaderRoute: typeof NewsletterBestaetigenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/newsletter/abmelden': {
+      id: '/newsletter/abmelden'
+      path: '/newsletter/abmelden'
+      fullPath: '/newsletter/abmelden'
+      preLoaderRoute: typeof NewsletterAbmeldenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/artikel/$slug': {
@@ -504,6 +597,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/mnv/users'
       preLoaderRoute: typeof AuthenticatedMnvUsersRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
+    '/_authenticated/mnv/newsletter': {
+      id: '/_authenticated/mnv/newsletter'
+      path: '/newsletter'
+      fullPath: '/mnv/newsletter'
+      preLoaderRoute: typeof AuthenticatedMnvNewsletterRouteImport
       parentRoute: typeof AuthenticatedMnvRoute
     }
     '/_authenticated/mnv/messages': {
@@ -548,6 +648,7 @@ interface AuthenticatedMnvRouteChildren {
   AuthenticatedMnvArticlesRoute: typeof AuthenticatedMnvArticlesRoute
   AuthenticatedMnvMediaRoute: typeof AuthenticatedMnvMediaRoute
   AuthenticatedMnvMessagesRoute: typeof AuthenticatedMnvMessagesRoute
+  AuthenticatedMnvNewsletterRoute: typeof AuthenticatedMnvNewsletterRoute
   AuthenticatedMnvUsersRoute: typeof AuthenticatedMnvUsersRoute
   AuthenticatedMnvIndexRoute: typeof AuthenticatedMnvIndexRoute
   AuthenticatedMnvArticlesIdRoute: typeof AuthenticatedMnvArticlesIdRoute
@@ -558,6 +659,7 @@ const AuthenticatedMnvRouteChildren: AuthenticatedMnvRouteChildren = {
   AuthenticatedMnvArticlesRoute: AuthenticatedMnvArticlesRoute,
   AuthenticatedMnvMediaRoute: AuthenticatedMnvMediaRoute,
   AuthenticatedMnvMessagesRoute: AuthenticatedMnvMessagesRoute,
+  AuthenticatedMnvNewsletterRoute: AuthenticatedMnvNewsletterRoute,
   AuthenticatedMnvUsersRoute: AuthenticatedMnvUsersRoute,
   AuthenticatedMnvIndexRoute: AuthenticatedMnvIndexRoute,
   AuthenticatedMnvArticlesIdRoute: AuthenticatedMnvArticlesIdRoute,
@@ -582,6 +684,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AgbRoute: AgbRoute,
+  BarrierefreiheitRoute: BarrierefreiheitRoute,
+  BildnachweiseRoute: BildnachweiseRoute,
   CookiesRoute: CookiesRoute,
   DatenschutzRoute: DatenschutzRoute,
   EBikesRoute: EBikesRoute,
@@ -597,17 +701,9 @@ const rootRouteChildren: RootRouteChildren = {
   TestsRoute: TestsRoute,
   UeberUnsRoute: UeberUnsRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
+  NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,
+  NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
