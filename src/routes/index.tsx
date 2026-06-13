@@ -36,29 +36,12 @@ function Index() {
   const ratgeber = articles.filter((a) => a.category === "Ratgeber");
   const tests = articles.filter((a) => a.category === "Tests" || a.category === "E-Bikes");
 
-  if (!featured) {
-    return (
-      <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-24 md:py-40 border-x border-border text-center">
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <span className="h-px w-10 bg-signal" />
-          <span className="eyebrow text-signal">radmap.de</span>
-          <span className="h-px w-10 bg-signal" />
-        </div>
-        <h1 className="font-display text-4xl md:text-6xl font-black tracking-tight leading-[0.95]">
-          Bald geht's los.
-        </h1>
-        <p className="mt-6 text-muted-foreground font-light max-w-xl mx-auto">
-          Neue Artikel werden in Kürze automatisch veröffentlicht. Schauen Sie bald wieder vorbei.
-        </p>
-      </section>
-    );
-  }
-
   return (
     <>
       {/* ========================================================== */}
       {/* SPLIT HERO                                                  */}
       {/* ========================================================== */}
+      {featured && (
       <section className="border-b border-border">
         <div className="mx-auto max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 border-x border-border">
           {/* LEFT — cinematic feature */}
@@ -185,10 +168,12 @@ function Index() {
           </aside>
         </div>
       </section>
+      )}
 
       {/* ========================================================== */}
       {/* LIVE TICKER                                                 */}
       {/* ========================================================== */}
+      {broken.length > 0 && (
       <div className="border-b border-border bg-signal text-signal-foreground overflow-hidden">
         <div className="flex items-center">
           <div className="px-6 py-3 border-r border-signal-foreground/30 flex items-center gap-3 shrink-0">
@@ -206,10 +191,12 @@ function Index() {
           </div>
         </div>
       </div>
+      )}
 
       {/* ========================================================== */}
       {/* BROKEN GRID — NEW EDITION                                   */}
       {/* ========================================================== */}
+      {broken.length > 0 && (
       <section className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
         <div className="flex flex-wrap items-end justify-between gap-6 mb-12 md:mb-16">
           <div className="max-w-2xl">
@@ -257,6 +244,7 @@ function Index() {
           )}
         </div>
       </section>
+      )}
 
       {/* ========================================================== */}
       {/* RATGEBER STRIP                                              */}
