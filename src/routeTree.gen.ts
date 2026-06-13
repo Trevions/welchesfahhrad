@@ -23,6 +23,8 @@ import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as BildnachweiseRouteImport } from './routes/bildnachweise'
+import { Route as BarrierefreiheitRouteImport } from './routes/barrierefreiheit'
 import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -106,6 +108,16 @@ const CookiesRoute = CookiesRouteImport.update({
   path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BildnachweiseRoute = BildnachweiseRouteImport.update({
+  id: '/bildnachweise',
+  path: '/bildnachweise',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BarrierefreiheitRoute = BarrierefreiheitRouteImport.update({
+  id: '/barrierefreiheit',
+  path: '/barrierefreiheit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgbRoute = AgbRouteImport.update({
   id: '/agb',
   path: '/agb',
@@ -173,6 +185,8 @@ const AuthenticatedMnvArticlesIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/barrierefreiheit': typeof BarrierefreiheitRoute
+  '/bildnachweise': typeof BildnachweiseRoute
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
@@ -200,6 +214,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agb': typeof AgbRoute
+  '/barrierefreiheit': typeof BarrierefreiheitRoute
+  '/bildnachweise': typeof BildnachweiseRoute
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
@@ -228,6 +244,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/agb': typeof AgbRoute
+  '/barrierefreiheit': typeof BarrierefreiheitRoute
+  '/bildnachweise': typeof BildnachweiseRoute
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
@@ -257,6 +275,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agb'
+    | '/barrierefreiheit'
+    | '/bildnachweise'
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
@@ -284,6 +304,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/agb'
+    | '/barrierefreiheit'
+    | '/bildnachweise'
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
@@ -311,6 +333,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/agb'
+    | '/barrierefreiheit'
+    | '/bildnachweise'
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
@@ -340,6 +364,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AgbRoute: typeof AgbRoute
+  BarrierefreiheitRoute: typeof BarrierefreiheitRoute
+  BildnachweiseRoute: typeof BildnachweiseRoute
   CookiesRoute: typeof CookiesRoute
   DatenschutzRoute: typeof DatenschutzRoute
   EBikesRoute: typeof EBikesRoute
@@ -455,6 +481,20 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bildnachweise': {
+      id: '/bildnachweise'
+      path: '/bildnachweise'
+      fullPath: '/bildnachweise'
+      preLoaderRoute: typeof BildnachweiseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/barrierefreiheit': {
+      id: '/barrierefreiheit'
+      path: '/barrierefreiheit'
+      fullPath: '/barrierefreiheit'
+      preLoaderRoute: typeof BarrierefreiheitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agb': {
@@ -582,6 +622,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AgbRoute: AgbRoute,
+  BarrierefreiheitRoute: BarrierefreiheitRoute,
+  BildnachweiseRoute: BildnachweiseRoute,
   CookiesRoute: CookiesRoute,
   DatenschutzRoute: DatenschutzRoute,
   EBikesRoute: EBikesRoute,
