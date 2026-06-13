@@ -112,7 +112,12 @@ export function AdminShell({
                   <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 bg-[#FF6A1A] rounded-r" />
                 )}
                 <item.icon className="h-4 w-4" />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.key === "messages" && unread > 0 && (
+                  <span className="ml-auto bg-[#FF6A1A] text-zinc-950 text-[10px] font-bold tabular-nums px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                    {unread > 99 ? "99+" : unread}
+                  </span>
+                )}
               </Link>
             );
           })}
