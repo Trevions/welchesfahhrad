@@ -480,13 +480,16 @@ const TEN_YEARS_SECONDS = 60 * 60 * 24 * 365 * 10;
 
 export async function uploadImageAndGetUrl(
   slug: string,
-  png: Uint8Array,
+  bytes: Uint8Array,
+  opts?: { ext?: string; contentType?: string },
 ): Promise<string> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const path = `auto/${Date.now()}-${slug}.png`;
+  const ext = opts?.ext ?? "png";
+  const contentType = opts?.contentType ?? "image/png";
+  const path = `auto/${Date.now()}-${slug}.${ext}`;
   const { error } = await supabaseAdmin.storage
     .from("article-images")
-    .upload(path, png, { contentType: "image/png", upsert: true });
+    .upload(path, bytes, { contentType, upsert: true });
   if (error) throw new Error(`Upload failed: ${error.message}`);
 
   const { data, error: urlErr } = await supabaseAdmin.storage
