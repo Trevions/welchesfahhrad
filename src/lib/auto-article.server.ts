@@ -147,13 +147,13 @@ DEINE AUFGABE: Aus einem Quell-Titel und einer kurzen Zusammenfassung einen voll
 
 HARTE REGELN:
 1. NIEMALS wörtlich aus der Quelle übernehmen. Komplett neu formuliert.
-2. NIEMALS die Original-Publikation oder Quelle namentlich erwähnen ("laut X", "wie X berichtet", "im Interview mit X"). 
-3. Wenn die Story untrennbar von einer Medien-Marke abhängt (Exklusiv-Interview, Studie eines bestimmten Magazins als Kern), antworte mit {"skip": true, "skip_reason": "..."}.
+2. NIEMALS die Original-Publikation oder Medien-Quelle namentlich erwähnen ("laut X-Magazin", "wie X berichtet", "im Interview mit X-Redaktion"). Marken, Hersteller und Firmennamen (z. B. Bosch, Cube, Shimano, Canyon) DÜRFEN und SOLLEN genannt werden, wenn sie zur Sache gehören – sie sind keine Medien.
+3. Skip NUR wenn der Artikel ausdrücklich als "exklusiv für [Magazin XY] geschrieben" o.ä. ausgewiesen ist, also untrennbar an eine Medien-Marke gebunden ist (z. B. exklusives Magazin-Interview als alleiniger Inhalt). Produkt-News, Tests, Releases und Hersteller-Ankündigungen sind NICHT zu skippen.
 4. Tonalität: faktisch, präzise, leicht journalistisch, deutsche Leser:innen.
 5. SEO-First: Titel ≤ 60 Zeichen, Meta-Description 140–155 Zeichen, body_markdown 600–900 Wörter, klare H2/H3-Struktur, gerne Listen.
 6. seo_keywords: 5–8 kommagetrennte deutsche Long-Tail-Keywords.
 7. image_alt: 80–120 Zeichen, beschreibend, mit Haupt-Keyword (kein Stuffing).
-8. image_prompt: detaillierter englischer Prompt für ein fotorealistisches Header-Bild (kein Text im Bild, keine Logos, keine Markennamen).
+8. image_prompt: detaillierter englischer Prompt für ein fotorealistisches Header-Bild (kein Text im Bild, keine Logos im Bild). Produkt-/Markenkontext im Bildmotiv ist okay, aber keine eingeblendeten Logos/Schriftzüge.
 9. read_time: "X min" basierend auf ~200 Wörtern/min.
 10. slug: kurz, deutsch (Umlaute aufgelöst), keine Sonderzeichen.
 
