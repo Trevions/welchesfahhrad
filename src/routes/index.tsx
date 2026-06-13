@@ -168,10 +168,12 @@ function Index() {
           </aside>
         </div>
       </section>
+      )}
 
       {/* ========================================================== */}
       {/* LIVE TICKER                                                 */}
       {/* ========================================================== */}
+      {broken.length > 0 && (
       <div className="border-b border-border bg-signal text-signal-foreground overflow-hidden">
         <div className="flex items-center">
           <div className="px-6 py-3 border-r border-signal-foreground/30 flex items-center gap-3 shrink-0">
