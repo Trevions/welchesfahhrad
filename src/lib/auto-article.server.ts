@@ -292,3 +292,180 @@ export async function ensureUniqueSlug(baseSlug: string): Promise<string> {
     if (i > 50) return `${baseSlug}-${Date.now()}`;
   }
 }
+
+// ---------- Orchestrator (in-process) ----------
+const ALL_CATEGORIES: Category[] = ["Nachrichten", "Ratgeber", "E-Bikes", "Tests"];
+
+export type RunAutoGenerateInput = {
+  category?: Category;
+  trigger?: "cron" | "manual";
+};
+
+export type RunAutoGenerateResult = {
+  ok: true;
+  runId: string;
+  status: "success" | "partial" | "failed";
+  sourcesFound: number;
+  articlesCreated: number;
+  errors: string[];
+};
+
+export async function runAutoGeneratePipeline(
+  input: RunAutoGenerateInput = {},
+): Promise<RunAutoGenerateResult> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const categories: Category[] = input.category ? [input.category] : ALL_CATEGORIES;
+  const trigger = input.trigger ?? "manual";
+
+  const { data: runRow, error: runErr } = await supabaseAdmin
+    .from("article_generation_runs")
+    .insert({ status: "running", trigger })
+    .select("id")
+    .single();
+  if (runErr || !runRow) throw new Error(runErr?.message ?? "run insert failed");
+  const runId = runRow.id as string;
+
+  let sourcesFound = 0;
+  let articlesCreated = 0;
+  const errors: string[] = [];
+
+  for (const category of categories) {
+    try {
+      const candidates = await discoverSources(category);
+      sourcesFound += candidates.length;
+      if (candidates.length === 0) continue;
+
+      const urls = candidates.map((c) => c.url);
+      const { data: seenRows } = await supabaseAdmin
+        .from("article_sources")
+        .select("source_url")
+        .in("source_url", urls);
+      const seen = new Set((seenRows ?? []).map((r) => r.source_url));
+      const fresh: DiscoveredSource[] = candidates.filter((c) => !seen.has(c.url));
+      if (fresh.length === 0) continue;
+
+      for (const source of fresh.slice(0, 3)) {
+        try {
+          const rewritten = await rewriteArticle(source, category);
+
+          if (rewritten.skip) {
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "skipped_brand_mention",
+              skip_reason: rewritten.skip_reason ?? "Brand-dependent story",
+            });
+            continue;
+          }
+
+          if (!rewritten.title || !rewritten.body_markdown || !rewritten.excerpt) {
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              skip_reason: "AI returned incomplete article",
+            });
+            continue;
+          }
+
+          const baseSlug = rewritten.slug || slugify(rewritten.title);
+          const slug = await ensureUniqueSlug(baseSlug);
+
+          let coverImage: string | null = null;
+          try {
+            const png = await generateImagePng(rewritten.image_prompt || rewritten.title);
+            coverImage = await uploadImageAndGetUrl(slug, png);
+          } catch (e) {
+            errors.push(`image (${category}): ${e instanceof Error ? e.message : String(e)}`);
+          }
+
+          const articleCategory = (["Nachrichten", "Ratgeber", "E-Bikes", "Tests"] as const).includes(
+            rewritten.category as Category,
+          )
+            ? rewritten.category
+            : category;
+
+          const { data: inserted, error: insErr } = await supabaseAdmin
+            .from("articles")
+            .insert({
+              slug,
+              title: rewritten.title.slice(0, 200),
+              excerpt: rewritten.excerpt.slice(0, 500),
+              body: rewritten.body_markdown,
+              cover_image: coverImage,
+              category: articleCategory,
+              source: "Radmap Redaktion",
+              status: "published",
+              read_time: rewritten.read_time?.slice(0, 20) ?? null,
+              seo_title: rewritten.seo_title?.slice(0, 70) ?? null,
+              seo_description: rewritten.seo_description?.slice(0, 170) ?? null,
+              seo_keywords: rewritten.seo_keywords?.slice(0, 300) ?? null,
+              og_image: coverImage,
+              published_at: new Date().toISOString(),
+            })
+            .select("id")
+            .single();
+
+          if (insErr || !inserted) {
+            errors.push(`insert (${category}): ${insErr?.message ?? "unknown"}`);
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              skip_reason: insErr?.message?.slice(0, 300) ?? "Insert failed",
+            });
+            continue;
+          }
+
+          await supabaseAdmin.from("article_sources").insert({
+            article_id: inserted.id,
+            source_url: source.url,
+            source_title: source.title,
+            source_domain: source.domain,
+            category,
+            status: "processed",
+          });
+
+          articlesCreated++;
+          break;
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          errors.push(`rewrite (${category}): ${msg}`);
+          await supabaseAdmin.from("article_sources").insert({
+            source_url: source.url,
+            source_title: source.title,
+            source_domain: source.domain,
+            category,
+            status: "failed",
+            skip_reason: msg.slice(0, 300),
+          });
+        }
+      }
+    } catch (e) {
+      errors.push(`category ${category}: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+
+  const finalStatus: "success" | "partial" | "failed" =
+    errors.length === 0 ? "success" : articlesCreated > 0 ? "partial" : "failed";
+
+  await supabaseAdmin
+    .from("article_generation_runs")
+    .update({
+      status: finalStatus,
+      sources_found: sourcesFound,
+      articles_created: articlesCreated,
+      errors_count: errors.length,
+      error_summary: errors.length ? errors.join("\n").slice(0, 4000) : null,
+      finished_at: new Date().toISOString(),
+    })
+    .eq("id", runId);
+
+  return { ok: true, runId, status: finalStatus, sourcesFound, articlesCreated, errors };
+}
