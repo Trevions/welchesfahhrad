@@ -565,7 +565,21 @@ export async function runAutoGeneratePipeline(
             const png = await generateImagePng(rewritten.image_prompt || rewritten.title);
             coverImage = await uploadImageAndGetUrl(slug, png);
           } catch (e) {
-            errors.push(`image (${category}): ${e instanceof Error ? e.message : String(e)}`);
+            const msg = e instanceof Error ? e.message : String(e);
+            errors.push(`image (${category}): ${msg}`);
+          }
+
+          if (!coverImage) {
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              scraped_text: scraped.text,
+              skip_reason: `image generation failed — article not published without image`,
+            });
+            continue;
           }
 
           const articleCategory = (["Nachrichten", "Ratgeber", "E-Bikes", "Tests"] as const).includes(

@@ -63,6 +63,7 @@ export const getPublicArticles = createServerFn({ method: "GET" }).handler(
         "slug, title, excerpt, body, cover_image, category, source, read_time, published_at, updated_at, created_at",
       )
       .eq("status", "published")
+      .not("cover_image", "is", null)
       .order("published_at", { ascending: false, nullsFirst: false })
       .limit(120);
     if (error) throw new Error(error.message);
@@ -82,6 +83,7 @@ export const getPublicArticleBySlug = createServerFn({ method: "POST" })
       )
       .eq("slug", data.slug)
       .eq("status", "published")
+      .not("cover_image", "is", null)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!row) return { article: null as Article | null, seo: null };
