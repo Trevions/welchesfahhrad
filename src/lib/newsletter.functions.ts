@@ -95,7 +95,8 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string,
       html,
       text,
       headers: {
-        "List-Unsubscribe": `<${unsubUrl}>`,
+        // RFC 2369 + RFC 8058: prefer the one-click POST endpoint, fall back to the page URL.
+        "List-Unsubscribe": `<${oneClickUnsubUrl ?? unsubUrl}>, <${unsubUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
     }),
