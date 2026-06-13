@@ -1,6 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Clock, Share2, Bookmark } from "lucide-react";
+import { ArrowLeft, Clock, Bookmark } from "lucide-react";
 import { getArticleBySlug, articles } from "@/lib/articles";
+import { ShareMenu } from "@/components/ShareMenu";
+
+const SITE = "https://radmap.de";
+const abs = (u: string) => (/^https?:\/\//i.test(u) ? u : SITE + (u.startsWith("/") ? u : "/" + u));
 
 export const Route = createFileRoute("/artikel/$slug")({
   loader: ({ params }) => {
