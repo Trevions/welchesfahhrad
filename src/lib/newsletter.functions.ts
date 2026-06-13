@@ -38,7 +38,7 @@ function getSiteUrl() {
   return "https://radmap.de";
 }
 
-async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string) {
+async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string, oneClickUnsubUrl?: string) {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const resendKey = process.env.RESEND_API_KEY;
   if (!lovableKey || !resendKey) {
@@ -95,7 +95,8 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string)
       html,
       text,
       headers: {
-        "List-Unsubscribe": `<${unsubUrl}>`,
+        // RFC 2369 + RFC 8058: prefer the one-click POST endpoint, fall back to the page URL.
+        "List-Unsubscribe": `<${oneClickUnsubUrl ?? unsubUrl}>, <${unsubUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
     }),
@@ -182,8 +183,10 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
     const siteUrl = getSiteUrl();
     const confirmUrl = `${siteUrl}/newsletter/bestaetigen?token=${confirmToken}`;
     const unsubUrl = `${siteUrl}/newsletter/abmelden?token=${unsubToken}`;
+    // RFC 8058 one-click endpoint (used by Gmail/Outlook "Unsubscribe" button)
+    const oneClickUnsubUrl = `${siteUrl}/api/public/newsletter/unsubscribe?token=${unsubToken}`;
 
-    await sendDoiEmail(data.email, confirmUrl, unsubUrl);
+    await sendDoiEmail(data.email, confirmUrl, unsubUrl, oneClickUnsubUrl);
 
     return { ok: true };
   });
