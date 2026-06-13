@@ -85,12 +85,6 @@ export function Header() {
               </kbd>
             </button>
             <ThemeToggle />
-            <Link
-              to="/admin"
-              className="hidden lg:inline-flex items-center bg-foreground px-4 py-2 eyebrow text-background hover:bg-signal hover:text-signal-foreground transition-colors"
-            >
-              Admin
-            </Link>
           </div>
         </div>
       </div>
