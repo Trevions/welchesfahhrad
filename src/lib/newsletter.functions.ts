@@ -52,7 +52,7 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string)
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0a0a0a; color:#e5e5e5; padding:40px 20px; margin:0;">
   <div style="max-width:560px; margin:0 auto; background:#111; border:1px solid #262626; border-radius:8px; overflow:hidden;">
     <div style="padding:32px; border-bottom:1px solid #262626;">
-      <div style="font-family: Georgia, serif; font-weight:900; font-style:italic; font-size:28px; color:#fff;">Radmap<span style="color:#f97316;">.</span></div>
+      <div style="font-family: Georgia, serif; font-weight:900; font-style:italic; font-size:28px; color:#fff;">Radmap<span style="color:#f97316;">.</span><span style="color:#fff;">de</span></div>
     </div>
     <div style="padding:32px;">
       <h1 style="font-size:22px; font-weight:700; margin:0 0 16px; color:#fff;">Newsletter-Anmeldung bestätigen</h1>
@@ -73,7 +73,7 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string)
       </p>
     </div>
     <div style="padding:20px 32px; background:#0a0a0a; border-top:1px solid #262626; font-size:11px; color:#525252;">
-      DigiMarket Bulgaria · 6400 Dimitrovgrad, Bulgarien · support@radmap.de
+      DigiMarket · support@radmap.de
     </div>
   </div>
 </body></html>`;
