@@ -194,6 +194,107 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ============ PUBLIC: Request unsubscribe by email ============
+const requestUnsubInput = z.object({
+  email: z.string().trim().email().max(254),
+  hp_field: z.string().max(200).optional().default(""),
+});
+
+async function sendUnsubscribeRequestEmail(email: string, unsubUrl: string) {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!lovableKey || !resendKey) {
+    console.warn("[newsletter] Resend not configured — unsub-request email skipped for", email);
+    return { sent: false };
+  }
+
+  const html = `
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><title>Newsletter abbestellen</title></head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0a0a0a; color:#e5e5e5; padding:40px 20px; margin:0;">
+  <div style="max-width:560px; margin:0 auto; background:#111; border:1px solid #262626; border-radius:8px; overflow:hidden;">
+    <div style="padding:32px; border-bottom:1px solid #262626;">
+      <div style="font-family: Georgia, serif; font-weight:900; font-style:italic; font-size:28px; color:#fff;">Radmap<span style="color:#f97316;">.</span><span style="color:#fff;">de</span></div>
+    </div>
+    <div style="padding:32px;">
+      <h1 style="font-size:22px; font-weight:700; margin:0 0 16px; color:#fff;">Abmeldung bestätigen</h1>
+      <p style="font-size:15px; line-height:1.6; color:#a3a3a3; margin:0 0 24px;">
+        Sie haben angefordert, sich vom Radmap-Newsletter abzumelden. Bitte bestätigen Sie die Abmeldung durch Klick auf den folgenden Button. Aus Sicherheitsgründen verlangen wir diese Bestätigung, damit niemand Ihre Adresse ohne Ihr Wissen abmelden kann.
+      </p>
+      <a href="${unsubUrl}" style="display:inline-block; background:#f97316; color:#0a0a0a; text-decoration:none; padding:14px 28px; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; border-radius:4px;">Abmeldung bestätigen</a>
+      <p style="font-size:13px; line-height:1.6; color:#737373; margin:24px 0 0;">
+        Oder kopieren Sie diesen Link in Ihren Browser:<br>
+        <span style="color:#a3a3a3; word-break:break-all;">${unsubUrl}</span>
+      </p>
+      <hr style="border:none; border-top:1px solid #262626; margin:32px 0;">
+      <p style="font-size:12px; line-height:1.5; color:#737373; margin:0;">
+        Sie haben diese E-Mail erhalten, weil über das Abmelde-Formular auf radmap.de Ihre Adresse eingegeben wurde. Haben Sie das nicht selbst getan? Dann ignorieren Sie diese E-Mail einfach — ohne Bestätigung passiert nichts.
+      </p>
+    </div>
+    <div style="padding:20px 32px; background:#0a0a0a; border-top:1px solid #262626; font-size:11px; color:#525252;">
+      DigiMarket · support@radmap.de
+    </div>
+  </div>
+</body></html>`;
+
+  const text = `Abmeldung bestätigen\n\nSie haben angefordert, sich vom Radmap-Newsletter abzumelden.\n\nBitte bestätigen Sie die Abmeldung:\n${unsubUrl}\n\nHaben Sie das nicht selbst getan? Ignorieren Sie diese E-Mail.\n\nDigiMarket · support@radmap.de`;
+
+  const resp = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${lovableKey}`,
+      "X-Connection-Api-Key": resendKey,
+    },
+    body: JSON.stringify({
+      from: FROM_EMAIL,
+      to: email,
+      reply_to: REPLY_TO,
+      subject: "Newsletter-Abmeldung bestätigen",
+      html,
+      text,
+      headers: {
+        "List-Id": "Radmap.de Updates <updates.radmap.de>",
+        "Precedence": "bulk",
+        "X-Entity-Ref-ID": crypto.randomUUID(),
+      },
+    }),
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text();
+    console.error("[newsletter] Resend error (unsub-request):", resp.status, errText);
+    return { sent: false };
+  }
+  return { sent: true };
+}
+
+export const requestUnsubscribe = createServerFn({ method: "POST" })
+  .inputValidator((d) => requestUnsubInput.parse(d))
+  .handler(async ({ data }) => {
+    // Honeypot — silent success
+    if (data.hp_field && data.hp_field.length > 0) {
+      return { ok: true };
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin
+      .from("newsletter_subscribers")
+      .select("id, status, unsubscribe_token")
+      .ilike("email", data.email)
+      .maybeSingle();
+
+    // No leaks: same response whether or not the email exists / is already unsubscribed.
+    if (!row || row.status === "unsubscribed" || !row.unsubscribe_token) {
+      return { ok: true };
+    }
+
+    const siteUrl = getSiteUrl();
+    const unsubUrl = `${siteUrl}/newsletter/abmelden?token=${row.unsubscribe_token}`;
+    await sendUnsubscribeRequestEmail(data.email, unsubUrl);
+    return { ok: true };
+  });
+
 // ============ PUBLIC: Confirm via token ============
 export const confirmNewsletter = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ token: z.string().min(20).max(200) }).parse(d))
