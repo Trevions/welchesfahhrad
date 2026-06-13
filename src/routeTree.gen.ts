@@ -40,6 +40,7 @@ import { Route as AuthenticatedMnvMediaRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMnvArticlesRouteImport } from './routes/_authenticated/mnv.articles'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicNewsletterUnsubscribeRouteImport } from './routes/api.public.newsletter.unsubscribe'
+import { Route as ApiPublicNewsletterDispatchRouteImport } from './routes/api.public.newsletter.dispatch'
 import { Route as AuthenticatedMnvArticlesNewRouteImport } from './routes/_authenticated/mnv.articles_.new'
 import { Route as AuthenticatedMnvArticlesIdRouteImport } from './routes/_authenticated/mnv.articles_.$id'
 
@@ -202,6 +203,12 @@ const ApiPublicNewsletterUnsubscribeRoute =
     path: '/api/public/newsletter/unsubscribe',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicNewsletterDispatchRoute =
+  ApiPublicNewsletterDispatchRouteImport.update({
+    id: '/api/public/newsletter/dispatch',
+    path: '/api/public/newsletter/dispatch',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedMnvArticlesNewRoute =
   AuthenticatedMnvArticlesNewRouteImport.update({
     id: '/articles_/new',
@@ -246,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/mnv/': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
+  '/api/public/newsletter/dispatch': typeof ApiPublicNewsletterDispatchRoute
   '/api/public/newsletter/unsubscribe': typeof ApiPublicNewsletterUnsubscribeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -279,6 +287,7 @@ export interface FileRoutesByTo {
   '/mnv': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
+  '/api/public/newsletter/dispatch': typeof ApiPublicNewsletterDispatchRoute
   '/api/public/newsletter/unsubscribe': typeof ApiPublicNewsletterUnsubscribeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -315,6 +324,7 @@ export interface FileRoutesById {
   '/_authenticated/mnv/': typeof AuthenticatedMnvIndexRoute
   '/_authenticated/mnv/articles_/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/_authenticated/mnv/articles_/new': typeof AuthenticatedMnvArticlesNewRoute
+  '/api/public/newsletter/dispatch': typeof ApiPublicNewsletterDispatchRoute
   '/api/public/newsletter/unsubscribe': typeof ApiPublicNewsletterUnsubscribeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/mnv/'
     | '/mnv/articles/$id'
     | '/mnv/articles/new'
+    | '/api/public/newsletter/dispatch'
     | '/api/public/newsletter/unsubscribe'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/mnv'
     | '/mnv/articles/$id'
     | '/mnv/articles/new'
+    | '/api/public/newsletter/dispatch'
     | '/api/public/newsletter/unsubscribe'
     | '/lovable/email/queue/process'
   id:
@@ -419,6 +431,7 @@ export interface FileRouteTypes {
     | '/_authenticated/mnv/'
     | '/_authenticated/mnv/articles_/$id'
     | '/_authenticated/mnv/articles_/new'
+    | '/api/public/newsletter/dispatch'
     | '/api/public/newsletter/unsubscribe'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
@@ -446,6 +459,7 @@ export interface RootRouteChildren {
   ArtikelSlugRoute: typeof ArtikelSlugRoute
   NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
   NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
+  ApiPublicNewsletterDispatchRoute: typeof ApiPublicNewsletterDispatchRoute
   ApiPublicNewsletterUnsubscribeRoute: typeof ApiPublicNewsletterUnsubscribeRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
@@ -669,6 +683,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicNewsletterUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/newsletter/dispatch': {
+      id: '/api/public/newsletter/dispatch'
+      path: '/api/public/newsletter/dispatch'
+      fullPath: '/api/public/newsletter/dispatch'
+      preLoaderRoute: typeof ApiPublicNewsletterDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/mnv/articles_/new': {
       id: '/_authenticated/mnv/articles_/new'
       path: '/articles/new'
@@ -745,6 +766,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArtikelSlugRoute: ArtikelSlugRoute,
   NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,
   NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
+  ApiPublicNewsletterDispatchRoute: ApiPublicNewsletterDispatchRoute,
   ApiPublicNewsletterUnsubscribeRoute: ApiPublicNewsletterUnsubscribeRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
