@@ -480,7 +480,38 @@ export async function runAutoGeneratePipeline(
 
       for (const source of fresh.slice(0, 3)) {
         try {
-          const rewritten = await rewriteArticle(source, category);
+          // 1) Scrape full source text — no scrape, no article.
+          let scraped: ScrapedSource;
+          try {
+            scraped = await fetchSourceArticle(source.url);
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              skip_reason: `scrape failed: ${msg.slice(0, 240)}`,
+            });
+            continue;
+          }
+
+          if (scraped.wordCount < 120) {
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              scraped_text: scraped.text || null,
+              skip_reason: `source too short (${scraped.wordCount} words) — refusing to fabricate`,
+            });
+            continue;
+          }
+
+          // 2) Rewrite using ONLY the scraped text.
+          const rewritten = await rewriteArticle(source, category, scraped.text);
 
           if (rewritten.skip) {
             await supabaseAdmin.from("article_sources").insert({
@@ -489,7 +520,8 @@ export async function runAutoGeneratePipeline(
               source_domain: source.domain,
               category,
               status: "skipped_brand_mention",
-              skip_reason: rewritten.skip_reason ?? "Brand-dependent story",
+              scraped_text: scraped.text,
+              skip_reason: rewritten.skip_reason ?? "Not suitable for rewrite",
             });
             continue;
           }
@@ -501,10 +533,29 @@ export async function runAutoGeneratePipeline(
               source_domain: source.domain,
               category,
               status: "failed",
+              scraped_text: scraped.text,
               skip_reason: "AI returned incomplete article",
             });
             continue;
           }
+
+          // 3) Validate generated text against the source — block hallucinations.
+          const validation = validateAgainstSource(rewritten, scraped.text);
+          if (!validation.ok) {
+            const reason = `hallucination detected — missing entities: [${validation.missingEntities.slice(0, 6).join(", ")}]; missing facts: [${validation.missingFacts.slice(0, 3).join(" | ")}]`;
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              scraped_text: scraped.text,
+              skip_reason: reason.slice(0, 500),
+            });
+            errors.push(`validation (${category}): ${reason.slice(0, 200)}`);
+            continue;
+          }
+
 
           const baseSlug = rewritten.slug || slugify(rewritten.title);
           const slug = await ensureUniqueSlug(baseSlug);
