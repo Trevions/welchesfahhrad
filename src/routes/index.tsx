@@ -322,10 +322,21 @@ function Index() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 overflow-x-auto snap-x snap-mandatory pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 sm:overflow-visible sm:snap-none scrollbar-hide relative">
               {tests.slice(0, 4).map((a, i) => (
-                <ArticleCard key={a.slug} article={a} size="sm" index={i} />
+                <div key={a.slug} className="min-w-[280px] sm:min-w-0 snap-start">
+                  <ArticleCard article={a} size="sm" index={i} />
+                </div>
               ))}
+              {/* Swipe hint — shown only on mobile */}
+              <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 sm:hidden">
+                <div className="swipe-hint flex items-center justify-center w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-lg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-foreground">
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </section>
