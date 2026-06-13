@@ -322,3 +322,43 @@ export const deleteNewsletterSubscriber = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ============ ADMIN: List newsletter issues ============
+export const listNewsletterIssues = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { data, error } = await context.supabase
+      .from("newsletter_issues")
+      .select("id, issue_date, subject, status, recipients_total, recipients_sent, recipients_failed, sent_at, created_at, error")
+      .order("issue_date", { ascending: false })
+      .limit(50);
+    if (error) throw new Error(error.message);
+    return { issues: data ?? [] };
+  });
+
+// ============ ADMIN: Trigger newsletter dispatch manually ============
+export const triggerNewsletterDispatch = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const secret = process.env.NEWSLETTER_DISPATCH_SECRET;
+    if (!secret) throw new Error("NEWSLETTER_DISPATCH_SECRET nicht konfiguriert");
+
+    const resp = await fetch("https://radmap.de/api/public/newsletter/dispatch", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-dispatch-secret": secret,
+      },
+      body: JSON.stringify({ force: true }),
+    });
+    const text = await resp.text();
+    let payload: unknown;
+    try { payload = JSON.parse(text); } catch { payload = { raw: text }; }
+    if (!resp.ok) {
+      throw new Error(`Dispatch fehlgeschlagen (${resp.status}): ${text.slice(0, 300)}`);
+    }
+    return { ok: true, result: payload };
+  });
+
