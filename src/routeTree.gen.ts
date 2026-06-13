@@ -13,7 +13,6 @@ import { Route as TestsRouteImport } from './routes/tests'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
-import { Route as MnvRouteImport } from './routes/mnv'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -44,11 +43,6 @@ const RatgeberRoute = RatgeberRouteImport.update({
 const NachrichtenRoute = NachrichtenRouteImport.update({
   id: '/nachrichten',
   path: '/nachrichten',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MnvRoute = MnvRouteImport.update({
-  id: '/mnv',
-  path: '/mnv',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EBikesRoute = EBikesRouteImport.update({
@@ -112,11 +106,11 @@ const AuthenticatedMnvArticlesIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/e-bikes': typeof EBikesRoute
-  '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
@@ -128,7 +122,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/e-bikes': typeof EBikesRoute
-  '/mnv': typeof AuthenticatedMnvIndexRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -137,6 +130,7 @@ export interface FileRoutesByTo {
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/users': typeof AuthenticatedMnvUsersRoute
+  '/mnv': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
 }
@@ -145,7 +139,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/e-bikes': typeof EBikesRoute
-  '/mnv': typeof MnvRoute
   '/nachrichten': typeof NachrichtenRoute
   '/ratgeber': typeof RatgeberRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -164,11 +157,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/e-bikes'
-    | '/mnv'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
     | '/tests'
+    | '/mnv'
     | '/artikel/$slug'
     | '/mnv/articles'
     | '/mnv/media'
@@ -180,7 +173,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/e-bikes'
-    | '/mnv'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
@@ -189,6 +181,7 @@ export interface FileRouteTypes {
     | '/mnv/articles'
     | '/mnv/media'
     | '/mnv/users'
+    | '/mnv'
     | '/mnv/articles/$id'
     | '/mnv/articles/new'
   id:
@@ -196,7 +189,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/e-bikes'
-    | '/mnv'
     | '/nachrichten'
     | '/ratgeber'
     | '/sitemap.xml'
@@ -215,7 +207,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   EBikesRoute: typeof EBikesRoute
-  MnvRoute: typeof MnvRoute
   NachrichtenRoute: typeof NachrichtenRoute
   RatgeberRoute: typeof RatgeberRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -251,13 +242,6 @@ declare module '@tanstack/react-router' {
       path: '/nachrichten'
       fullPath: '/nachrichten'
       preLoaderRoute: typeof NachrichtenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mnv': {
-      id: '/mnv'
-      path: '/mnv'
-      fullPath: '/mnv'
-      preLoaderRoute: typeof MnvRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/e-bikes': {
@@ -376,7 +360,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   EBikesRoute: EBikesRoute,
-  MnvRoute: MnvRoute,
   NachrichtenRoute: NachrichtenRoute,
   RatgeberRoute: RatgeberRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
