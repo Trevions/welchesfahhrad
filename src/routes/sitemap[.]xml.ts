@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { articles } from "@/lib/articles";
 
 const BASE_URL = "";
 
@@ -8,14 +7,22 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data } = await supabaseAdmin
+          .from("articles")
+          .select("slug")
+          .eq("status", "published")
+          .order("published_at", { ascending: false })
+          .limit(500);
+
         const staticPaths = ["/", "/nachrichten", "/ratgeber", "/e-bikes", "/tests"];
-        const articlePaths = articles.map((a) => `/artikel/${a.slug}`);
+        const articlePaths = (data ?? []).map((a) => `/artikel/${a.slug}`);
         const all = [...staticPaths, ...articlePaths];
 
         const urls = all
           .map(
             (p) =>
-              `  <url>\n    <loc>${BASE_URL}${p}</loc>\n    <changefreq>daily</changefreq>\n  </url>`
+              `  <url>\n    <loc>${BASE_URL}${p}</loc>\n    <changefreq>daily</changefreq>\n  </url>`,
           )
           .join("\n");
 

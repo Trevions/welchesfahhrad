@@ -1,29 +1,45 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { CategoryPage, buildCategoryJsonLd } from "@/components/CategoryPage";
-import { categoryMeta, getArticlesByCategory } from "@/lib/articles";
+import { categoryMeta } from "@/lib/articles";
+import { getPublicArticles } from "@/lib/articles.functions";
 
 const cat = "Tests" as const;
 const meta = categoryMeta[cat];
 
-export const Route = createFileRoute("/tests")({
-  head: () => {
-    const lead = getArticlesByCategory(cat)[0];
-    return {
-      meta: [
-        { title: `${meta.title} | radmap.de` },
-        { name: "description", content: meta.description },
-        { name: "keywords", content: "Fahrrad Test, Rennrad Test, Canyon Aeroad, Shimano Dura-Ace, SRAM Red AXS, Garmin Edge, Komponenten Test" },
-        { property: "og:title", content: `${meta.title} | radmap.de` },
-        { property: "og:description", content: meta.description },
-        { property: "og:url", content: meta.slug },
-        { property: "og:type", content: "website" },
-        ...(lead ? [{ property: "og:image", content: lead.image } as const] : []),
-        ...(lead ? [{ name: "twitter:image", content: lead.image } as const] : []),
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-      links: [{ rel: "canonical", href: meta.slug }],
-      scripts: buildCategoryJsonLd(cat),
-    };
-  },
-  component: () => <CategoryPage category={cat} />,
+const articlesQuery = queryOptions({
+  queryKey: ["public-articles"],
+  queryFn: () => getPublicArticles(),
+  staleTime: 60_000,
 });
+
+export const Route = createFileRoute("/tests")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(articlesQuery),
+  head: () => ({
+    meta: [
+      { title: `${meta.title} | radmap.de` },
+      { name: "description", content: meta.description },
+      { name: "keywords", content: "Fahrrad Test, Rennrad Test, Komponenten Test, Garmin, Shimano" },
+      { property: "og:title", content: `${meta.title} | radmap.de` },
+      { property: "og:description", content: meta.description },
+      { property: "og:url", content: meta.slug },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: meta.slug }],
+    scripts: buildCategoryJsonLd(cat),
+  }),
+  errorComponent: ({ error }) => (
+    <div className="pt-32 px-6 text-center">
+      <h1 className="font-display text-3xl font-black">Fehler beim Laden</h1>
+      <p className="mt-3 text-muted-foreground text-sm">{error.message}</p>
+    </div>
+  ),
+  notFoundComponent: () => null,
+  component: TestsPage,
+});
+
+function TestsPage() {
+  const { data } = useSuspenseQuery(articlesQuery);
+  return <CategoryPage category={cat} articles={data.articles} />;
+}

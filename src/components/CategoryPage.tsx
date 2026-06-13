@@ -3,34 +3,30 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CategoryHero } from "@/components/CategoryHero";
 import {
-  articles,
   categoryMeta,
-  getArticlesByCategory,
   type Article,
 } from "@/lib/articles";
 
 type Props = {
   category: Article["category"];
+  articles: Article[];
 };
 
-export function CategoryPage({ category }: Props) {
+export function CategoryPage({ category, articles }: Props) {
   const meta = categoryMeta[category];
-  const items = getArticlesByCategory(category);
+  const items = articles.filter((a) => a.category === category);
   const [lead, ...rest] = items;
   const featured = rest.slice(0, 2);
   const grid = rest.slice(2);
 
-  // Sidebar: other categories
   const otherCats = (Object.keys(categoryMeta) as Article["category"][]).filter(
     (c) => c !== category,
   );
 
-  // Most read = articles from other categories (first 4)
   const moreReads = articles.filter((a) => a.category !== category).slice(0, 4);
 
   return (
     <>
-      {/* Breadcrumb */}
       <nav
         aria-label="Brotkrumen-Navigation"
         className="border-b border-border bg-background/50"
@@ -53,7 +49,6 @@ export function CategoryPage({ category }: Props) {
         description={meta.description}
       />
 
-      {/* Lead article */}
       {lead && (
         <section className="border-b border-border">
           <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-10 md:py-14 border-x border-border">
@@ -62,11 +57,9 @@ export function CategoryPage({ category }: Props) {
         </section>
       )}
 
-      {/* Main grid + sidebar */}
       <section className="border-b border-border">
         <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-12 md:py-20 border-x border-border">
           <div className="grid gap-12 lg:grid-cols-12">
-            {/* Main */}
             <div className="lg:col-span-8">
               {featured.length > 0 && (
                 <>
@@ -108,7 +101,6 @@ export function CategoryPage({ category }: Props) {
               )}
             </div>
 
-            {/* Sidebar */}
             <aside className="lg:col-span-4 space-y-10 lg:sticky lg:top-24 self-start">
               <div className="border border-border p-6 bg-card">
                 <div className="eyebrow-sm text-signal mb-3">Themenbereiche</div>
@@ -192,10 +184,8 @@ export function CategoryPage({ category }: Props) {
   );
 }
 
-/* ------- JSON-LD helper ------- */
-export function buildCategoryJsonLd(category: Article["category"]) {
+export function buildCategoryJsonLd(category: Article["category"], items: Article[] = []) {
   const meta = categoryMeta[category];
-  const items = getArticlesByCategory(category);
   return [
     {
       type: "application/ld+json" as const,
