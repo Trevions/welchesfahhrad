@@ -107,16 +107,19 @@ function NewsletterAdminPage() {
                 <th className="text-left px-4 py-3 font-medium hidden md:table-cell">Quelle</th>
                 <th className="text-left px-4 py-3 font-medium hidden md:table-cell">Anmeldung</th>
                 <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Bestätigt</th>
+                <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Abgemeldet</th>
                 <th className="text-right px-4 py-3 font-medium">Aktion</th>
               </tr>
+
             </thead>
             <tbody className="divide-y divide-zinc-900">
               {isLoading && (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-zinc-500">Wird geladen…</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-zinc-500">Wird geladen…</td></tr>
               )}
               {!isLoading && subs.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-zinc-500">Keine Abonnenten gefunden.</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-zinc-500">Keine Abonnenten gefunden.</td></tr>
               )}
+
               {subs.map((s) => (
                 <tr key={s.id} className="hover:bg-zinc-900/50">
                   <td className="px-4 py-3">
@@ -136,6 +139,10 @@ function NewsletterAdminPage() {
                   <td className="px-4 py-3 hidden lg:table-cell text-zinc-400 text-xs">
                     {s.confirmed_at ? new Date(s.confirmed_at).toLocaleString("de-DE") : "—"}
                   </td>
+                  <td className="px-4 py-3 hidden lg:table-cell text-zinc-400 text-xs">
+                    {s.unsubscribed_at ? new Date(s.unsubscribed_at).toLocaleString("de-DE") : "—"}
+                  </td>
+
                   <td className="px-4 py-3 text-right">
                     <button
                       onClick={() => {

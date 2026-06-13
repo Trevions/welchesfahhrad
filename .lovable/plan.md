@@ -1,71 +1,38 @@
-# Newsletter-Abmeldung: sichtbare Option im Footer
+## Plan: make newsletter unsubscribe work professionally
 
-## Ziel
-Aktuell ist der Abmelde-Link nur in der DOI-Bestätigungs-Mail und (laut RFC 8058) im Gmail-Header. Wer die Newsletter-Mails später löscht, findet keinen Weg zurück. Lösung: ein klar sichtbarer Text-Button **„Newsletter abbestellen"** direkt unter dem Abonnier-Formular im Footer. Klick öffnet ein professionelles Dialog-Fenster, in dem der Nutzer seine E-Mail eingibt — wir schicken ihm dann einen Abmelde-Link per Mail (gleiches Sicherheits-Prinzip wie Double-Opt-In, damit niemand fremde Adressen abmelden kann).
+### Goal
+Make the footer unsubscribe flow reliable on `radmap.de`: when a confirmed subscriber requests unsubscribe, the system records it in the admin panel and that address is no longer included for newsletter sending.
 
-## User-Flow
+### Changes
+1. **Replace the failing unsubscribe-request email step**
+   - The footer dialog will no longer depend on sending a second email that may not arrive.
+   - User enters their subscribed email and clicks unsubscribe.
+   - If the address exists, update it immediately to `unsubscribed` and set the unsubscribe timestamp.
+   - If the address does not exist, show the same neutral success message so we do not expose subscriber data.
 
-```text
-Footer
- └─ [E-Mail eingeben] [Abonnieren]
-    ☐ Einwilligung …
-    ───────────────────────────────
-    Newsletter abbestellen   ← neuer Text-Button (unauffällig, unterstrichen)
+2. **Improve the unsubscribe dialog**
+   - Change the wording from “E-Mail versendet” to a clear final result like “Abmeldung verarbeitet”.
+   - Make the button text clear: “Newsletter abbestellen”.
+   - Keep professional anti-spam protection with the honeypot field.
 
-Klick öffnet Dialog:
- ┌──────────────────────────────────────────┐
- │  Newsletter abbestellen                  │
- │                                          │
- │  Geben Sie Ihre E-Mail-Adresse ein.      │
- │  Wir senden Ihnen einen Bestätigungs-    │
- │  Link, um die Abmeldung abzuschließen.   │
- │                                          │
- │  [ihre@email.de        ] [Senden]        │
- └──────────────────────────────────────────┘
+3. **Admin panel tracking**
+   - The admin panel already reads `confirmed`, `pending`, and `unsubscribed` statuses.
+   - I will make the unsubscribe state clearer by showing the unsubscribe date when available and keeping the “Abgemeldet” filter/stat visible.
 
-Nach Klick „Senden":
- → immer gleiche Erfolgs-Meldung (egal ob die Adresse existiert oder nicht —
-   damit man nicht herausfinden kann, wer Abonnent ist).
- → Falls Adresse existiert: Mail mit Abmelde-Link → führt zur bestehenden
-   Seite /newsletter/abmelden?token=… (Ein-Klick-Bestätigung).
-```
+4. **Sending safety**
+   - Any newsletter-recipient logic must only use subscribers with status `confirmed`.
+   - Unsubscribed addresses remain in the admin panel for proof/audit, but must not be used for future sends.
 
-## Was wird gebaut
+5. **Keep token unsubscribe support**
+   - Existing links like `/newsletter/abmelden?token=...` and email-client unsubscribe headers stay active.
+   - If someone clicks an unsubscribe link from an email, it still marks the address as unsubscribed.
 
-### 1. Neue Server-Funktion `requestUnsubscribe` (`src/lib/newsletter.functions.ts`)
-- Input: `email` + `hp_field` (gleicher Honeypot-Schutz wie beim Abonnieren).
-- Sucht den Subscriber. Wenn vorhanden und nicht bereits abgemeldet → schickt Mail mit Link `https://radmap.de/newsletter/abmelden?token=…`.
-- Wenn nicht vorhanden / bereits abgemeldet → tut nichts, gibt aber `{ ok: true }` zurück (keine Info-Leaks).
-- Eigene saubere HTML-Mail im gleichen Stil wie die DOI-Mail (Betreff: „Abmeldung bestätigen").
+### Files to update
+- `src/lib/newsletter.functions.ts`
+- `src/components/UnsubscribeDialog.tsx`
+- `src/routes/_authenticated/mnv.newsletter.tsx`
 
-### 2. Neuer Dialog `UnsubscribeDialog` (`src/components/UnsubscribeDialog.tsx`)
-- Nutzt shadcn `Dialog` (passt zum bestehenden Design-System).
-- Felder: E-Mail (mit Validierung), Senden-Button mit Lade-Spinner.
-- Honeypot-Feld wie im Abo-Formular (off-screen).
-- Erfolgs-State: „Wenn diese Adresse abonniert war, haben wir Ihnen einen Bestätigungs-Link gesendet. Bitte prüfen Sie auch den Spam-Ordner."
-- Fehler-State: gleicher freundlicher Text wie im Footer.
-
-### 3. Footer-Anpassung (`src/components/Footer.tsx`)
-- Direkt **unter** dem Abonnier-Formular ein dezenter Text-Button:
-  `Newsletter bereits abonniert? Hier abbestellen.`
-- Klick öffnet den Dialog (State im `NewsletterForm`).
-- Bleibt sichtbar — auch nach erfolgreichem Abonnieren — damit Bestandsleser jederzeit hinkommen.
-
-### 4. Bestehende Bestätigungs-Mail erweitern
-Im DOI-Confirm-Erfolgs-Bildschirm (`/newsletter/bestaetigen`) zusätzlich einen kleinen Hinweis: „Sie können sich jederzeit über den Link am Ende jeder Newsletter-Mail oder im Footer von radmap.de wieder abmelden."
-
-## Sicherheits- & DSGVO-Aspekte
-- **Kein Info-Leak**: Antwort ist immer identisch, egal ob die E-Mail in der DB steht.
-- **Bestätigungs-Mail** (statt sofortiger Abmeldung über das Formular): verhindert, dass jemand fremde Adressen mutwillig abmeldet — gleiches Prinzip wie Double-Opt-In.
-- **Bestehender Token-Link bleibt gültig** (24 h+) — wir generieren keinen neuen, sondern nutzen den vorhandenen `unsubscribe_token` aus der Tabelle.
-- **Honeypot** gegen Bots, gleiche Technik wie im Abo-Formular.
-- **Rate-Limiting**: aktuell keins eingebaut, kann aber als Folge-Schritt ergänzt werden (z. B. max. 3 Anfragen pro IP-Hash pro Stunde).
-
-## Geänderte / neue Dateien
-- `src/lib/newsletter.functions.ts` — neue exportierte Funktion `requestUnsubscribe` + interne `sendUnsubscribeRequestEmail`.
-- `src/components/UnsubscribeDialog.tsx` — **neu**.
-- `src/components/Footer.tsx` — Text-Button + Dialog-Einbindung.
-- `src/routes/newsletter.bestaetigen.tsx` — kleiner Zusatztext (optional).
-
-## Was *nicht* geändert wird
-- Die bestehende DOI-Mail, die Token-Logik, die `/newsletter/abmelden`-Seite, die RFC-8058-One-Click-Route, die DB-Tabelle. Alles bleibt 1:1.
+### Validation
+- Confirm a currently `confirmed` test subscriber becomes `unsubscribed` after using the footer dialog.
+- Confirm the admin newsletter page shows the updated status/date.
+- Confirm no unsubscribe-request email is required anymore.

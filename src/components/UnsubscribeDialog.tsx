@@ -67,8 +67,7 @@ export function UnsubscribeDialog({ open, onOpenChange }: Props) {
           <DialogTitle className="text-xl font-semibold">Newsletter abbestellen</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
             Geben Sie die E-Mail-Adresse ein, mit der Sie den Newsletter abonniert haben.
-            Wir senden Ihnen einen Bestätigungs-Link, mit dem Sie die Abmeldung in einem
-            Klick abschließen können.
+            Wir melden Sie sofort ab und Sie erhalten keine weiteren Ausgaben mehr.
           </DialogDescription>
         </DialogHeader>
 
@@ -76,10 +75,10 @@ export function UnsubscribeDialog({ open, onOpenChange }: Props) {
           <div className="surface-strong rounded-sm p-4 flex items-start gap-3">
             <CheckCircle2 className="h-5 w-5 text-signal shrink-0 mt-0.5" />
             <div>
-              <div className="text-sm font-semibold text-foreground">E-Mail versendet</div>
+              <div className="text-sm font-semibold text-foreground">Abmeldung verarbeitet</div>
               <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                Falls diese Adresse bei uns hinterlegt ist, haben wir Ihnen soeben einen
-                Bestätigungs-Link gesendet. Bitte prüfen Sie auch Ihren Spam-Ordner.
+                Falls diese Adresse bei uns hinterlegt war, wurde sie erfolgreich abgemeldet.
+                Sie erhalten ab sofort keine Newsletter-Ausgaben mehr von uns.
               </p>
             </div>
           </div>
@@ -103,7 +102,7 @@ export function UnsubscribeDialog({ open, onOpenChange }: Props) {
                 className="bg-foreground px-4 py-3 eyebrow-sm text-background hover:bg-signal hover:text-signal-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {status === "loading" ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-                Senden
+                Abmelden
               </button>
             </div>
 
@@ -130,8 +129,7 @@ export function UnsubscribeDialog({ open, onOpenChange }: Props) {
             )}
 
             <p className="text-[11px] text-muted-foreground leading-snug">
-              Aus Sicherheitsgründen verlangen wir eine Bestätigung per E-Mail — so kann
-              niemand Ihre Adresse ohne Ihr Wissen abmelden.
+              Die Abmeldung erfolgt sofort. Sie können sich jederzeit erneut anmelden.
             </p>
           </form>
         )}
@@ -139,3 +137,4 @@ export function UnsubscribeDialog({ open, onOpenChange }: Props) {
     </Dialog>
   );
 }
+
