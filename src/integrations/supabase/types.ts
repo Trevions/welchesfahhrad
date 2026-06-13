@@ -80,6 +80,48 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip_hash: string | null
+          message: string
+          name: string
+          status: Database["public"]["Enums"]["contact_status"]
+          subject: string
+          topic: string
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip_hash?: string | null
+          message: string
+          name: string
+          status?: Database["public"]["Enums"]["contact_status"]
+          subject: string
+          topic: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip_hash?: string | null
+          message?: string
+          name?: string
+          status?: Database["public"]["Enums"]["contact_status"]
+          subject?: string
+          topic?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -145,6 +187,7 @@ export type Database = {
       app_role: "admin" | "editor" | "user"
       article_category: "Nachrichten" | "Ratgeber" | "E-Bikes" | "Tests"
       article_status: "draft" | "published"
+      contact_status: "new" | "read" | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -275,6 +318,7 @@ export const Constants = {
       app_role: ["admin", "editor", "user"],
       article_category: ["Nachrichten", "Ratgeber", "E-Bikes", "Tests"],
       article_status: ["draft", "published"],
+      contact_status: ["new", "read", "archived"],
     },
   },
 } as const
