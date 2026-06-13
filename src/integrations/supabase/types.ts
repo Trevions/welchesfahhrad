@@ -209,6 +209,117 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_deliveries: {
+        Row: {
+          attempts: number
+          created_at: string
+          email: string
+          error: string | null
+          id: string
+          issue_id: string
+          message_id: string | null
+          sent_at: string | null
+          status: string
+          subscriber_id: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          email: string
+          error?: string | null
+          id?: string
+          issue_id: string
+          message_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subscriber_id: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          email?: string
+          error?: string | null
+          id?: string
+          issue_id?: string
+          message_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subscriber_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_deliveries_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newsletter_deliveries_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "newsletter_subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_issues: {
+        Row: {
+          article_ids: string[]
+          created_at: string
+          error: string | null
+          html: string
+          id: string
+          issue_date: string
+          preheader: string | null
+          recipients_failed: number
+          recipients_sent: number
+          recipients_total: number
+          sent_at: string | null
+          status: string
+          subject: string
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          article_ids?: string[]
+          created_at?: string
+          error?: string | null
+          html: string
+          id?: string
+          issue_date: string
+          preheader?: string | null
+          recipients_failed?: number
+          recipients_sent?: number
+          recipients_total?: number
+          sent_at?: string | null
+          status?: string
+          subject: string
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          article_ids?: string[]
+          created_at?: string
+          error?: string | null
+          html?: string
+          id?: string
+          issue_date?: string
+          preheader?: string | null
+          recipients_failed?: number
+          recipients_sent?: number
+          recipients_total?: number
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           confirm_token: string
