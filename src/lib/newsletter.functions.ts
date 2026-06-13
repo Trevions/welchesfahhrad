@@ -3,7 +3,6 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const SITE_URL = "https://radmap.de";
 const FROM_EMAIL = "Radmap Newsletter <newsletter@radmap.de>";
 const REPLY_TO = "support@radmap.de";
 
@@ -31,6 +30,17 @@ async function hashIp(ip: string | null): Promise<string | null> {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("")
     .slice(0, 32);
+}
+
+function getSiteUrl() {
+  const origin = getRequestHeader("origin");
+  if (origin?.startsWith("https://")) return origin.replace(/\/$/, "");
+
+  const forwardedHost = getRequestHeader("x-forwarded-host");
+  const host = forwardedHost ?? getRequestHeader("host");
+  if (host) return `https://${host}`.replace(/\/$/, "");
+
+  return "https://radmap.de";
 }
 
 async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string) {
@@ -174,8 +184,9 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
       unsubToken = inserted.unsubscribe_token;
     }
 
-    const confirmUrl = `${SITE_URL}/newsletter/bestaetigen?token=${confirmToken}`;
-    const unsubUrl = `${SITE_URL}/newsletter/abmelden?token=${unsubToken}`;
+    const siteUrl = getSiteUrl();
+    const confirmUrl = `${siteUrl}/newsletter/bestaetigen?token=${confirmToken}`;
+    const unsubUrl = `${siteUrl}/newsletter/abmelden?token=${unsubToken}`;
 
     await sendDoiEmail(data.email, confirmUrl, unsubUrl);
 
