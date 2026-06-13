@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LegalPage, Section, InfoBox } from "@/components/LegalPage";
+import { LegalPage, Section } from "@/components/LegalPage";
+
 
 export const Route = createFileRoute("/impressum")({
   head: () => ({
@@ -22,44 +23,42 @@ function ImpressumPage() {
       title="Impressum"
       lead="Anbieterkennzeichnung gemäß § 5 Telemediengesetz (TMG) und § 18 Abs. 2 Medienstaatsvertrag (MStV)."
     >
-      <InfoBox tone="signal">
-        <strong className="text-foreground">Hinweis für den Betreiber:</strong> Die nachfolgenden Platzhalter
-        <code className="mx-1 px-1.5 py-0.5 bg-muted text-foreground rounded-sm text-xs">[…]</code>
-        müssen vor Veröffentlichung mit den vollständigen, korrekten und
-        wahrheitsgemäßen Daten ersetzt werden. Ein unvollständiges Impressum
-        kann nach § 5 TMG abgemahnt werden.
-      </InfoBox>
-
-      <Section title="Angaben gemäß § 5 TMG">
+      <Section title="Anbieter">
         <p>
-          [Vor- und Nachname / Firmenbezeichnung]<br />
-          [Straße und Hausnummer]<br />
-          [PLZ und Ort]<br />
-          Deutschland
+          <strong className="text-foreground">DigiMarket Bulgaria</strong><br />
+          6400 Dimitrovgrad<br />
+          Bulgarien
         </p>
       </Section>
 
       <Section title="Kontakt">
         <p>
-          Telefon: [+49 …]<br />
-          E-Mail: [kontakt@radmap.de]
+          E-Mail:{" "}
+          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
+            support@radmap.de
+          </a>
         </p>
-      </Section>
-
-      <Section title="Umsatzsteuer-ID">
-        <p>
-          Umsatzsteuer-Identifikationsnummer gemäß § 27 a UStG:<br />
-          [DE… — falls vorhanden, sonst Abschnitt entfernen]
+        <p className="text-sm text-muted-foreground">
+          Eine schnelle elektronische Kontaktaufnahme ist über die oben
+          genannte E-Mail-Adresse jederzeit möglich (§ 5 Abs. 1 Nr. 2 TMG;
+          EuGH, Urteil v. 16.10.2008, C-298/07 — eine Telefonnummer ist nicht
+          zwingend erforderlich, sofern ein weiterer schneller Kommunikations­weg
+          zur Verfügung steht).
         </p>
       </Section>
 
       <Section title="Redaktionell verantwortlich (§ 18 Abs. 2 MStV)">
         <p>
-          [Vor- und Nachname]<br />
-          [Straße und Hausnummer]<br />
-          [PLZ und Ort]
+          Verantwortlich für die journalistisch-redaktionellen Inhalte:<br />
+          <strong className="text-foreground">DigiMarket Bulgaria</strong><br />
+          6400 Dimitrovgrad, Bulgarien<br />
+          E-Mail:{" "}
+          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
+            support@radmap.de
+          </a>
         </p>
       </Section>
+
 
       <Section title="EU-Streitschlichtung">
         <p>

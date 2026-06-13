@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { LegalPage, Section, SubSection, InfoBox } from "@/components/LegalPage";
+import { createFileRoute } from "@tanstack/react-router";
+import { LegalPage, Section, SubSection } from "@/components/LegalPage";
 
 export const Route = createFileRoute("/datenschutz")({
   head: () => ({
@@ -23,22 +23,23 @@ function PrivacyPage() {
       lead="Wir nehmen den Schutz deiner persönlichen Daten ernst. Diese Datenschutzerklärung informiert dich über Art, Umfang und Zweck der Verarbeitung personenbezogener Daten auf radmap.de — gemäß DSGVO und BDSG."
       updated="13. Juni 2026"
     >
-      <InfoBox tone="signal">
-        <strong className="text-foreground">Hinweis für den Betreiber:</strong> Diese Vorlage deckt typische
-        Verarbeitungen einer Magazin-Website ab. Vor Veröffentlichung müssen
-        die Angaben zum Verantwortlichen (Impressum), zu eingesetzten Diensten
-        (z. B. Analyse, Hosting, Newsletter) und ggf. zum
-        Datenschutzbeauftragten ergänzt bzw. angepasst werden.
-      </InfoBox>
+
+
 
       <Section title="1. Verantwortlicher">
         <p>
-          Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne
-          der Datenschutz-Grundverordnung (DSGVO) ist die im{" "}
-          <Link to="/impressum" className="text-signal hover:underline">Impressum</Link>{" "}
-          genannte natürliche oder juristische Person.
+          Verantwortlicher im Sinne der Datenschutz-Grundverordnung (DSGVO):
+        </p>
+        <p>
+          <strong className="text-foreground">DigiMarket Bulgaria</strong><br />
+          6400 Dimitrovgrad, Bulgarien<br />
+          E-Mail:{" "}
+          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
+            support@radmap.de
+          </a>
         </p>
       </Section>
+
 
       <Section title="2. Allgemeines zur Datenverarbeitung">
         <SubSection title="Umfang der Verarbeitung">

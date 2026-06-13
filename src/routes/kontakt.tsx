@@ -39,16 +39,22 @@ function ContactPage() {
           <div className="border border-border bg-card p-5">
             <Mail className="h-4 w-4 text-signal" />
             <div className="mt-3 eyebrow-sm text-muted-foreground">E-Mail</div>
-            <div className="mt-1 text-sm text-foreground">
-              Siehe{" "}
-              <Link to="/impressum" className="text-signal hover:underline">Impressum</Link>
-            </div>
+            <a
+              href="mailto:support@radmap.de"
+              className="mt-1 inline-block text-sm text-foreground hover:text-signal transition-colors"
+            >
+              support@radmap.de
+            </a>
           </div>
           <div className="border border-border bg-card p-5">
             <MapPin className="h-4 w-4 text-signal" />
-            <div className="mt-3 eyebrow-sm text-muted-foreground">Postanschrift</div>
-            <div className="mt-1 text-sm text-foreground">Siehe Impressum</div>
+            <div className="mt-3 eyebrow-sm text-muted-foreground">Anbieter</div>
+            <div className="mt-1 text-sm text-foreground">
+              DigiMarket Bulgaria<br />
+              6400 Dimitrovgrad, Bulgarien
+            </div>
           </div>
+
         </div>
       </Section>
 
@@ -140,10 +146,12 @@ function ContactPage() {
 
         <InfoBox>
           Bis zur technischen Freischaltung des Formular-Versands erreichst du
-          uns am schnellsten über die im{" "}
-          <Link to="/impressum" className="text-signal hover:underline">Impressum</Link>{" "}
-          angegebene E-Mail-Adresse.
+          uns am schnellsten per E-Mail an{" "}
+          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
+            support@radmap.de
+          </a>.
         </InfoBox>
+
       </Section>
     </LegalPage>
   );
