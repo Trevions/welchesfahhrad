@@ -322,14 +322,10 @@ function Index() {
               </Link>
             </div>
 
-            <div className="-mx-6 md:-mx-8 px-6 md:px-8 overflow-x-auto pb-4 scrollbar-thin">
-              <div className="flex gap-6 min-w-min">
-                {tests.map((a, i) => (
-                  <div key={a.slug} className="w-[280px] md:w-[340px] shrink-0">
-                    <ArticleCard article={a} size="sm" index={i} />
-                  </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+              {tests.slice(0, 4).map((a, i) => (
+                <ArticleCard key={a.slug} article={a} size="sm" index={i} />
+              ))}
             </div>
           </div>
         </section>
