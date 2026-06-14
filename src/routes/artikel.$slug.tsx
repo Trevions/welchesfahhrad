@@ -167,13 +167,29 @@ function ArticlePage() {
 
       {a.image && (
         <div className="mx-auto max-w-[1400px] px-6 md:px-8">
-          <div className="relative overflow-hidden bg-card border border-border animate-scale-in">
+          <figure className="relative overflow-hidden bg-card border border-border animate-scale-in">
             <img
               src={a.image}
-              alt={a.title}
+              alt={a.imageCaption || a.title}
               className="aspect-[16/9] w-full object-cover"
             />
-          </div>
+            {a.imageIsAi && (
+              <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-background/85 backdrop-blur px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-foreground border border-border">
+                <span className="h-1.5 w-1.5 rounded-full bg-signal" />
+                KI-generiert
+              </span>
+            )}
+            {(a.imageCaption || a.imageCredit) && (
+              <figcaption className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-border bg-card/60 px-4 py-2.5 text-xs leading-relaxed text-muted-foreground">
+                {a.imageCaption && <span className="text-foreground/80">{a.imageCaption}</span>}
+                {a.imageCredit && (
+                  <span className="uppercase tracking-widest text-[10px] text-muted-foreground/80">
+                    {a.imageCredit}
+                  </span>
+                )}
+              </figcaption>
+            )}
+          </figure>
         </div>
       )}
 

@@ -46,6 +46,9 @@ type ArticleFormState = {
   excerpt: string;
   body: string;
   cover_image: string;
+  cover_image_caption: string;
+  cover_image_credit: string;
+  cover_image_is_ai: boolean;
   category: "Nachrichten" | "Ratgeber" | "E-Bikes" | "Tests";
   source: string;
   status: "draft" | "published";
@@ -62,6 +65,9 @@ const empty: ArticleFormState = {
   excerpt: "",
   body: "",
   cover_image: "",
+  cover_image_caption: "",
+  cover_image_credit: "",
+  cover_image_is_ai: false,
   category: "Nachrichten",
   source: "",
   status: "draft",
@@ -372,6 +378,38 @@ Ein **fetter** Satz oder ein *kursiver*.
               onChange={(e) => setField("cover_image", e.target.value)}
               placeholder="…oder URL einfügen"
               className="bg-zinc-950 border-zinc-800 text-zinc-100 text-xs"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Bildunterschrift (optional)</Label>
+            <Textarea
+              value={form.cover_image_caption}
+              onChange={(e) => setField("cover_image_caption", e.target.value)}
+              placeholder="z.B. Ein Pedelec auf dem Radweg in Berlin-Mitte."
+              rows={2}
+              className="bg-zinc-950 border-zinc-800 text-zinc-100 resize-none text-sm"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Bildquelle / Credit (optional)</Label>
+            <Input
+              value={form.cover_image_credit}
+              onChange={(e) => setField("cover_image_credit", e.target.value)}
+              placeholder="z.B. Foto: ADFC / Max Mustermann"
+              className="bg-zinc-950 border-zinc-800 text-zinc-100 text-sm"
+            />
+          </div>
+
+          <div className="flex items-center justify-between rounded border border-zinc-800 bg-zinc-950 px-3 py-2">
+            <div>
+              <div className="text-sm text-zinc-200">KI-generiertes Bild</div>
+              <div className="text-[11px] text-zinc-500">Zeigt einen Hinweis unter dem Bild an</div>
+            </div>
+            <Switch
+              checked={form.cover_image_is_ai}
+              onCheckedChange={(c) => setField("cover_image_is_ai", c)}
             />
           </div>
 
