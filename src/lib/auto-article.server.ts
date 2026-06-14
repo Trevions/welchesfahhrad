@@ -618,7 +618,7 @@ export async function runAutoGeneratePipeline(
             continue;
           }
 
-          if (scraped.wordCount < 120) {
+          if (scraped.wordCount < 250) {
             await supabaseAdmin.from("article_sources").insert({
               source_url: source.url,
               source_title: source.title,
