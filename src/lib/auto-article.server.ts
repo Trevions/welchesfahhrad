@@ -778,6 +778,13 @@ export async function runAutoGeneratePipeline(
             scraped_text: scraped.text,
           });
 
+          try {
+            const { notifyNewArticle } = await import("@/lib/indexnow.server");
+            await notifyNewArticle(slug);
+          } catch (e) {
+            console.error("[indexnow] auto notify failed", e);
+          }
+
           articlesCreated++;
           break;
         } catch (e) {

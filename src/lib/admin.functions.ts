@@ -125,6 +125,14 @@ export const upsertArticle = createServerFn({ method: "POST" })
 
     const { data: row, error } = await query;
     if (error) throw new Error(error.message);
+    if (data.status === "published") {
+      try {
+        const { notifyNewArticle } = await import("@/lib/indexnow.server");
+        await notifyNewArticle(row.slug as string);
+      } catch (e) {
+        console.error("[indexnow] notify failed", e);
+      }
+    }
     return { id: row.id as string, slug: row.slug as string };
   });
 
