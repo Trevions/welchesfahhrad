@@ -77,9 +77,8 @@ export function MotionLayer() {
       }
     });
 
-    // ---- Reveal observer (deferred so freshly-mounted routes have layout
-    //      computed; also force-reveal anything already in viewport to
-    //      avoid missed intersections after back/forward navigation).
+    // ---- Reveal observer
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-reveal], .kinetic");
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
@@ -89,25 +88,9 @@ export function MotionLayer() {
           }
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -5% 0px" },
+      { threshold: 0.18, rootMargin: "0px 0px -8% 0px" },
     );
-    const attachReveals = () => {
-      const vh = window.innerHeight || document.documentElement.clientHeight;
-      const revealEls = document.querySelectorAll<HTMLElement>(
-        "[data-reveal]:not(.is-visible), .kinetic:not(.is-visible)",
-      );
-      revealEls.forEach((el) => {
-        const r = el.getBoundingClientRect();
-        if (r.top < vh * 0.95 && r.bottom > 0) {
-          el.classList.add("is-visible");
-          return;
-        }
-        io.observe(el);
-      });
-    };
-    const raf1 = requestAnimationFrame(() => {
-      requestAnimationFrame(attachReveals);
-    });
+    revealEls.forEach((el) => io.observe(el));
 
     // ---- Magnetic
     const magnets = Array.from(document.querySelectorAll<HTMLElement>("[data-magnetic]"));
@@ -134,7 +117,6 @@ export function MotionLayer() {
     }
 
     return () => {
-      cancelAnimationFrame(raf1);
       window.removeEventListener("scroll", onScroll);
       bar.remove();
       if (spot) {
