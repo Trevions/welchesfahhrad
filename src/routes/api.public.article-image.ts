@@ -11,11 +11,11 @@ function cleanPath(value: string | null): string | null {
   }
 }
 
-export const Route = createFileRoute("/api/public/article-image")({
+export const Route = createFileRoute("/api/public/article-image/$path")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
-        const path = cleanPath(new URL(request.url).searchParams.get("path"));
+      GET: async ({ params }) => {
+        const path = cleanPath(params.path);
         if (!path) return new Response("Bad image path", { status: 400 });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
