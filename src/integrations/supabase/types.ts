@@ -133,6 +133,9 @@ export type Database = {
           body: string
           category: Database["public"]["Enums"]["article_category"]
           cover_image: string | null
+          cover_image_caption: string | null
+          cover_image_credit: string | null
+          cover_image_is_ai: boolean
           created_at: string
           excerpt: string | null
           id: string
@@ -154,6 +157,9 @@ export type Database = {
           body?: string
           category: Database["public"]["Enums"]["article_category"]
           cover_image?: string | null
+          cover_image_caption?: string | null
+          cover_image_credit?: string | null
+          cover_image_is_ai?: boolean
           created_at?: string
           excerpt?: string | null
           id?: string
@@ -175,6 +181,9 @@ export type Database = {
           body?: string
           category?: Database["public"]["Enums"]["article_category"]
           cover_image?: string | null
+          cover_image_caption?: string | null
+          cover_image_credit?: string | null
+          cover_image_is_ai?: boolean
           created_at?: string
           excerpt?: string | null
           id?: string
