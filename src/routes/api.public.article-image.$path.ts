@@ -11,7 +11,7 @@ function cleanPath(value: string | null): string | null {
   }
 }
 
-export const Route = createFileRoute("/api/public/article-image/")({
+export const Route = createFileRoute("/api/public/article-image/$path")({
   server: {
     handlers: {
       GET: async ({ request }) => {
