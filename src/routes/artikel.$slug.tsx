@@ -166,15 +166,16 @@ function ArticlePage() {
       </header>
 
       {a.image && (
-        <div className="mx-auto max-w-[1400px] px-6 md:px-8">
-          <div className="relative overflow-hidden bg-card border border-border animate-scale-in">
+        <figure className="mx-auto max-w-[1100px] px-6 md:px-8">
+          <div className="relative overflow-hidden rounded-sm bg-card border border-border animate-scale-in">
             <img
               src={a.image}
               alt={a.title}
+              loading="eager"
               className="aspect-[16/9] w-full object-cover"
             />
           </div>
-        </div>
+        </figure>
       )}
 
       <div className="mx-auto max-w-[1100px] px-6 md:px-8 py-16 md:py-24">
