@@ -18,6 +18,7 @@ import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { MotionLayer } from "@/components/MotionLayer";
 import { CookieConsentBanner } from "@/components/CookieConsent";
+import { InstallAppBanner } from "@/components/InstallAppBanner";
 
 function NotFoundComponent() {
   return (
@@ -86,6 +87,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#050505" },
+      { name: "application-name", content: "RADMAP" },
+      { name: "apple-mobile-web-app-title", content: "RADMAP" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { title: "radmap.de – Fahrrad-News, Tests & Ratgeber" },
       {
         name: "description",
@@ -107,6 +113,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icons/icon-192.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -151,6 +160,7 @@ function RootComponent() {
           <Footer />
           <MobileNav />
           <CookieConsentBanner />
+          <InstallAppBanner />
         </div>
       </ThemeProvider>
     </QueryClientProvider>
