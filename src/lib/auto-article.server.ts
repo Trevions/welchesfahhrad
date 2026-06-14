@@ -660,6 +660,21 @@ export async function runAutoGeneratePipeline(
             continue;
           }
 
+          // Enforce minimum article length — no tiny 5-line stubs.
+          const bodyWordCount = rewritten.body_markdown.trim().split(/\s+/).length;
+          if (bodyWordCount < 500) {
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              scraped_text: scraped.text,
+              skip_reason: `article too short (${bodyWordCount} words, min 500) — rejected`,
+            });
+            continue;
+          }
+
           // 3) Validate generated text against the source — block hallucinations.
           const validation = validateAgainstSource(rewritten, scraped.text);
           if (!validation.ok) {
