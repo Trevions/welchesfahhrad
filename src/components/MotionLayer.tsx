@@ -134,6 +134,7 @@ export function MotionLayer() {
     }
 
     return () => {
+      cancelAnimationFrame(raf1);
       window.removeEventListener("scroll", onScroll);
       bar.remove();
       if (spot) {
