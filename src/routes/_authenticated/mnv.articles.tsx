@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { listArticles, deleteArticle } from "@/lib/admin.functions";
+import { articleImageUrl } from "@/lib/article-image-url";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -150,7 +151,7 @@ function ArticlesList() {
                     <td className="px-4 py-3">
                       <div className="h-10 w-14 bg-zinc-900 rounded overflow-hidden">
                         {a.cover_image && (
-                          <img src={a.cover_image} alt="" className="h-full w-full object-cover" />
+                          <img src={articleImageUrl(a.cover_image)} alt="" className="h-full w-full object-cover" />
                         )}
                       </div>
                     </td>
