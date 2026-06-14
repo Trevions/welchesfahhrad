@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { Article } from "@/lib/articles";
+import { articleImageUrl } from "@/lib/article-image-url";
 
 // Convert stored markdown body into paragraphs the existing UI expects.
 function bodyToParagraphs(md: string | null | undefined): string[] {
@@ -48,7 +49,7 @@ function rowToArticle(r: any): Article {
     category,
     date: formatDate(r.published_at ?? r.updated_at ?? r.created_at),
     readTime: r.read_time ?? "4 min",
-    image: r.cover_image || FALLBACK_IMAGE,
+    image: articleImageUrl(r.cover_image) || FALLBACK_IMAGE,
     source: r.source ?? undefined,
     body: bodyToParagraphs(r.body),
   };

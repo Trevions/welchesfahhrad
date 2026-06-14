@@ -33,6 +33,7 @@ import { Route as NewsletterAbmeldenRouteImport } from './routes/newsletter.abme
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AuthenticatedMnvRouteImport } from './routes/_authenticated/mnv'
 import { Route as AuthenticatedMnvIndexRouteImport } from './routes/_authenticated/mnv.index'
+import { Route as ApiPublicArticleImageRouteImport } from './routes/api.public.article-image'
 import { Route as AuthenticatedMnvUsersRouteImport } from './routes/_authenticated/mnv.users'
 import { Route as AuthenticatedMnvNewsletterRouteImport } from './routes/_authenticated/mnv.newsletter'
 import { Route as AuthenticatedMnvMessagesRouteImport } from './routes/_authenticated/mnv.messages'
@@ -165,6 +166,11 @@ const AuthenticatedMnvIndexRoute = AuthenticatedMnvIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
+const ApiPublicArticleImageRoute = ApiPublicArticleImageRouteImport.update({
+  id: '/api/public/article-image',
+  path: '/api/public/article-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedMnvUsersRoute = AuthenticatedMnvUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
   '/mnv/users': typeof AuthenticatedMnvUsersRoute
+  '/api/public/article-image': typeof ApiPublicArticleImageRoute
   '/mnv/': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
   '/mnv/users': typeof AuthenticatedMnvUsersRoute
+  '/api/public/article-image': typeof ApiPublicArticleImageRoute
   '/mnv': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
@@ -340,6 +348,7 @@ export interface FileRoutesById {
   '/_authenticated/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/_authenticated/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
   '/_authenticated/mnv/users': typeof AuthenticatedMnvUsersRoute
+  '/api/public/article-image': typeof ApiPublicArticleImageRoute
   '/_authenticated/mnv/': typeof AuthenticatedMnvIndexRoute
   '/_authenticated/mnv/articles_/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/_authenticated/mnv/articles_/new': typeof AuthenticatedMnvArticlesNewRoute
@@ -379,6 +388,7 @@ export interface FileRouteTypes {
     | '/mnv/messages'
     | '/mnv/newsletter'
     | '/mnv/users'
+    | '/api/public/article-image'
     | '/mnv/'
     | '/mnv/articles/$id'
     | '/mnv/articles/new'
@@ -415,6 +425,7 @@ export interface FileRouteTypes {
     | '/mnv/messages'
     | '/mnv/newsletter'
     | '/mnv/users'
+    | '/api/public/article-image'
     | '/mnv'
     | '/mnv/articles/$id'
     | '/mnv/articles/new'
@@ -453,6 +464,7 @@ export interface FileRouteTypes {
     | '/_authenticated/mnv/messages'
     | '/_authenticated/mnv/newsletter'
     | '/_authenticated/mnv/users'
+    | '/api/public/article-image'
     | '/_authenticated/mnv/'
     | '/_authenticated/mnv/articles_/$id'
     | '/_authenticated/mnv/articles_/new'
@@ -485,6 +497,7 @@ export interface RootRouteChildren {
   ArtikelSlugRoute: typeof ArtikelSlugRoute
   NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
   NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
+  ApiPublicArticleImageRoute: typeof ApiPublicArticleImageRoute
   ApiPublicArticlesAutoGenerateRoute: typeof ApiPublicArticlesAutoGenerateRoute
   ApiPublicNewsletterDispatchRoute: typeof ApiPublicNewsletterDispatchRoute
   ApiPublicNewsletterUnsubscribeRoute: typeof ApiPublicNewsletterUnsubscribeRoute
@@ -661,6 +674,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMnvIndexRouteImport
       parentRoute: typeof AuthenticatedMnvRoute
     }
+    '/api/public/article-image': {
+      id: '/api/public/article-image'
+      path: '/api/public/article-image'
+      fullPath: '/api/public/article-image'
+      preLoaderRoute: typeof ApiPublicArticleImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/mnv/users': {
       id: '/_authenticated/mnv/users'
       path: '/users'
@@ -809,6 +829,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArtikelSlugRoute: ArtikelSlugRoute,
   NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,
   NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
+  ApiPublicArticleImageRoute: ApiPublicArticleImageRoute,
   ApiPublicArticlesAutoGenerateRoute: ApiPublicArticlesAutoGenerateRoute,
   ApiPublicNewsletterDispatchRoute: ApiPublicNewsletterDispatchRoute,
   ApiPublicNewsletterUnsubscribeRoute: ApiPublicNewsletterUnsubscribeRoute,
