@@ -15,6 +15,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RedaktionRouteImport } from './routes/redaktion'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
 import { Route as NutzungsbedingungenRouteImport } from './routes/nutzungsbedingungen'
+import { Route as NewsSitemapDotxmlRouteImport } from './routes/news-sitemap[.]xml'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
 import { Route as MerklisteRouteImport } from './routes/merkliste'
 import { Route as MediadatenRouteImport } from './routes/mediadaten'
@@ -75,6 +76,11 @@ const RatgeberRoute = RatgeberRouteImport.update({
 const NutzungsbedingungenRoute = NutzungsbedingungenRouteImport.update({
   id: '/nutzungsbedingungen',
   path: '/nutzungsbedingungen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsSitemapDotxmlRoute = NewsSitemapDotxmlRouteImport.update({
+  id: '/news-sitemap.xml',
+  path: '/news-sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NachrichtenRoute = NachrichtenRouteImport.update({
@@ -256,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
+  '/news-sitemap.xml': typeof NewsSitemapDotxmlRoute
   '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
@@ -294,6 +301,7 @@ export interface FileRoutesByTo {
   '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
+  '/news-sitemap.xml': typeof NewsSitemapDotxmlRoute
   '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
@@ -333,6 +341,7 @@ export interface FileRoutesById {
   '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
+  '/news-sitemap.xml': typeof NewsSitemapDotxmlRoute
   '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
@@ -373,6 +382,7 @@ export interface FileRouteTypes {
     | '/mediadaten'
     | '/merkliste'
     | '/nachrichten'
+    | '/news-sitemap.xml'
     | '/nutzungsbedingungen'
     | '/ratgeber'
     | '/redaktion'
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/mediadaten'
     | '/merkliste'
     | '/nachrichten'
+    | '/news-sitemap.xml'
     | '/nutzungsbedingungen'
     | '/ratgeber'
     | '/redaktion'
@@ -449,6 +460,7 @@ export interface FileRouteTypes {
     | '/mediadaten'
     | '/merkliste'
     | '/nachrichten'
+    | '/news-sitemap.xml'
     | '/nutzungsbedingungen'
     | '/ratgeber'
     | '/redaktion'
@@ -489,6 +501,7 @@ export interface RootRouteChildren {
   MediadatenRoute: typeof MediadatenRoute
   MerklisteRoute: typeof MerklisteRoute
   NachrichtenRoute: typeof NachrichtenRoute
+  NewsSitemapDotxmlRoute: typeof NewsSitemapDotxmlRoute
   NutzungsbedingungenRoute: typeof NutzungsbedingungenRoute
   RatgeberRoute: typeof RatgeberRoute
   RedaktionRoute: typeof RedaktionRoute
@@ -547,6 +560,13 @@ declare module '@tanstack/react-router' {
       path: '/nutzungsbedingungen'
       fullPath: '/nutzungsbedingungen'
       preLoaderRoute: typeof NutzungsbedingungenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news-sitemap.xml': {
+      id: '/news-sitemap.xml'
+      path: '/news-sitemap.xml'
+      fullPath: '/news-sitemap.xml'
+      preLoaderRoute: typeof NewsSitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nachrichten': {
@@ -821,6 +841,7 @@ const rootRouteChildren: RootRouteChildren = {
   MediadatenRoute: MediadatenRoute,
   MerklisteRoute: MerklisteRoute,
   NachrichtenRoute: NachrichtenRoute,
+  NewsSitemapDotxmlRoute: NewsSitemapDotxmlRoute,
   NutzungsbedingungenRoute: NutzungsbedingungenRoute,
   RatgeberRoute: RatgeberRoute,
   RedaktionRoute: RedaktionRoute,
