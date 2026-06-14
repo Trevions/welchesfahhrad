@@ -355,15 +355,15 @@ PFLICHT:
 1. Jeder Name (Fahrer, Team, Ort, Veranstaltung) MUSS wörtlich im Quelltext vorkommen.
 2. Komplett neue Formulierungen — niemals wörtlich aus dem Quelltext kopieren.
 3. Tonalität: sachlich, präzise, journalistisch (Nachrichtenstil), keine Werbung, keine Emotion.
-4. Länge body_markdown: 350–550 Wörter. Wenn die Quelle nur 200 Wörter Fakten hergibt, schreibe lieber 350 als gestreckte 550.
-5. Struktur: 2–4 H2-Überschriften, kurze Absätze, gerne 1 Liste mit echten Fakten.
+4. Länge body_markdown: MINDESTENS 600 Wörter, Ziel 700–900 Wörter. Kürzere Artikel werden abgelehnt. Nutze ALLE relevanten Fakten aus dem Quelltext, gib Kontext, Hintergrund, Einordnung, Details zu Personen/Produkten/Orten — solange jeder Fakt im Quelltext belegt ist. Wenn die Quelle wirklich zu wenig hergibt (< 250 Wörter Fakten), setze skip=true mit Grund "source_too_thin".
+5. Struktur: aussagekräftige Einleitung (mind. 3 Sätze), danach 3–5 H2-Überschriften mit jeweils 2–3 ausformulierten Absätzen, mind. 1 Liste mit konkreten Fakten/Zahlen, abschließender Absatz mit Einordnung (nur Fakten aus Quelltext).
 6. NIEMALS Medien-Quellen namentlich nennen ("laut Magazin XY"). Marken/Hersteller (Bosch, Shimano, Canyon usw.) DÜRFEN genannt werden, wenn sie im Quelltext stehen.
 7. SEO: seo_title ≤ 60 Zeichen, seo_description 140–155 Zeichen, seo_keywords 5–8 deutsche Long-Tail.
 8. image_prompt: detaillierter ENGLISCHER Prompt für ein fotorealistisches Header-Bild zum Thema. Keine Logos, keine eingeblendete Schrift.
 9. image_alt: 80–120 Zeichen, beschreibend.
-10. read_time: "X min" basierend auf ~200 Wörtern/min.
+10. read_time: "X min" basierend auf ~200 Wörtern/min (bei 700 Wörtern also "4 min").
 11. slug: kurz, deutsch (Umlaute aufgelöst), keine Sonderzeichen.
-12. key_facts: 5–10 kurze deutsche Stichpunkte mit den wichtigsten überprüfbaren Fakten, die du aus dem QUELLTEXT entnommen hast (Namen, Zahlen, Orte). JEDER Stichpunkt MUSS sich im Quelltext nachweisen lassen.
+12. key_facts: 6–12 kurze deutsche Stichpunkte mit den wichtigsten überprüfbaren Fakten aus dem QUELLTEXT (Namen, Zahlen, Orte). JEDER Stichpunkt MUSS sich im Quelltext nachweisen lassen.
 
 SKIP-REGEL:
 - skip=true NUR wenn der Quelltext keine sachliche Berichterstattung enthält (z. B. nur ein Magazin-Inhaltsverzeichnis, ein Paywall-Anriss von < 100 Wörtern Fakten, ein reines Interview, das ohne Medien-Marke nicht funktioniert) ODER wenn das Thema nichts mit Fahrrad/Radsport/E-Bike/Radverkehr zu tun hat.
@@ -618,7 +618,7 @@ export async function runAutoGeneratePipeline(
             continue;
           }
 
-          if (scraped.wordCount < 120) {
+          if (scraped.wordCount < 250) {
             await supabaseAdmin.from("article_sources").insert({
               source_url: source.url,
               source_title: source.title,
@@ -656,6 +656,21 @@ export async function runAutoGeneratePipeline(
               status: "failed",
               scraped_text: scraped.text,
               skip_reason: "AI returned incomplete article",
+            });
+            continue;
+          }
+
+          // Enforce minimum article length — no tiny 5-line stubs.
+          const bodyWordCount = rewritten.body_markdown.trim().split(/\s+/).length;
+          if (bodyWordCount < 500) {
+            await supabaseAdmin.from("article_sources").insert({
+              source_url: source.url,
+              source_title: source.title,
+              source_domain: source.domain,
+              category,
+              status: "failed",
+              scraped_text: scraped.text,
+              skip_reason: `article too short (${bodyWordCount} words, min 500) — rejected`,
             });
             continue;
           }
