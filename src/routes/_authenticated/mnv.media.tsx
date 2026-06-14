@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { listMedia, deleteMedia } from "@/lib/admin.functions";
+import { articleImageUrl } from "@/lib/article-image-url";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
@@ -89,7 +90,7 @@ function MediaLibrary() {
                 <div className="text-[10px] text-zinc-300 truncate">{f.name}</div>
                 <div className="flex items-center justify-between gap-1">
                   <button
-                    onClick={() => { navigator.clipboard.writeText(f.url); toast.success("URL kopiert"); }}
+                    onClick={() => { navigator.clipboard.writeText(articleImageUrl(`article-images/${f.name}`)); toast.success("URL kopiert"); }}
                     className="flex-1 h-7 grid place-items-center rounded bg-zinc-800/80 hover:bg-zinc-700 text-zinc-100"
                   >
                     <Copy className="h-3 w-3" />

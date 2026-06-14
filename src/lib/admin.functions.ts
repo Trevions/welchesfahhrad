@@ -1,9 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { articleImageUrl } from "@/lib/article-image-url";
 
 const articleCategories = ["Nachrichten", "Ratgeber", "E-Bikes", "Tests"] as const;
 const articleStatuses = ["draft", "published"] as const;
+const imageRefSchema = z.string().max(1200).optional().nullable().or(z.literal(""));
 
 const articleInput = z.object({
   id: z.string().uuid().optional(),
@@ -11,7 +13,7 @@ const articleInput = z.object({
   title: z.string().min(3).max(300),
   excerpt: z.string().max(600).optional().nullable(),
   body: z.string().default(""),
-  cover_image: z.string().url().optional().nullable().or(z.literal("")),
+  cover_image: imageRefSchema,
   category: z.enum(articleCategories),
   source: z.string().max(200).optional().nullable(),
   status: z.enum(articleStatuses),
@@ -19,7 +21,7 @@ const articleInput = z.object({
   seo_title: z.string().max(120).optional().nullable(),
   seo_description: z.string().max(300).optional().nullable(),
   seo_keywords: z.string().max(400).optional().nullable(),
-  og_image: z.string().url().optional().nullable().or(z.literal("")),
+  og_image: imageRefSchema,
   published_at: z.string().optional().nullable(),
 });
 
@@ -223,7 +225,6 @@ export const listMedia = createServerFn({ method: "GET" })
       .from("article-images")
       .list("", { limit: 200, sortBy: { column: "created_at", order: "desc" } });
     if (error) throw new Error(error.message);
-    const url = (process.env.SUPABASE_URL ?? "").replace(/\/$/, "");
     return {
       files: (data ?? [])
         .filter((f: any) => f.name && !f.name.endsWith("/"))
@@ -232,7 +233,7 @@ export const listMedia = createServerFn({ method: "GET" })
           size: f.metadata?.size ?? 0,
           mimetype: f.metadata?.mimetype ?? "",
           created_at: f.created_at,
-          url: `${url}/storage/v1/object/public/article-images/${f.name}`,
+          url: articleImageUrl(`article-images/${f.name}`),
         })),
     };
   });

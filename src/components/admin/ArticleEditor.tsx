@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import { upsertArticle } from "@/lib/admin.functions";
+import { articleImageUrl } from "@/lib/article-image-url";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -121,11 +122,12 @@ export function ArticleEditor({ initial }: { initial?: Partial<ArticleFormState>
         upsert: false,
       });
       if (error) throw error;
-      const { data } = supabase.storage.from("article-images").getPublicUrl(name);
+      const storedUrl = `article-images/${name}`;
+      const displayUrl = articleImageUrl(storedUrl);
       if (target === "inline") {
-        insertMd(`\n\n![Bild](${data.publicUrl})\n\n`);
+        insertMd(`\n\n![Bild](${displayUrl})\n\n`);
       } else {
-        setField(target, data.publicUrl);
+        setField(target, storedUrl);
       }
       toast.success("Bild hochgeladen");
     } catch (e) {
@@ -344,7 +346,7 @@ Ein **fetter** Satz oder ein *kursiver*.
             <Label>Cover-Bild</Label>
             <div className="aspect-video bg-zinc-950 border border-zinc-800 rounded overflow-hidden grid place-items-center">
               {form.cover_image ? (
-                <img src={form.cover_image} alt="" className="h-full w-full object-cover" />
+                <img src={articleImageUrl(form.cover_image)} alt="" className="h-full w-full object-cover" />
               ) : (
                 <ImageIcon className="h-8 w-8 text-zinc-700" />
               )}

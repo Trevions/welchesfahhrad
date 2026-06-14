@@ -1,5 +1,6 @@
 // Server-only HTML/text renderer for the weekly newsletter.
 // Pure functions — no I/O. Called from the dispatch route.
+import { articleImageUrl } from "@/lib/article-image-url";
 
 export interface IssueArticle {
   id: string;
@@ -12,6 +13,8 @@ export interface IssueArticle {
 
 const SITE = "https://radmap.de";
 const BRAND_ORANGE = "#f97316";
+const abs = (u: string) => (/^https?:\/\//i.test(u) ? u : SITE + (u.startsWith("/") ? u : "/" + u));
+const newsletterImageUrl = (u: string | null) => (u ? abs(articleImageUrl(u)) : "");
 
 function escapeHtml(s: string): string {
   return s
@@ -63,8 +66,8 @@ export function renderIssueHtml(opts: RenderOpts): string {
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 32px;">
       <tr><td>
         ${
-          hero.cover_image
-            ? `<a href="${SITE}/artikel/${escapeHtml(hero.slug)}" style="text-decoration:none;"><img src="${escapeHtml(hero.cover_image)}" alt="" width="560" style="display:block;width:100%;max-width:560px;height:auto;border-radius:6px;border:1px solid #262626;" /></a>`
+          newsletterImageUrl(hero.cover_image)
+            ? `<a href="${SITE}/artikel/${escapeHtml(hero.slug)}" style="text-decoration:none;"><img src="${escapeHtml(newsletterImageUrl(hero.cover_image))}" alt="" width="560" style="display:block;width:100%;max-width:560px;height:auto;border-radius:6px;border:1px solid #262626;" /></a>`
             : ""
         }
         <div style="margin-top:18px;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:${BRAND_ORANGE};font-weight:700;">${escapeHtml(hero.category)}</div>
@@ -87,9 +90,9 @@ export function renderIssueHtml(opts: RenderOpts): string {
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border-top:1px solid #262626;padding-top:24px;">
       <tr>
         ${
-          a.cover_image
+          newsletterImageUrl(a.cover_image)
             ? `<td width="160" valign="top" style="padding-right:16px;">
-                <a href="${url}" style="text-decoration:none;"><img src="${escapeHtml(a.cover_image)}" alt="" width="160" style="display:block;width:160px;height:auto;border-radius:4px;border:1px solid #262626;" /></a>
+                <a href="${url}" style="text-decoration:none;"><img src="${escapeHtml(newsletterImageUrl(a.cover_image))}" alt="" width="160" style="display:block;width:160px;height:auto;border-radius:4px;border:1px solid #262626;" /></a>
               </td>`
             : ""
         }
