@@ -93,6 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Tagesaktuelle Nachrichten, Tests, Ratgeber und Kaufberatung rund um Fahrräder, E-Bikes und Radsport in Deutschland. Unabhängig und kompetent.",
       },
       { name: "author", content: "radmap.de" },
+      { name: "google-site-verification", content: "_6gLgomav_z_dTAtMUX9TdQzBXEmmx_IiEx_lW1vvoM" },
       { property: "og:site_name", content: "radmap.de" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
