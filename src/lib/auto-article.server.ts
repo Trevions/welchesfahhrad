@@ -475,8 +475,7 @@ export async function generateImagePng(prompt: string): Promise<Uint8Array> {
   return bytes;
 }
 
-// ---------- Upload to article-images bucket, return long-lived signed URL ----------
-const TEN_YEARS_SECONDS = 60 * 60 * 24 * 365 * 10;
+// ---------- Upload to article-images bucket, return stable storage reference ----------
 
 export async function uploadImageAndGetUrl(
   slug: string,
@@ -492,11 +491,7 @@ export async function uploadImageAndGetUrl(
     .upload(path, bytes, { contentType, upsert: true });
   if (error) throw new Error(`Upload failed: ${error.message}`);
 
-  const { data, error: urlErr } = await supabaseAdmin.storage
-    .from("article-images")
-    .createSignedUrl(path, TEN_YEARS_SECONDS);
-  if (urlErr || !data?.signedUrl) throw new Error(`Signed URL failed: ${urlErr?.message}`);
-  return data.signedUrl;
+  return `article-images/${path}`;
 }
 
 // ---------- Ensure unique slug ----------
