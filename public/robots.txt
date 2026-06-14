@@ -1,3 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /mnv
+Disallow: /api/
+
+Sitemap: https://radmap.de/sitemap.xml
+Sitemap: https://radmap.de/news-sitemap.xml
