@@ -51,6 +51,9 @@ function rowToArticle(r: any): Article {
     readTime: r.read_time ?? "4 min",
     image: articleImageUrl(r.cover_image) || FALLBACK_IMAGE,
     source: r.source ?? undefined,
+    imageCaption: r.cover_image_caption ?? undefined,
+    imageCredit: r.cover_image_credit ?? undefined,
+    imageIsAi: !!r.cover_image_is_ai,
     body: bodyToParagraphs(r.body),
   };
 }
@@ -61,7 +64,7 @@ export const getPublicArticles = createServerFn({ method: "GET" }).handler(
     const { data, error } = await supabaseAdmin
       .from("articles")
       .select(
-        "slug, title, excerpt, body, cover_image, category, source, read_time, published_at, updated_at, created_at",
+        "slug, title, excerpt, body, cover_image, cover_image_caption, cover_image_credit, cover_image_is_ai, category, source, read_time, published_at, updated_at, created_at",
       )
       .eq("status", "published")
       .not("cover_image", "is", null)
@@ -80,7 +83,7 @@ export const getPublicArticleBySlug = createServerFn({ method: "POST" })
     const { data: row, error } = await supabaseAdmin
       .from("articles")
       .select(
-        "slug, title, excerpt, body, cover_image, category, source, read_time, seo_title, seo_description, seo_keywords, og_image, published_at, updated_at, created_at",
+        "slug, title, excerpt, body, cover_image, cover_image_caption, cover_image_credit, cover_image_is_ai, category, source, read_time, seo_title, seo_description, seo_keywords, og_image, published_at, updated_at, created_at",
       )
       .eq("slug", data.slug)
       .eq("status", "published")

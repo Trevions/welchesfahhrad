@@ -8,6 +8,9 @@ export type Article = {
   readTime: string;
   image: string;
   source?: string;
+  imageCaption?: string;
+  imageCredit?: string;
+  imageIsAi?: boolean;
   body: string[];
 };
 
