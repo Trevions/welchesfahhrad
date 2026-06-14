@@ -78,27 +78,40 @@ export function renderIssueHtml(opts: RenderOpts): string {
     : "";
 
   const restHtml = rest
-    .map(
-      (a) => `
+    .map((a) => {
+      const url = `${SITE}/artikel/${escapeHtml(a.slug)}`;
+      const excerptText = a.excerpt
+        ? `${escapeHtml(a.excerpt.slice(0, 220))}${a.excerpt.length > 220 ? "…" : ""}`
+        : "";
+      return `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border-top:1px solid #262626;padding-top:24px;">
       <tr>
         ${
           a.cover_image
-            ? `<td width="140" valign="top" style="padding-right:16px;">
-                <a href="${SITE}/artikel/${escapeHtml(a.slug)}" style="text-decoration:none;"><img src="${escapeHtml(a.cover_image)}" alt="" width="140" style="display:block;width:140px;height:auto;border-radius:4px;border:1px solid #262626;" /></a>
+            ? `<td width="160" valign="top" style="padding-right:16px;">
+                <a href="${url}" style="text-decoration:none;"><img src="${escapeHtml(a.cover_image)}" alt="" width="160" style="display:block;width:160px;height:auto;border-radius:4px;border:1px solid #262626;" /></a>
               </td>`
             : ""
         }
-        <td valign="top">
-          <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:${BRAND_ORANGE};font-weight:700;margin-bottom:4px;">${escapeHtml(a.category)}</div>
-          <h3 style="margin:0 0 8px;font-size:16px;line-height:1.35;color:#ffffff;font-weight:700;">
-            <a href="${SITE}/artikel/${escapeHtml(a.slug)}" style="color:#ffffff;text-decoration:none;">${escapeHtml(a.title)}</a>
+        <td valign="top" style="text-align:left;">
+          <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:${BRAND_ORANGE};font-weight:700;margin-bottom:6px;">${escapeHtml(a.category)}</div>
+          <h3 style="margin:0;font-size:16px;line-height:1.35;color:#ffffff;font-weight:700;">
+            <a href="${url}" style="color:#ffffff;text-decoration:none;">${escapeHtml(a.title)}</a>
           </h3>
-          ${a.excerpt ? `<p style="margin:0;font-size:13px;line-height:1.5;color:#a3a3a3;">${escapeHtml(a.excerpt.slice(0, 160))}${a.excerpt.length > 160 ? "…" : ""}</p>` : ""}
         </td>
       </tr>
-    </table>`,
-    )
+      ${
+        excerptText
+          ? `<tr><td colspan="2" style="padding-top:14px;">
+              <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#a3a3a3;">${excerptText}</p>
+              <a href="${url}" style="display:inline-block;color:${BRAND_ORANGE};text-decoration:none;font-weight:700;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">Weiterlesen →</a>
+            </td></tr>`
+          : `<tr><td colspan="2" style="padding-top:10px;">
+              <a href="${url}" style="display:inline-block;color:${BRAND_ORANGE};text-decoration:none;font-weight:700;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">Weiterlesen →</a>
+            </td></tr>`
+      }
+    </table>`;
+    })
     .join("");
 
   return `<!DOCTYPE html>
