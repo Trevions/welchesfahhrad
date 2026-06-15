@@ -368,7 +368,7 @@
 }
 .kinetic .char {
   display: inline-block;
-  opacity: 1;
+  opacity: 0;
   will-change: transform, opacity;
 }
 .kinetic.is-visible .char {
