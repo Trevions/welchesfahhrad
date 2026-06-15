@@ -63,52 +63,43 @@ function Index() {
             params={{ slug: featured.slug }}
             className="lg:col-span-8 relative group overflow-hidden border-b lg:border-b-0 lg:border-r border-border bg-[#050505]"
           >
-            <div className="relative aspect-[16/10] lg:aspect-auto lg:h-[78vh] min-h-[520px]">
-              <img
-                src={featured.image || hero}
-                alt={featured.title}
-                width={1920}
-                height={1280}
-                fetchPriority="high"
-                className="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-[1600ms] ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.05]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/60 via-transparent to-transparent" />
-            </div>
+            <div className="relative aspect-[16/10] lg:aspect-auto lg:h-[78vh] min-h-[520px] flex flex-col justify-end">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/90 to-[#050505]/70" />
 
-            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12 lg:p-16 text-zinc-100">
-              <div className="flex items-center gap-3 mb-6 md:mb-8" data-reveal>
-                <span className="h-px w-10 bg-signal" />
-                <span className="eyebrow text-signal">Top-Story · {featured.category}</span>
-              </div>
+              <div className="relative z-10 flex flex-col justify-end p-6 md:p-12 lg:p-16 text-zinc-100">
+                <div className="flex items-center gap-3 mb-6 md:mb-8">
+                  <span className="h-px w-10 bg-signal" />
+                  <span className="eyebrow text-signal">Top-Story · {featured.category}</span>
+                </div>
 
-              <h1 className="kinetic font-display font-black tracking-tight leading-[0.88] text-4xl md:text-6xl lg:text-[5.5rem] max-w-4xl">
-                {featured.title}
-              </h1>
+                <h1 className="kinetic is-visible font-display font-black tracking-tight leading-[0.88] text-4xl md:text-6xl lg:text-[5.5rem] max-w-4xl">
+                  {featured.title}
+                </h1>
 
-              <div className="mt-8 flex flex-col md:flex-row md:items-end gap-6 md:gap-10" data-reveal>
-                <p className="text-base md:text-lg text-zinc-300 font-light leading-relaxed max-w-md">
-                  {featured.excerpt}
-                </p>
-                <span
-                  data-magnetic="0.3"
-                  className="inline-flex items-center gap-3 border border-zinc-600 py-3 px-6 group-hover:border-zinc-100 group-hover:bg-zinc-100 group-hover:text-[#050505] transition-all duration-500 self-start whitespace-nowrap glow-signal"
-                >
-                  <span className="eyebrow">Vollständiger Bericht</span>
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                </span>
-              </div>
+                <div className="mt-8 flex flex-col md:flex-row md:items-end gap-6 md:gap-10">
+                  <p className="text-base md:text-lg text-zinc-300 font-light leading-relaxed max-w-md">
+                    {featured.excerpt}
+                  </p>
+                  <span
+                    data-magnetic="0.3"
+                    className="inline-flex items-center gap-3 border border-zinc-600 py-3 px-6 group-hover:border-zinc-100 group-hover:bg-zinc-100 group-hover:text-[#050505] transition-all duration-500 self-start whitespace-nowrap glow-signal"
+                  >
+                    <span className="eyebrow">Vollständiger Bericht</span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </div>
 
-              <div className="mt-8 flex items-center gap-3 text-[10px] uppercase tracking-widest text-zinc-500">
-                <span>{featured.date}</span>
-                <span className="h-px w-3 bg-zinc-700" />
-                <span>{featured.readTime} Lesezeit</span>
-                {featured.source && (
-                  <>
-                    <span className="h-px w-3 bg-zinc-700" />
-                    <span>Quelle · {featured.source}</span>
-                  </>
-                )}
+                <div className="mt-8 flex items-center gap-3 text-[10px] uppercase tracking-widest text-zinc-500">
+                  <span>{featured.date}</span>
+                  <span className="h-px w-3 bg-zinc-700" />
+                  <span>{featured.readTime} Lesezeit</span>
+                  {featured.source && (
+                    <>
+                      <span className="h-px w-3 bg-zinc-700" />
+                      <span>Quelle · {featured.source}</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </Link>
