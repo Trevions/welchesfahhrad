@@ -69,7 +69,7 @@ function Index() {
                 alt={featured.title}
                 width={1920}
                 height={1280}
-                data-reveal="mask"
+                fetchPriority="high"
                 className="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-[1600ms] ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.05]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
