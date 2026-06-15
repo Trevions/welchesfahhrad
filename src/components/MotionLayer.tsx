@@ -88,9 +88,35 @@ export function MotionLayer() {
           }
         }
       },
-      { threshold: 0.18, rootMargin: "0px 0px -8% 0px" },
+      { threshold: 0.01, rootMargin: "0px 0px 10% 0px" },
     );
     revealEls.forEach((el) => io.observe(el));
+
+    // Fallback: anything already in (or close to) the viewport becomes
+    // visible immediately — guards against observer timing issues after
+    // hydration / route changes that previously left hero excerpts hidden.
+    const vh0 = window.innerHeight || document.documentElement.clientHeight;
+    revealEls.forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < vh0 * 1.1 && r.bottom > -50) {
+        el.classList.add("is-visible");
+        io.unobserve(el);
+      }
+    });
+    // Safety net: after a short delay reveal anything still hidden near the fold.
+    const revealTimer = window.setTimeout(() => {
+      document
+        .querySelectorAll<HTMLElement>(
+          "[data-reveal]:not(.is-visible), .kinetic:not(.is-visible)",
+        )
+        .forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.top < (window.innerHeight || 0) * 1.5) {
+            el.classList.add("is-visible");
+            io.unobserve(el);
+          }
+        });
+    }, 1200);
 
     // ---- Magnetic
     const magnets = Array.from(document.querySelectorAll<HTMLElement>("[data-magnetic]"));
@@ -125,6 +151,7 @@ export function MotionLayer() {
         if (onLeave) window.removeEventListener("pointerleave", onLeave);
         spot.remove();
       }
+      window.clearTimeout(revealTimer);
       io.disconnect();
       magnetHandlers.forEach((fn) => fn());
     };
