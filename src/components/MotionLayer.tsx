@@ -151,6 +151,7 @@ export function MotionLayer() {
         if (onLeave) window.removeEventListener("pointerleave", onLeave);
         spot.remove();
       }
+      window.clearTimeout(revealTimer);
       io.disconnect();
       magnetHandlers.forEach((fn) => fn());
     };
