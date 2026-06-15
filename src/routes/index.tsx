@@ -72,7 +72,7 @@ function Index() {
                   <span className="eyebrow text-signal">Top-Story · {featured.category}</span>
                 </div>
 
-                <h1 className="kinetic font-display font-black tracking-tight leading-[0.88] text-4xl md:text-6xl lg:text-[5.5rem] max-w-4xl">
+                <h1 className="kinetic is-visible font-display font-black tracking-tight leading-[0.88] text-4xl md:text-6xl lg:text-[5.5rem] max-w-4xl">
                   {featured.title}
                 </h1>
 
