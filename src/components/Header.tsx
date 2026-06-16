@@ -11,7 +11,7 @@ const nav = [
   { to: "/nachrichten", label: "Nachrichten" },
   { to: "/ratgeber", label: "Ratgeber" },
   { to: "/e-bikes", label: "E-Bikes" },
-  { to: "/tests", label: "Tests" },
+  { to: "/tools", label: "Tools" },
 ];
 
 export function Header() {
