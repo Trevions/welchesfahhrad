@@ -183,7 +183,7 @@ function Index() {
       )}
 
       {/* LIVE TICKER */}
-      {broken.length > 0 && (
+      {ticker.length > 0 && (
       <div className="border-b border-border bg-signal text-signal-foreground overflow-hidden">
         <div className="flex items-center">
           <div className="px-6 py-3 border-r border-signal-foreground/30 flex items-center gap-3 shrink-0">
@@ -192,7 +192,7 @@ function Index() {
           </div>
           <div className="flex-1 overflow-hidden">
             <div className="flex gap-12 animate-marquee whitespace-nowrap py-3 pl-12">
-              {[...broken, ...broken].map((a, i) => (
+              {[...ticker, ...ticker].map((a, i) => (
                 <span key={i} className="eyebrow-sm">
                   ◆ {a.title}
                 </span>
