@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Wrench, Gauge, CloudSun, Scale, Sparkles } from "lucide-react";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import hero from "@/assets/hero-bike.jpg";
 import magazineCover from "@/assets/magazine-cover.jpg";
@@ -48,7 +48,10 @@ function Index() {
   const articles = data.articles;
   const featured = articles[0];
   const feed = articles.slice(1, 4);
-  const broken = articles.slice(1, 7);
+  // start broken grid AFTER the aside feed to avoid repeating the same stories
+  const broken = articles.slice(4, 10);
+  // ticker pulls from a wider pool so it doesn't mirror the grid 1:1
+  const ticker = articles.slice(0, 12);
   const ratgeber = articles.filter((a) => a.category === "Ratgeber");
   const tests = articles.filter((a) => a.category === "Tests" || a.category === "E-Bikes");
 
@@ -180,7 +183,7 @@ function Index() {
       )}
 
       {/* LIVE TICKER */}
-      {broken.length > 0 && (
+      {ticker.length > 0 && (
       <div className="border-b border-border bg-signal text-signal-foreground overflow-hidden">
         <div className="flex items-center">
           <div className="px-6 py-3 border-r border-signal-foreground/30 flex items-center gap-3 shrink-0">
@@ -189,7 +192,7 @@ function Index() {
           </div>
           <div className="flex-1 overflow-hidden">
             <div className="flex gap-12 animate-marquee whitespace-nowrap py-3 pl-12">
-              {[...broken, ...broken].map((a, i) => (
+              {[...ticker, ...ticker].map((a, i) => (
                 <span key={i} className="eyebrow-sm">
                   ◆ {a.title}
                 </span>
@@ -305,6 +308,69 @@ function Index() {
           </div>
         </section>
       )}
+
+      {/* TOOLS TEASER — premium hub showcase */}
+      <section className="relative border-t border-border bg-[#050505] text-zinc-100 overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.25]"
+          style={{
+            backgroundImage:
+              "radial-gradient(900px 420px at 85% -10%, color-mix(in oklch, var(--signal) 70%, transparent), transparent 60%), radial-gradient(700px 360px at -5% 110%, color-mix(in oklch, var(--signal) 50%, transparent), transparent 70%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border/40">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-end">
+            <div className="lg:col-span-5">
+              <div className="flex items-center gap-3">
+                <span className="h-px w-10 bg-signal" />
+                <span className="eyebrow text-signal">Neu · Werkzeuge</span>
+              </div>
+              <h2 className="mt-5 font-display text-4xl md:text-6xl font-black italic leading-[0.92] tracking-tight">
+                Tools, die <br />
+                <span className="text-signal">mitfahren.</span>
+              </h2>
+              <p className="mt-6 text-zinc-400 font-light leading-relaxed max-w-md">
+                Rechner, Planungs- und Wartungs-Tools — entwickelt von der radmap.de Redaktion.
+                Vom Reifendruck bis zur Reichweite, vom Wetter bis zur Bußgeld-Tabelle.
+              </p>
+              <Link
+                to="/tools"
+                className="mt-8 inline-flex items-center gap-3 border border-zinc-700 px-6 py-3 hover:border-zinc-100 hover:bg-zinc-100 hover:text-[#050505] transition-all duration-500 glow-signal"
+              >
+                <Wrench className="h-4 w-4" strokeWidth={1.75} />
+                <span className="eyebrow">Alle Tools öffnen</span>
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+
+            <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              {[
+                { icon: Gauge, label: "Reifendruck", sub: "Rechner" },
+                { icon: CloudSun, label: "Fahrrad-Wetter", sub: "Planung" },
+                { icon: Scale, label: "StVO & Bußgeld", sub: "Recht" },
+                { icon: Sparkles, label: "Kaufberater", sub: "Quiz" },
+              ].map(({ icon: Icon, label, sub }) => (
+                <Link
+                  key={label}
+                  to="/tools"
+                  className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 p-5 transition-all duration-300 hover:border-signal/60 hover:-translate-y-0.5 hover:bg-zinc-900/80"
+                >
+                  <div className="grid h-11 w-11 place-items-center rounded-xl border border-zinc-800 bg-black/40 text-signal transition-colors group-hover:border-signal/50">
+                    <Icon className="h-5 w-5" strokeWidth={1.75} />
+                  </div>
+                  <div className="mt-5 font-display text-base font-bold tracking-tight text-zinc-100">
+                    {label}
+                  </div>
+                  <div className="mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                    {sub}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* TESTS HORIZONTAL */}
       {tests.length > 0 && (
