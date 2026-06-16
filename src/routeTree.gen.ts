@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UeberUnsRouteImport } from './routes/ueber-uns'
+import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as TestsRouteImport } from './routes/tests'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RedaktionRouteImport } from './routes/redaktion'
@@ -51,6 +52,11 @@ import { Route as AuthenticatedMnvArticlesIdRouteImport } from './routes/_authen
 const UeberUnsRoute = UeberUnsRouteImport.update({
   id: '/ueber-uns',
   path: '/ueber-uns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsRoute = ToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestsRoute = TestsRouteImport.update({
@@ -268,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/tools': typeof ToolsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByTo {
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/tools': typeof ToolsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
@@ -347,6 +355,7 @@ export interface FileRoutesById {
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/tools': typeof ToolsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
@@ -388,6 +397,7 @@ export interface FileRouteTypes {
     | '/redaktion'
     | '/sitemap.xml'
     | '/tests'
+    | '/tools'
     | '/ueber-uns'
     | '/mnv'
     | '/artikel/$slug'
@@ -427,6 +437,7 @@ export interface FileRouteTypes {
     | '/redaktion'
     | '/sitemap.xml'
     | '/tests'
+    | '/tools'
     | '/ueber-uns'
     | '/artikel/$slug'
     | '/newsletter/abmelden'
@@ -466,6 +477,7 @@ export interface FileRouteTypes {
     | '/redaktion'
     | '/sitemap.xml'
     | '/tests'
+    | '/tools'
     | '/ueber-uns'
     | '/_authenticated/mnv'
     | '/artikel/$slug'
@@ -507,6 +519,7 @@ export interface RootRouteChildren {
   RedaktionRoute: typeof RedaktionRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestsRoute: typeof TestsRoute
+  ToolsRoute: typeof ToolsRoute
   UeberUnsRoute: typeof UeberUnsRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
   NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
@@ -525,6 +538,13 @@ declare module '@tanstack/react-router' {
       path: '/ueber-uns'
       fullPath: '/ueber-uns'
       preLoaderRoute: typeof UeberUnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools': {
+      id: '/tools'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tests': {
@@ -847,6 +867,7 @@ const rootRouteChildren: RootRouteChildren = {
   RedaktionRoute: RedaktionRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestsRoute: TestsRoute,
+  ToolsRoute: ToolsRoute,
   UeberUnsRoute: UeberUnsRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
   NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,
@@ -860,13 +881,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
