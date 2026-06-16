@@ -48,7 +48,10 @@ function Index() {
   const articles = data.articles;
   const featured = articles[0];
   const feed = articles.slice(1, 4);
-  const broken = articles.slice(1, 7);
+  // start broken grid AFTER the aside feed to avoid repeating the same stories
+  const broken = articles.slice(4, 10);
+  // ticker pulls from a wider pool so it doesn't mirror the grid 1:1
+  const ticker = articles.slice(0, 12);
   const ratgeber = articles.filter((a) => a.category === "Ratgeber");
   const tests = articles.filter((a) => a.category === "Tests" || a.category === "E-Bikes");
 
