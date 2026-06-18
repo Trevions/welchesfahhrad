@@ -67,7 +67,7 @@ const poiCategories = [
   { icon: Bike, label: "Fahrradläden", color: "text-signal" },
   { icon: TreePine, label: "Erholung", color: "text-emerald-400" },
   { icon: Waves, label: "Gewässer", color: "text-sky-400" },
-  { icon: Route, label: "Routen", color: "text-amber-400" },
+  { icon: RouteIcon, label: "Routen", color: "text-amber-400" },
 ];
 
 function KartePage() {
