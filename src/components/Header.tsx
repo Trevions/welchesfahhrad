@@ -10,6 +10,7 @@ const nav = [
   { to: "/", label: "Startseite", exact: true },
   { to: "/nachrichten", label: "Nachrichten" },
   { to: "/ratgeber", label: "Ratgeber" },
+  { to: "/karte", label: "Karte" },
   { to: "/e-bikes", label: "E-Bikes" },
   { to: "/tools", label: "Tools" },
 ];
