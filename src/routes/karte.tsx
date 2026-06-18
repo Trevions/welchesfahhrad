@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MapPin, Navigation, Route, Layers, Info, Bike, Mountain, TreePine, Waves } from "lucide-react";
+import { MapPin, Navigation, Route as RouteIcon, Layers, Info, Bike, Mountain, TreePine, Waves } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/karte")({

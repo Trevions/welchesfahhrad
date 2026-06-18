@@ -21,6 +21,7 @@ import { Route as NachrichtenRouteImport } from './routes/nachrichten'
 import { Route as MerklisteRouteImport } from './routes/merkliste'
 import { Route as MediadatenRouteImport } from './routes/mediadaten'
 import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as KarteRouteImport } from './routes/karte'
 import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
@@ -108,6 +109,11 @@ const MediadatenRoute = MediadatenRouteImport.update({
 const KontaktRoute = KontaktRouteImport.update({
   id: '/kontakt',
   path: '/kontakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KarteRoute = KarteRouteImport.update({
+  id: '/karte',
+  path: '/karte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImpressumRoute = ImpressumRouteImport.update({
@@ -270,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
   '/impressum': typeof ImpressumRoute
+  '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
   '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
@@ -311,6 +318,7 @@ export interface FileRoutesByTo {
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
   '/impressum': typeof ImpressumRoute
+  '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
   '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
@@ -353,6 +361,7 @@ export interface FileRoutesById {
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
   '/impressum': typeof ImpressumRoute
+  '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
   '/mediadaten': typeof MediadatenRoute
   '/merkliste': typeof MerklisteRoute
@@ -396,6 +405,7 @@ export interface FileRouteTypes {
     | '/datenschutz'
     | '/e-bikes'
     | '/impressum'
+    | '/karte'
     | '/kontakt'
     | '/mediadaten'
     | '/merkliste'
@@ -437,6 +447,7 @@ export interface FileRouteTypes {
     | '/datenschutz'
     | '/e-bikes'
     | '/impressum'
+    | '/karte'
     | '/kontakt'
     | '/mediadaten'
     | '/merkliste'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/datenschutz'
     | '/e-bikes'
     | '/impressum'
+    | '/karte'
     | '/kontakt'
     | '/mediadaten'
     | '/merkliste'
@@ -521,6 +533,7 @@ export interface RootRouteChildren {
   DatenschutzRoute: typeof DatenschutzRoute
   EBikesRoute: typeof EBikesRoute
   ImpressumRoute: typeof ImpressumRoute
+  KarteRoute: typeof KarteRoute
   KontaktRoute: typeof KontaktRoute
   MediadatenRoute: typeof MediadatenRoute
   MerklisteRoute: typeof MerklisteRoute
@@ -627,6 +640,13 @@ declare module '@tanstack/react-router' {
       path: '/kontakt'
       fullPath: '/kontakt'
       preLoaderRoute: typeof KontaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/karte': {
+      id: '/karte'
+      path: '/karte'
+      fullPath: '/karte'
+      preLoaderRoute: typeof KarteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/impressum': {
@@ -886,6 +906,7 @@ const rootRouteChildren: RootRouteChildren = {
   DatenschutzRoute: DatenschutzRoute,
   EBikesRoute: EBikesRoute,
   ImpressumRoute: ImpressumRoute,
+  KarteRoute: KarteRoute,
   KontaktRoute: KontaktRoute,
   MediadatenRoute: MediadatenRoute,
   MerklisteRoute: MerklisteRoute,
