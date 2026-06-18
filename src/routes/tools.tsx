@@ -58,7 +58,7 @@ const groups: Group[] = [
     eyebrow: "02",
     title: "Wetter & Planung",
     tools: [
-      { title: "Fahrrad-Wetter", desc: "Stundengenaue Prognose über Open-Meteo.", icon: CloudSun, soon: true },
+      { title: "Fahrrad-Wetter", desc: "Stundengenaue Prognose über Open-Meteo.", icon: CloudSun, to: "/tools/fahrrad-wetter" },
       { title: "Pollen & Luftqualität", desc: "AQI, Feinstaub und Pollenflug live.", icon: Wind, soon: true },
       { title: "Sonnenauf-/untergang", desc: "Lichtzeiten und Dämmerung für deine Tour.", icon: Sunrise, soon: true },
       { title: "Tourenplaner", desc: "Routen planen mit Höhenprofil und Karte.", icon: Map, soon: true },

@@ -30,6 +30,7 @@ import { Route as BarrierefreiheitRouteImport } from './routes/barrierefreiheit'
 import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ToolsFahrradWetterRouteImport } from './routes/tools.fahrrad-wetter'
 import { Route as NewsletterBestaetigenRouteImport } from './routes/newsletter.bestaetigen'
 import { Route as NewsletterAbmeldenRouteImport } from './routes/newsletter.abmelden'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
@@ -153,6 +154,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToolsFahrradWetterRoute = ToolsFahrradWetterRouteImport.update({
+  id: '/fahrrad-wetter',
+  path: '/fahrrad-wetter',
+  getParentRoute: () => ToolsRoute,
+} as any)
 const NewsletterBestaetigenRoute = NewsletterBestaetigenRouteImport.update({
   id: '/newsletter/bestaetigen',
   path: '/newsletter/bestaetigen',
@@ -274,12 +280,13 @@ export interface FileRoutesByFullPath {
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
-  '/tools': typeof ToolsRoute
+  '/tools': typeof ToolsRouteWithChildren
   '/ueber-uns': typeof UeberUnsRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
+  '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
@@ -314,11 +321,12 @@ export interface FileRoutesByTo {
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
-  '/tools': typeof ToolsRoute
+  '/tools': typeof ToolsRouteWithChildren
   '/ueber-uns': typeof UeberUnsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
+  '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
@@ -355,12 +363,13 @@ export interface FileRoutesById {
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
-  '/tools': typeof ToolsRoute
+  '/tools': typeof ToolsRouteWithChildren
   '/ueber-uns': typeof UeberUnsRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
+  '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/artikel/$slug'
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
+    | '/tools/fahrrad-wetter'
     | '/mnv/articles'
     | '/mnv/auto-articles'
     | '/mnv/media'
@@ -442,6 +452,7 @@ export interface FileRouteTypes {
     | '/artikel/$slug'
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
+    | '/tools/fahrrad-wetter'
     | '/mnv/articles'
     | '/mnv/auto-articles'
     | '/mnv/media'
@@ -483,6 +494,7 @@ export interface FileRouteTypes {
     | '/artikel/$slug'
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
+    | '/tools/fahrrad-wetter'
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/auto-articles'
     | '/_authenticated/mnv/media'
@@ -519,7 +531,7 @@ export interface RootRouteChildren {
   RedaktionRoute: typeof RedaktionRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestsRoute: typeof TestsRoute
-  ToolsRoute: typeof ToolsRoute
+  ToolsRoute: typeof ToolsRouteWithChildren
   UeberUnsRoute: typeof UeberUnsRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
   NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
@@ -679,6 +691,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/tools/fahrrad-wetter': {
+      id: '/tools/fahrrad-wetter'
+      path: '/fahrrad-wetter'
+      fullPath: '/tools/fahrrad-wetter'
+      preLoaderRoute: typeof ToolsFahrradWetterRouteImport
+      parentRoute: typeof ToolsRoute
     }
     '/newsletter/bestaetigen': {
       id: '/newsletter/bestaetigen'
@@ -847,6 +866,16 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ToolsRouteChildren {
+  ToolsFahrradWetterRoute: typeof ToolsFahrradWetterRoute
+}
+
+const ToolsRouteChildren: ToolsRouteChildren = {
+  ToolsFahrradWetterRoute: ToolsFahrradWetterRoute,
+}
+
+const ToolsRouteWithChildren = ToolsRoute._addFileChildren(ToolsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -867,7 +896,7 @@ const rootRouteChildren: RootRouteChildren = {
   RedaktionRoute: RedaktionRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestsRoute: TestsRoute,
-  ToolsRoute: ToolsRoute,
+  ToolsRoute: ToolsRouteWithChildren,
   UeberUnsRoute: UeberUnsRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
   NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,

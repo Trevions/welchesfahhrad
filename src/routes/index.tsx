@@ -4,6 +4,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import hero from "@/assets/hero-bike.jpg";
 import magazineCover from "@/assets/magazine-cover.jpg";
 import { ArticleCard } from "@/components/ArticleCard";
+import { BikeWeatherBar } from "@/components/BikeWeatherBar";
 import { getPublicArticles } from "@/lib/articles.functions";
 
 const publicArticlesQuery = queryOptions({
@@ -57,6 +58,9 @@ function Index() {
 
   return (
     <>
+      {/* FAHRRAD-WETTER BAR */}
+      <BikeWeatherBar />
+
       {/* SPLIT HERO */}
       {featured && (
       <section className="border-b border-border">
