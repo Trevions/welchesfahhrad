@@ -191,7 +191,7 @@ function KartePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             {
-              icon: Route,
+              icon: RouteIcon,
               title: "Radrouten",
               desc: "Über 200.000 km markierte Radwege in Deutschland — vom Alltagsweg bis zur Fernroute.",
               stat: "200.000+ km",
