@@ -146,6 +146,41 @@ export function buildBikeTips(c: WeatherCurrent, hourly: WeatherHour[]): BikeTip
     });
   }
 
+  // --- Night / low light ---
+  if (!c.isDay) {
+    tips.push({
+      id: "night",
+      severity: "warn",
+      icon: "🌙",
+      title: "Dunkelheit — sichtbar bleiben",
+      body:
+        "StVZO-konformes Front- (mind. 10 Lux) und Rücklicht, Reflektoren an Pedalen und Speichen prüfen. Reflektorweste oder helle Jacke trägt 140 m Sichtbarkeit gegenüber 25 m bei dunkler Kleidung. Tempo um 20 % reduzieren, mit Wild und Fußgängern rechnen.",
+    });
+  }
+
+  // --- Post-rain hazards ---
+  const recentRain = hourly.slice(0, 1).some((h) => h.precip > 0.2) || c.precip > 0.2;
+  if (!recentRain && c.humidity >= 85 && c.temperature < 20) {
+    tips.push({
+      id: "wet-roads",
+      severity: "info",
+      icon: "🍃",
+      title: "Feuchte Fahrbahn — Vorsicht in Kurven",
+      body:
+        "Nasses Laub, Gullideckel, Zebrastreifen und Holzbrücken sind rutschig wie Eis. Aufrecht durch Kurven, früh und sanft bremsen, Hinterrad-Anteil erhöhen. Splitt und Rollsplitt auf Radwegen aktiv ausweichen.",
+    });
+  }
+
+  // --- Group / safety baseline ---
+  tips.push({
+    id: "share",
+    severity: "info",
+    icon: "📍",
+    title: "Tour teilen — Sicherheit zuerst",
+    body:
+      "Teile Route und geplante Ankunftszeit mit einer Vertrauensperson (Live-Standort via Messenger). Helm, Handy geladen, Notfallkontakt auf dem Sperrbildschirm, kleines Erste-Hilfe-Set und Flickzeug dabei. Bei Solo-Touren defensive Linie wählen.",
+  });
+
   // --- Good day ---
   if (tips.length === 0) {
     tips.push({
