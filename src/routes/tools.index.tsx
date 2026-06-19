@@ -103,7 +103,7 @@ const DESCRIPTION =
   "Professionelle Fahrrad-Tools: Reifendruck, Rahmengröße, Übersetzung, E-Bike Reichweite, Wetter, Wartung, Recht und Kaufberatung — kostenlos auf radmap.de.";
 const URL = "https://radmap.de/tools";
 
-export const Route = createFileRoute("/tools")({
+export const Route = createFileRoute("/tools/")({
   head: () => ({
     meta: [
       { title: TITLE },
