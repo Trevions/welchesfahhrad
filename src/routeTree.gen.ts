@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UeberUnsRouteImport } from './routes/ueber-uns'
+import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as TestsRouteImport } from './routes/tests'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RedaktionRouteImport } from './routes/redaktion'
@@ -54,6 +55,11 @@ import { Route as AuthenticatedMnvArticlesIdRouteImport } from './routes/_authen
 const UeberUnsRoute = UeberUnsRouteImport.update({
   id: '/ueber-uns',
   path: '/ueber-uns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsRoute = ToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestsRoute = TestsRouteImport.update({
@@ -156,14 +162,14 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsIndexRoute = ToolsIndexRouteImport.update({
-  id: '/tools/',
-  path: '/tools/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => ToolsRoute,
 } as any)
 const ToolsFahrradWetterRoute = ToolsFahrradWetterRouteImport.update({
-  id: '/tools/fahrrad-wetter',
-  path: '/tools/fahrrad-wetter',
-  getParentRoute: () => rootRouteImport,
+  id: '/fahrrad-wetter',
+  path: '/fahrrad-wetter',
+  getParentRoute: () => ToolsRoute,
 } as any)
 const NewsletterBestaetigenRoute = NewsletterBestaetigenRouteImport.update({
   id: '/newsletter/bestaetigen',
@@ -287,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/tools': typeof ToolsRouteWithChildren
   '/ueber-uns': typeof UeberUnsRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
@@ -372,6 +379,7 @@ export interface FileRoutesById {
   '/redaktion': typeof RedaktionRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
+  '/tools': typeof ToolsRouteWithChildren
   '/ueber-uns': typeof UeberUnsRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
@@ -416,6 +424,7 @@ export interface FileRouteTypes {
     | '/redaktion'
     | '/sitemap.xml'
     | '/tests'
+    | '/tools'
     | '/ueber-uns'
     | '/mnv'
     | '/artikel/$slug'
@@ -500,6 +509,7 @@ export interface FileRouteTypes {
     | '/redaktion'
     | '/sitemap.xml'
     | '/tests'
+    | '/tools'
     | '/ueber-uns'
     | '/_authenticated/mnv'
     | '/artikel/$slug'
@@ -544,12 +554,11 @@ export interface RootRouteChildren {
   RedaktionRoute: typeof RedaktionRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestsRoute: typeof TestsRoute
+  ToolsRoute: typeof ToolsRouteWithChildren
   UeberUnsRoute: typeof UeberUnsRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
   NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
   NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
-  ToolsFahrradWetterRoute: typeof ToolsFahrradWetterRoute
-  ToolsIndexRoute: typeof ToolsIndexRoute
   ApiPublicArticleImagePathRoute: typeof ApiPublicArticleImagePathRoute
   ApiPublicArticlesAutoGenerateRoute: typeof ApiPublicArticlesAutoGenerateRoute
   ApiPublicNewsletterDispatchRoute: typeof ApiPublicNewsletterDispatchRoute
@@ -564,6 +573,13 @@ declare module '@tanstack/react-router' {
       path: '/ueber-uns'
       fullPath: '/ueber-uns'
       preLoaderRoute: typeof UeberUnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools': {
+      id: '/tools'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tests': {
@@ -708,17 +724,17 @@ declare module '@tanstack/react-router' {
     }
     '/tools/': {
       id: '/tools/'
-      path: '/tools'
+      path: '/'
       fullPath: '/tools/'
       preLoaderRoute: typeof ToolsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ToolsRoute
     }
     '/tools/fahrrad-wetter': {
       id: '/tools/fahrrad-wetter'
-      path: '/tools/fahrrad-wetter'
+      path: '/fahrrad-wetter'
       fullPath: '/tools/fahrrad-wetter'
       preLoaderRoute: typeof ToolsFahrradWetterRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ToolsRoute
     }
     '/newsletter/bestaetigen': {
       id: '/newsletter/bestaetigen'
@@ -887,6 +903,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ToolsRouteChildren {
+  ToolsFahrradWetterRoute: typeof ToolsFahrradWetterRoute
+  ToolsIndexRoute: typeof ToolsIndexRoute
+}
+
+const ToolsRouteChildren: ToolsRouteChildren = {
+  ToolsFahrradWetterRoute: ToolsFahrradWetterRoute,
+  ToolsIndexRoute: ToolsIndexRoute,
+}
+
+const ToolsRouteWithChildren = ToolsRoute._addFileChildren(ToolsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -908,12 +936,11 @@ const rootRouteChildren: RootRouteChildren = {
   RedaktionRoute: RedaktionRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestsRoute: TestsRoute,
+  ToolsRoute: ToolsRouteWithChildren,
   UeberUnsRoute: UeberUnsRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
   NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,
   NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
-  ToolsFahrradWetterRoute: ToolsFahrradWetterRoute,
-  ToolsIndexRoute: ToolsIndexRoute,
   ApiPublicArticleImagePathRoute: ApiPublicArticleImagePathRoute,
   ApiPublicArticlesAutoGenerateRoute: ApiPublicArticlesAutoGenerateRoute,
   ApiPublicNewsletterDispatchRoute: ApiPublicNewsletterDispatchRoute,
