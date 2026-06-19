@@ -15,6 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useBikeWeather, weatherCodeInfo, windDirLabel } from "@/hooks/use-bike-weather";
+import { buildBikeTips, severityClasses } from "@/lib/bike-weather-tips";
 
 const TITLE = "Fahrrad-Wetter — stundengenaue Prognose für Radfahrer | radmap.de";
 const DESCRIPTION =
@@ -236,6 +237,36 @@ function WeatherDashboard({
           </button>
         </div>
       </div>
+
+      {/* Cycling Safety Tips */}
+      <section>
+        <div className="flex items-end justify-between mb-4 gap-3">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-signal">Sicherheit & Tipps</div>
+            <h2 className="font-display text-2xl font-black tracking-tight mt-1">
+              Was du heute beachten solltest
+            </h2>
+          </div>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          {buildBikeTips(data.current, data.hourly).map((t) => (
+            <div
+              key={t.id}
+              className={`rounded-2xl border p-5 ${severityClasses[t.severity]}`}
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-3xl shrink-0" aria-hidden>{t.icon}</span>
+                <div className="min-w-0">
+                  <h3 className="font-display text-lg font-black text-foreground">{t.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    {t.body}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Hourly */}
       <section>
