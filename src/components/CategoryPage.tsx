@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CategoryHero } from "@/components/CategoryHero";
+import { InlineSearch } from "@/components/InlineSearch";
 import {
   categoryMeta,
   type Article,
@@ -15,6 +17,20 @@ type Props = {
 export function CategoryPage({ category, articles }: Props) {
   const meta = categoryMeta[category];
   const items = articles.filter((a) => a.category === category);
+
+  const [q, setQ] = useState("");
+  const norm = q.trim().toLowerCase();
+
+  const searched = useMemo(() => {
+    if (!norm) return null;
+    return items.filter(
+      (a) =>
+        a.title.toLowerCase().includes(norm) ||
+        a.excerpt.toLowerCase().includes(norm) ||
+        a.body?.some((p) => p.toLowerCase().includes(norm)),
+    );
+  }, [items, norm]);
+
   const [lead, ...rest] = items;
   const featured = rest.slice(0, 2);
   const grid = rest.slice(2);
