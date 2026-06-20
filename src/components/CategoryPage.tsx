@@ -1,9 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CategoryHero } from "@/components/CategoryHero";
 import { InlineSearch } from "@/components/InlineSearch";
+import type { Suggestion } from "@/components/InlineSearch";
 import {
   categoryMeta,
   type Article,
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function CategoryPage({ category, articles }: Props) {
+  const navigate = useNavigate();
   const meta = categoryMeta[category];
   const items = articles.filter((a) => a.category === category);
 
@@ -30,6 +32,23 @@ export function CategoryPage({ category, articles }: Props) {
         a.body?.some((p) => p.toLowerCase().includes(norm)),
     );
   }, [items, norm]);
+
+  const suggestions: Suggestion[] = useMemo(() => {
+    if (!searched) return [];
+    return searched.slice(0, 5).map((a) => ({
+      id: a.slug,
+      label: a.title,
+      subtitle: a.excerpt,
+      href: `/artikel/${a.slug}`,
+      category: meta.eyebrow,
+    }));
+  }, [searched, meta.eyebrow]);
+
+  const handleSelect = (s: Suggestion) => {
+    if (s.href) {
+      navigate({ to: s.href });
+    }
+  };
 
   const [lead, ...rest] = items;
   const featured = rest.slice(0, 2);
@@ -71,6 +90,8 @@ export function CategoryPage({ category, articles }: Props) {
             <InlineSearch
               value={q}
               onChange={setQ}
+              onSelect={handleSelect}
+              suggestions={suggestions}
               eyebrow={`${meta.eyebrow} durchsuchen`}
               placeholder={`In ${items.length} ${meta.eyebrow}-Beiträgen suchen…`}
               hint="Titel, Teaser und Artikeltext"
