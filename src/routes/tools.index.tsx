@@ -264,6 +264,8 @@ function ToolsPage() {
             <InlineSearch
               value={q}
               onChange={setQ}
+              onSelect={handleSelect}
+              suggestions={suggestions}
               eyebrow="Tools durchsuchen"
               placeholder="Suche: Reifendruck, Wetter, Bußgeld, Reichweite…"
               hint="Filtere alle Rechner, Planer und Ratgeber-Tools"
