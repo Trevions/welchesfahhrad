@@ -123,6 +123,11 @@ export function CategoryPage({ category, articles }: Props) {
         <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-12 md:py-20 border-x border-border">
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-8">
+              {searched && (
+                <p className="mb-8 text-sm text-muted-foreground">
+                  Weitere Beiträge aus <span className="text-foreground font-medium">{meta.eyebrow}</span> — unabhängig von deiner Suche.
+                </p>
+              )}
               {featured.length > 0 && (
                 <>
                   <div className="flex items-baseline justify-between mb-8">
