@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CategoryHero } from "@/components/CategoryHero";
+import { InlineSearch } from "@/components/InlineSearch";
 import {
   categoryMeta,
   type Article,
@@ -15,6 +17,20 @@ type Props = {
 export function CategoryPage({ category, articles }: Props) {
   const meta = categoryMeta[category];
   const items = articles.filter((a) => a.category === category);
+
+  const [q, setQ] = useState("");
+  const norm = q.trim().toLowerCase();
+
+  const searched = useMemo(() => {
+    if (!norm) return null;
+    return items.filter(
+      (a) =>
+        a.title.toLowerCase().includes(norm) ||
+        a.excerpt.toLowerCase().includes(norm) ||
+        a.body?.some((p) => p.toLowerCase().includes(norm)),
+    );
+  }, [items, norm]);
+
   const [lead, ...rest] = items;
   const featured = rest.slice(0, 2);
   const grid = rest.slice(2);
@@ -49,7 +65,53 @@ export function CategoryPage({ category, articles }: Props) {
         description={meta.description}
       />
 
-      {lead && (
+      <section className="border-b border-border bg-background/60">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-6 md:py-8 border-x border-border">
+          <div className="max-w-2xl">
+            <InlineSearch
+              value={q}
+              onChange={setQ}
+              eyebrow={`${meta.eyebrow} durchsuchen`}
+              placeholder={`In ${items.length} ${meta.eyebrow}-Beiträgen suchen…`}
+              hint="Titel, Teaser und Artikeltext"
+              resultsCount={searched?.length}
+            />
+          </div>
+        </div>
+      </section>
+
+      {searched ? (
+        <section className="border-b border-border">
+          <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-12 md:py-16 border-x border-border">
+            {searched.length === 0 ? (
+              <div className="rounded-2xl border border-border bg-card/60 p-10 text-center">
+                <p className="font-display text-xl font-black tracking-tight">
+                  Keine Beiträge gefunden für „{q}"
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Probiere einen anderen Suchbegriff.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="mb-8 flex items-baseline justify-between">
+                  <h2 className="font-display text-2xl md:text-3xl font-black">
+                    Such-<span className="italic text-muted-foreground">ergebnisse</span>
+                  </h2>
+                  <span className="eyebrow-sm text-signal">
+                    {searched.length} {searched.length === 1 ? "Treffer" : "Treffer"}
+                  </span>
+                </div>
+                <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                  {searched.map((a, i) => (
+                    <ArticleCard key={a.slug} article={a} index={i} />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </section>
+      ) : lead && (
         <section className="border-b border-border">
           <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-10 md:py-14 border-x border-border">
             <ArticleCard article={lead} featured size="lg" index={0} />
@@ -61,6 +123,11 @@ export function CategoryPage({ category, articles }: Props) {
         <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-12 md:py-20 border-x border-border">
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-8">
+              {searched && (
+                <p className="mb-8 text-sm text-muted-foreground">
+                  Weitere Beiträge aus <span className="text-foreground font-medium">{meta.eyebrow}</span> — unabhängig von deiner Suche.
+                </p>
+              )}
               {featured.length > 0 && (
                 <>
                   <div className="flex items-baseline justify-between mb-8">

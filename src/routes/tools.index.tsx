@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { InlineSearch } from "@/components/InlineSearch";
 import {
   Gauge,
   Ruler,
@@ -187,6 +189,26 @@ function ToolCard({ tool }: { tool: Tool }) {
 }
 
 function ToolsPage() {
+  const [q, setQ] = useState("");
+  const norm = q.trim().toLowerCase();
+
+  const filtered = useMemo(() => {
+    if (!norm) return groups;
+    return groups
+      .map((g) => ({
+        ...g,
+        tools: g.tools.filter(
+          (t) =>
+            t.title.toLowerCase().includes(norm) ||
+            t.desc.toLowerCase().includes(norm) ||
+            g.title.toLowerCase().includes(norm),
+        ),
+      }))
+      .filter((g) => g.tools.length > 0);
+  }, [norm]);
+
+  const totalHits = filtered.reduce((n, g) => n + g.tools.length, 0);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
@@ -213,35 +235,57 @@ function ToolsPage() {
             Rechner, Planungs- und Wartungs-Tools — entwickelt von der radmap.de Redaktion.
             Alles, was du für die nächste Tour, den nächsten Service oder den nächsten Kauf brauchst.
           </p>
+
+          <div className="mt-8 max-w-2xl">
+            <InlineSearch
+              value={q}
+              onChange={setQ}
+              eyebrow="Tools durchsuchen"
+              placeholder="Suche: Reifendruck, Wetter, Bußgeld, Reichweite…"
+              hint="Filtere alle Rechner, Planer und Ratgeber-Tools"
+              resultsCount={totalHits}
+            />
+          </div>
         </div>
       </section>
 
       {/* Groups */}
       <div className="mx-auto max-w-[1400px] px-5 py-12 md:px-8 md:py-16">
-        {groups.map((g, gi) => (
-          <section key={g.id} className={gi > 0 ? "mt-14 md:mt-20" : ""}>
-            <header className="mb-6 flex items-end justify-between gap-4 md:mb-8">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-signal">
-                  <span className="font-mono">{g.eyebrow}</span>
-                  <span className="h-px w-6 bg-signal/60" />
+        {filtered.length === 0 ? (
+          <div className="rounded-2xl border border-border bg-card/60 p-10 text-center">
+            <p className="font-display text-xl font-black tracking-tight">
+              Keine Tools gefunden für „{q}"
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Probiere einen anderen Begriff oder lösche die Suche.
+            </p>
+          </div>
+        ) : (
+          filtered.map((g, gi) => (
+            <section key={g.id} className={gi > 0 ? "mt-14 md:mt-20" : ""}>
+              <header className="mb-6 flex items-end justify-between gap-4 md:mb-8">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-signal">
+                    <span className="font-mono">{g.eyebrow}</span>
+                    <span className="h-px w-6 bg-signal/60" />
+                  </div>
+                  <h2 className="mt-2 font-display text-2xl font-black tracking-tight md:text-3xl">
+                    {g.title}
+                  </h2>
                 </div>
-                <h2 className="mt-2 font-display text-2xl font-black tracking-tight md:text-3xl">
-                  {g.title}
-                </h2>
-              </div>
-              <div className="hidden text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:block">
-                {g.tools.length} Tools
-              </div>
-            </header>
+                <div className="hidden text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:block">
+                  {g.tools.length} Tools
+                </div>
+              </header>
 
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
-              {g.tools.map((t) => (
-                <ToolCard key={t.title} tool={t} />
-              ))}
-            </div>
-          </section>
-        ))}
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+                {g.tools.map((t) => (
+                  <ToolCard key={t.title} tool={t} />
+                ))}
+              </div>
+            </section>
+          ))
+        )}
 
         <p className="mt-16 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
           Weitere Tools folgen — kuratiert von der radmap.de Redaktion
