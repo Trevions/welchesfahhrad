@@ -1,9 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CategoryHero } from "@/components/CategoryHero";
 import { InlineSearch } from "@/components/InlineSearch";
+import type { Suggestion } from "@/components/InlineSearch";
 import {
   categoryMeta,
   type Article,
