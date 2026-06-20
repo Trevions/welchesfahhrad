@@ -90,6 +90,8 @@ export function CategoryPage({ category, articles }: Props) {
             <InlineSearch
               value={q}
               onChange={setQ}
+              onSelect={handleSelect}
+              suggestions={suggestions}
               eyebrow={`${meta.eyebrow} durchsuchen`}
               placeholder={`In ${items.length} ${meta.eyebrow}-Beiträgen suchen…`}
               hint="Titel, Teaser und Artikeltext"
