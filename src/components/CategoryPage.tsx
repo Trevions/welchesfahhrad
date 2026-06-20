@@ -16,6 +16,7 @@ type Props = {
 };
 
 export function CategoryPage({ category, articles }: Props) {
+  const navigate = useNavigate();
   const meta = categoryMeta[category];
   const items = articles.filter((a) => a.category === category);
 
@@ -31,6 +32,23 @@ export function CategoryPage({ category, articles }: Props) {
         a.body?.some((p) => p.toLowerCase().includes(norm)),
     );
   }, [items, norm]);
+
+  const suggestions: Suggestion[] = useMemo(() => {
+    if (!searched) return [];
+    return searched.slice(0, 5).map((a) => ({
+      id: a.slug,
+      label: a.title,
+      subtitle: a.excerpt,
+      href: `/artikel/${a.slug}`,
+      category: meta.eyebrow,
+    }));
+  }, [searched, meta.eyebrow]);
+
+  const handleSelect = (s: Suggestion) => {
+    if (s.href) {
+      navigate({ to: s.href });
+    }
+  };
 
   const [lead, ...rest] = items;
   const featured = rest.slice(0, 2);
