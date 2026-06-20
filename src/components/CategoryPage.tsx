@@ -65,7 +65,53 @@ export function CategoryPage({ category, articles }: Props) {
         description={meta.description}
       />
 
-      {lead && (
+      <section className="border-b border-border bg-background/60">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-6 md:py-8 border-x border-border">
+          <div className="max-w-2xl">
+            <InlineSearch
+              value={q}
+              onChange={setQ}
+              eyebrow={`${meta.eyebrow} durchsuchen`}
+              placeholder={`In ${items.length} ${meta.eyebrow}-Beiträgen suchen…`}
+              hint="Titel, Teaser und Artikeltext"
+              resultsCount={searched?.length}
+            />
+          </div>
+        </div>
+      </section>
+
+      {searched ? (
+        <section className="border-b border-border">
+          <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-12 md:py-16 border-x border-border">
+            {searched.length === 0 ? (
+              <div className="rounded-2xl border border-border bg-card/60 p-10 text-center">
+                <p className="font-display text-xl font-black tracking-tight">
+                  Keine Beiträge gefunden für „{q}"
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Probiere einen anderen Suchbegriff.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="mb-8 flex items-baseline justify-between">
+                  <h2 className="font-display text-2xl md:text-3xl font-black">
+                    Such-<span className="italic text-muted-foreground">ergebnisse</span>
+                  </h2>
+                  <span className="eyebrow-sm text-signal">
+                    {searched.length} {searched.length === 1 ? "Treffer" : "Treffer"}
+                  </span>
+                </div>
+                <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                  {searched.map((a, i) => (
+                    <ArticleCard key={a.slug} article={a} index={i} />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </section>
+      ) : lead && (
         <section className="border-b border-border">
           <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-10 md:py-14 border-x border-border">
             <ArticleCard article={lead} featured size="lg" index={0} />
