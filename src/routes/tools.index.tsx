@@ -190,6 +190,7 @@ function ToolCard({ tool }: { tool: Tool }) {
 }
 
 function ToolsPage() {
+  const navigate = useNavigate();
   const [q, setQ] = useState("");
   const norm = q.trim().toLowerCase();
 
@@ -209,6 +210,28 @@ function ToolsPage() {
   }, [norm]);
 
   const totalHits = filtered.reduce((n, g) => n + g.tools.length, 0);
+
+  const suggestions: Suggestion[] = useMemo(() => {
+    if (!norm) return [];
+    const allTools = filtered.flatMap((g) =>
+      g.tools.map((t) => ({
+        id: t.title,
+        label: t.title,
+        subtitle: t.desc,
+        href: t.to,
+        category: g.title,
+        icon: <t.icon className="h-4 w-4" strokeWidth={1.75} />,
+      })),
+    );
+    return allTools;
+  }, [filtered, norm]);
+
+  const handleSelect = (s: Suggestion) => {
+    if (s.href) {
+      navigate({ to: s.href });
+    }
+    setQ(s.label);
+  };
 
   return (
     <div className="min-h-screen bg-background">
