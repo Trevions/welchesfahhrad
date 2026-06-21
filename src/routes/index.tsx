@@ -68,45 +68,69 @@ function Index() {
           <Link
             to="/artikel/$slug"
             params={{ slug: featured.slug }}
-            className="lg:col-span-8 relative group overflow-hidden border-b lg:border-b-0 lg:border-r border-border bg-[#050505]"
+            className="lg:col-span-8 relative group overflow-hidden border-b lg:border-b-0 lg:border-r border-border bg-[#050505] isolate"
           >
-            <div className="relative aspect-[16/10] lg:aspect-auto lg:h-[78vh] min-h-[520px]">
-              <img
-                src={featured.image || hero}
-                alt={featured.title}
-                width={1920}
-                height={1280}
-                data-reveal="mask"
-                className="absolute inset-0 h-full w-full object-cover opacity-90 transition-transform duration-[1600ms] ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.05]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/60 via-transparent to-transparent" />
+            {/* Premium black background layers */}
+            <div aria-hidden className="absolute inset-0 -z-10">
+              {/* signal radial glow top-right */}
+              <div className="absolute -top-32 -right-32 h-[60%] w-[60%] rounded-full opacity-[0.22] blur-3xl"
+                   style={{ background: "radial-gradient(closest-side, var(--signal), transparent 70%)" }} />
+              {/* subtle cool glow bottom-left for depth */}
+              <div className="absolute -bottom-40 -left-32 h-[55%] w-[55%] rounded-full opacity-[0.10] blur-3xl"
+                   style={{ background: "radial-gradient(closest-side, #6ea8ff, transparent 70%)" }} />
+              {/* grain */}
+              <div className="absolute inset-0 opacity-[0.07] mix-blend-overlay pointer-events-none"
+                   style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")" }} />
+              {/* hairline accents */}
+              <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[color-mix(in_oklab,var(--signal)_70%,transparent)] to-transparent" />
+              <div className="absolute right-6 top-6 bottom-6 w-px bg-zinc-800/60" />
+              {/* huge ghost editorial numeral */}
+              <div className="absolute -right-6 -bottom-16 md:-bottom-24 select-none pointer-events-none font-display font-black leading-none text-[14rem] md:text-[22rem] lg:text-[28rem] tracking-tighter text-white/[0.035]">
+                N°24
+              </div>
             </div>
 
-            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12 lg:p-16 text-zinc-100">
-              <div className="flex items-center gap-3 mb-6 md:mb-8" data-reveal>
+            <div className="relative flex min-h-[78vh] flex-col justify-end p-6 md:p-12 lg:p-16 text-zinc-100">
+              <div className="flex items-center gap-3 mb-6 md:mb-8 animate-fade-up" style={{ animationDelay: "60ms", animationFillMode: "both" }}>
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-signal opacity-75 animate-ping" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-signal" />
+                </span>
                 <span className="h-px w-10 bg-signal" />
                 <span className="eyebrow text-signal">Top-Story · {featured.category}</span>
               </div>
 
-              <h1 className="kinetic font-display font-black tracking-tight leading-[0.88] text-4xl md:text-6xl lg:text-[5.5rem] max-w-4xl">
+              <h1
+                className="font-display font-black tracking-tight leading-[0.92] text-[clamp(2rem,7vw,5.25rem)] animate-fade-up break-words hyphens-auto"
+                style={{ animationDelay: "140ms", animationFillMode: "both" }}
+              >
                 {featured.title}
               </h1>
 
-              <div className="mt-8 flex flex-col md:flex-row md:items-end gap-6 md:gap-10" data-reveal>
+              <div
+                className="mt-8 flex flex-col md:flex-row md:items-end gap-6 md:gap-10 animate-fade-up"
+                style={{ animationDelay: "260ms", animationFillMode: "both" }}
+              >
                 <p className="text-base md:text-lg text-zinc-300 font-light leading-relaxed max-w-md">
                   {featured.excerpt}
                 </p>
                 <span
-                  data-magnetic="0.3"
-                  className="inline-flex items-center gap-3 border border-zinc-600 py-3 px-6 group-hover:border-zinc-100 group-hover:bg-zinc-100 group-hover:text-[#050505] transition-all duration-500 self-start whitespace-nowrap glow-signal"
+                  className="relative inline-flex items-center gap-3 self-start whitespace-nowrap border border-signal/70 py-3 px-6 text-zinc-100 transition-all duration-500 overflow-hidden group-hover:bg-signal group-hover:text-[#050505] group-hover:border-signal"
+                  style={{ boxShadow: "0 0 0 1px color-mix(in oklab, var(--signal) 25%, transparent), 0 18px 50px -20px color-mix(in oklab, var(--signal) 55%, transparent)" }}
                 >
-                  <span className="eyebrow">Vollständiger Bericht</span>
-                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                  {/* always-on shimmer underline */}
+                  <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] overflow-hidden">
+                    <span className="block h-full w-1/3 bg-gradient-to-r from-transparent via-signal to-transparent animate-[shimmer_2.4s_linear_infinite]" />
+                  </span>
+                  <span className="eyebrow relative">Vollständiger Bericht</span>
+                  <ArrowRight className="h-3.5 w-3.5 relative transition-transform group-hover:translate-x-1.5" />
                 </span>
               </div>
 
-              <div className="mt-8 flex items-center gap-3 text-[10px] uppercase tracking-widest text-zinc-500">
+              <div
+                className="mt-8 flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-mono animate-fade-up"
+                style={{ animationDelay: "360ms", animationFillMode: "both" }}
+              >
                 <span>{featured.date}</span>
                 <span className="h-px w-3 bg-zinc-700" />
                 <span>{featured.readTime} Lesezeit</span>
