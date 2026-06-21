@@ -120,7 +120,7 @@ function Index() {
                 >
                   {/* always-on shimmer underline */}
                   <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] overflow-hidden">
-                    <span className="block h-full w-1/3 bg-gradient-to-r from-transparent via-signal to-transparent animate-[shimmer_2.4s_linear_infinite]" />
+                    <span className="block h-full w-1/3 bg-gradient-to-r from-transparent via-signal to-transparent animate-[shimmer-slide_2.4s_linear_infinite]" />
                   </span>
                   <span className="eyebrow relative">Vollständiger Bericht</span>
                   <ArrowRight className="h-3.5 w-3.5 relative transition-transform group-hover:translate-x-1.5" />
