@@ -42,7 +42,7 @@
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
 
-  --font-display: "Playfair Display", "Times New Roman", Georgia, serif;
+  --font-display: "DM Serif Display", "Georgia", "Times New Roman", serif;
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
   --shadow-glass: 0 1px 0 0 oklch(1 0 0 / 0.04) inset, 0 24px 60px -20px oklch(0 0 0 / 0.6);
