@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sunrise, MapPin, Loader2, AlertCircle, RotateCw } from "lucide-react";
 import { ToolShell, ToolCard, ToolResultStat, ToolDisclaimer, ToolLabel, ToolInput } from "@/components/tools/ToolShell";
 import { toolHead } from "@/lib/tools/seo";
+import { getLocation, hasGeoConsent } from "@/lib/geo-consent";
 
 export const Route = createFileRoute("/tools/sonnenzeiten")({
   head: () =>
@@ -64,44 +65,38 @@ function SunPage() {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const autoTried = useRef(false);
 
-  const load = () => {
+  const load = async () => {
     setLoading(true);
     setError(null);
-    if (!("geolocation" in navigator)) {
-      setError("Geolocation wird nicht unterstützt.");
+    try {
+      const { lat, lon } = await getLocation();
+      let city: string | undefined;
+      try {
+        const r = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=de&count=1`,
+        );
+        const g = await r.json();
+        city = g.results?.[0]?.name;
+      } catch {
+        /* ignore */
+      }
+      setPos({ lat, lng: lon, city });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Standort nicht verfügbar.");
+    } finally {
       setLoading(false);
-      return;
     }
-    navigator.geolocation.getCurrentPosition(
-      async (p) => {
-        try {
-          const lat = p.coords.latitude;
-          const lng = p.coords.longitude;
-          let city: string | undefined;
-          try {
-            const r = await fetch(
-              `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lng}&language=de&count=1`,
-            );
-            const g = await r.json();
-            city = g.results?.[0]?.name;
-          } catch {
-            /* ignore */
-          }
-          setPos({ lat, lng, city });
-        } finally {
-          setLoading(false);
-        }
-      },
-      (err) => {
-        setError(err.message);
-        setLoading(false);
-      },
-    );
   };
 
+  // Auto-fetch on mount if user already granted geolocation elsewhere.
   useEffect(() => {
-    /* user-triggered */
+    if (autoTried.current) return;
+    autoTried.current = true;
+    if (hasGeoConsent()) {
+      void load();
+    }
   }, []);
 
   const d = new Date(date + "T12:00:00Z");

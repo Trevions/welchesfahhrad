@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Wind, MapPin, Loader2, AlertCircle, RotateCw } from "lucide-react";
 import { ToolShell, ToolCard, ToolResultStat, ToolDisclaimer } from "@/components/tools/ToolShell";
 import { toolHead } from "@/lib/tools/seo";
+import { getLocation, hasGeoConsent } from "@/lib/geo-consent";
 
 export const Route = createFileRoute("/tools/luftqualitaet")({
   head: () =>
@@ -45,67 +46,57 @@ function AirPage() {
   const [data, setData] = useState<AirData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [askedPermission, setAskedPermission] = useState(false);
+  const autoTried = useRef(false);
 
-  const load = () => {
+  const load = async () => {
     setLoading(true);
     setError(null);
-    if (!("geolocation" in navigator)) {
-      setError("Geolocation wird vom Browser nicht unterstützt.");
+    try {
+      const { lat, lon } = await getLocation();
+      const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=european_aqi,pm10,pm2_5,ozone,nitrogen_dioxide,birch_pollen,grass_pollen,ragweed_pollen,alder_pollen&timezone=auto`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Open-Meteo Air-Quality nicht erreichbar.");
+      const json = await res.json();
+      const c = json.current;
+      let city: string | undefined;
+      try {
+        const geo = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=de&count=1`,
+        );
+        const g = await geo.json();
+        city = g.results?.[0]?.name;
+      } catch {
+        /* ignore */
+      }
+      setData({
+        city,
+        aqi: c.european_aqi,
+        pm25: c.pm2_5,
+        pm10: c.pm10,
+        o3: c.ozone,
+        no2: c.nitrogen_dioxide,
+        pollen: {
+          birch: c.birch_pollen ?? 0,
+          grass: c.grass_pollen ?? 0,
+          ragweed: c.ragweed_pollen ?? 0,
+          alder: c.alder_pollen ?? 0,
+        },
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unbekannter Fehler");
+    } finally {
       setLoading(false);
-      return;
     }
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=european_aqi,pm10,pm2_5,ozone,nitrogen_dioxide,birch_pollen,grass_pollen,ragweed_pollen,alder_pollen&timezone=auto`;
-          const res = await fetch(url);
-          if (!res.ok) throw new Error("Open-Meteo Air-Quality nicht erreichbar.");
-          const json = await res.json();
-          const c = json.current;
-          let city: string | undefined;
-          try {
-            const geo = await fetch(
-              `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latitude}&longitude=${longitude}&language=de&count=1`,
-            );
-            const g = await geo.json();
-            city = g.results?.[0]?.name;
-          } catch {
-            /* ignore */
-          }
-          setData({
-            city,
-            aqi: c.european_aqi,
-            pm25: c.pm2_5,
-            pm10: c.pm10,
-            o3: c.ozone,
-            no2: c.nitrogen_dioxide,
-            pollen: {
-              birch: c.birch_pollen ?? 0,
-              grass: c.grass_pollen ?? 0,
-              ragweed: c.ragweed_pollen ?? 0,
-              alder: c.alder_pollen ?? 0,
-            },
-          });
-        } catch (e) {
-          setError(e instanceof Error ? e.message : "Unbekannter Fehler");
-        } finally {
-          setLoading(false);
-        }
-      },
-      (err) => {
-        setError(err.message || "Standort konnte nicht ermittelt werden.");
-        setLoading(false);
-      },
-      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 5 * 60_000 },
-    );
   };
 
+  // Auto-fetch on mount if user already granted geolocation elsewhere.
   useEffect(() => {
-    if (askedPermission) return;
-    setAskedPermission(true);
-  }, [askedPermission]);
+    if (autoTried.current) return;
+    autoTried.current = true;
+    if (hasGeoConsent()) {
+      void load();
+    }
+  }, []);
 
   return (
     <ToolShell
