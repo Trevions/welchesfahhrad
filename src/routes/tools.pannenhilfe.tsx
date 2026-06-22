@@ -35,7 +35,7 @@ const guides: { id: string; title: string; tools: string; steps: string[] }[] = 
     tools: "Plug-Set, evtl. Schlauch als Fallback",
     steps: [
       "Loch nach unten drehen, kurz aufpumpen — Milch in Position bringen.",
-      "Bei größerem Loch: Tubeless-Plug („Bacon Strip") einsetzen, Reifen drehen.",
+      'Bei größerem Loch: Tubeless-Plug („Bacon Strip") einsetzen, Reifen drehen.',
       "Wenn weiter undicht: Mantel entfernen, von innen mit Patch-Kit kleben oder Notfall-Schlauch einbauen.",
     ],
   },
