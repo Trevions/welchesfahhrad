@@ -41,7 +41,7 @@ function JobRadPage() {
   const [insured, setInsured] = useState(true);
   const [takeover, setTakeover] = useState(18); // % vom UVP nach 36 Monaten
 
-  const r = useMemo(() => {
+  const result = useMemo(() => {
     const months = 36;
     // Leasingrate (typisch ~2,8 %/Monat vom UVP brutto, inkl. Service/Versicherung)
     const monthlyLeaseGross = price * (insured ? 0.0295 : 0.027);
