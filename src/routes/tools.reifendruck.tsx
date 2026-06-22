@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Gauge } from "lucide-react";
+import { Gauge, Bike } from "lucide-react";
 import {
   ToolShell,
   ToolCard,
@@ -11,6 +11,7 @@ import {
   ToolDisclaimer,
 } from "@/components/tools/ToolShell";
 import { toolHead } from "@/lib/tools/seo";
+import { useBikeProfile } from "@/lib/bike-profile";
 
 export const Route = createFileRoute("/tools/reifendruck")({
   head: () =>
@@ -128,12 +129,16 @@ function calc(
 }
 
 function ReifendruckPage() {
-  const [weight, setWeight] = useState(85);
-  const [width, setWidth] = useState(28);
+  const profile = useBikeProfile();
+  const [weight, setWeight] = useState<number>(profile?.weightKg ?? 85);
+  const [width, setWidth] = useState<number>(profile?.tire?.widthMm ?? 28);
   const [surface, setSurface] = useState<Surface>("smooth");
   const [setup, setSetup] = useState<Setup>("butyl");
   const [style, setStyle] = useState<Style>("balanced");
   const [maxP, setMaxP] = useState<number>(0);
+  const prefilledFromProfile = !!profile && (
+    profile.weightKg != null || profile.tire?.widthMm != null
+  );
 
   const r = useMemo(
     () => calc(weight, width, surface, setup, style, maxP || null),
@@ -150,6 +155,15 @@ function ReifendruckPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <ToolCard>
           <h2 className="font-display text-lg font-bold tracking-tight">Eingaben</h2>
+          {prefilledFromProfile && (
+            <p className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
+              <Bike className="h-3 w-3 text-signal" />
+              Vorausgefüllt aus deinem{" "}
+              <Link to="/mein-rad" className="underline hover:text-foreground">
+                RadProfil
+              </Link>
+            </p>
+          )}
           <div className="mt-5 grid gap-4">
             <div>
               <ToolLabel>Systemgewicht (Fahrer + Rad + Gepäck, kg)</ToolLabel>

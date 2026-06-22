@@ -20,6 +20,7 @@ import { Route as NutzungsbedingungenRouteImport } from './routes/nutzungsbeding
 import { Route as NewsSitemapDotxmlRouteImport } from './routes/news-sitemap[.]xml'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
 import { Route as MerklisteRouteImport } from './routes/merkliste'
+import { Route as MeinRadRouteImport } from './routes/mein-rad'
 import { Route as MediadatenRouteImport } from './routes/mediadaten'
 import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as KarteRouteImport } from './routes/karte'
@@ -126,6 +127,11 @@ const NachrichtenRoute = NachrichtenRouteImport.update({
 const MerklisteRoute = MerklisteRouteImport.update({
   id: '/merkliste',
   path: '/merkliste',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeinRadRoute = MeinRadRouteImport.update({
+  id: '/mein-rad',
+  path: '/mein-rad',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MediadatenRoute = MediadatenRouteImport.update({
@@ -411,6 +417,7 @@ export interface FileRoutesByFullPath {
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
   '/mediadaten': typeof MediadatenRoute
+  '/mein-rad': typeof MeinRadRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
   '/news-sitemap.xml': typeof NewsSitemapDotxmlRoute
@@ -475,6 +482,7 @@ export interface FileRoutesByTo {
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
   '/mediadaten': typeof MediadatenRoute
+  '/mein-rad': typeof MeinRadRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
   '/news-sitemap.xml': typeof NewsSitemapDotxmlRoute
@@ -539,6 +547,7 @@ export interface FileRoutesById {
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
   '/mediadaten': typeof MediadatenRoute
+  '/mein-rad': typeof MeinRadRoute
   '/merkliste': typeof MerklisteRoute
   '/nachrichten': typeof NachrichtenRoute
   '/news-sitemap.xml': typeof NewsSitemapDotxmlRoute
@@ -605,6 +614,7 @@ export interface FileRouteTypes {
     | '/karte'
     | '/kontakt'
     | '/mediadaten'
+    | '/mein-rad'
     | '/merkliste'
     | '/nachrichten'
     | '/news-sitemap.xml'
@@ -669,6 +679,7 @@ export interface FileRouteTypes {
     | '/karte'
     | '/kontakt'
     | '/mediadaten'
+    | '/mein-rad'
     | '/merkliste'
     | '/nachrichten'
     | '/news-sitemap.xml'
@@ -732,6 +743,7 @@ export interface FileRouteTypes {
     | '/karte'
     | '/kontakt'
     | '/mediadaten'
+    | '/mein-rad'
     | '/merkliste'
     | '/nachrichten'
     | '/news-sitemap.xml'
@@ -798,6 +810,7 @@ export interface RootRouteChildren {
   KarteRoute: typeof KarteRoute
   KontaktRoute: typeof KontaktRoute
   MediadatenRoute: typeof MediadatenRoute
+  MeinRadRoute: typeof MeinRadRoute
   MerklisteRoute: typeof MerklisteRoute
   NachrichtenRoute: typeof NachrichtenRoute
   NewsSitemapDotxmlRoute: typeof NewsSitemapDotxmlRoute
@@ -896,6 +909,13 @@ declare module '@tanstack/react-router' {
       path: '/merkliste'
       fullPath: '/merkliste'
       preLoaderRoute: typeof MerklisteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mein-rad': {
+      id: '/mein-rad'
+      path: '/mein-rad'
+      fullPath: '/mein-rad'
+      preLoaderRoute: typeof MeinRadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mediadaten': {
@@ -1368,6 +1388,7 @@ const rootRouteChildren: RootRouteChildren = {
   KarteRoute: KarteRoute,
   KontaktRoute: KontaktRoute,
   MediadatenRoute: MediadatenRoute,
+  MeinRadRoute: MeinRadRoute,
   MerklisteRoute: MerklisteRoute,
   NachrichtenRoute: NachrichtenRoute,
   NewsSitemapDotxmlRoute: NewsSitemapDotxmlRoute,
