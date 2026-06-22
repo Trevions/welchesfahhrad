@@ -264,17 +264,12 @@ export default function InteractiveMap() {
   }
 
   function toggleKind(k: PoiKind) {
-    setEnabled((prev) => {
-      const next = new Set(prev);
-      if (next.has(k)) next.delete(k);
-      else next.add(k);
-      return next;
-    });
+    setActiveKind((prev) => (prev === k ? null : k));
   }
 
   const visiblePois = useMemo(
-    () => pois.filter((p) => enabled.has(p.kind)),
-    [pois, enabled],
+    () => (activeKind ? pois.filter((p) => p.kind === activeKind) : pois),
+    [pois, activeKind],
   );
 
   const iconCache = useMemo(() => {
