@@ -244,7 +244,7 @@ export function CategoryPage({ category, articles }: Props) {
                   Die {meta.eyebrow}-Woche direkt ins Postfach
                 </h3>
                 <p className="text-xs text-muted-foreground mb-4">
-                  Jeden Freitag: die wichtigsten Meldungen, Tests und Tipps der Woche.
+                  Jeden Sonntag: die wichtigsten Meldungen, Tests und Tipps der Woche.
                 </p>
                 <form
                   className="flex gap-2"
