@@ -57,8 +57,8 @@ const guides: { id: string; title: string; tools: string; steps: string[] }[] = 
     steps: [
       "Auf größtes Ritzel schalten — Schaltauge & Schaltwerk müssen vertikal stehen.",
       "Zugspannung an Einstellschraube am Schaltwerk: bei Verzögerung beim Hochschalten 1/4 Umdrehung gegen Uhrzeigersinn.",
-      "Wechselt nicht runter aufs kleinste Ritzel? Anschlagschraube „H" leicht öffnen.",
-      "Wechselt nicht rauf? Anschlagschraube „L" leicht öffnen.",
+      'Wechselt nicht runter aufs kleinste Ritzel? Anschlagschraube „H" leicht öffnen.',
+      'Wechselt nicht rauf? Anschlagschraube „L" leicht öffnen.',
       "Letzter Check: Schaltauge verbogen → in Werkstatt richten lassen.",
     ],
   },
