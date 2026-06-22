@@ -65,7 +65,7 @@ function ConfirmPage() {
             </h1>
             <p className="mt-4 text-muted-foreground font-light leading-relaxed">
               Ihre Newsletter-Anmeldung ist erfolgreich bestätigt. Die erste Ausgabe
-              erreicht Sie pünktlich am kommenden Freitag.
+              erreicht Sie pünktlich am kommenden Sonntag.
             </p>
           </>
         )}

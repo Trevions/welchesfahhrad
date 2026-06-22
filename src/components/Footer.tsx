@@ -199,7 +199,7 @@ export function Footer() {
 
             <h4 className="eyebrow text-foreground">Newsletter</h4>
             <p className="mt-5 text-sm text-muted-foreground font-light">
-              Die wichtigsten Geschichten der Woche — jeden Freitag in Ihrem Postfach.
+              Die wichtigsten Geschichten der Woche — jeden Sonntag in Ihrem Postfach.
             </p>
             <NewsletterForm />
           </div>
