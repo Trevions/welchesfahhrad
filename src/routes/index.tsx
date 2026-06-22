@@ -374,14 +374,14 @@ function Index() {
 
             <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               {[
-                { icon: Gauge, label: "Reifendruck", sub: "Rechner" },
-                { icon: CloudSun, label: "Fahrrad-Wetter", sub: "Planung" },
-                { icon: Scale, label: "StVO & Bußgeld", sub: "Recht" },
-                { icon: Sparkles, label: "Kaufberater", sub: "Quiz" },
-              ].map(({ icon: Icon, label, sub }) => (
+                { icon: Gauge, label: "Reifendruck", sub: "Rechner", to: "/tools/reifendruck" },
+                { icon: CloudSun, label: "Fahrrad-Wetter", sub: "Planung", to: "/tools/fahrrad-wetter" },
+                { icon: Scale, label: "StVO & Bußgeld", sub: "Recht", to: "/tools/bussgeld" },
+                { icon: Sparkles, label: "Kaufberater", sub: "Quiz", to: "/tools/kaufberater" },
+              ].map(({ icon: Icon, label, sub, to }) => (
                 <Link
                   key={label}
-                  to="/tools"
+                  to={to}
                   className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 p-5 transition-all duration-300 hover:border-signal/60 hover:-translate-y-0.5 hover:bg-zinc-900/80"
                 >
                   <div className="grid h-11 w-11 place-items-center rounded-xl border border-zinc-800 bg-black/40 text-signal transition-colors group-hover:border-signal/50">
