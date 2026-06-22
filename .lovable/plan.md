@@ -1,107 +1,66 @@
-## Ziel
+## Plan: професионална интерактивна Карта
 
-Eine professionelle Personalisierungs-Engine. Der Nutzer hinterlegt einmal sein „RadProfil" (Fahrradtyp, Rahmen, Reifen, Körpermaße, Gewicht, Fahrstil, Region, Interessen). Danach erkennt die Seite automatisch, welche Artikel zu ihm passen, und blendet sie **direkt unter dem Live Ticker** als eigenen Streifen „Für dich relevant" ein. Dieselben Profildaten werden später benutzt, um Fahrräder vorzuschlagen.
+### Какво ще има на новата страница `/karte`
 
-## 1. Datenmodell (lokal, kein Login nötig)
+Истинска интерактивна карта (вместо сегашния iframe) с живи данни от безплатни OpenStreetMap източници. Бързо зареждане, красив дизайн в стила на RADMAP, и когато потребителят разреши локация — показва всичко важно за колоездачи около него.
 
-Gespeichert in `localStorage` unter `radmap.bikeProfile.v1` über einen kleinen Helper `src/lib/bike-profile.ts` (analog zum bestehenden `geo-consent.ts`).
+### 1. Истинска карта (Leaflet + OSM)
 
-Felder:
+Превключваеми базови слоеве:
+- CyclOSM (професионална колоездачна карта)
+- OpenStreetMap стандарт
+- OpenTopoMap (терен / надморска височина)
+- Esri Satellit
 
-```text
-bikeTypes:        ["road" | "gravel" | "mtb" | "ebike" | "city" | "trekking" | "cargo" | "kids"]
-ridingStyle:      "commute" | "touring" | "sport" | "offroad" | "family"
-frameSizeCm:      number   (z. B. 54)
-bodyHeightCm:     number
-inseamCm:         number   (Schrittlänge, optional)
-weightKg:         number
-tire:             { widthMm: number, diameter: "700c"|"650b"|"29"|"27.5"|"26", type: "slick"|"semi"|"knobby" }
-brakes:           "rim" | "disc-mech" | "disc-hydraulic"
-drivetrain:       "1x" | "2x" | "3x" | "internal" | "belt"
-interests:        ["touren","technik","sicherheit","recht","wartung","ernaehrung","wetter","navigation","kaufberatung","ebike-akku"]
-budgetEur:        number | null   (für späteres Bike-Matching)
-region:           string | null   (PLZ/Stadt, optional — sonst Geo-Consent)
-updatedAt:        ISO string
-```
+Превключваеми насложени слоеве:
+- Waymarked Trails — Radwege (всички велоалеи в Германия)
+- Waymarked Trails — MTB трейлове
 
-Profil ist komplett client-seitig, exportierbar/löschbar. Wenn der Nutzer eingeloggt ist, **kann** das Profil zusätzlich in einer neuen Tabelle `public.bike_profiles` (1:1 zu `auth.users`) gespeichert werden — Phase 2, nicht jetzt nötig.
+Контроли: zoom, layer switcher, бутон „Standort orten“, избор на радиус (1 / 3 / 5 / 10 km).
 
-## 2. Zugang: prominenter Einstieg
+### 2. Живи POI данни (Overpass API, безплатно)
 
-Ein neuer auffälliger Block **„Mein RadProfil"** wird an zwei Stellen sichtbar:
+Когато потребителят разреши локация, картата центрира върху него и зарежда от OpenStreetMap всичко важно в избрания радиус:
 
-- **Header-CTA (Desktop + Mobile)**: kleines Icon + Label „Mein Rad" neben Theme-Toggle. Pulsierender Dot, solange noch kein Profil existiert.
-- **Homepage-Hero-Strip** zwischen „Magazin"-Block und Live Ticker: voller, redaktioneller Banner mit Headline, Subline und Button. Ändert sich, sobald Profil ausgefüllt ist, zu „Profil aktualisieren" + Mini-Zusammenfassung („54 cm · Gravel · 40 mm · 78 kg").
+- Fahrradläden (магазини)
+- Reparaturstationen (станции за ремонт)
+- Fahrradverleih
+- Fahrradparkplätze
+- Trinkwasser
+- Cafés / Rast
+- Bahnhöfe (за комбиниране влак + колело)
+- Aussichtspunkte
+- Parks / Erholung
 
-Route: `/mein-rad` (neues `src/routes/mein-rad.tsx`) — mehrstufiger, ruhiger Wizard (5 Schritte: Typ → Maße → Reifen/Antrieb → Fahrstil → Interessen). Speichert nach jedem Schritt lokal, kein Pflichtfeld außer Bike-Typ. Komplett tastatur- und mobilfreundlich.
+Всеки маркер има цветна икона по категория и popup с име, адрес, работно време, уебсайт и линк към OSM + Google Maps маршрут.
 
-## 3. Matching-Engine
+Fallback към 3 различни безплатни Overpass сървъра, за да е надеждно.
 
-Neues Modul `src/lib/recommendations.ts` mit einer reinen Funktion `scoreArticle(article, profile) → number`.
+### 3. Под картата — „В твоята близост“
 
-Score-Quellen pro Artikel:
+- Списък с до 24 най-близки места, сортирани по разстояние
+- Филтри по категория с брояч на резултатите
+- Клик върху картичка → картата лети до мястото
+- Линкове за навигация (Google Maps bicycling) и към OSM
 
-- `category` (Nachrichten/Ratgeber/E-Bikes/Tests) ↔ `bikeTypes`, `interests`
-- `seo_keywords` (kommagetrennt) → tokenisieren, gegen kuratierte Synonymliste matchen (z. B. „Reifendruck", „bar", „Tubeless" → Interesse „technik" + Tire-Match)
-- Titel + Excerpt → leichte Keyword-Suche (lowercase, Diakritik-frei) mit gewichteten Begriffen je Profil-Feld (z. B. `frameSizeCm 54` boostet Artikel mit „Rahmengröße", „Geometrie")
-- E-Bike-Profil → boost auf Kategorie „E-Bikes" + Keywords „Akku", „Reichweite", „Motor"
-- MTB/Gravel → boost auf „Tubeless", „Federgabel", „Geometrie", „Schotter"
-- Commute → boost auf „StVO", „Diebstahl", „Licht", „Wetter"
-- Frische: leichter Recency-Bonus (max +1 für < 7 Tage)
+### 4. Дизайн и скорост
 
-Schwelle: nur Artikel ab Score ≥ X erscheinen. Reihenfolge nach Score, dann `published_at` desc. Max 8.
+- Тъмен стил, signal orange акцент — както останалата част от RADMAP
+- Анимиран пулсиращ маркер за собствената локация
+- Loading / error / empty състояния
+- Client-only mount, за да не блокира SSR
 
-Alles deterministisch und testbar — keine LLM-Calls nötig, Performance kostenlos.
+### 5. Технически детайли
 
-## 4. UI: „Für dich" unter dem Live Ticker
+- Нов компонент `src/components/karte/InteractiveMap.tsx` (вече започнат)
+- Пренаписване на `src/routes/karte.tsx` с client-only `<ClientOnly>` обвивка
+- Пакетите `leaflet`, `react-leaflet`, `@types/leaflet` (вече инсталирани)
+- Използва съществуващия `src/lib/geo-consent.ts` за локацията
+- Всички API-та са безплатни и без ключове: OpenStreetMap, CyclOSM, OpenTopoMap, Esri, Waymarked Trails, Overpass
 
-Neue Komponente `src/components/ForYouStrip.tsx`, eingebunden in `src/routes/index.tsx` **direkt nach dem Live-Ticker-Block** (Zeile ~232) und nur sichtbar, wenn:
+### 6. Проверка
 
-- Profil existiert **und** mindestens 2 Match-Artikel vorhanden sind.
-
-Design (im bestehenden redaktionellen Stil — Signal-Akzent, Eyebrow, Border):
-
-```text
-┌─ FÜR DICH RELEVANT  •  basierend auf deinem RadProfil  [Profil bearbeiten →]
-├─────────────────────────────────────────────────────────────────────────────
-│  ◆ Kachel 1     ◆ Kachel 2     ◆ Kachel 3     ◆ Kachel 4   (horiz. Scroll auf Mobile)
-│  klein, dicht, mit Match-Reason-Chip: „Gravel · 40 mm"
-```
-
-Wenn kein Profil: stattdessen kompakter Call-to-Action-Streifen „Hol dir deine persönlichen Empfehlungen — RadProfil in 60 Sek. anlegen".
-
-Artikel-Quelle: der bestehende Loader auf `index.tsx` lädt bereits News — `ForYouStrip` macht clientseitig einen erweiterten Fetch (z. B. letzte 60 Artikel) und filtert/sortiert über `scoreArticle`. Realtime-Subscription nicht nötig.
-
-## 5. Wiederverwendung in Tools & Artikeln
-
-- `tools.reifendruck.tsx`: Wenn Profil vorhanden, Reifenbreite und Gewicht vorausfüllen (mit Hinweis „aus deinem RadProfil — ändern").
-- `tools.rahmengroesse.tsx`: Körpergröße/Schrittlänge vorausfüllen.
-- `tools.kaufberater.tsx`: Profil als Startpunkt nutzen.
-- Artikelseite (`artikel.$slug.tsx`): unter dem Artikel ein Mini-Block „Weitere Beiträge für dich" mit `scoreArticle`.
-
-## 6. Phase 2 (später, hier nur erwähnt, nicht gebaut)
-
-- Tabelle `public.bikes` (Modell, Geometrie, Reifenfreiheit, Preis, Bildlink). Funktion `scoreBike(bike, profile)`. Neue Sektion „Passende Räder" auf Homepage + eigene Route `/passende-raeder`.
-- Optionaler Cloud-Sync des Profils für eingeloggte Nutzer.
-
-## Technische Details
-
-Neue Dateien:
-- `src/lib/bike-profile.ts` — get/set/clear/subscribe-Hook (`useBikeProfile()`) auf Basis von `localStorage` + `storage`-Event, SSR-safe.
-- `src/lib/recommendations.ts` — `scoreArticle`, `getTopMatches`, Synonym-Map.
-- `src/components/ForYouStrip.tsx`
-- `src/components/BikeProfileCTA.tsx` (Homepage-Banner)
-- `src/components/BikeProfileBadge.tsx` (Header-Icon)
-- `src/routes/mein-rad.tsx` (Wizard + Übersicht + Reset/Export)
-
-Bestehende Dateien (kleine Edits):
-- `src/routes/index.tsx` — `ForYouStrip` direkt nach Live Ticker, `BikeProfileCTA` oberhalb.
-- `src/components/Header.tsx` + `src/components/MobileNav.tsx` — Profil-Badge.
-- `src/routes/tools.reifendruck.tsx`, `tools.rahmengroesse.tsx`, `tools.kaufberater.tsx` — Profil-Vorfüllung.
-- `src/routes/artikel.$slug.tsx` — „Weitere Beiträge für dich".
-
-Keine Datenbankänderung in Phase 1. Keine zusätzlichen Secrets. Alles SSR-sicher, ohne LLM-Kosten.
-
-## Ergebnis für den Nutzer
-
-Ein einziger, ruhiger Profil-Wizard. Danach erscheinen oben auf der Startseite — sichtbar direkt unter dem Live Ticker — genau die Artikel, die zu seinem Rad und seinen Interessen passen, mit Begründung. Die Tools füllen sich selbst aus. Die Basis für „passende Räder" ist gelegt.
+- `/karte` се отваря в preview без 404
+- Картата се рендерира, слоевете превключват
+- При даване на локация се появяват маркери и списък под картата
+- Конзолата е чиста
