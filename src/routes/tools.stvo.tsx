@@ -33,7 +33,7 @@ const sections: { id: string; title: string; rule: string; source: string }[] = 
     id: "einbahn",
     title: "Einbahnstraße in Gegenrichtung",
     rule:
-      "Nur erlaubt mit Zusatzschild „Radfahrer frei" (Z 1000-32) unter dem Einbahnstraßen-Schild. Schritttempo nicht vorgeschrieben, aber vorausschauend fahren — Autofahrer rechnen nicht mit dir.",
+      'Nur erlaubt mit Zusatzschild „Radfahrer frei" (Z 1000-32) unter dem Einbahnstraßen-Schild. Schritttempo nicht vorgeschrieben, aber vorausschauend fahren — Autofahrer rechnen nicht mit dir.',
     source: "§ 41 StVO Anlage 2",
   },
   {
