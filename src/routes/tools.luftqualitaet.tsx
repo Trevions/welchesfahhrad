@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Wind, MapPin, Loader2, AlertCircle, RotateCw } from "lucide-react";
 import { ToolShell, ToolCard, ToolResultStat, ToolDisclaimer } from "@/components/tools/ToolShell";
 import { toolHead } from "@/lib/tools/seo";
+import { getLocation, hasGeoConsent } from "@/lib/geo-consent";
 
 export const Route = createFileRoute("/tools/luftqualitaet")({
   head: () =>
