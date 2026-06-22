@@ -5,8 +5,8 @@ const items = [
   { to: "/", label: "Start", Icon: Home },
   { to: "/nachrichten", label: "News", Icon: Newspaper },
   { to: "/ratgeber", label: "Ratgeber", Icon: BookOpen },
-  { to: "/karte", label: "Karte", Icon: Map, featured: true },
   { to: "/e-bikes", label: "E-Bikes", Icon: Zap },
+  { to: "/karte", label: "Karte", Icon: Map, featured: true },
   { to: "/tools", label: "Tools", Icon: Wrench },
 ];
 
