@@ -5,8 +5,8 @@ const items = [
   { to: "/", label: "Start", Icon: Home },
   { to: "/nachrichten", label: "News", Icon: Newspaper },
   { to: "/ratgeber", label: "Ratgeber", Icon: BookOpen },
-  { to: "/karte", label: "Karte", Icon: Map, featured: true },
   { to: "/e-bikes", label: "E-Bikes", Icon: Zap },
+  { to: "/karte", label: "Karte", Icon: Map, featured: true },
   { to: "/tools", label: "Tools", Icon: Wrench },
 ];
 
@@ -27,7 +27,7 @@ export function MobileNav() {
               >
                 {/* Floating pill background */}
                 <div
-                  className={`relative flex items-center justify-center w-[52px] h-[52px] rounded-full border-2 transition-all duration-300 shadow-lg ${
+                  className={`relative flex items-center justify-center w-[46px] h-[46px] rounded-full border-2 transition-all duration-300 shadow-lg ${
                     active
                       ? "bg-signal border-signal shadow-signal/30"
                       : "bg-background border-signal/60 shadow-signal/10 group-active:scale-95"
@@ -39,7 +39,7 @@ export function MobileNav() {
                   }}
                 >
                   <Icon
-                    className={`h-[22px] w-[22px] transition-colors ${
+                    className={`h-[20px] w-[20px] transition-colors ${
                       active ? "text-signal-foreground" : "text-signal"
                     }`}
                     strokeWidth={active ? 2.5 : 2}
