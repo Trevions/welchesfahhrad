@@ -213,7 +213,8 @@ export default function InteractiveMap() {
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [radius, setRadius] = useState(3000);
   const [pois, setPois] = useState<Poi[]>([]);
-  const [enabled, setEnabled] = useState<Set<PoiKind>>(new Set(ALL_KINDS));
+  // null = alle Kategorien sichtbar; sonst nur die gewählte
+  const [activeKind, setActiveKind] = useState<PoiKind | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [flyPos, setFlyPos] = useState<[number, number] | null>(null);
