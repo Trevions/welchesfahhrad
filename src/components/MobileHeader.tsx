@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Search, Bookmark } from "lucide-react";
+import { Search, Bookmark, Bike } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { SearchOverlay } from "./SearchOverlay";
 import { useBookmarks } from "@/hooks/use-bookmarks";
+import { useBikeProfile } from "@/lib/bike-profile";
 
 
 export function MobileHeader() {
   const [open, setOpen] = useState(false);
   const { bookmarks } = useBookmarks();
+  const profile = useBikeProfile();
+  const configured = !!profile && profile.bikeTypes.length > 0;
 
   return (
     <>
@@ -24,6 +27,18 @@ export function MobileHeader() {
           </Link>
           <div className="flex items-center gap-1">
             <ThemeToggle />
+            <Link
+              to="/mein-rad"
+              aria-label="Mein RadProfil"
+              className={`relative flex h-9 w-9 items-center justify-center transition-colors ${
+                configured ? "text-muted-foreground active:text-foreground" : "text-signal"
+              }`}
+            >
+              <Bike className="h-4 w-4" />
+              {!configured && (
+                <span aria-hidden className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+              )}
+            </Link>
             <Link
               to="/merkliste"
               aria-label="Merkliste"
