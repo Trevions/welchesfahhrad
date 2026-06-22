@@ -5,6 +5,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { SearchOverlay } from "./SearchOverlay";
 import { useBookmarks } from "@/hooks/use-bookmarks";
 import { useBikeProfile } from "@/lib/bike-profile";
+import { useMatchingArticles } from "@/lib/use-matches";
 
 
 export function MobileHeader() {
@@ -12,6 +13,9 @@ export function MobileHeader() {
   const { bookmarks } = useBookmarks();
   const profile = useBikeProfile();
   const configured = !!profile && profile.bikeTypes.length > 0;
+  const { count: matchCount } = useMatchingArticles(80);
+  const hasMatches = configured && matchCount > 0;
+
 
   return (
     <>
