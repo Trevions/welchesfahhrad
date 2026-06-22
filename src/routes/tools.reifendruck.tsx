@@ -155,6 +155,15 @@ function ReifendruckPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <ToolCard>
           <h2 className="font-display text-lg font-bold tracking-tight">Eingaben</h2>
+          {prefilledFromProfile && (
+            <p className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
+              <Bike className="h-3 w-3 text-signal" />
+              Vorausgefüllt aus deinem{" "}
+              <Link to="/mein-rad" className="underline hover:text-foreground">
+                RadProfil
+              </Link>
+            </p>
+          )}
           <div className="mt-5 grid gap-4">
             <div>
               <ToolLabel>Systemgewicht (Fahrer + Rad + Gepäck, kg)</ToolLabel>
