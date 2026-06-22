@@ -327,7 +327,7 @@ export default function InteractiveMap() {
                 maxZoom={19}
               />
             </LayersControl.BaseLayer>
-            <LayersControl.Overlay name="Radwege (Waymarked Trails)">
+            <LayersControl.Overlay checked name="Radwege (Waymarked Trails)">
               <TileLayer
                 attribution='&copy; <a href="https://waymarkedtrails.org">Waymarked Trails</a>'
                 url="https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png"
