@@ -481,10 +481,26 @@ export default function InteractiveMap() {
       {/* Filters bar */}
       <div className="border-b border-border bg-card/40">
         <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-4 flex flex-wrap gap-2">
+          <button
+            onClick={() => setActiveKind(null)}
+            className={`flex items-center gap-2 px-3 py-1.5 border text-xs font-bold uppercase tracking-wider transition-all ${
+              activeKind === null
+                ? "bg-signal text-signal-foreground border-signal"
+                : "bg-transparent border-border text-muted-foreground/70 hover:text-foreground"
+            }`}
+          >
+            Alle
+            {pois.length > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 bg-background/20 border border-current/20 text-[10px] tabular-nums">
+                {pois.length}
+              </span>
+            )}
+          </button>
           {ALL_KINDS.map((k) => {
             const meta = KIND_META[k];
             const Icon = meta.icon;
-            const on = enabled.has(k);
+            const on = activeKind === k;
+            const dim = activeKind !== null && !on;
             const c = counts[k] || 0;
             return (
               <button
@@ -492,13 +508,15 @@ export default function InteractiveMap() {
                 onClick={() => toggleKind(k)}
                 className={`flex items-center gap-2 px-3 py-1.5 border text-xs font-medium transition-all ${
                   on
-                    ? "bg-card border-foreground/30 text-foreground"
-                    : "bg-transparent border-border text-muted-foreground/60 hover:text-foreground"
+                    ? "bg-card border-foreground text-foreground shadow-elevated"
+                    : dim
+                      ? "bg-transparent border-border text-muted-foreground/50 hover:text-foreground"
+                      : "bg-transparent border-border text-foreground/80 hover:text-foreground"
                 }`}
               >
                 <span
                   className="w-2.5 h-2.5 rounded-full"
-                  style={{ background: meta.color, opacity: on ? 1 : 0.35 }}
+                  style={{ background: meta.color, opacity: dim ? 0.35 : 1 }}
                 />
                 <Icon className="h-3.5 w-3.5" />
                 {meta.label}
@@ -512,6 +530,7 @@ export default function InteractiveMap() {
           })}
         </div>
       </div>
+
 
       {/* Nearby list */}
       {userPos && (
