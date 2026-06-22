@@ -32,17 +32,28 @@ export function MobileHeader() {
           <div className="flex items-center gap-1">
             <ThemeToggle />
             <Link
-              to="/mein-rad"
-              aria-label="Mein RadProfil"
+              to={hasMatches ? "/passt-zu-dir" : "/mein-rad"}
+              aria-label={hasMatches ? `${matchCount} passende Artikel` : "Mein RadProfil"}
               className={`relative flex h-9 w-9 items-center justify-center transition-colors ${
-                configured ? "text-muted-foreground active:text-foreground" : "text-signal"
+                hasMatches
+                  ? "text-signal"
+                  : configured
+                    ? "text-muted-foreground active:text-foreground"
+                    : "text-signal"
               }`}
             >
-              <Bike className="h-4 w-4" />
-              {!configured && (
-                <span aria-hidden className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+              <Bike className={`h-4 w-4 ${hasMatches ? "animate-pulse-soft" : ""}`} />
+              {hasMatches ? (
+                <span className="absolute top-0.5 right-0.5 min-w-[16px] h-[16px] px-1 inline-flex items-center justify-center bg-signal text-[9px] font-bold text-signal-foreground tabular-nums leading-none">
+                  {matchCount > 99 ? "99+" : matchCount}
+                </span>
+              ) : (
+                !configured && (
+                  <span aria-hidden className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+                )
               )}
             </Link>
+
             <Link
               to="/merkliste"
               aria-label="Merkliste"
