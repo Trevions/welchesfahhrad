@@ -448,3 +448,12 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Soft attention pulse for the "matches found" badge */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 1.8s ease-in-out infinite;
+}

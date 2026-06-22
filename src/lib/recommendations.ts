@@ -248,3 +248,39 @@ export function getTopMatches(
     .sort((a, b) => b.score - a.score);
   return ranked.slice(0, limit);
 }
+
+export type PercentMatch = MatchResult & { percent: number };
+
+/**
+ * Profile-aware match percentage. Denominator is a synthetic "ideal" score
+ * derived from the user's selected bike types and interests, so a denser
+ * profile needs a denser article to reach 80%. Clipped to [0, 100].
+ */
+export function profileDenominator(profile: BikeProfile): number {
+  const types = Math.max(1, profile.bikeTypes.length);
+  const interests = profile.interests.length;
+  // Average top-keyword weight per bike type ≈ 6, per interest ≈ 4.
+  // We deliberately keep the denominator modest so a deeply on-topic article
+  // can reach 100%, while generic news stays well below 80%.
+  return types * 6 + interests * 3 + 4;
+}
+
+export function getPercentMatches(
+  articles: Article[],
+  profile: BikeProfile | null,
+  opts: { minPercent?: number; limit?: number } = {},
+): PercentMatch[] {
+  if (!profile || profile.bikeTypes.length === 0) return [];
+  const denom = profileDenominator(profile);
+  const min = opts.minPercent ?? 80;
+  const ranked = articles
+    .map((a) => {
+      const r = scoreArticle(a, profile);
+      const percent = Math.min(100, Math.round((r.score / denom) * 100));
+      return { ...r, percent };
+    })
+    .filter((r) => r.percent >= min)
+    .sort((a, b) => b.percent - a.percent || b.score - a.score);
+  return opts.limit ? ranked.slice(0, opts.limit) : ranked;
+}
+

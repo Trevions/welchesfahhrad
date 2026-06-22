@@ -16,6 +16,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SicherheitRouteImport } from './routes/sicherheit'
 import { Route as RedaktionRouteImport } from './routes/redaktion'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
+import { Route as PasstZuDirRouteImport } from './routes/passt-zu-dir'
 import { Route as NutzungsbedingungenRouteImport } from './routes/nutzungsbedingungen'
 import { Route as NewsSitemapDotxmlRouteImport } from './routes/news-sitemap[.]xml'
 import { Route as NachrichtenRouteImport } from './routes/nachrichten'
@@ -107,6 +108,11 @@ const RedaktionRoute = RedaktionRouteImport.update({
 const RatgeberRoute = RatgeberRouteImport.update({
   id: '/ratgeber',
   path: '/ratgeber',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PasstZuDirRoute = PasstZuDirRouteImport.update({
+  id: '/passt-zu-dir',
+  path: '/passt-zu-dir',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NutzungsbedingungenRoute = NutzungsbedingungenRouteImport.update({
@@ -422,6 +428,7 @@ export interface FileRoutesByFullPath {
   '/nachrichten': typeof NachrichtenRoute
   '/news-sitemap.xml': typeof NewsSitemapDotxmlRoute
   '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
+  '/passt-zu-dir': typeof PasstZuDirRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
   '/sicherheit': typeof SicherheitRoute
@@ -487,6 +494,7 @@ export interface FileRoutesByTo {
   '/nachrichten': typeof NachrichtenRoute
   '/news-sitemap.xml': typeof NewsSitemapDotxmlRoute
   '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
+  '/passt-zu-dir': typeof PasstZuDirRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
   '/sicherheit': typeof SicherheitRoute
@@ -552,6 +560,7 @@ export interface FileRoutesById {
   '/nachrichten': typeof NachrichtenRoute
   '/news-sitemap.xml': typeof NewsSitemapDotxmlRoute
   '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
+  '/passt-zu-dir': typeof PasstZuDirRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
   '/sicherheit': typeof SicherheitRoute
@@ -619,6 +628,7 @@ export interface FileRouteTypes {
     | '/nachrichten'
     | '/news-sitemap.xml'
     | '/nutzungsbedingungen'
+    | '/passt-zu-dir'
     | '/ratgeber'
     | '/redaktion'
     | '/sicherheit'
@@ -684,6 +694,7 @@ export interface FileRouteTypes {
     | '/nachrichten'
     | '/news-sitemap.xml'
     | '/nutzungsbedingungen'
+    | '/passt-zu-dir'
     | '/ratgeber'
     | '/redaktion'
     | '/sicherheit'
@@ -748,6 +759,7 @@ export interface FileRouteTypes {
     | '/nachrichten'
     | '/news-sitemap.xml'
     | '/nutzungsbedingungen'
+    | '/passt-zu-dir'
     | '/ratgeber'
     | '/redaktion'
     | '/sicherheit'
@@ -815,6 +827,7 @@ export interface RootRouteChildren {
   NachrichtenRoute: typeof NachrichtenRoute
   NewsSitemapDotxmlRoute: typeof NewsSitemapDotxmlRoute
   NutzungsbedingungenRoute: typeof NutzungsbedingungenRoute
+  PasstZuDirRoute: typeof PasstZuDirRoute
   RatgeberRoute: typeof RatgeberRoute
   RedaktionRoute: typeof RedaktionRoute
   SicherheitRoute: typeof SicherheitRoute
@@ -881,6 +894,13 @@ declare module '@tanstack/react-router' {
       path: '/ratgeber'
       fullPath: '/ratgeber'
       preLoaderRoute: typeof RatgeberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/passt-zu-dir': {
+      id: '/passt-zu-dir'
+      path: '/passt-zu-dir'
+      fullPath: '/passt-zu-dir'
+      preLoaderRoute: typeof PasstZuDirRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nutzungsbedingungen': {
@@ -1393,6 +1413,7 @@ const rootRouteChildren: RootRouteChildren = {
   NachrichtenRoute: NachrichtenRoute,
   NewsSitemapDotxmlRoute: NewsSitemapDotxmlRoute,
   NutzungsbedingungenRoute: NutzungsbedingungenRoute,
+  PasstZuDirRoute: PasstZuDirRoute,
   RatgeberRoute: RatgeberRoute,
   RedaktionRoute: RedaktionRoute,
   SicherheitRoute: SicherheitRoute,

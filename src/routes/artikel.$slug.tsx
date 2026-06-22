@@ -1,9 +1,12 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Clock } from "lucide-react";
+import { useEffect } from "react";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getPublicArticleBySlug, getPublicArticles } from "@/lib/articles.functions";
 import { ShareMenu } from "@/components/ShareMenu";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { markArticleRead } from "@/lib/read-articles";
+
 
 const SITE = "https://radmap.de";
 const abs = (u: string) => (/^https?:\/\//i.test(u) ? u : SITE + (u.startsWith("/") ? u : "/" + u));
@@ -98,7 +101,13 @@ function ArticlePage() {
   const a = data.article!;
   const related = relData.articles.filter((x) => x.slug !== a.slug).slice(0, 3);
 
+  // Mark article as read once visible (removes it from the "Für dich" feed).
+  useEffect(() => {
+    markArticleRead(a.slug);
+  }, [a.slug]);
+
   return (
+
     <article>
       <div className="border-b border-border bg-card">
         <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-4 flex items-center justify-between">
