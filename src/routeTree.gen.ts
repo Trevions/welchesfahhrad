@@ -13,6 +13,7 @@ import { Route as UeberUnsRouteImport } from './routes/ueber-uns'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as TestsRouteImport } from './routes/tests'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SicherheitRouteImport } from './routes/sicherheit'
 import { Route as RedaktionRouteImport } from './routes/redaktion'
 import { Route as RatgeberRouteImport } from './routes/ratgeber'
 import { Route as NutzungsbedingungenRouteImport } from './routes/nutzungsbedingungen'
@@ -90,6 +91,11 @@ const TestsRoute = TestsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SicherheitRoute = SicherheitRouteImport.update({
+  id: '/sicherheit',
+  path: '/sicherheit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RedaktionRoute = RedaktionRouteImport.update({
@@ -411,6 +417,7 @@ export interface FileRoutesByFullPath {
   '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
+  '/sicherheit': typeof SicherheitRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
   '/tools': typeof ToolsRouteWithChildren
@@ -474,6 +481,7 @@ export interface FileRoutesByTo {
   '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
+  '/sicherheit': typeof SicherheitRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
@@ -537,6 +545,7 @@ export interface FileRoutesById {
   '/nutzungsbedingungen': typeof NutzungsbedingungenRoute
   '/ratgeber': typeof RatgeberRoute
   '/redaktion': typeof RedaktionRoute
+  '/sicherheit': typeof SicherheitRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
   '/tools': typeof ToolsRouteWithChildren
@@ -602,6 +611,7 @@ export interface FileRouteTypes {
     | '/nutzungsbedingungen'
     | '/ratgeber'
     | '/redaktion'
+    | '/sicherheit'
     | '/sitemap.xml'
     | '/tests'
     | '/tools'
@@ -665,6 +675,7 @@ export interface FileRouteTypes {
     | '/nutzungsbedingungen'
     | '/ratgeber'
     | '/redaktion'
+    | '/sicherheit'
     | '/sitemap.xml'
     | '/tests'
     | '/ueber-uns'
@@ -727,6 +738,7 @@ export interface FileRouteTypes {
     | '/nutzungsbedingungen'
     | '/ratgeber'
     | '/redaktion'
+    | '/sicherheit'
     | '/sitemap.xml'
     | '/tests'
     | '/tools'
@@ -792,6 +804,7 @@ export interface RootRouteChildren {
   NutzungsbedingungenRoute: typeof NutzungsbedingungenRoute
   RatgeberRoute: typeof RatgeberRoute
   RedaktionRoute: typeof RedaktionRoute
+  SicherheitRoute: typeof SicherheitRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TestsRoute: typeof TestsRoute
   ToolsRoute: typeof ToolsRouteWithChildren
@@ -834,6 +847,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sicherheit': {
+      id: '/sicherheit'
+      path: '/sicherheit'
+      fullPath: '/sicherheit'
+      preLoaderRoute: typeof SicherheitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/redaktion': {
@@ -1354,6 +1374,7 @@ const rootRouteChildren: RootRouteChildren = {
   NutzungsbedingungenRoute: NutzungsbedingungenRoute,
   RatgeberRoute: RatgeberRoute,
   RedaktionRoute: RedaktionRoute,
+  SicherheitRoute: SicherheitRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TestsRoute: TestsRoute,
   ToolsRoute: ToolsRouteWithChildren,
@@ -1370,13 +1391,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
