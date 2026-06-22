@@ -31,8 +31,7 @@ type Tool = {
   title: string;
   desc: string;
   icon: LucideIcon;
-  to?: string;
-  soon?: boolean;
+  to: string;
 };
 
 type Group = {
@@ -48,12 +47,12 @@ const groups: Group[] = [
     eyebrow: "01",
     title: "Rechner & Tools",
     tools: [
-      { title: "Reifendruck-Rechner", desc: "Optimaler Luftdruck für Gewicht & Reifenbreite.", icon: Gauge, soon: true },
-      { title: "Rahmengrößen-Rechner", desc: "Passende Rahmenhöhe nach Körpermaßen.", icon: Ruler, soon: true },
-      { title: "Übersetzungs-Rechner", desc: "Entfaltung, Kadenz und Geschwindigkeit.", icon: Cog, soon: true },
-      { title: "E-Bike Reichweite", desc: "Reichweite nach Akku, Profil und Modus.", icon: BatteryCharging, soon: true },
-      { title: "Kalorien-Rechner", desc: "Energieverbrauch auf der Tour bestimmen.", icon: Flame, soon: true },
-      { title: "JobRad / Leasing", desc: "Monatsrate und Ersparnis kalkulieren.", icon: Wallet, soon: true },
+      { title: "Reifendruck-Rechner", desc: "Optimaler Luftdruck für Gewicht & Reifenbreite.", icon: Gauge, to: "/tools/reifendruck" },
+      { title: "Rahmengrößen-Rechner", desc: "Passende Rahmenhöhe nach Körpermaßen.", icon: Ruler, to: "/tools/rahmengroesse" },
+      { title: "Übersetzungs-Rechner", desc: "Entfaltung, Kadenz und Geschwindigkeit.", icon: Cog, to: "/tools/uebersetzung" },
+      { title: "E-Bike Reichweite", desc: "Reichweite nach Akku, Profil und Modus.", icon: BatteryCharging, to: "/tools/ebike-reichweite" },
+      { title: "Kalorien-Rechner", desc: "Energieverbrauch auf der Tour bestimmen.", icon: Flame, to: "/tools/kalorien" },
+      { title: "JobRad / Leasing", desc: "Monatsrate und Ersparnis kalkulieren.", icon: Wallet, to: "/tools/jobrad-leasing" },
     ],
   },
   {
@@ -62,9 +61,9 @@ const groups: Group[] = [
     title: "Wetter & Planung",
     tools: [
       { title: "Fahrrad-Wetter", desc: "Stundengenaue Prognose über Open-Meteo.", icon: CloudSun, to: "/tools/fahrrad-wetter" },
-      { title: "Pollen & Luftqualität", desc: "AQI, Feinstaub und Pollenflug live.", icon: Wind, soon: true },
-      { title: "Sonnenauf-/untergang", desc: "Lichtzeiten und Dämmerung für deine Tour.", icon: Sunrise, soon: true },
-      { title: "Tourenplaner", desc: "Routen planen mit Höhenprofil und Karte.", icon: Map, soon: true },
+      { title: "Pollen & Luftqualität", desc: "AQI, Feinstaub und Pollenflug live.", icon: Wind, to: "/tools/luftqualitaet" },
+      { title: "Sonnenauf-/untergang", desc: "Lichtzeiten und Dämmerung für deine Tour.", icon: Sunrise, to: "/tools/sonnenzeiten" },
+      { title: "Tourenplaner", desc: "Routen planen mit Höhenprofil und Karte.", icon: Map, to: "/tools/tourenplaner" },
     ],
   },
   {
@@ -72,10 +71,10 @@ const groups: Group[] = [
     eyebrow: "03",
     title: "Wartung & Sicherheit",
     tools: [
-      { title: "Sicherheits-Check", desc: "Checkliste vor jeder längeren Ausfahrt.", icon: ShieldCheck, soon: true },
-      { title: "Pannenhilfe-Guide", desc: "Schritt für Schritt durch häufige Pannen.", icon: LifeBuoy, soon: true },
-      { title: "Werkzeug-Liste", desc: "Was wirklich in Werkstatt und Satteltasche gehört.", icon: Wrench, soon: true },
-      { title: "Wartungs-Intervalle", desc: "Service-Plan nach Kilometern und Saison.", icon: CalendarClock, soon: true },
+      { title: "Sicherheits-Check", desc: "Checkliste vor jeder längeren Ausfahrt.", icon: ShieldCheck, to: "/tools/sicherheits-check" },
+      { title: "Pannenhilfe-Guide", desc: "Schritt für Schritt durch häufige Pannen.", icon: LifeBuoy, to: "/tools/pannenhilfe" },
+      { title: "Werkzeug-Liste", desc: "Was wirklich in Werkstatt und Satteltasche gehört.", icon: Wrench, to: "/tools/werkzeug-liste" },
+      { title: "Wartungs-Intervalle", desc: "Service-Plan nach Kilometern und Saison.", icon: CalendarClock, to: "/tools/wartungsintervalle" },
     ],
   },
   {
@@ -83,10 +82,10 @@ const groups: Group[] = [
     eyebrow: "04",
     title: "Ratgeber & Recht",
     tools: [
-      { title: "StVO für Radfahrer", desc: "Die wichtigsten Regeln auf einen Blick.", icon: Scale, soon: true },
-      { title: "Bußgeld-Tabelle", desc: "Aktuelle Bußgelder und Punkte für Radfahrer.", icon: Receipt, soon: true },
-      { title: "Diebstahlschutz", desc: "Schloss, Codierung und richtiges Abstellen.", icon: Lock, soon: true },
-      { title: "Versicherungs-Vergleich", desc: "Fahrrad- und E-Bike-Policen objektiv vergleichen.", icon: ShieldHalf, soon: true },
+      { title: "StVO für Radfahrer", desc: "Die wichtigsten Regeln auf einen Blick.", icon: Scale, to: "/tools/stvo" },
+      { title: "Bußgeld-Tabelle", desc: "Aktuelle Bußgelder und Punkte für Radfahrer.", icon: Receipt, to: "/tools/bussgeld" },
+      { title: "Diebstahlschutz", desc: "Schloss, Codierung und richtiges Abstellen.", icon: Lock, to: "/tools/diebstahlschutz" },
+      { title: "Versicherungs-Vergleich", desc: "Fahrrad- und E-Bike-Policen objektiv vergleichen.", icon: ShieldHalf, to: "/tools/versicherung" },
     ],
   },
   {
@@ -94,9 +93,9 @@ const groups: Group[] = [
     eyebrow: "05",
     title: "Kaufberatung",
     tools: [
-      { title: "Kaufberater-Quiz", desc: "In wenigen Fragen zum passenden Rad.", icon: Sparkles, soon: true },
-      { title: "Vergleichstool", desc: "Modelle nach Ausstattung und Preis vergleichen.", icon: GitCompare, soon: true },
-      { title: "Förderungs-Finder", desc: "Zuschüsse und Prämien in deiner Region.", icon: HandCoins, soon: true },
+      { title: "Kaufberater-Quiz", desc: "In wenigen Fragen zum passenden Rad.", icon: Sparkles, to: "/tools/kaufberater" },
+      { title: "Vergleichstool", desc: "Modelle nach Ausstattung und Preis vergleichen.", icon: GitCompare, to: "/tools/vergleich" },
+      { title: "Förderungs-Finder", desc: "Zuschüsse und Prämien in deiner Region.", icon: HandCoins, to: "/tools/foerderung" },
     ],
   },
 ];
@@ -142,6 +141,7 @@ export const Route = createFileRoute("/tools/")({
               description: t.desc,
               applicationCategory: g.title,
               operatingSystem: "Web",
+              url: `https://radmap.de${t.to}`,
             })),
           ),
         }),
@@ -153,40 +153,30 @@ export const Route = createFileRoute("/tools/")({
 
 function ToolCard({ tool }: { tool: Tool }) {
   const Icon = tool.icon;
-  const inner = (
-    <div className="group relative h-full overflow-hidden rounded-2xl border border-border bg-card/60 p-5 transition-all duration-300 hover:border-signal/60 hover:bg-card hover:-translate-y-0.5 hover:shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]">
-      {/* soft sheen */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-1/2 left-0 h-[200%] w-px bg-gradient-to-b from-transparent via-signal/60 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-      />
-      <div className="flex items-start justify-between gap-3">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border bg-background/50 text-signal transition-colors group-hover:border-signal/50">
-          <Icon className="h-5 w-5" strokeWidth={1.75} />
-        </div>
-        {tool.soon && (
-          <span className="rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-            Bald
+  return (
+    <Link to={tool.to} className="block h-full">
+      <div className="group relative h-full overflow-hidden rounded-2xl border border-border bg-card/60 p-5 transition-all duration-300 hover:border-signal/60 hover:bg-card hover:-translate-y-0.5 hover:shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-1/2 left-0 h-[200%] w-px bg-gradient-to-b from-transparent via-signal/60 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        />
+        <div className="flex items-start justify-between gap-3">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border bg-background/50 text-signal transition-colors group-hover:border-signal/50">
+            <Icon className="h-5 w-5" strokeWidth={1.75} />
+          </div>
+          <span className="rounded-full border border-signal/40 bg-signal/5 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-signal">
+            Live
           </span>
-        )}
+        </div>
+        <h3 className="mt-4 font-display text-base font-bold tracking-tight text-foreground">
+          {tool.title}
+        </h3>
+        <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground line-clamp-2">
+          {tool.desc}
+        </p>
       </div>
-      <h3 className="mt-4 font-display text-base font-bold tracking-tight text-foreground">
-        {tool.title}
-      </h3>
-      <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground line-clamp-2">
-        {tool.desc}
-      </p>
-    </div>
+    </Link>
   );
-
-  if (tool.to && !tool.soon) {
-    return (
-      <Link to={tool.to} className="block h-full">
-        {inner}
-      </Link>
-    );
-  }
-  return <div className="h-full cursor-default">{inner}</div>;
 }
 
 function ToolsPage() {
@@ -213,7 +203,7 @@ function ToolsPage() {
 
   const suggestions: Suggestion[] = useMemo(() => {
     if (!norm) return [];
-    const allTools = filtered.flatMap((g) =>
+    return filtered.flatMap((g) =>
       g.tools.map((t) => ({
         id: t.title,
         label: t.title,
@@ -223,19 +213,15 @@ function ToolsPage() {
         icon: <t.icon className="h-4 w-4" strokeWidth={1.75} />,
       })),
     );
-    return allTools;
   }, [filtered, norm]);
 
   const handleSelect = (s: Suggestion) => {
-    if (s.href) {
-      navigate({ to: s.href });
-    }
+    if (s.href) navigate({ to: s.href });
     setQ(s.label);
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
       <section className="relative overflow-hidden border-b border-border">
         <div
           aria-hidden
@@ -275,7 +261,6 @@ function ToolsPage() {
         </div>
       </section>
 
-      {/* Groups */}
       <div className="mx-auto max-w-[1400px] px-5 py-12 md:px-8 md:py-16">
         {filtered.length === 0 ? (
           <div className="rounded-2xl border border-border bg-card/60 p-10 text-center">
@@ -314,7 +299,7 @@ function ToolsPage() {
         )}
 
         <p className="mt-16 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          Weitere Tools folgen — kuratiert von der radmap.de Redaktion
+          Alle Tools kuratiert von der radmap.de Redaktion
         </p>
       </div>
     </div>
