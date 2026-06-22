@@ -40,7 +40,7 @@ const sections: { id: string; title: string; rule: string; source: string }[] = 
     id: "gehweg",
     title: "Gehweg & Fußgängerzone",
     rule:
-      "Grundsätzlich verboten. Ausnahmen: Kinder bis 8 Jahre müssen, bis 10 dürfen den Gehweg nutzen; eine Begleitperson ab 16 darf seit 2016 ebenfalls mit. „Fahrrad frei" in der Fußgängerzone heißt: Schritttempo und Fußgänger haben Vorrang.",
+      'Grundsätzlich verboten. Ausnahmen: Kinder bis 8 Jahre müssen, bis 10 dürfen den Gehweg nutzen; eine Begleitperson ab 16 darf seit 2016 ebenfalls mit. „Fahrrad frei" in der Fußgängerzone heißt: Schritttempo und Fußgänger haben Vorrang.',
     source: "§ 2 Abs. 5 StVO",
   },
   {
