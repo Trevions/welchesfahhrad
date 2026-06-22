@@ -5,6 +5,7 @@ import hero from "@/assets/hero-bike.jpg";
 import magazineCover from "@/assets/magazine-cover.jpg";
 import { ArticleCard } from "@/components/ArticleCard";
 import { BikeWeatherBar } from "@/components/BikeWeatherBar";
+import { ForYouStrip } from "@/components/ForYouStrip";
 import { getPublicArticles } from "@/lib/articles.functions";
 
 const publicArticlesQuery = queryOptions({
@@ -230,6 +231,9 @@ function Index() {
         </div>
       </div>
       )}
+
+      {/* PERSONALIZED — appears right under the live ticker */}
+      <ForYouStrip />
 
       {/* BROKEN GRID */}
       {broken.length > 0 && (

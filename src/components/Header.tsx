@@ -3,6 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Search, Bookmark } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { SearchOverlay } from "./SearchOverlay";
+import { BikeProfileBadge } from "./BikeProfileBadge";
 import { useBookmarks } from "@/hooks/use-bookmarks";
 
 
@@ -102,6 +103,7 @@ export function Header() {
                 </span>
               )}
             </Link>
+            <BikeProfileBadge />
             <ThemeToggle />
 
           </div>
