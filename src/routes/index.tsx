@@ -318,13 +318,7 @@ function Index() {
                     key={a.slug}
                     to="/artikel/$slug"
                     params={{ slug: a.slug }}
-                    className={`group flex gap-5 border-t border-border pt-6 ${i >= 3 ? "hidden sm:flex" : ""} ${i >= 2 && i < 3 ? "hidden sm:flex" : ""}`.replace(/\s+/g, " ")}
-                  >
-                  <Link
-                    key={a.slug}
-                    to="/artikel/$slug"
-                    params={{ slug: a.slug }}
-                    className="group flex gap-5 border-t border-border pt-6"
+                    className={`group flex gap-5 border-t border-border pt-6 ${i >= 3 ? "hidden sm:flex" : ""}`}
                   >
                     <span className="font-display text-3xl font-black italic text-signal shrink-0">
                       {String(i + 1).padStart(2, "0")}
