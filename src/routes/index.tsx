@@ -6,6 +6,7 @@ import magazineCover from "@/assets/magazine-cover.jpg";
 import { ArticleCard } from "@/components/ArticleCard";
 import { BikeWeatherBar } from "@/components/BikeWeatherBar";
 import { ForYouStrip } from "@/components/ForYouStrip";
+import { BikeShowcase } from "@/components/bikes/BikeShowcase";
 import { getPublicArticles } from "@/lib/articles.functions";
 
 const publicArticlesQuery = queryOptions({
