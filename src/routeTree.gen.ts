@@ -26,6 +26,7 @@ import { Route as MediadatenRouteImport } from './routes/mediadaten'
 import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as KarteRouteImport } from './routes/karte'
 import { Route as ImpressumRouteImport } from './routes/impressum'
+import { Route as FahrraederRouteImport } from './routes/fahrraeder'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as CookiesRouteImport } from './routes/cookies'
@@ -58,6 +59,7 @@ import { Route as ToolsDiebstahlschutzRouteImport } from './routes/tools.diebsta
 import { Route as ToolsBussgeldRouteImport } from './routes/tools.bussgeld'
 import { Route as NewsletterBestaetigenRouteImport } from './routes/newsletter.bestaetigen'
 import { Route as NewsletterAbmeldenRouteImport } from './routes/newsletter.abmelden'
+import { Route as FahrraederSlugRouteImport } from './routes/fahrraeder.$slug'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AuthenticatedMnvRouteImport } from './routes/_authenticated/mnv'
 import { Route as AuthenticatedMnvIndexRouteImport } from './routes/_authenticated/mnv.index'
@@ -158,6 +160,11 @@ const KarteRoute = KarteRouteImport.update({
 const ImpressumRoute = ImpressumRouteImport.update({
   id: '/impressum',
   path: '/impressum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FahrraederRoute = FahrraederRouteImport.update({
+  id: '/fahrraeder',
+  path: '/fahrraeder',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EBikesRoute = EBikesRouteImport.update({
@@ -319,6 +326,11 @@ const NewsletterAbmeldenRoute = NewsletterAbmeldenRouteImport.update({
   path: '/newsletter/abmelden',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FahrraederSlugRoute = FahrraederSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => FahrraederRoute,
+} as any)
 const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
   id: '/artikel/$slug',
   path: '/artikel/$slug',
@@ -419,6 +431,7 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
+  '/fahrraeder': typeof FahrraederRouteWithChildren
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
@@ -438,6 +451,7 @@ export interface FileRoutesByFullPath {
   '/ueber-uns': typeof UeberUnsRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/fahrraeder/$slug': typeof FahrraederSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
@@ -485,6 +499,7 @@ export interface FileRoutesByTo {
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
+  '/fahrraeder': typeof FahrraederRouteWithChildren
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
@@ -502,6 +517,7 @@ export interface FileRoutesByTo {
   '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/fahrraeder/$slug': typeof FahrraederSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
@@ -551,6 +567,7 @@ export interface FileRoutesById {
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
+  '/fahrraeder': typeof FahrraederRouteWithChildren
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
@@ -570,6 +587,7 @@ export interface FileRoutesById {
   '/ueber-uns': typeof UeberUnsRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
+  '/fahrraeder/$slug': typeof FahrraederSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
@@ -619,6 +637,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
+    | '/fahrraeder'
     | '/impressum'
     | '/karte'
     | '/kontakt'
@@ -638,6 +657,7 @@ export interface FileRouteTypes {
     | '/ueber-uns'
     | '/mnv'
     | '/artikel/$slug'
+    | '/fahrraeder/$slug'
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
@@ -685,6 +705,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
+    | '/fahrraeder'
     | '/impressum'
     | '/karte'
     | '/kontakt'
@@ -702,6 +723,7 @@ export interface FileRouteTypes {
     | '/tests'
     | '/ueber-uns'
     | '/artikel/$slug'
+    | '/fahrraeder/$slug'
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
@@ -750,6 +772,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
+    | '/fahrraeder'
     | '/impressum'
     | '/karte'
     | '/kontakt'
@@ -769,6 +792,7 @@ export interface FileRouteTypes {
     | '/ueber-uns'
     | '/_authenticated/mnv'
     | '/artikel/$slug'
+    | '/fahrraeder/$slug'
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
@@ -818,6 +842,7 @@ export interface RootRouteChildren {
   CookiesRoute: typeof CookiesRoute
   DatenschutzRoute: typeof DatenschutzRoute
   EBikesRoute: typeof EBikesRoute
+  FahrraederRoute: typeof FahrraederRouteWithChildren
   ImpressumRoute: typeof ImpressumRoute
   KarteRoute: typeof KarteRoute
   KontaktRoute: typeof KontaktRoute
@@ -964,6 +989,13 @@ declare module '@tanstack/react-router' {
       path: '/impressum'
       fullPath: '/impressum'
       preLoaderRoute: typeof ImpressumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fahrraeder': {
+      id: '/fahrraeder'
+      path: '/fahrraeder'
+      fullPath: '/fahrraeder'
+      preLoaderRoute: typeof FahrraederRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/e-bikes': {
@@ -1190,6 +1222,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsletterAbmeldenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fahrraeder/$slug': {
+      id: '/fahrraeder/$slug'
+      path: '/$slug'
+      fullPath: '/fahrraeder/$slug'
+      preLoaderRoute: typeof FahrraederSlugRouteImport
+      parentRoute: typeof FahrraederRoute
+    }
     '/artikel/$slug': {
       id: '/artikel/$slug'
       path: '/artikel/$slug'
@@ -1343,6 +1382,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface FahrraederRouteChildren {
+  FahrraederSlugRoute: typeof FahrraederSlugRoute
+}
+
+const FahrraederRouteChildren: FahrraederRouteChildren = {
+  FahrraederSlugRoute: FahrraederSlugRoute,
+}
+
+const FahrraederRouteWithChildren = FahrraederRoute._addFileChildren(
+  FahrraederRouteChildren,
+)
+
 interface ToolsRouteChildren {
   ToolsBussgeldRoute: typeof ToolsBussgeldRoute
   ToolsDiebstahlschutzRoute: typeof ToolsDiebstahlschutzRoute
@@ -1404,6 +1455,7 @@ const rootRouteChildren: RootRouteChildren = {
   CookiesRoute: CookiesRoute,
   DatenschutzRoute: DatenschutzRoute,
   EBikesRoute: EBikesRoute,
+  FahrraederRoute: FahrraederRouteWithChildren,
   ImpressumRoute: ImpressumRoute,
   KarteRoute: KarteRoute,
   KontaktRoute: KontaktRoute,
