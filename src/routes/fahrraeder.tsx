@@ -1,0 +1,151 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { listPublicBikes } from "@/lib/bikes.functions";
+import { BikeCard } from "@/components/bikes/BikeCard";
+import { BIKE_TYPES } from "@/lib/bike-types";
+import { Search } from "lucide-react";
+
+const bikesQuery = queryOptions({
+  queryKey: ["public-bikes"],
+  queryFn: () => listPublicBikes(),
+  staleTime: 60_000,
+});
+
+export const Route = createFileRoute("/fahrraeder")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(bikesQuery),
+  head: () => ({
+    meta: [
+      { title: "Fahrräder & E-Bikes — radmap.de" },
+      {
+        name: "description",
+        content:
+          "Entdecke geprüfte Fahrräder und E-Bikes mit vollständigen Spezifikationen, Motor- und Akkudaten, Tests und Empfehlungen.",
+      },
+      { property: "og:title", content: "Fahrräder & E-Bikes — radmap.de" },
+      {
+        property: "og:description",
+        content: "Die Fahrrad-Datenbank für Deutschland: alle Specs, Motoren, Reichweiten, Bewertungen.",
+      },
+      { property: "og:url", content: "/fahrraeder" },
+    ],
+    links: [{ rel: "canonical", href: "/fahrraeder" }],
+  }),
+  errorComponent: ({ error }) => (
+    <div className="pt-32 px-6 text-center">
+      <h1 className="font-display text-3xl font-black">Fehler</h1>
+      <p className="mt-3 text-sm text-muted-foreground">{error.message}</p>
+    </div>
+  ),
+  notFoundComponent: () => null,
+  component: FahrraederPage,
+});
+
+type Filter = "all" | "bike" | "ebike";
+
+function FahrraederPage() {
+  const { data } = useSuspenseQuery(bikesQuery);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [type, setType] = useState<string>("all");
+  const [q, setQ] = useState("");
+
+  const bikes = useMemo(() => {
+    return data.bikes.filter((b) => {
+      if (filter !== "all" && b.category !== filter) return false;
+      if (type !== "all" && b.bike_type !== type) return false;
+      if (q.trim()) {
+        const s = q.trim().toLowerCase();
+        if (!`${b.brand} ${b.model}`.toLowerCase().includes(s)) return false;
+      }
+      return true;
+    });
+  }, [data.bikes, filter, type, q]);
+
+  return (
+    <div className="bg-background">
+      {/* HERO */}
+      <section className="border-b border-border bg-card">
+        <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-12 md:py-20 border-x border-border">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="h-px w-10 bg-signal" />
+            <span className="eyebrow text-signal">Die Fahrrad-Datenbank</span>
+          </div>
+          <h1 className="font-display font-black tracking-tight leading-[0.95] text-[clamp(2.25rem,7vw,5rem)] max-w-3xl">
+            Fahrräder <span className="italic font-light text-muted-foreground">& E-Bikes</span>
+          </h1>
+          <p className="mt-4 text-base md:text-lg text-muted-foreground max-w-2xl">
+            Alle Modelle mit vollständigen Spezifikationen, transparenten Bewertungen und Hersteller-Links.
+          </p>
+        </div>
+      </section>
+
+      {/* FILTER BAR */}
+      <section className="sticky top-16 z-20 bg-background/90 backdrop-blur border-b border-border">
+        <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-3 border-x border-border flex flex-col gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            {(["all", "bike", "ebike"] as Filter[]).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-4 py-1.5 text-[11px] uppercase tracking-wider font-semibold border transition-colors ${
+                  filter === f
+                    ? "bg-signal text-[#050505] border-signal"
+                    : "bg-transparent border-border text-muted-foreground hover:border-signal hover:text-signal"
+                }`}
+              >
+                {f === "all" ? "Alle" : f === "bike" ? "Fahrräder" : "E-Bikes"}
+              </button>
+            ))}
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+              {bikes.length} {bikes.length === 1 ? "Modell" : "Modelle"}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="relative flex-1 min-w-[180px] max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Marke oder Modell…"
+                className="w-full pl-9 pr-3 py-1.5 text-sm bg-card border border-border focus:border-signal outline-none rounded-none"
+              />
+            </div>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              className="text-xs uppercase tracking-wider px-3 py-1.5 bg-card border border-border outline-none focus:border-signal"
+            >
+              <option value="all">Alle Typen</option>
+              {BIKE_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </section>
+
+      {/* GRID */}
+      <section className="mx-auto max-w-[1400px] px-4 md:px-8 py-8 md:py-12 border-x border-border">
+        {bikes.length === 0 ? (
+          <div className="border border-dashed border-border p-16 text-center text-sm text-muted-foreground">
+            Keine Fahrräder gefunden.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+            {bikes.map((b) => (
+              <BikeCard key={b.id} bike={b} />
+            ))}
+          </div>
+        )}
+        <div className="mt-12 text-center text-xs text-muted-foreground">
+          <Link to="/" className="hover:text-signal">
+            ← zurück zur Startseite
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
+}
