@@ -111,6 +111,49 @@ export function CategoryPage({ category, articles, pillFilters }: Props) {
         description={meta.description}
       />
 
+      {pillFilters && pillFilters.length > 1 && (
+        <section className="border-b border-border bg-card/40">
+          <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-4 md:py-5 border-x border-border">
+            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar -mx-1 px-1">
+              <span className="eyebrow-sm text-muted-foreground shrink-0 mr-1 hidden sm:inline">
+                Filter
+              </span>
+              {pillFilters.map((p) => {
+                const active = p.id === activeFilter;
+                const count = pillCounts[p.id] ?? 0;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setActiveFilter(p.id)}
+                    aria-pressed={active}
+                    className={[
+                      "group inline-flex items-center gap-2 whitespace-nowrap border px-4 py-2 text-xs uppercase tracking-[0.18em] font-bold transition-all shrink-0",
+                      active
+                        ? "bg-signal text-signal-foreground border-signal shadow-[0_8px_24px_-12px_color-mix(in_oklab,var(--signal)_70%,transparent)]"
+                        : "border-border text-foreground/80 hover:border-signal hover:text-signal",
+                    ].join(" ")}
+                  >
+                    {p.icon === "ebike" && <Zap className="h-3.5 w-3.5" />}
+                    <span>{p.label}</span>
+                    <span
+                      className={[
+                        "ml-1 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1.5 text-[10px] font-mono rounded-sm",
+                        active
+                          ? "bg-signal-foreground/15 text-signal-foreground"
+                          : "bg-muted text-muted-foreground",
+                      ].join(" ")}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="border-b border-border bg-background/60">
         <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-6 md:py-8 border-x border-border">
           <div className="max-w-2xl">
