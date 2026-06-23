@@ -166,7 +166,7 @@ function Index() {
                   key={a.slug}
                   to="/artikel/$slug"
                   params={{ slug: a.slug }}
-                  className="group block px-6 py-6 hover:bg-accent/50 transition-colors"
+                  className={`group block px-6 py-6 hover:bg-accent/50 transition-colors ${i >= 2 ? "hidden lg:block" : ""}`}
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <span className="font-display text-sm font-black italic text-signal w-6">
@@ -268,17 +268,17 @@ function Index() {
             {broken[2] && <ArticleCard article={broken[2]} size="md" index={2} />}
           </div>
           {broken[3] && (
-            <div className="col-span-12 md:col-span-4">
+            <div className="hidden md:block col-span-12 md:col-span-4">
               <ArticleCard article={broken[3]} size="md" index={3} />
             </div>
           )}
           {broken[4] && (
-            <div className="col-span-12 md:col-span-4 md:mt-12">
+            <div className="hidden md:block col-span-12 md:col-span-4 md:mt-12">
               <ArticleCard article={broken[4]} size="md" index={4} />
             </div>
           )}
           {broken[5] && (
-            <div className="col-span-12 md:col-span-4">
+            <div className="hidden md:block col-span-12 md:col-span-4">
               <ArticleCard article={broken[5]} size="md" index={5} />
             </div>
           )}
@@ -318,7 +318,7 @@ function Index() {
                     key={a.slug}
                     to="/artikel/$slug"
                     params={{ slug: a.slug }}
-                    className="group flex gap-5 border-t border-border pt-6"
+                    className={`group flex gap-5 border-t border-border pt-6 ${i >= 3 ? "hidden sm:flex" : ""}`}
                   >
                     <span className="font-display text-3xl font-black italic text-signal shrink-0">
                       {String(i + 1).padStart(2, "0")}
