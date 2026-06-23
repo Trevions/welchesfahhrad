@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight, Zap } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CategoryHero } from "@/components/CategoryHero";
 import { InlineSearch } from "@/components/InlineSearch";
@@ -10,15 +10,31 @@ import {
   type Article,
 } from "@/lib/articles";
 
+export type PillFilter = {
+  id: string;
+  label: string;
+  categories: Article["category"][];
+  icon?: "ebike";
+};
+
 type Props = {
   category: Article["category"];
   articles: Article[];
+  pillFilters?: PillFilter[];
 };
 
-export function CategoryPage({ category, articles }: Props) {
+export function CategoryPage({ category, articles, pillFilters }: Props) {
   const navigate = useNavigate();
   const meta = categoryMeta[category];
-  const items = articles.filter((a) => a.category === category);
+
+  const [activeFilter, setActiveFilter] = useState<string>(
+    pillFilters?.[0]?.id ?? "__default",
+  );
+
+  const activePill = pillFilters?.find((p) => p.id === activeFilter);
+  const includedCategories = activePill?.categories ?? [category];
+
+  const items = articles.filter((a) => includedCategories.includes(a.category));
 
   const [q, setQ] = useState("");
   const norm = q.trim().toLowerCase();
@@ -55,10 +71,21 @@ export function CategoryPage({ category, articles }: Props) {
   const grid = rest.slice(2);
 
   const otherCats = (Object.keys(categoryMeta) as Article["category"][]).filter(
-    (c) => c !== category,
+    (c) => !includedCategories.includes(c),
   );
 
-  const moreReads = articles.filter((a) => a.category !== category).slice(0, 4);
+  const moreReads = articles
+    .filter((a) => !includedCategories.includes(a.category))
+    .slice(0, 4);
+
+  const pillCounts = useMemo(() => {
+    if (!pillFilters) return {} as Record<string, number>;
+    const out: Record<string, number> = {};
+    for (const p of pillFilters) {
+      out[p.id] = articles.filter((a) => p.categories.includes(a.category)).length;
+    }
+    return out;
+  }, [pillFilters, articles]);
 
   return (
     <>
@@ -83,6 +110,49 @@ export function CategoryPage({ category, articles }: Props) {
         title={meta.tagline}
         description={meta.description}
       />
+
+      {pillFilters && pillFilters.length > 1 && (
+        <section className="border-b border-border bg-card/40">
+          <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-4 md:py-5 border-x border-border">
+            <div className="flex items-center gap-3 overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <span className="eyebrow-sm text-muted-foreground shrink-0 mr-1 hidden sm:inline">
+                Filter
+              </span>
+              {pillFilters.map((p) => {
+                const active = p.id === activeFilter;
+                const count = pillCounts[p.id] ?? 0;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setActiveFilter(p.id)}
+                    aria-pressed={active}
+                    className={[
+                      "group inline-flex items-center gap-2 whitespace-nowrap border px-4 py-2 text-xs uppercase tracking-[0.18em] font-bold transition-all shrink-0",
+                      active
+                        ? "bg-signal text-signal-foreground border-signal shadow-[0_8px_24px_-12px_color-mix(in_oklab,var(--signal)_70%,transparent)]"
+                        : "border-border text-foreground/80 hover:border-signal hover:text-signal",
+                    ].join(" ")}
+                  >
+                    {p.icon === "ebike" && <Zap className="h-3.5 w-3.5" />}
+                    <span>{p.label}</span>
+                    <span
+                      className={[
+                        "ml-1 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1.5 text-[10px] font-mono rounded-sm",
+                        active
+                          ? "bg-signal-foreground/15 text-signal-foreground"
+                          : "bg-muted text-muted-foreground",
+                      ].join(" ")}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="border-b border-border bg-background/60">
         <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-6 md:py-8 border-x border-border">
