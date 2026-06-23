@@ -268,17 +268,17 @@ function Index() {
             {broken[2] && <ArticleCard article={broken[2]} size="md" index={2} />}
           </div>
           {broken[3] && (
-            <div className="col-span-12 md:col-span-4">
+            <div className="hidden md:block col-span-12 md:col-span-4">
               <ArticleCard article={broken[3]} size="md" index={3} />
             </div>
           )}
           {broken[4] && (
-            <div className="col-span-12 md:col-span-4 md:mt-12">
+            <div className="hidden md:block col-span-12 md:col-span-4 md:mt-12">
               <ArticleCard article={broken[4]} size="md" index={4} />
             </div>
           )}
           {broken[5] && (
-            <div className="col-span-12 md:col-span-4">
+            <div className="hidden md:block col-span-12 md:col-span-4">
               <ArticleCard article={broken[5]} size="md" index={5} />
             </div>
           )}
