@@ -114,7 +114,7 @@ export function CategoryPage({ category, articles, pillFilters }: Props) {
       {pillFilters && pillFilters.length > 1 && (
         <section className="border-b border-border bg-card/40">
           <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-4 md:py-5 border-x border-border">
-            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar -mx-1 px-1">
+            <div className="flex items-center gap-3 overflow-x-auto -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <span className="eyebrow-sm text-muted-foreground shrink-0 mr-1 hidden sm:inline">
                 Filter
               </span>
