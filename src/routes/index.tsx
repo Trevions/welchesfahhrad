@@ -166,7 +166,7 @@ function Index() {
                   key={a.slug}
                   to="/artikel/$slug"
                   params={{ slug: a.slug }}
-                  className="group block px-6 py-6 hover:bg-accent/50 transition-colors"
+                  className={`group block px-6 py-6 hover:bg-accent/50 transition-colors ${i >= 2 ? "hidden lg:block" : ""}`}
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <span className="font-display text-sm font-black italic text-signal w-6">
