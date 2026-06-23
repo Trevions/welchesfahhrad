@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight, Zap } from "lucide-react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CategoryHero } from "@/components/CategoryHero";
 import { InlineSearch } from "@/components/InlineSearch";
@@ -10,15 +10,31 @@ import {
   type Article,
 } from "@/lib/articles";
 
+export type PillFilter = {
+  id: string;
+  label: string;
+  categories: Article["category"][];
+  icon?: "ebike";
+};
+
 type Props = {
   category: Article["category"];
   articles: Article[];
+  pillFilters?: PillFilter[];
 };
 
-export function CategoryPage({ category, articles }: Props) {
+export function CategoryPage({ category, articles, pillFilters }: Props) {
   const navigate = useNavigate();
   const meta = categoryMeta[category];
-  const items = articles.filter((a) => a.category === category);
+
+  const [activeFilter, setActiveFilter] = useState<string>(
+    pillFilters?.[0]?.id ?? "__default",
+  );
+
+  const activePill = pillFilters?.find((p) => p.id === activeFilter);
+  const includedCategories = activePill?.categories ?? [category];
+
+  const items = articles.filter((a) => includedCategories.includes(a.category));
 
   const [q, setQ] = useState("");
   const norm = q.trim().toLowerCase();
@@ -55,10 +71,21 @@ export function CategoryPage({ category, articles }: Props) {
   const grid = rest.slice(2);
 
   const otherCats = (Object.keys(categoryMeta) as Article["category"][]).filter(
-    (c) => c !== category,
+    (c) => !includedCategories.includes(c),
   );
 
-  const moreReads = articles.filter((a) => a.category !== category).slice(0, 4);
+  const moreReads = articles
+    .filter((a) => !includedCategories.includes(a.category))
+    .slice(0, 4);
+
+  const pillCounts = useMemo(() => {
+    if (!pillFilters) return {} as Record<string, number>;
+    const out: Record<string, number> = {};
+    for (const p of pillFilters) {
+      out[p.id] = articles.filter((a) => p.categories.includes(a.category)).length;
+    }
+    return out;
+  }, [pillFilters, articles]);
 
   return (
     <>
