@@ -41,5 +41,15 @@ export const Route = createFileRoute("/nachrichten")({
 
 function NachrichtenPage() {
   const { data } = useSuspenseQuery(articlesQuery);
-  return <CategoryPage category={cat} articles={data.articles} />;
+  return (
+    <CategoryPage
+      category={cat}
+      articles={data.articles}
+      pillFilters={[
+        { id: "all", label: "Alle News", categories: ["Nachrichten", "E-Bikes"] },
+        { id: "news", label: "Allgemein", categories: ["Nachrichten"] },
+        { id: "ebike", label: "E-Bike News", categories: ["E-Bikes"], icon: "ebike" },
+      ]}
+    />
+  );
 }
