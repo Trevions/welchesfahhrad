@@ -67,6 +67,7 @@ import { Route as AuthenticatedMnvUsersRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMnvNewsletterRouteImport } from './routes/_authenticated/mnv.newsletter'
 import { Route as AuthenticatedMnvMessagesRouteImport } from './routes/_authenticated/mnv.messages'
 import { Route as AuthenticatedMnvMediaRouteImport } from './routes/_authenticated/mnv.media'
+import { Route as AuthenticatedMnvBikesRouteImport } from './routes/_authenticated/mnv.bikes'
 import { Route as AuthenticatedMnvAutoArticlesRouteImport } from './routes/_authenticated/mnv.auto-articles'
 import { Route as AuthenticatedMnvArticlesRouteImport } from './routes/_authenticated/mnv.articles'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -74,6 +75,8 @@ import { Route as ApiPublicNewsletterUnsubscribeRouteImport } from './routes/api
 import { Route as ApiPublicNewsletterDispatchRouteImport } from './routes/api.public.newsletter.dispatch'
 import { Route as ApiPublicArticlesAutoGenerateRouteImport } from './routes/api.public.articles.auto-generate'
 import { Route as ApiPublicArticleImagePathRouteImport } from './routes/api.public.article-image.$path'
+import { Route as AuthenticatedMnvBikesNewRouteImport } from './routes/_authenticated/mnv.bikes_.new'
+import { Route as AuthenticatedMnvBikesIdRouteImport } from './routes/_authenticated/mnv.bikes_.$id'
 import { Route as AuthenticatedMnvArticlesNewRouteImport } from './routes/_authenticated/mnv.articles_.new'
 import { Route as AuthenticatedMnvArticlesIdRouteImport } from './routes/_authenticated/mnv.articles_.$id'
 
@@ -368,6 +371,11 @@ const AuthenticatedMnvMediaRoute = AuthenticatedMnvMediaRouteImport.update({
   path: '/media',
   getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
+const AuthenticatedMnvBikesRoute = AuthenticatedMnvBikesRouteImport.update({
+  id: '/bikes',
+  path: '/bikes',
+  getParentRoute: () => AuthenticatedMnvRoute,
+} as any)
 const AuthenticatedMnvAutoArticlesRoute =
   AuthenticatedMnvAutoArticlesRouteImport.update({
     id: '/auto-articles',
@@ -410,6 +418,17 @@ const ApiPublicArticleImagePathRoute =
     path: '/api/public/article-image/$path',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedMnvBikesNewRoute =
+  AuthenticatedMnvBikesNewRouteImport.update({
+    id: '/bikes_/new',
+    path: '/bikes/new',
+    getParentRoute: () => AuthenticatedMnvRoute,
+  } as any)
+const AuthenticatedMnvBikesIdRoute = AuthenticatedMnvBikesIdRouteImport.update({
+  id: '/bikes_/$id',
+  path: '/bikes/$id',
+  getParentRoute: () => AuthenticatedMnvRoute,
+} as any)
 const AuthenticatedMnvArticlesNewRoute =
   AuthenticatedMnvArticlesNewRouteImport.update({
     id: '/articles_/new',
@@ -478,6 +497,7 @@ export interface FileRoutesByFullPath {
   '/tools/': typeof ToolsIndexRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
+  '/mnv/bikes': typeof AuthenticatedMnvBikesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
@@ -485,6 +505,8 @@ export interface FileRoutesByFullPath {
   '/mnv/': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
+  '/mnv/bikes/$id': typeof AuthenticatedMnvBikesIdRoute
+  '/mnv/bikes/new': typeof AuthenticatedMnvBikesNewRoute
   '/api/public/article-image/$path': typeof ApiPublicArticleImagePathRoute
   '/api/public/articles/auto-generate': typeof ApiPublicArticlesAutoGenerateRoute
   '/api/public/newsletter/dispatch': typeof ApiPublicNewsletterDispatchRoute
@@ -544,6 +566,7 @@ export interface FileRoutesByTo {
   '/tools': typeof ToolsIndexRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
+  '/mnv/bikes': typeof AuthenticatedMnvBikesRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
@@ -551,6 +574,8 @@ export interface FileRoutesByTo {
   '/mnv': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
+  '/mnv/bikes/$id': typeof AuthenticatedMnvBikesIdRoute
+  '/mnv/bikes/new': typeof AuthenticatedMnvBikesNewRoute
   '/api/public/article-image/$path': typeof ApiPublicArticleImagePathRoute
   '/api/public/articles/auto-generate': typeof ApiPublicArticlesAutoGenerateRoute
   '/api/public/newsletter/dispatch': typeof ApiPublicNewsletterDispatchRoute
@@ -614,6 +639,7 @@ export interface FileRoutesById {
   '/tools/': typeof ToolsIndexRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
+  '/_authenticated/mnv/bikes': typeof AuthenticatedMnvBikesRoute
   '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/_authenticated/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/_authenticated/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
@@ -621,6 +647,8 @@ export interface FileRoutesById {
   '/_authenticated/mnv/': typeof AuthenticatedMnvIndexRoute
   '/_authenticated/mnv/articles_/$id': typeof AuthenticatedMnvArticlesIdRoute
   '/_authenticated/mnv/articles_/new': typeof AuthenticatedMnvArticlesNewRoute
+  '/_authenticated/mnv/bikes_/$id': typeof AuthenticatedMnvBikesIdRoute
+  '/_authenticated/mnv/bikes_/new': typeof AuthenticatedMnvBikesNewRoute
   '/api/public/article-image/$path': typeof ApiPublicArticleImagePathRoute
   '/api/public/articles/auto-generate': typeof ApiPublicArticlesAutoGenerateRoute
   '/api/public/newsletter/dispatch': typeof ApiPublicNewsletterDispatchRoute
@@ -684,6 +712,7 @@ export interface FileRouteTypes {
     | '/tools/'
     | '/mnv/articles'
     | '/mnv/auto-articles'
+    | '/mnv/bikes'
     | '/mnv/media'
     | '/mnv/messages'
     | '/mnv/newsletter'
@@ -691,6 +720,8 @@ export interface FileRouteTypes {
     | '/mnv/'
     | '/mnv/articles/$id'
     | '/mnv/articles/new'
+    | '/mnv/bikes/$id'
+    | '/mnv/bikes/new'
     | '/api/public/article-image/$path'
     | '/api/public/articles/auto-generate'
     | '/api/public/newsletter/dispatch'
@@ -750,6 +781,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/mnv/articles'
     | '/mnv/auto-articles'
+    | '/mnv/bikes'
     | '/mnv/media'
     | '/mnv/messages'
     | '/mnv/newsletter'
@@ -757,6 +789,8 @@ export interface FileRouteTypes {
     | '/mnv'
     | '/mnv/articles/$id'
     | '/mnv/articles/new'
+    | '/mnv/bikes/$id'
+    | '/mnv/bikes/new'
     | '/api/public/article-image/$path'
     | '/api/public/articles/auto-generate'
     | '/api/public/newsletter/dispatch'
@@ -819,6 +853,7 @@ export interface FileRouteTypes {
     | '/tools/'
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/auto-articles'
+    | '/_authenticated/mnv/bikes'
     | '/_authenticated/mnv/media'
     | '/_authenticated/mnv/messages'
     | '/_authenticated/mnv/newsletter'
@@ -826,6 +861,8 @@ export interface FileRouteTypes {
     | '/_authenticated/mnv/'
     | '/_authenticated/mnv/articles_/$id'
     | '/_authenticated/mnv/articles_/new'
+    | '/_authenticated/mnv/bikes_/$id'
+    | '/_authenticated/mnv/bikes_/new'
     | '/api/public/article-image/$path'
     | '/api/public/articles/auto-generate'
     | '/api/public/newsletter/dispatch'
@@ -1278,6 +1315,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMnvMediaRouteImport
       parentRoute: typeof AuthenticatedMnvRoute
     }
+    '/_authenticated/mnv/bikes': {
+      id: '/_authenticated/mnv/bikes'
+      path: '/bikes'
+      fullPath: '/mnv/bikes'
+      preLoaderRoute: typeof AuthenticatedMnvBikesRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
     '/_authenticated/mnv/auto-articles': {
       id: '/_authenticated/mnv/auto-articles'
       path: '/auto-articles'
@@ -1327,6 +1371,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicArticleImagePathRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/mnv/bikes_/new': {
+      id: '/_authenticated/mnv/bikes_/new'
+      path: '/bikes/new'
+      fullPath: '/mnv/bikes/new'
+      preLoaderRoute: typeof AuthenticatedMnvBikesNewRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
+    '/_authenticated/mnv/bikes_/$id': {
+      id: '/_authenticated/mnv/bikes_/$id'
+      path: '/bikes/$id'
+      fullPath: '/mnv/bikes/$id'
+      preLoaderRoute: typeof AuthenticatedMnvBikesIdRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
     '/_authenticated/mnv/articles_/new': {
       id: '/_authenticated/mnv/articles_/new'
       path: '/articles/new'
@@ -1347,6 +1405,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedMnvRouteChildren {
   AuthenticatedMnvArticlesRoute: typeof AuthenticatedMnvArticlesRoute
   AuthenticatedMnvAutoArticlesRoute: typeof AuthenticatedMnvAutoArticlesRoute
+  AuthenticatedMnvBikesRoute: typeof AuthenticatedMnvBikesRoute
   AuthenticatedMnvMediaRoute: typeof AuthenticatedMnvMediaRoute
   AuthenticatedMnvMessagesRoute: typeof AuthenticatedMnvMessagesRoute
   AuthenticatedMnvNewsletterRoute: typeof AuthenticatedMnvNewsletterRoute
@@ -1354,11 +1413,14 @@ interface AuthenticatedMnvRouteChildren {
   AuthenticatedMnvIndexRoute: typeof AuthenticatedMnvIndexRoute
   AuthenticatedMnvArticlesIdRoute: typeof AuthenticatedMnvArticlesIdRoute
   AuthenticatedMnvArticlesNewRoute: typeof AuthenticatedMnvArticlesNewRoute
+  AuthenticatedMnvBikesIdRoute: typeof AuthenticatedMnvBikesIdRoute
+  AuthenticatedMnvBikesNewRoute: typeof AuthenticatedMnvBikesNewRoute
 }
 
 const AuthenticatedMnvRouteChildren: AuthenticatedMnvRouteChildren = {
   AuthenticatedMnvArticlesRoute: AuthenticatedMnvArticlesRoute,
   AuthenticatedMnvAutoArticlesRoute: AuthenticatedMnvAutoArticlesRoute,
+  AuthenticatedMnvBikesRoute: AuthenticatedMnvBikesRoute,
   AuthenticatedMnvMediaRoute: AuthenticatedMnvMediaRoute,
   AuthenticatedMnvMessagesRoute: AuthenticatedMnvMessagesRoute,
   AuthenticatedMnvNewsletterRoute: AuthenticatedMnvNewsletterRoute,
@@ -1366,6 +1428,8 @@ const AuthenticatedMnvRouteChildren: AuthenticatedMnvRouteChildren = {
   AuthenticatedMnvIndexRoute: AuthenticatedMnvIndexRoute,
   AuthenticatedMnvArticlesIdRoute: AuthenticatedMnvArticlesIdRoute,
   AuthenticatedMnvArticlesNewRoute: AuthenticatedMnvArticlesNewRoute,
+  AuthenticatedMnvBikesIdRoute: AuthenticatedMnvBikesIdRoute,
+  AuthenticatedMnvBikesNewRoute: AuthenticatedMnvBikesNewRoute,
 }
 
 const AuthenticatedMnvRouteWithChildren =
