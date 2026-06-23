@@ -1,66 +1,97 @@
-## Plan: професионална интерактивна Карта
+# Fahrrad-Datenbank — Plan
 
-### Какво ще има на новата страница `/karte`
+## 1. Datenbank (Lovable Cloud)
 
-Истинска интерактивна карта (вместо сегашния iframe) с живи данни от безплатни OpenStreetMap източници. Бързо зареждане, красив дизайн в стила на RADMAP, и когато потребителят разреши локация — показва всичко важно за колоездачи около него.
+Nieuwe tabel `bikes`:
+- `id`, `slug` (uniek), `created_at`, `updated_at`, `published` (bool)
+- Grunddaten: `brand`, `model`, `year`, `category` ('bike' | 'ebike'), `bike_type` (Trekking, MTB, Gravel, City, Cargo, Rennrad…), `price_eur`, `image_url`, `gallery` (jsonb), `manufacturer_url`
+- SEO: `meta_title`, `meta_description`, `og_image_url`, `keywords` (text[])
+- Inhalt: `excerpt`, `description` (Rich-Text / markdown), `highlights` (jsonb: pro/contra)
+- Spezifikationen (jsonb `specs`): Rahmen (Material, Größe Optionen, Geometrie), Gabel, Schaltung, Bremsen, Laufräder, Reifen (Marke, Breite, Profil), Sattel, Lenker, Gewicht
+- E-Bike-Spezifika (jsonb `ebike`, nullable): Motor (Marke, Nm, W), Akku (Wh, Zellen, abnehmbar), Reichweite (Eco/Tour/Turbo km), Ladezeit, Display, Sensor, Unterstützung bis km/h
+- Bewertung (jsonb `ratings`): Komfort, Antrieb, Bremsen, Ausstattung, Preis-Leistung (0-10) — für Radar-/Bar-Charts
+- Tags: `intended_use` (text[]), `terrain` (text[])
 
-### 1. Истинска карта (Leaflet + OSM)
+RLS: SELECT für anon/authenticated wenn `published=true`; alles für `service_role`; admin-Schreibzugriff via `has_role(auth.uid(),'admin')`.
 
-Превключваеми базови слоеве:
-- CyclOSM (професионална колоездачна карта)
-- OpenStreetMap стандарт
-- OpenTopoMap (терен / надморска височина)
-- Esri Satellit
+## 2. Admin-Panel (`/mnv/bikes`)
 
-Превключваеми насложени слоеве:
-- Waymarked Trails — Radwege (всички велоалеи в Германия)
-- Waymarked Trails — MTB трейлове
+- Liste mit Suche, Filter (Kategorie, Marke, Status), Sortierung
+- Editor `/mnv/bikes/$id`:
+  - Tabs: Grunddaten · Bilder · Spezifikationen · E-Bike · Bewertungen · SEO · Vorschau
+  - Spezifikationen als strukturiertes Formular (kein Roh-JSON)
+  - Bilder-Upload → Storage `bike-images` (bereits genutztes Muster wie Artikelbilder)
+  - SEO-Helfer: Auto-Slug, Zeichen-Counter für Title/Description, OG-Preview
+  - „Veröffentlichen“-Toggle
+- Server functions in `src/lib/bikes.functions.ts` (mit `requireSupabaseAuth` + admin-Check für Mutationen, public read).
 
-Контроли: zoom, layer switcher, бутон „Standort orten“, избор на радиус (1 / 3 / 5 / 10 km).
+## 3. Startseite (`/`)
 
-### 2. Живи POI данни (Overpass API, безплатно)
+Hero-Block „Geprüft. Bewertet." wird ersetzt durch **„Fahrräder im Fokus"**:
+- Eyebrow „RÄDER & E-BIKES"
+- Grid: 2 Spalten mobil, 4 Spalten Desktop, 2-3 Reihen (max. 8 Karten)
+- Karte: Bild (1:1), darunter **Marke** (klein, uppercase) + **Modell** (Serif Titel), kleines Badge „E-Bike" wenn zutreffend, optional Preis
+- Hover: sanftes Heben + Akzentlinie
+- CTA „Alle Fahrräder ansehen" → `/fahrraeder`
+- Daten via server function `listFeaturedBikes({ limit: 8 })`
 
-Когато потребителят разреши локация, картата центрира върху него и зарежда от OpenStreetMap всичко важно в избрания радиус:
+## 4. Neue Seite `/fahrraeder`
 
-- Fahrradläden (магазини)
-- Reparaturstationen (станции за ремонт)
-- Fahrradverleih
-- Fahrradparkplätze
-- Trinkwasser
-- Cafés / Rast
-- Bahnhöfe (за комбиниране влак + колело)
-- Aussichtspunkte
-- Parks / Erholung
+- Hero + Filterleiste oben mit Pill-Buttons **Alle · Fahrräder · E-Bikes**
+- Sekundärfilter: Typ (Trekking, MTB, Gravel, City, Cargo, Rennrad), Marke, Preisrange
+- Suche
+- Responsive Grid (2 / 3 / 4 Spalten)
+- Pagination / „Mehr laden"
+- SEO `head()` pro Filter-State über URL-Query
 
-Всеки маркер има цветна икона по категория и popup с име, адрес, работно време, уебсайт и линк към OSM + Google Maps маршрут.
+## 5. Detailseite `/fahrraeder/$slug`
 
-Fallback към 3 различни безплатни Overpass сървъра, за да е надеждно.
+Magazin-Layout, Lesefluss:
+1. **Hero**: Großes Bild + Marke/Modell, Badges (Kategorie, Typ, Modelljahr), Preis, Verfügbarkeit-Hinweis (Hinweis: kein Verkauf, Link zum Hersteller)
+2. **Steckbrief** (Sticky-Side / Mobile-Block): Wichtigste Specs auf einen Blick
+3. **Beschreibung** (Rich-Text)
+4. **Spezifikationen** als gegliederte Tabellen (Rahmen, Antrieb, Bremsen, Räder, Komfort)
+5. **E-Bike-Block** (nur bei E-Bikes):
+   - Motor- & Akku-Karten mit Kennzahlen
+   - **Reichweiten-Chart** (Bar, 3 Modi) via Recharts (bereits im Stack üblich)
+   - **Bewertungs-Radar** (Recharts RadarChart)
+6. **Pro & Contra**
+7. **Galerie** (Lightbox)
+8. **FAQ** (collapsible) — JSON-LD `FAQPage`
+9. **Verwandte Fahrräder** (gleiche Kategorie/Typ)
 
-### 3. Под картата — „В твоята близост“
+SEO:
+- `head()` mit `title`, `description`, `og:title/description/image`, `twitter:card=summary_large_image`
+- JSON-LD `Product` (brand, model, image, offers? nein — `category`, aggregateRating wenn vorhanden) + `BreadcrumbList` + `FAQPage`
+- Canonical, Alt-Text aus Marke/Modell, Lazy-Loading
+- Sitemap-Eintrag in `sitemap.xml.ts` ergänzen
 
-- Списък с до 24 най-близки места, сортирани по разстояние
-- Филтри по категория с брояч на резултатите
-- Клик върху картичка → картата лети до мястото
-- Линкове за навигация (Google Maps bicycling) и към OSM
+## 6. Navigation
 
-### 4. Дизайн и скорост
+- Mobile-Nav & Header-Link: „RÄDER" → `/fahrraeder` (E-BIKES bleibt als Unterfilter / oder wird zum Alias `?cat=ebike`)
+- Footer-Link ergänzen
 
-- Тъмен стил, signal orange акцент — както останалата част от RADMAP
-- Анимиран пулсиращ маркер за собствената локация
-- Loading / error / empty състояния
-- Client-only mount, за да не блокира SSR
+## 7. Technische Details
 
-### 5. Технически детайли
+- Server functions: `src/lib/bikes.functions.ts` (list, listFeatured, getBySlug, admin: upsert, delete, togglePublish)
+- Typen: `src/lib/bike-types.ts`
+- Charts: Recharts (BarChart, RadarChart)
+- Slug aus Marke+Modell+Jahr auto-generieren, eindeutig erzwingen
+- Storage-Bucket `bike-images` (public read)
+- Index in `src/routes/index.tsx`: alte „Geprüft. Bewertet."-Section durch `<BikeShowcase />` ersetzen, „Zur Test-Datenbank"-Link entfernen oder umlenken
 
-- Нов компонент `src/components/karte/InteractiveMap.tsx` (вече започнат)
-- Пренаписване на `src/routes/karte.tsx` с client-only `<ClientOnly>` обвивка
-- Пакетите `leaflet`, `react-leaflet`, `@types/leaflet` (вече инсталирани)
-- Използва съществуващия `src/lib/geo-consent.ts` за локацията
-- Всички API-та са безплатни и без ключове: OpenStreetMap, CyclOSM, OpenTopoMap, Esri, Waymarked Trails, Overpass
+## Dateien (geplant)
 
-### 6. Проверка
+Neu:
+- `supabase/migrations/<ts>_bikes.sql`
+- `src/lib/bikes.functions.ts`, `src/lib/bike-types.ts`
+- `src/components/bikes/BikeCard.tsx`, `BikeShowcase.tsx`, `BikeFilters.tsx`, `BikeSpecsTable.tsx`, `BikeRangeChart.tsx`, `BikeRatingRadar.tsx`, `BikeGallery.tsx`
+- `src/routes/fahrraeder.tsx`, `src/routes/fahrraeder.$slug.tsx`
+- `src/routes/_authenticated/mnv.bikes.tsx`, `mnv.bikes_.new.tsx`, `mnv.bikes_.$id.tsx`
+- `src/components/admin/BikeEditor.tsx`
 
-- `/karte` се отваря в preview без 404
-- Картата се рендерира, слоевете превключват
-- При даване на локация се появяват маркери и списък под картата
-- Конзолата е чиста
+Geändert:
+- `src/routes/index.tsx` (Showcase statt Tests-Hero)
+- `src/components/MobileNav.tsx`, `Header.tsx`, `Footer.tsx`
+- `src/routes/sitemap[.]xml.ts`
+- `src/components/admin/AdminShell.tsx` (Menüpunkt „Fahrräder")

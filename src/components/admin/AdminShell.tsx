@@ -13,6 +13,7 @@ import {
   Inbox,
   Mail,
   Sparkles,
+  Bike,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -26,6 +27,7 @@ import { cn } from "@/lib/utils";
 const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; key?: string }[] = [
   { to: "/mnv", label: "Übersicht", icon: LayoutDashboard, exact: true },
   { to: "/mnv/articles", label: "Artikel", icon: FileText },
+  { to: "/mnv/bikes", label: "Fahrräder", icon: Bike },
   { to: "/mnv/auto-articles", label: "Auto-Artikel", icon: Sparkles },
   { to: "/mnv/messages", label: "Nachrichten", icon: Inbox, key: "messages" },
   { to: "/mnv/newsletter", label: "Newsletter", icon: Mail },

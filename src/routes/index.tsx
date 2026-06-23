@@ -6,6 +6,7 @@ import magazineCover from "@/assets/magazine-cover.jpg";
 import { ArticleCard } from "@/components/ArticleCard";
 import { BikeWeatherBar } from "@/components/BikeWeatherBar";
 import { ForYouStrip } from "@/components/ForYouStrip";
+import { BikeShowcase } from "@/components/bikes/BikeShowcase";
 import { getPublicArticles } from "@/lib/articles.functions";
 
 const publicArticlesQuery = queryOptions({
@@ -404,38 +405,9 @@ function Index() {
         </div>
       </section>
 
-      {/* TESTS HORIZONTAL */}
-      {tests.length > 0 && (
-        <section className="border-t border-border">
-          <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border">
-            <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
-              <div>
-                <div className="flex items-center gap-3">
-                  <span className="h-px w-10 bg-signal" />
-                  <span className="eyebrow text-signal">Tests & E-Bikes</span>
-                </div>
-                <h2 className="mt-5 font-display text-4xl md:text-6xl font-black leading-[0.95]">
-                  Geprüft. <span className="italic text-muted-foreground">Bewertet.</span>
-                </h2>
-              </div>
-              <Link
-                to="/tests"
-                className="eyebrow border-b border-foreground pb-1 hover:text-signal hover:border-signal transition-colors"
-              >
-                Zur Test-Datenbank
-              </Link>
-            </div>
+      {/* BIKE SHOWCASE — replaces old Tests block */}
+      <BikeShowcase />
 
-            <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 overflow-x-auto snap-x snap-mandatory pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 sm:overflow-visible sm:snap-none scrollbar-hide relative">
-              {tests.slice(0, 4).map((a, i) => (
-                <div key={a.slug} className="min-w-[280px] sm:min-w-0 snap-start">
-                  <ArticleCard article={a} size="sm" index={i} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
     </>
   );
 }
