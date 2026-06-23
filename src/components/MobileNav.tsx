@@ -1,11 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Newspaper, BookOpen, Zap, Wrench, Map } from "lucide-react";
+import { Home, Newspaper, BookOpen, Bike, Wrench, Map } from "lucide-react";
 
 const items = [
   { to: "/", label: "Start", Icon: Home },
   { to: "/nachrichten", label: "News", Icon: Newspaper },
   { to: "/ratgeber", label: "Ratgeber", Icon: BookOpen },
-  { to: "/e-bikes", label: "E-Bikes", Icon: Zap },
+  { to: "/fahrraeder", label: "Räder", Icon: Bike },
   { to: "/karte", label: "Karte", Icon: Map, featured: true },
   { to: "/tools", label: "Tools", Icon: Wrench },
 ];
