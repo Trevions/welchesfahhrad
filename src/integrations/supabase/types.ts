@@ -202,6 +202,99 @@ export type Database = {
         }
         Relationships: []
       }
+      bikes: {
+        Row: {
+          bike_type: string | null
+          brand: string
+          category: string
+          created_at: string
+          description: string | null
+          ebike: Json | null
+          excerpt: string | null
+          featured: boolean
+          gallery: Json
+          highlights: Json
+          id: string
+          image_url: string | null
+          intended_use: string[]
+          keywords: string[]
+          manufacturer_url: string | null
+          meta_description: string | null
+          meta_title: string | null
+          model: string
+          og_image_url: string | null
+          price_eur: number | null
+          published: boolean
+          published_at: string | null
+          ratings: Json
+          slug: string
+          specs: Json
+          terrain: string[]
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          bike_type?: string | null
+          brand: string
+          category: string
+          created_at?: string
+          description?: string | null
+          ebike?: Json | null
+          excerpt?: string | null
+          featured?: boolean
+          gallery?: Json
+          highlights?: Json
+          id?: string
+          image_url?: string | null
+          intended_use?: string[]
+          keywords?: string[]
+          manufacturer_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          model: string
+          og_image_url?: string | null
+          price_eur?: number | null
+          published?: boolean
+          published_at?: string | null
+          ratings?: Json
+          slug: string
+          specs?: Json
+          terrain?: string[]
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          bike_type?: string | null
+          brand?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          ebike?: Json | null
+          excerpt?: string | null
+          featured?: boolean
+          gallery?: Json
+          highlights?: Json
+          id?: string
+          image_url?: string | null
+          intended_use?: string[]
+          keywords?: string[]
+          manufacturer_url?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          model?: string
+          og_image_url?: string | null
+          price_eur?: number | null
+          published?: boolean
+          published_at?: string | null
+          ratings?: Json
+          slug?: string
+          specs?: Json
+          terrain?: string[]
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
