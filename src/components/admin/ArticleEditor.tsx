@@ -37,8 +37,51 @@ import {
   Image as ImageIcon,
   ChevronDown,
   Upload,
+  AlertTriangle,
 } from "lucide-react";
 import { ArticleFileImport, type ImportedArticle } from "./ArticleFileImport";
+
+const ALLOWED_CATEGORIES = ["Nachrichten", "Ratgeber", "E-Bikes", "Tests"] as const;
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+type FieldError = { field: string; label: string; message: string };
+
+function validateArticle(f: ArticleFormState, publish: boolean): FieldError[] {
+  const errs: FieldError[] = [];
+  const t = f.title.trim();
+  if (!t) errs.push({ field: "title", label: "Titel", message: "Pflichtfeld" });
+  else if (t.length < 5) errs.push({ field: "title", label: "Titel", message: "min. 5 Zeichen" });
+  else if (t.length > 140) errs.push({ field: "title", label: "Titel", message: "max. 140 Zeichen" });
+
+  const s = f.slug.trim();
+  if (!s) errs.push({ field: "slug", label: "Slug", message: "Pflichtfeld" });
+  else if (!SLUG_RE.test(s)) errs.push({ field: "slug", label: "Slug", message: "nur a-z, 0-9 und Bindestriche" });
+  else if (s.length > 100) errs.push({ field: "slug", label: "Slug", message: "max. 100 Zeichen" });
+
+  if (!(ALLOWED_CATEGORIES as readonly string[]).includes(f.category)) {
+    errs.push({ field: "category", label: "Kategorie", message: "ungültig" });
+  }
+
+  if (publish) {
+    const ex = f.excerpt.trim();
+    if (!ex) errs.push({ field: "excerpt", label: "Teaser", message: "Pflichtfeld zum Veröffentlichen" });
+    else if (ex.length < 20) errs.push({ field: "excerpt", label: "Teaser", message: "min. 20 Zeichen" });
+    else if (ex.length > 320) errs.push({ field: "excerpt", label: "Teaser", message: "max. 320 Zeichen" });
+
+    const body = f.body.trim();
+    if (!body) errs.push({ field: "body", label: "Inhalt", message: "Pflichtfeld zum Veröffentlichen" });
+    else if (body.length < 100) errs.push({ field: "body", label: "Inhalt", message: "min. 100 Zeichen" });
+
+    if (!f.cover_image.trim()) errs.push({ field: "cover_image", label: "Cover-Bild", message: "Pflicht zum Veröffentlichen" });
+
+    if (f.seo_title && f.seo_title.length > 60) errs.push({ field: "seo_title", label: "SEO-Titel", message: "max. 60 Zeichen" });
+    if (f.seo_description && f.seo_description.length > 160) errs.push({ field: "seo_description", label: "Meta-Beschreibung", message: "max. 160 Zeichen" });
+    if (f.og_image && !/^https?:\/\//i.test(f.og_image) && !f.og_image.startsWith("article-images/")) {
+      errs.push({ field: "og_image", label: "OG-Bild", message: "muss eine URL sein (https://…)" });
+    }
+  }
+  return errs;
+}
 
 type ArticleFormState = {
   id?: string;
