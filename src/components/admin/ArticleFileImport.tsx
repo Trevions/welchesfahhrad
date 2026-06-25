@@ -157,6 +157,67 @@ function normalize(rawIn: Record<string, unknown>, body?: string): ImportedArtic
   return out;
 }
 
+/**
+ * Detect free-form section markers like TEASER / INHALT / EXCERPT / BODY
+ * (case-insensitive, on their own line, optionally surrounded by --- separators)
+ * and split the body into { excerpt, body }.
+ * Also promotes short non-punctuated lines followed by a blank line into "## heading".
+ */
+function splitSections(raw: string): { excerpt?: string; body?: string } {
+  const lines = raw.split(/\r?\n/);
+  const sections: { name: string; from: number }[] = [];
+  const isMarker = (l: string) =>
+    /^(teaser|excerpt|zusammenfassung|kurzfassung|intro|einleitung|inhalt|body|content|text|artikel)$/i.test(l.trim());
+  for (let i = 0; i < lines.length; i++) {
+    if (isMarker(lines[i])) sections.push({ name: lines[i].trim().toLowerCase(), from: i + 1 });
+  }
+  if (sections.length === 0) return { body: raw.trim() || undefined };
+  const result: { excerpt?: string; body?: string } = {};
+  for (let s = 0; s < sections.length; s++) {
+    const start = sections[s].from;
+    const end = s + 1 < sections.length ? sections[s + 1].from - 1 : lines.length;
+    const chunk = lines.slice(start, end).join("\n")
+      .replace(/^\s*---+\s*$/gm, "")
+      .trim();
+    if (!chunk) continue;
+    const name = sections[s].name;
+    if (/^(teaser|excerpt|zusammenfassung|kurzfassung|intro|einleitung)$/.test(name)) {
+      result.excerpt = (result.excerpt ? result.excerpt + "\n\n" : "") + chunk;
+    } else {
+      result.body = (result.body ? result.body + "\n\n" : "") + chunk;
+    }
+  }
+  return result;
+}
+
+function promoteHeadings(body: string): string {
+  const lines = body.split(/\r?\n/);
+  const out: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    const prev = (out[out.length - 1] ?? "").trim();
+    const next = (lines[i + 1] ?? "").trim();
+    // already a markdown heading or list/quote → keep
+    if (/^(#{1,6}\s|[-*+]\s|>\s|\d+\.\s)/.test(trimmed)) {
+      out.push(line);
+      continue;
+    }
+    const isHeadingCandidate =
+      trimmed.length > 0 &&
+      trimmed.length <= 90 &&
+      !/[.!?…]$/.test(trimmed) &&
+      prev === "" &&
+      next === "";
+    if (isHeadingCandidate) {
+      out.push(`## ${trimmed}`);
+    } else {
+      out.push(line);
+    }
+  }
+  return out.join("\n");
+}
+
 async function parseFile(file: File): Promise<ImportedArticle> {
   const text = await file.text();
   const name = file.name.toLowerCase();
@@ -176,7 +237,13 @@ async function parseFile(file: File): Promise<ImportedArticle> {
       const firstHeading = body.match(/^#\s+(.+)$/m);
       if (firstHeading) data["title"] = firstHeading[1].trim();
     }
-    return normalize(data, body);
+    const normalized = normalize(data, body);
+    // Detect TEASER / INHALT style sections in the body
+    const sections = splitSections(normalized.body ?? body);
+    if (sections.excerpt && !normalized.excerpt) normalized.excerpt = sections.excerpt;
+    if (sections.body) normalized.body = promoteHeadings(sections.body);
+    else if (normalized.body) normalized.body = promoteHeadings(normalized.body);
+    return normalized;
   }
   throw new Error("Поддържат се .md, .json и .txt файлове");
 }
