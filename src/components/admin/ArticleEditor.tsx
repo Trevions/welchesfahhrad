@@ -37,8 +37,51 @@ import {
   Image as ImageIcon,
   ChevronDown,
   Upload,
+  AlertTriangle,
 } from "lucide-react";
 import { ArticleFileImport, type ImportedArticle } from "./ArticleFileImport";
+
+const ALLOWED_CATEGORIES = ["Nachrichten", "Ratgeber", "E-Bikes", "Tests"] as const;
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+type FieldError = { field: string; label: string; message: string };
+
+function validateArticle(f: ArticleFormState, publish: boolean): FieldError[] {
+  const errs: FieldError[] = [];
+  const t = f.title.trim();
+  if (!t) errs.push({ field: "title", label: "Titel", message: "Pflichtfeld" });
+  else if (t.length < 5) errs.push({ field: "title", label: "Titel", message: "min. 5 Zeichen" });
+  else if (t.length > 140) errs.push({ field: "title", label: "Titel", message: "max. 140 Zeichen" });
+
+  const s = f.slug.trim();
+  if (!s) errs.push({ field: "slug", label: "Slug", message: "Pflichtfeld" });
+  else if (!SLUG_RE.test(s)) errs.push({ field: "slug", label: "Slug", message: "nur a-z, 0-9 und Bindestriche" });
+  else if (s.length > 100) errs.push({ field: "slug", label: "Slug", message: "max. 100 Zeichen" });
+
+  if (!(ALLOWED_CATEGORIES as readonly string[]).includes(f.category)) {
+    errs.push({ field: "category", label: "Kategorie", message: "ungültig" });
+  }
+
+  if (publish) {
+    const ex = f.excerpt.trim();
+    if (!ex) errs.push({ field: "excerpt", label: "Teaser", message: "Pflichtfeld zum Veröffentlichen" });
+    else if (ex.length < 20) errs.push({ field: "excerpt", label: "Teaser", message: "min. 20 Zeichen" });
+    else if (ex.length > 320) errs.push({ field: "excerpt", label: "Teaser", message: "max. 320 Zeichen" });
+
+    const body = f.body.trim();
+    if (!body) errs.push({ field: "body", label: "Inhalt", message: "Pflichtfeld zum Veröffentlichen" });
+    else if (body.length < 100) errs.push({ field: "body", label: "Inhalt", message: "min. 100 Zeichen" });
+
+    if (!f.cover_image.trim()) errs.push({ field: "cover_image", label: "Cover-Bild", message: "Pflicht zum Veröffentlichen" });
+
+    if (f.seo_title && f.seo_title.length > 60) errs.push({ field: "seo_title", label: "SEO-Titel", message: "max. 60 Zeichen" });
+    if (f.seo_description && f.seo_description.length > 160) errs.push({ field: "seo_description", label: "Meta-Beschreibung", message: "max. 160 Zeichen" });
+    if (f.og_image && !/^https?:\/\//i.test(f.og_image) && !f.og_image.startsWith("article-images/")) {
+      errs.push({ field: "og_image", label: "OG-Bild", message: "muss eine URL sein (https://…)" });
+    }
+  }
+  return errs;
+}
 
 type ArticleFormState = {
   id?: string;
@@ -144,7 +187,21 @@ export function ArticleEditor({ initial }: { initial?: Partial<ArticleFormState>
     }
   };
 
+  const publishErrors = useMemo(() => validateArticle(form, true), [form]);
+  const draftErrors = useMemo(() => validateArticle(form, false), [form]);
+
   const onSubmit = async (publish: boolean) => {
+    const errs = publish ? publishErrors : draftErrors;
+    if (errs.length > 0) {
+      toast.error(
+        publish
+          ? `Veröffentlichen blockiert — ${errs.length} Feld${errs.length === 1 ? "" : "er"} prüfen`
+          : `Speichern blockiert — ${errs[0].label}: ${errs[0].message}`,
+      );
+      const el = document.getElementById(`field-${errs[0].field}`) ?? document.getElementById(errs[0].field);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     setSaving(true);
     try {
       const payload = {
@@ -442,11 +499,26 @@ Ein **fetter** Satz oder ein *kursiver*.
             />
           </div>
 
+          {publishErrors.length > 0 && (
+            <div className="rounded border border-amber-500/40 bg-amber-500/10 p-3 space-y-1.5">
+              <div className="flex items-center gap-2 text-amber-300 text-xs font-semibold">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                {publishErrors.length} Problem{publishErrors.length === 1 ? "" : "e"} vor dem Veröffentlichen
+              </div>
+              <ul className="text-[11px] text-amber-200/90 space-y-0.5 pl-5 list-disc">
+                {publishErrors.slice(0, 6).map((e, i) => (
+                  <li key={i}><span className="font-medium">{e.label}:</span> {e.message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="pt-3 space-y-2 border-t border-zinc-800">
             <Button
               onClick={() => onSubmit(true)}
-              disabled={saving || !form.title || !form.slug}
-              className="w-full bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 font-medium"
+              disabled={saving || publishErrors.length > 0}
+              title={publishErrors.length > 0 ? publishErrors.map((e) => `${e.label}: ${e.message}`).join("\n") : undefined}
+              className="w-full bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 font-medium disabled:opacity-50"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : (
                 <>{form.status === "published" ? "Aktualisieren" : "Veröffentlichen"}</>
@@ -455,7 +527,8 @@ Ein **fetter** Satz oder ein *kursiver*.
             <Button
               variant="outline"
               onClick={() => onSubmit(false)}
-              disabled={saving || !form.title || !form.slug}
+              disabled={saving || draftErrors.length > 0}
+              title={draftErrors.length > 0 ? draftErrors.map((e) => `${e.label}: ${e.message}`).join("\n") : undefined}
               className="w-full border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-zinc-300"
             >
               <Save className="h-4 w-4 mr-2" /> Als Entwurf speichern
