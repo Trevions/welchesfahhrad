@@ -1,97 +1,71 @@
-# Fahrrad-Datenbank — Plan
+# Импортиране на статия от файл
 
-## 1. Datenbank (Lovable Cloud)
+Добавяме нова възможност в админ панела: при създаване на нова статия можеш да качиш файл (Markdown или JSON), който автоматично попълва всички полета. След това отделно качваш cover снимка, виждаш преглед и натискаш Publish.
 
-Nieuwe tabel `bikes`:
-- `id`, `slug` (uniek), `created_at`, `updated_at`, `published` (bool)
-- Grunddaten: `brand`, `model`, `year`, `category` ('bike' | 'ebike'), `bike_type` (Trekking, MTB, Gravel, City, Cargo, Rennrad…), `price_eur`, `image_url`, `gallery` (jsonb), `manufacturer_url`
-- SEO: `meta_title`, `meta_description`, `og_image_url`, `keywords` (text[])
-- Inhalt: `excerpt`, `description` (Rich-Text / markdown), `highlights` (jsonb: pro/contra)
-- Spezifikationen (jsonb `specs`): Rahmen (Material, Größe Optionen, Geometrie), Gabel, Schaltung, Bremsen, Laufräder, Reifen (Marke, Breite, Profil), Sattel, Lenker, Gewicht
-- E-Bike-Spezifika (jsonb `ebike`, nullable): Motor (Marke, Nm, W), Akku (Wh, Zellen, abnehmbar), Reichweite (Eco/Tour/Turbo km), Ladezeit, Display, Sensor, Unterstützung bis km/h
-- Bewertung (jsonb `ratings`): Komfort, Antrieb, Bremsen, Ausstattung, Preis-Leistung (0-10) — für Radar-/Bar-Charts
-- Tags: `intended_use` (text[]), `terrain` (text[])
+## Какво се добавя
 
-RLS: SELECT für anon/authenticated wenn `published=true`; alles für `service_role`; admin-Schreibzugriff via `has_role(auth.uid(),'admin')`.
+### 1. „Import from file" зона горе в редактора на нова статия
+- Drag-and-drop / click-to-upload поле, което приема `.md` и `.json`
+- Автоматично разпознава формата по разширение
+- Бутон „Изчисти" за връщане към празна форма
 
-## 2. Admin-Panel (`/mnv/bikes`)
+### 2. Поддържани файлови формати
 
-- Liste mit Suche, Filter (Kategorie, Marke, Status), Sortierung
-- Editor `/mnv/bikes/$id`:
-  - Tabs: Grunddaten · Bilder · Spezifikationen · E-Bike · Bewertungen · SEO · Vorschau
-  - Spezifikationen als strukturiertes Formular (kein Roh-JSON)
-  - Bilder-Upload → Storage `bike-images` (bereits genutztes Muster wie Artikelbilder)
-  - SEO-Helfer: Auto-Slug, Zeichen-Counter für Title/Description, OG-Preview
-  - „Veröffentlichen“-Toggle
-- Server functions in `src/lib/bikes.functions.ts` (mit `requireSupabaseAuth` + admin-Check für Mutationen, public read).
+**Markdown (.md) с frontmatter:**
+```markdown
+---
+title: Заглавие на статията
+slug: optional-slug
+excerpt: Кратко описание (до 200 символа)
+category: Nachrichten
+tags: [e-bike, test]
+status: draft
+seo_title: SEO заглавие
+seo_description: SEO мета описание
+---
 
-## 3. Startseite (`/`)
+# Първи параграф на тялото
+Останалият Markdown текст става HTML за полето body.
+```
 
-Hero-Block „Geprüft. Bewertet." wird ersetzt durch **„Fahrräder im Fokus"**:
-- Eyebrow „RÄDER & E-BIKES"
-- Grid: 2 Spalten mobil, 4 Spalten Desktop, 2-3 Reihen (max. 8 Karten)
-- Karte: Bild (1:1), darunter **Marke** (klein, uppercase) + **Modell** (Serif Titel), kleines Badge „E-Bike" wenn zutreffend, optional Preis
-- Hover: sanftes Heben + Akzentlinie
-- CTA „Alle Fahrräder ansehen" → `/fahrraeder`
-- Daten via server function `listFeaturedBikes({ limit: 8 })`
+**JSON (.json):**
+```json
+{
+  "title": "...",
+  "slug": "...",
+  "excerpt": "...",
+  "category": "Nachrichten",
+  "tags": ["..."],
+  "status": "draft",
+  "seo_title": "...",
+  "seo_description": "...",
+  "body": "<p>HTML или markdown</p>"
+}
+```
 
-## 4. Neue Seite `/fahrraeder`
+Задължителни: `title`, `body`. Останалите са опционални — категория default „Nachrichten", status default „draft", slug автогенериран от заглавието.
 
-- Hero + Filterleiste oben mit Pill-Buttons **Alle · Fahrräder · E-Bikes**
-- Sekundärfilter: Typ (Trekking, MTB, Gravel, City, Cargo, Rennrad), Marke, Preisrange
-- Suche
-- Responsive Grid (2 / 3 / 4 Spalten)
-- Pagination / „Mehr laden"
-- SEO `head()` pro Filter-State über URL-Query
+### 3. Поток (UX)
 
-## 5. Detailseite `/fahrraeder/$slug`
+1. Качваш файла → полетата в редактора веднага се попълват, виждаш зелен banner „Файлът е импортиран успешно"
+2. Качваш cover снимка в съществуващото image поле (отделно от файла)
+3. Виждаш пълен преглед в редактора, можеш ръчно да коригираш каквото и да е
+4. Натискаш Publish (или Save as draft) — стандартното поведение
 
-Magazin-Layout, Lesefluss:
-1. **Hero**: Großes Bild + Marke/Modell, Badges (Kategorie, Typ, Modelljahr), Preis, Verfügbarkeit-Hinweis (Hinweis: kein Verkauf, Link zum Hersteller)
-2. **Steckbrief** (Sticky-Side / Mobile-Block): Wichtigste Specs auf einen Blick
-3. **Beschreibung** (Rich-Text)
-4. **Spezifikationen** als gegliederte Tabellen (Rahmen, Antrieb, Bremsen, Räder, Komfort)
-5. **E-Bike-Block** (nur bei E-Bikes):
-   - Motor- & Akku-Karten mit Kennzahlen
-   - **Reichweiten-Chart** (Bar, 3 Modi) via Recharts (bereits im Stack üblich)
-   - **Bewertungs-Radar** (Recharts RadarChart)
-6. **Pro & Contra**
-7. **Galerie** (Lightbox)
-8. **FAQ** (collapsible) — JSON-LD `FAQPage`
-9. **Verwandte Fahrräder** (gleiche Kategorie/Typ)
+### 4. Валидация и грешки
+- Невалиден JSON / липсва `title` или `body` → червен toast с ясна причина, формата не се променя
+- Непозната категория → попълва се както е, потребителят може да я смени
+- Markdown се конвертира към чист HTML (`marked` + `DOMPurify`)
 
-SEO:
-- `head()` mit `title`, `description`, `og:title/description/image`, `twitter:card=summary_large_image`
-- JSON-LD `Product` (brand, model, image, offers? nein — `category`, aggregateRating wenn vorhanden) + `BreadcrumbList` + `FAQPage`
-- Canonical, Alt-Text aus Marke/Modell, Lazy-Loading
-- Sitemap-Eintrag in `sitemap.xml.ts` ergänzen
+## Технически детайли
 
-## 6. Navigation
+- Нов компонент `src/components/admin/ArticleFileImport.tsx` с drop zone (използва съществуващите shadcn primitives, без нови UI зависимости)
+- Парсване на frontmatter с `gray-matter`, markdown→html с `marked`, sanitize с вече наличния DOMPurify pattern
+- Добавя се в `src/components/admin/ArticleEditor.tsx` най-горе, над сегашните полета, видимо само при нова статия (не при редакция)
+- Полетата се запълват през съществуващия form state (react-hook-form `setValue`) — никаква промяна по `upsertArticle` server fn или DB схема
+- Snimkata и публикуването използват вече съществуващата логика — нищо ново на backend
 
-- Mobile-Nav & Header-Link: „RÄDER" → `/fahrraeder` (E-BIKES bleibt als Unterfilter / oder wird zum Alias `?cat=ebike`)
-- Footer-Link ergänzen
-
-## 7. Technische Details
-
-- Server functions: `src/lib/bikes.functions.ts` (list, listFeatured, getBySlug, admin: upsert, delete, togglePublish)
-- Typen: `src/lib/bike-types.ts`
-- Charts: Recharts (BarChart, RadarChart)
-- Slug aus Marke+Modell+Jahr auto-generieren, eindeutig erzwingen
-- Storage-Bucket `bike-images` (public read)
-- Index in `src/routes/index.tsx`: alte „Geprüft. Bewertet."-Section durch `<BikeShowcase />` ersetzen, „Zur Test-Datenbank"-Link entfernen oder umlenken
-
-## Dateien (geplant)
-
-Neu:
-- `supabase/migrations/<ts>_bikes.sql`
-- `src/lib/bikes.functions.ts`, `src/lib/bike-types.ts`
-- `src/components/bikes/BikeCard.tsx`, `BikeShowcase.tsx`, `BikeFilters.tsx`, `BikeSpecsTable.tsx`, `BikeRangeChart.tsx`, `BikeRatingRadar.tsx`, `BikeGallery.tsx`
-- `src/routes/fahrraeder.tsx`, `src/routes/fahrraeder.$slug.tsx`
-- `src/routes/_authenticated/mnv.bikes.tsx`, `mnv.bikes_.new.tsx`, `mnv.bikes_.$id.tsx`
-- `src/components/admin/BikeEditor.tsx`
-
-Geändert:
-- `src/routes/index.tsx` (Showcase statt Tests-Hero)
-- `src/components/MobileNav.tsx`, `Header.tsx`, `Footer.tsx`
-- `src/routes/sitemap[.]xml.ts`
-- `src/components/admin/AdminShell.tsx` (Menüpunkt „Fahrräder")
+## Извън обхвата
+- Без bulk import (само един файл наведнъж)
+- Без качване на снимки вградени във файла — снимката винаги е отделно поле
+- Без промяна на bike editor-а (само статии)
