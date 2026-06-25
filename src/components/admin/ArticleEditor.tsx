@@ -187,7 +187,21 @@ export function ArticleEditor({ initial }: { initial?: Partial<ArticleFormState>
     }
   };
 
+  const publishErrors = useMemo(() => validateArticle(form, true), [form]);
+  const draftErrors = useMemo(() => validateArticle(form, false), [form]);
+
   const onSubmit = async (publish: boolean) => {
+    const errs = publish ? publishErrors : draftErrors;
+    if (errs.length > 0) {
+      toast.error(
+        publish
+          ? `Veröffentlichen blockiert — ${errs.length} Feld${errs.length === 1 ? "" : "er"} prüfen`
+          : `Speichern blockiert — ${errs[0].label}: ${errs[0].message}`,
+      );
+      const el = document.getElementById(`field-${errs[0].field}`) ?? document.getElementById(errs[0].field);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     setSaving(true);
     try {
       const payload = {
