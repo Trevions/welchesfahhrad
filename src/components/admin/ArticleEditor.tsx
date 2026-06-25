@@ -38,6 +38,7 @@ import {
   ChevronDown,
   Upload,
 } from "lucide-react";
+import { ArticleFileImport, type ImportedArticle } from "./ArticleFileImport";
 
 type ArticleFormState = {
   id?: string;
@@ -176,6 +177,14 @@ export function ArticleEditor({ initial }: { initial?: Partial<ArticleFormState>
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
       {/* Main */}
       <div className="space-y-5 min-w-0">
+        {!initial?.id && (
+          <ArticleFileImport
+            onImport={(data: ImportedArticle) => {
+              setForm((f) => ({ ...f, ...data }));
+              if (data.slug) setSlugTouched(true);
+            }}
+          />
+        )}
         <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Titel</Label>
