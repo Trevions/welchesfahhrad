@@ -499,11 +499,26 @@ Ein **fetter** Satz oder ein *kursiver*.
             />
           </div>
 
+          {publishErrors.length > 0 && (
+            <div className="rounded border border-amber-500/40 bg-amber-500/10 p-3 space-y-1.5">
+              <div className="flex items-center gap-2 text-amber-300 text-xs font-semibold">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                {publishErrors.length} Problem{publishErrors.length === 1 ? "" : "e"} vor dem Veröffentlichen
+              </div>
+              <ul className="text-[11px] text-amber-200/90 space-y-0.5 pl-5 list-disc">
+                {publishErrors.slice(0, 6).map((e, i) => (
+                  <li key={i}><span className="font-medium">{e.label}:</span> {e.message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="pt-3 space-y-2 border-t border-zinc-800">
             <Button
               onClick={() => onSubmit(true)}
-              disabled={saving || !form.title || !form.slug}
-              className="w-full bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 font-medium"
+              disabled={saving || publishErrors.length > 0}
+              title={publishErrors.length > 0 ? publishErrors.map((e) => `${e.label}: ${e.message}`).join("\n") : undefined}
+              className="w-full bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 font-medium disabled:opacity-50"
             >
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : (
                 <>{form.status === "published" ? "Aktualisieren" : "Veröffentlichen"}</>
@@ -512,7 +527,8 @@ Ein **fetter** Satz oder ein *kursiver*.
             <Button
               variant="outline"
               onClick={() => onSubmit(false)}
-              disabled={saving || !form.title || !form.slug}
+              disabled={saving || draftErrors.length > 0}
+              title={draftErrors.length > 0 ? draftErrors.map((e) => `${e.label}: ${e.message}`).join("\n") : undefined}
               className="w-full border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-zinc-300"
             >
               <Save className="h-4 w-4 mr-2" /> Als Entwurf speichern
