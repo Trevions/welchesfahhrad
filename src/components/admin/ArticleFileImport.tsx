@@ -34,8 +34,8 @@ function stripQuotes(s: string): string {
 function parseScalar(raw: string): string | number | boolean | string[] {
   const v = raw.trim();
   if (v === "") return "";
-  if (v === "true") return true;
-  if (v === "false") return false;
+  if (/^(true|ja|yes|1)$/i.test(v)) return true;
+  if (/^(false|nein|no|0)$/i.test(v)) return false;
   if (/^\[.*\]$/.test(v)) {
     return v
       .slice(1, -1)
@@ -55,8 +55,9 @@ function parseScalar(raw: string): string | number | boolean | string[] {
  *  - block scalars `|` and `>` (multi-line text)
  */
 function parseFrontmatter(text: string): { data: Record<string, unknown>; body: string } {
-  const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
-  if (!m) return { data: {}, body: text };
+  const normalizedText = text.replace(/^\uFEFF/, "");
+  const m = normalizedText.match(/^\s*---\s*\r?\n([\s\S]*?)\r?\n\s*---\s*\r?\n?([\s\S]*)$/);
+  if (!m) return { data: parseLooseFields(normalizedText), body: stripLooseFieldHeader(normalizedText) };
   const lines = m[1].split(/\r?\n/);
   const data: Record<string, unknown> = {};
   let i = 0;
@@ -103,11 +104,123 @@ function parseFrontmatter(text: string): { data: Record<string, unknown>; body: 
   return { data, body: m[2].trim() };
 }
 
+function parseLooseFields(text: string): Record<string, unknown> {
+  const data: Record<string, unknown> = {};
+  const lines = text.split(/\r?\n/);
+  const known = /^(title|titel|headline|ueberschrift|überschrift|slug|permalink|url|excerpt|description|beschreibung|summary|zusammenfassung|teaser|subtitle|untertitel|category|kategorie|rubrik|source|quelle|publisher|publikation|status|state|read_time|readtime|reading_time|readingtime|lesezeit|lesedauer|seo_title|seo-title|seotitle|seo_titel|seo-titel|meta_title|meta-title|metatitle|meta_titel|seo_description|seo-description|seodescription|meta_description|meta-description|metadescription|meta_beschreibung|meta-beschreibung|keywords|seo_keywords|seo-keywords|tags|schlagwoerter|schlagwörter|og_image|og-image|ogimage|og:image|og_bild|og-bild|og_bild_url|og-bild-url|cover_image|cover-image|coverimage|image|bild|bild_url|bild-url|titelbild|cover|thumbnail|caption|bildunterschrift|bildbeschreibung|credit|bildquelle|photo_credit|photographer|fotograf|ai|ki|ki_bild|ki-bild)$/i;
+
+  for (const line of lines) {
+    const match = line.match(/^\s*([^:]{2,60})\s*:\s*(.*?)\s*$/);
+    if (!match) continue;
+    const key = match[1].trim();
+    if (!known.test(key)) continue;
+    data[key] = parseScalar(match[2]);
+  }
+
+  Object.assign(data, parseLabelValueBlocks(lines));
+
+  return data;
+}
+
+function canonicalField(label: string): string | undefined {
+  const key = label.trim().toLowerCase().replace(/[:：]+$/, "").replace(/[\s-]+/g, "_");
+  const map: Record<string, string> = {
+    title: "title",
+    titel: "titel",
+    headline: "title",
+    ueberschrift: "title",
+    überschrift: "title",
+    slug: "slug",
+    url_slug: "slug",
+    permalink: "slug",
+    kategorie: "kategorie",
+    category: "category",
+    rubrik: "rubrik",
+    quelle: "quelle",
+    source: "source",
+    lesezeit: "lesezeit",
+    lesedauer: "lesezeit",
+    read_time: "read_time",
+    seo_titel: "seo_titel",
+    seo_title: "seo_title",
+    meta_titel: "meta_titel",
+    meta_title: "meta_title",
+    meta_beschreibung: "meta_beschreibung",
+    meta_description: "meta_description",
+    seo_beschreibung: "seo_description",
+    seo_description: "seo_description",
+    keywords: "keywords",
+    schlagwoerter: "schlagwoerter",
+    schlagwörter: "schlagwörter",
+    tags: "tags",
+    og_bild: "og_bild",
+    og_bild_url: "og_bild_url",
+    og_image: "og_image",
+    titelbild: "titelbild",
+    cover_bild: "cover_image",
+    cover_image: "cover_image",
+    bild: "bild",
+    bild_url: "bild_url",
+    bildunterschrift: "bildunterschrift",
+    caption: "caption",
+    bildquelle: "bildquelle",
+    credit: "credit",
+    ki_bild: "ki_bild",
+    ai: "ai",
+  };
+  return map[key];
+}
+
+function parseLabelValueBlocks(lines: string[]): Record<string, unknown> {
+  const data: Record<string, unknown> = {};
+  const stopMarkers = /^(teaser|excerpt|zusammenfassung|kurzfassung|intro|einleitung|inhalt|body|content|text|artikel)$/i;
+  for (let i = 0; i < lines.length - 1; i++) {
+    const field = canonicalField(lines[i]);
+    if (!field) continue;
+    const valueLines: string[] = [];
+    for (let j = i + 1; j < lines.length; j++) {
+      const next = lines[j].trim();
+      if (!next && valueLines.length === 0) continue;
+      if (next === "---" || stopMarkers.test(next) || canonicalField(next) || /^\s*[^:]{2,60}\s*:/.test(lines[j])) break;
+      if (!next && valueLines.length > 0) break;
+      valueLines.push(lines[j]);
+    }
+    const value = valueLines.join("\n").trim();
+    if (value) data[field] = parseScalar(value);
+  }
+  return data;
+}
+
+function stripLooseFieldHeader(text: string): string {
+  const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/);
+  let lastField = -1;
+  const known = /^(title|titel|headline|ueberschrift|überschrift|slug|permalink|url|excerpt|description|beschreibung|summary|zusammenfassung|teaser|category|kategorie|rubrik|source|quelle|read_time|lesezeit|seo_title|seo_titel|meta_title|meta_titel|seo_description|meta_description|meta_beschreibung|keywords|seo_keywords|tags|schlagwoerter|schlagwörter|og_image|og_bild|og_bild_url|cover_image|image|bild|titelbild|caption|credit|bildquelle|ai|ki|ki_bild)$/i;
+  for (let i = 0; i < lines.length; i++) {
+    const match = lines[i].match(/^\s*([^:]{2,60})\s*:/);
+    if (match && known.test(match[1].trim())) lastField = i;
+    if (lastField >= 0 && lines[i].trim() === "---") lastField = i;
+    if (lastField >= 0 && /^(teaser|excerpt|inhalt|body|content|artikel)$/i.test(lines[i].trim())) {
+      return lines.slice(i).join("\n").trim();
+    }
+  }
+  return lastField >= 0 ? lines.slice(lastField + 1).join("\n").trim() : text.trim();
+}
+
 function pick(raw: Record<string, unknown>, ...keys: string[]): string | undefined {
   for (const k of keys) {
-    const v = raw[k];
+    const v = raw[k] ?? raw[k.replace(/-/g, "_")] ?? raw[k.replace(/_/g, "-")];
     if (v !== undefined && v !== null && v !== "") return String(v);
   }
+  return undefined;
+}
+
+function normalizeCategory(value?: string): ImportedArticle["category"] | undefined {
+  if (!value) return undefined;
+  const cleaned = value.trim().toLowerCase().replace(/[\s_]+/g, "-");
+  if (["nachrichten", "news", "neuheiten", "meldung", "meldungen"].includes(cleaned)) return "Nachrichten";
+  if (["ratgeber", "guide", "beratung", "tipps", "wissen"].includes(cleaned)) return "Ratgeber";
+  if (["e-bikes", "e-bike", "ebikes", "ebike", "elektrische-velos", "elektrische-velosipedi"].includes(cleaned)) return "E-Bikes";
+  if (["tests", "test", "review", "reviews", "vergleich"].includes(cleaned)) return "Tests";
   return undefined;
 }
 
@@ -124,25 +237,24 @@ function normalize(rawIn: Record<string, unknown>, body?: string): ImportedArtic
   const excerpt = pick(raw, "excerpt", "description", "beschreibung", "summary", "zusammenfassung", "teaser", "subtitle", "untertitel");
   if (excerpt) out.excerpt = excerpt;
   const cat = pick(raw, "category", "kategorie", "rubrik");
-  if (cat && (ALLOWED_CATEGORIES as readonly string[]).includes(cat)) {
-    out.category = cat as ImportedArticle["category"];
-  }
+  const normalizedCategory = normalizeCategory(cat);
+  if (normalizedCategory) out.category = normalizedCategory;
   const source = pick(raw, "source", "quelle", "publisher", "publikation");
   if (source) out.source = source;
   const status = pick(raw, "status", "state");
   if (status === "draft" || status === "published") out.status = status;
   const readTime = pick(raw, "read_time", "readtime", "reading_time", "readingtime", "lesezeit", "lesedauer");
   if (readTime) out.read_time = readTime;
-  const seoTitle = pick(raw, "seo_title", "seotitle", "meta_title", "metatitle", "seo-titel");
+  const seoTitle = pick(raw, "seo_title", "seo-title", "seotitle", "seo_titel", "seo-titel", "meta_title", "meta-title", "metatitle", "meta_titel", "meta-titel");
   if (seoTitle) out.seo_title = seoTitle;
-  const seoDesc = pick(raw, "seo_description", "seodescription", "meta_description", "metadescription", "meta-beschreibung", "meta");
+  const seoDesc = pick(raw, "seo_description", "seo-description", "seodescription", "meta_description", "meta-description", "metadescription", "meta_beschreibung", "meta-beschreibung", "beschreibung_seo", "meta");
   if (seoDesc) out.seo_description = seoDesc;
-  const kw = raw["seo_keywords"] ?? raw["seokeywords"] ?? raw["keywords"] ?? raw["tags"] ?? raw["schlagwoerter"] ?? raw["schlagwörter"] ?? raw["tags_de"];
+  const kw = raw["seo_keywords"] ?? raw["seo-keywords"] ?? raw["seokeywords"] ?? raw["keywords"] ?? raw["tags"] ?? raw["schlagwoerter"] ?? raw["schlagwörter"] ?? raw["tags_de"];
   if (Array.isArray(kw)) out.seo_keywords = kw.join(", ");
   else if (kw) out.seo_keywords = String(kw);
-  const og = pick(raw, "og_image", "ogimage", "og:image", "social_image");
+  const og = pick(raw, "og_image", "og-image", "ogimage", "og:image", "og_bild", "og-bild", "og_bild_url", "og-bild-url", "social_image", "social-image");
   if (og) out.og_image = og;
-  const cover = pick(raw, "cover_image", "coverimage", "image", "bild", "titelbild", "cover", "thumbnail");
+  const cover = pick(raw, "cover_image", "cover-image", "coverimage", "image", "bild", "bild_url", "bild-url", "titelbild", "cover", "thumbnail");
   if (cover) out.cover_image = cover;
   const caption = pick(raw, "cover_image_caption", "caption", "bildunterschrift", "bildbeschreibung");
   if (caption) out.cover_image_caption = caption;

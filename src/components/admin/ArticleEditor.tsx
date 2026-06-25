@@ -133,6 +133,17 @@ const slugify = (s: string) =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 100);
 
+function mergeImportedArticle(current: ArticleFormState, data: ImportedArticle): ArticleFormState {
+  const next = { ...current };
+  for (const [key, value] of Object.entries(data) as [keyof ArticleFormState, ArticleFormState[keyof ArticleFormState]][]) {
+    if (value === undefined || value === null) continue;
+    if (typeof value === "string" && value.trim() === "") continue;
+    (next as any)[key] = value;
+  }
+  if (!data.slug && data.title && !current.slug) next.slug = slugify(data.title);
+  return next;
+}
+
 export function ArticleEditor({ initial }: { initial?: Partial<ArticleFormState> & { id?: string } }) {
   const [form, setForm] = useState<ArticleFormState>(() => ({ ...empty, ...(initial ?? {}) }));
   const [slugTouched, setSlugTouched] = useState(!!initial?.slug);
@@ -237,7 +248,7 @@ export function ArticleEditor({ initial }: { initial?: Partial<ArticleFormState>
         {!initial?.id && (
           <ArticleFileImport
             onImport={(data: ImportedArticle) => {
-              setForm((f) => ({ ...f, ...data }));
+              setForm((f) => mergeImportedArticle(f, data));
               if (data.slug) setSlugTouched(true);
             }}
           />
