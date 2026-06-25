@@ -117,6 +117,77 @@ function parseLooseFields(text: string): Record<string, unknown> {
     data[key] = parseScalar(match[2]);
   }
 
+  Object.assign(data, parseLabelValueBlocks(lines));
+
+  return data;
+}
+
+function canonicalField(label: string): string | undefined {
+  const key = label.trim().toLowerCase().replace(/[:：]+$/, "").replace(/[\s-]+/g, "_");
+  const map: Record<string, string> = {
+    title: "title",
+    titel: "titel",
+    headline: "title",
+    ueberschrift: "title",
+    überschrift: "title",
+    slug: "slug",
+    url_slug: "slug",
+    permalink: "slug",
+    kategorie: "kategorie",
+    category: "category",
+    rubrik: "rubrik",
+    quelle: "quelle",
+    source: "source",
+    lesezeit: "lesezeit",
+    lesedauer: "lesezeit",
+    read_time: "read_time",
+    seo_titel: "seo_titel",
+    seo_title: "seo_title",
+    meta_titel: "meta_titel",
+    meta_title: "meta_title",
+    meta_beschreibung: "meta_beschreibung",
+    meta_description: "meta_description",
+    seo_beschreibung: "seo_description",
+    seo_description: "seo_description",
+    keywords: "keywords",
+    schlagwoerter: "schlagwoerter",
+    schlagwörter: "schlagwörter",
+    tags: "tags",
+    og_bild: "og_bild",
+    og_bild_url: "og_bild_url",
+    og_image: "og_image",
+    titelbild: "titelbild",
+    cover_bild: "cover_image",
+    cover_image: "cover_image",
+    bild: "bild",
+    bild_url: "bild_url",
+    bildunterschrift: "bildunterschrift",
+    caption: "caption",
+    bildquelle: "bildquelle",
+    credit: "credit",
+    ki_bild: "ki_bild",
+    ai: "ai",
+  };
+  return map[key];
+}
+
+function parseLabelValueBlocks(lines: string[]): Record<string, unknown> {
+  const data: Record<string, unknown> = {};
+  const stopMarkers = /^(teaser|excerpt|zusammenfassung|kurzfassung|intro|einleitung|inhalt|body|content|text|artikel)$/i;
+  for (let i = 0; i < lines.length - 1; i++) {
+    const field = canonicalField(lines[i]);
+    if (!field) continue;
+    const valueLines: string[] = [];
+    for (let j = i + 1; j < lines.length; j++) {
+      const next = lines[j].trim();
+      if (!next && valueLines.length === 0) continue;
+      if (next === "---" || stopMarkers.test(next) || canonicalField(next) || /^\s*[^:]{2,60}\s*:/.test(lines[j])) break;
+      if (!next && valueLines.length > 0) break;
+      valueLines.push(lines[j]);
+    }
+    const value = valueLines.join("\n").trim();
+    if (value) data[field] = parseScalar(value);
+  }
   return data;
 }
 
