@@ -166,7 +166,8 @@ function normalize(rawIn: Record<string, unknown>, body?: string): ImportedArtic
   const excerpt = pick(raw, "excerpt", "description", "beschreibung", "summary", "zusammenfassung", "teaser", "subtitle", "untertitel");
   if (excerpt) out.excerpt = excerpt;
   const cat = pick(raw, "category", "kategorie", "rubrik");
-  out.category = normalizeCategory(cat);
+  const normalizedCategory = normalizeCategory(cat);
+  if (normalizedCategory) out.category = normalizedCategory;
   const source = pick(raw, "source", "quelle", "publisher", "publikation");
   if (source) out.source = source;
   const status = pick(raw, "status", "state");
