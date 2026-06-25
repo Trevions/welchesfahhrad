@@ -23,66 +23,136 @@ export type ImportedArticle = Partial<{
 
 const ALLOWED_CATEGORIES = ["Nachrichten", "Ratgeber", "E-Bikes", "Tests"] as const;
 
+function stripQuotes(s: string): string {
+  const t = s.trim();
+  if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+    return t.slice(1, -1);
+  }
+  return t;
+}
+
 function parseScalar(raw: string): string | number | boolean | string[] {
   const v = raw.trim();
+  if (v === "") return "";
   if (v === "true") return true;
   if (v === "false") return false;
   if (/^\[.*\]$/.test(v)) {
     return v
       .slice(1, -1)
       .split(",")
-      .map((s) => s.trim().replace(/^["']|["']$/g, ""))
+      .map((s) => stripQuotes(s))
       .filter(Boolean);
   }
-  return v.replace(/^["']|["']$/g, "");
+  return stripQuotes(v);
 }
 
+/**
+ * Robust YAML-ish frontmatter parser supporting:
+ *  - simple key: value pairs
+ *  - quoted strings
+ *  - inline arrays [a, b, c]
+ *  - block arrays (next lines starting with "- ")
+ *  - block scalars `|` and `>` (multi-line text)
+ */
 function parseFrontmatter(text: string): { data: Record<string, unknown>; body: string } {
   const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
   if (!m) return { data: {}, body: text };
+  const lines = m[1].split(/\r?\n/);
   const data: Record<string, unknown> = {};
-  for (const line of m[1].split(/\r?\n/)) {
-    if (!line.trim() || line.trim().startsWith("#")) continue;
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim() || line.trim().startsWith("#")) {
+      i++;
+      continue;
+    }
     const idx = line.indexOf(":");
-    if (idx === -1) continue;
+    if (idx === -1) {
+      i++;
+      continue;
+    }
     const key = line.slice(0, idx).trim();
-    const val = line.slice(idx + 1);
-    data[key] = parseScalar(val);
+    const rest = line.slice(idx + 1).trim();
+    i++;
+    // block scalar
+    if (rest === "|" || rest === ">") {
+      const buf: string[] = [];
+      while (i < lines.length && (lines[i].startsWith("  ") || lines[i].startsWith("\t") || lines[i] === "")) {
+        buf.push(lines[i].replace(/^\s{0,4}/, ""));
+        i++;
+      }
+      data[key] = rest === ">" ? buf.join(" ").trim() : buf.join("\n").trim();
+      continue;
+    }
+    // block array (no inline value, following "- " lines)
+    if (rest === "") {
+      const arr: string[] = [];
+      while (i < lines.length && /^\s*-\s+/.test(lines[i])) {
+        arr.push(stripQuotes(lines[i].replace(/^\s*-\s+/, "")));
+        i++;
+      }
+      if (arr.length) {
+        data[key] = arr;
+        continue;
+      }
+      data[key] = "";
+      continue;
+    }
+    data[key] = parseScalar(rest);
   }
   return { data, body: m[2].trim() };
 }
 
-function normalize(raw: Record<string, unknown>, body?: string): ImportedArticle {
-  const out: ImportedArticle = {};
-  const get = (k: string) => (raw[k] !== undefined && raw[k] !== null ? String(raw[k]) : undefined);
+function pick(raw: Record<string, unknown>, ...keys: string[]): string | undefined {
+  for (const k of keys) {
+    const v = raw[k];
+    if (v !== undefined && v !== null && v !== "") return String(v);
+  }
+  return undefined;
+}
 
-  if (get("title")) out.title = get("title");
-  if (get("slug")) out.slug = get("slug");
-  if (get("excerpt") ?? get("description")) out.excerpt = get("excerpt") ?? get("description");
-  const cat = get("category");
+function normalize(rawIn: Record<string, unknown>, body?: string): ImportedArticle {
+  // case-insensitive key access
+  const raw: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(rawIn)) raw[k.toLowerCase()] = v;
+
+  const out: ImportedArticle = {};
+  const title = pick(raw, "title", "titel", "headline", "ueberschrift", "überschrift", "name");
+  if (title) out.title = title;
+  const slug = pick(raw, "slug", "permalink", "url");
+  if (slug) out.slug = slug;
+  const excerpt = pick(raw, "excerpt", "description", "beschreibung", "summary", "zusammenfassung", "teaser", "subtitle", "untertitel");
+  if (excerpt) out.excerpt = excerpt;
+  const cat = pick(raw, "category", "kategorie", "rubrik");
   if (cat && (ALLOWED_CATEGORIES as readonly string[]).includes(cat)) {
     out.category = cat as ImportedArticle["category"];
   }
-  if (get("source")) out.source = get("source");
-  const status = get("status");
+  const source = pick(raw, "source", "quelle", "publisher", "publikation");
+  if (source) out.source = source;
+  const status = pick(raw, "status", "state");
   if (status === "draft" || status === "published") out.status = status;
-  if (get("read_time") ?? get("readTime")) out.read_time = get("read_time") ?? get("readTime");
-  if (get("seo_title") ?? get("seoTitle")) out.seo_title = get("seo_title") ?? get("seoTitle");
-  if (get("seo_description") ?? get("seoDescription"))
-    out.seo_description = get("seo_description") ?? get("seoDescription");
-  const kw = raw["seo_keywords"] ?? raw["keywords"] ?? raw["tags"];
+  const readTime = pick(raw, "read_time", "readtime", "reading_time", "readingtime", "lesezeit", "lesedauer");
+  if (readTime) out.read_time = readTime;
+  const seoTitle = pick(raw, "seo_title", "seotitle", "meta_title", "metatitle", "seo-titel");
+  if (seoTitle) out.seo_title = seoTitle;
+  const seoDesc = pick(raw, "seo_description", "seodescription", "meta_description", "metadescription", "meta-beschreibung", "meta");
+  if (seoDesc) out.seo_description = seoDesc;
+  const kw = raw["seo_keywords"] ?? raw["seokeywords"] ?? raw["keywords"] ?? raw["tags"] ?? raw["schlagwoerter"] ?? raw["schlagwörter"] ?? raw["tags_de"];
   if (Array.isArray(kw)) out.seo_keywords = kw.join(", ");
   else if (kw) out.seo_keywords = String(kw);
-  if (get("og_image") ?? get("ogImage")) out.og_image = get("og_image") ?? get("ogImage");
-  if (get("cover_image") ?? get("coverImage") ?? get("image"))
-    out.cover_image = get("cover_image") ?? get("coverImage") ?? get("image");
-  if (get("cover_image_caption") ?? get("caption"))
-    out.cover_image_caption = get("cover_image_caption") ?? get("caption");
-  if (get("cover_image_credit") ?? get("credit"))
-    out.cover_image_credit = get("cover_image_credit") ?? get("credit");
-  if (raw["cover_image_is_ai"] === true || raw["ai"] === true) out.cover_image_is_ai = true;
+  const og = pick(raw, "og_image", "ogimage", "og:image", "social_image");
+  if (og) out.og_image = og;
+  const cover = pick(raw, "cover_image", "coverimage", "image", "bild", "titelbild", "cover", "thumbnail");
+  if (cover) out.cover_image = cover;
+  const caption = pick(raw, "cover_image_caption", "caption", "bildunterschrift", "bildbeschreibung");
+  if (caption) out.cover_image_caption = caption;
+  const credit = pick(raw, "cover_image_credit", "credit", "bildquelle", "photo_credit", "photographer", "fotograf");
+  if (credit) out.cover_image_credit = credit;
+  if (raw["cover_image_is_ai"] === true || raw["ai"] === true || raw["ki"] === true || raw["ki_bild"] === true) {
+    out.cover_image_is_ai = true;
+  }
 
-  const bodyValue = body ?? (typeof raw["body"] === "string" ? (raw["body"] as string) : undefined);
+  const bodyValue = body ?? (typeof raw["body"] === "string" ? (raw["body"] as string) : undefined) ?? (typeof raw["content"] === "string" ? (raw["content"] as string) : undefined) ?? (typeof raw["text"] === "string" ? (raw["text"] as string) : undefined) ?? (typeof raw["inhalt"] === "string" ? (raw["inhalt"] as string) : undefined);
   if (bodyValue) out.body = bodyValue;
   return out;
 }
@@ -99,16 +169,22 @@ async function parseFile(file: File): Promise<ImportedArticle> {
     }
     return normalize(data);
   }
-  if (name.endsWith(".md") || name.endsWith(".markdown")) {
+  if (name.endsWith(".md") || name.endsWith(".markdown") || name.endsWith(".txt")) {
     const { data, body } = parseFrontmatter(text);
+    // Fallback: if no frontmatter and first line is "# Title"
+    if (Object.keys(data).length === 0) {
+      const firstHeading = body.match(/^#\s+(.+)$/m);
+      if (firstHeading) data["title"] = firstHeading[1].trim();
+    }
     return normalize(data, body);
   }
-  throw new Error("Поддържат се само .md и .json файлове");
+  throw new Error("Поддържат се .md, .json и .txt файлове");
 }
 
 export function ArticleFileImport({ onImport }: { onImport: (data: ImportedArticle) => void }) {
   const [dragOver, setDragOver] = useState(false);
   const [imported, setImported] = useState<string | null>(null);
+  const [summary, setSummary] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
@@ -119,7 +195,21 @@ export function ArticleFileImport({ onImport }: { onImport: (data: ImportedArtic
       }
       onImport(data);
       setImported(file.name);
-      toast.success("Файлът е импортиран — провери полетата по-долу");
+      const filled: string[] = [];
+      if (data.title) filled.push("Titel");
+      if (data.excerpt) filled.push("Teaser");
+      if (data.body) filled.push("Inhalt");
+      if (data.category) filled.push("Kategorie");
+      if (data.seo_title) filled.push("SEO-Titel");
+      if (data.seo_description) filled.push("Meta");
+      if (data.seo_keywords) filled.push("Keywords");
+      if (data.cover_image) filled.push("Cover");
+      if (data.cover_image_caption) filled.push("Bildunterschrift");
+      if (data.cover_image_credit) filled.push("Credit");
+      if (data.source) filled.push("Quelle");
+      if (data.read_time) filled.push("Lesezeit");
+      setSummary(filled);
+      toast.success(`Импортирани ${filled.length} полета: ${filled.join(", ")}`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Грешка при импортиране");
     }
@@ -137,12 +227,12 @@ export function ArticleFileImport({ onImport }: { onImport: (data: ImportedArtic
       <div className="flex items-center justify-between mb-3">
         <div>
           <div className="text-sm font-semibold text-zinc-100">Импортирай статия от файл</div>
-          <div className="text-xs text-zinc-400">Markdown (.md) с frontmatter или JSON (.json) — полетата ще се попълнят автоматично</div>
+          <div className="text-xs text-zinc-400">Markdown (.md), TXT или JSON — поддържа DE/EN ключове и блокови YAML списъци</div>
         </div>
         {imported && (
           <button
             type="button"
-            onClick={() => setImported(null)}
+            onClick={() => { setImported(null); setSummary([]); }}
             className="text-zinc-500 hover:text-zinc-200 text-xs flex items-center gap-1"
           >
             <X className="h-3 w-3" /> изчисти
@@ -151,11 +241,18 @@ export function ArticleFileImport({ onImport }: { onImport: (data: ImportedArtic
       </div>
 
       {imported ? (
-        <div className="flex items-center gap-3 bg-zinc-950/60 border border-emerald-500/30 rounded-md px-4 py-3">
-          <FileText className="h-5 w-5 text-emerald-400 shrink-0" />
-          <div className="min-w-0 flex-1">
-            <div className="text-sm text-zinc-100 truncate">{imported}</div>
-            <div className="text-[11px] text-emerald-400">Импортиран — добави cover снимка и публикувай</div>
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 bg-zinc-950/60 border border-emerald-500/30 rounded-md px-4 py-3">
+            <FileText className="h-5 w-5 text-emerald-400 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm text-zinc-100 truncate">{imported}</div>
+              <div className="text-[11px] text-emerald-400">
+                {summary.length > 0 ? `Попълнени: ${summary.join(" · ")}` : "Импортиран"}
+              </div>
+            </div>
+          </div>
+          <div className="text-[11px] text-zinc-500">
+            Полета без съответствие във файла остават празни — добави ги ръчно или провери имената на ключовете.
           </div>
         </div>
       ) : (
@@ -175,11 +272,11 @@ export function ArticleFileImport({ onImport }: { onImport: (data: ImportedArtic
         >
           <FileUp className="h-6 w-6 mx-auto mb-2 text-zinc-400" />
           <div className="text-sm text-zinc-200">Пусни файл тук или кликни за избор</div>
-          <div className="text-[11px] text-zinc-500 mt-1">.md · .json — максимум 1 файл</div>
+          <div className="text-[11px] text-zinc-500 mt-1">.md · .txt · .json — максимум 1 файл</div>
           <input
             ref={inputRef}
             type="file"
-            accept=".md,.markdown,.json,application/json,text/markdown"
+            accept=".md,.markdown,.txt,.json,application/json,text/markdown,text/plain"
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
@@ -191,18 +288,24 @@ export function ArticleFileImport({ onImport }: { onImport: (data: ImportedArtic
       )}
 
       <details className="mt-3 text-[11px] text-zinc-500">
-        <summary className="cursor-pointer hover:text-zinc-300">Пример за формат</summary>
+        <summary className="cursor-pointer hover:text-zinc-300">Пример за формат (DE/EN ключове)</summary>
         <pre className="mt-2 bg-zinc-950 border border-zinc-800 rounded p-3 overflow-x-auto text-zinc-400">{`---
 title: Заглавие на статията
-excerpt: Кратко описание
-category: Nachrichten
-tags: [e-bike, test]
-seo_title: SEO заглавие
-seo_description: SEO мета описание
+excerpt: Кратко описание (или: beschreibung, teaser, summary)
+category: Nachrichten           # или: kategorie
+source: ADFC                    # или: quelle
+read_time: 5 Min.               # или: lesezeit
+seo_title: SEO заглавие         # или: meta_title
+seo_description: Мета описание  # или: meta_description, meta-beschreibung
+keywords: [bosch, ebike, 2026]  # или: tags, schlagwoerter
+cover_image: https://...        # или: bild, titelbild
+caption: Снимка на пътя         # или: bildunterschrift
+credit: Foto: ADFC              # или: bildquelle
+ai: true                        # или: ki_bild
 ---
 
 # Първи параграф
-Markdown тяло на статията...`}</pre>
+Markdown тяло...`}</pre>
       </details>
     </div>
   );
