@@ -1,6 +1,7 @@
 import { useRef, useState, type DragEvent } from "react";
 import { toast } from "sonner";
-import { FileUp, FileText, X } from "lucide-react";
+import { FileUp, FileText, X, Image as ImageIcon, Loader2, Plus, Star } from "lucide-react";
+import { articleImageUrl } from "@/lib/article-image-url";
 
 export type ImportedBike = Record<string, any>;
 
