@@ -102,7 +102,7 @@ function Index() {
         <div className="relative mx-auto max-w-[1400px] px-6 md:px-8 py-5 md:py-6 flex items-center justify-end">
           <Link
             to="/tools/eco-route"
-            className="inline-flex items-center gap-2 border border-signal/60 bg-signal/10 px-5 py-2.5 text-signal transition-all duration-300 hover:bg-signal hover:text-[#050505] hover:border-signal"
+            className="inline-flex items-center gap-2 border border-white/60 bg-signal/10 px-5 py-2.5 text-white transition-all duration-300 hover:bg-white hover:text-[#050505] hover:border-white"
           >
             <Map className="h-4 w-4" strokeWidth={1.75} />
             <span className="eyebrow-sm">Eco Route Planner</span>
