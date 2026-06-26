@@ -349,32 +349,43 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
         </div>
       </div>
 
-      {!form.id && (
-        <BikeFileImport
-          onImport={(d: ImportedBike) => {
-            setForm((f) => ({
-              ...f,
-              ...d,
-              // re-derive slug unless explicitly provided
-              slug: d.slug || bikeSlugify(d.brand ?? f.brand, d.model ?? f.model, d.year ?? f.year),
-              // ensure required nested shapes
-              highlights: d.highlights ?? f.highlights,
-              specs: d.specs ?? f.specs,
-              ebike: d.ebike ?? f.ebike,
-              ratings: d.ratings ?? f.ratings,
-              gallery: Array.isArray(d.gallery) ? d.gallery : f.gallery,
-              intended_use: Array.isArray(d.intended_use) ? d.intended_use : f.intended_use,
-              terrain: Array.isArray(d.terrain) ? d.terrain : f.terrain,
-              keywords: Array.isArray(d.keywords) ? d.keywords : f.keywords,
-              accessories: Array.isArray(d.accessories) ? d.accessories : f.accessories,
-              awards: Array.isArray(d.awards) ? d.awards : f.awards,
-              videos: Array.isArray(d.videos) ? d.videos : f.videos,
-              faq: Array.isArray(d.faq) ? d.faq : f.faq,
-            }));
-            if (d.slug) setSlugTouched(true);
-          }}
-        />
-      )}
+      <BikeFileImport
+        mainImage={form.image_url}
+        gallery={form.gallery}
+        uploading={uploading}
+        onUploadMain={(f) => handleUpload(f, "image_url")}
+        onUploadGallery={(f) => handleUpload(f, "gallery")}
+        onRemoveGalleryImage={(i) => set("gallery", form.gallery.filter((_, j) => j !== i))}
+        onPromoteToMain={(url) => {
+          const prev = form.image_url;
+          set("image_url", url);
+          const next = form.gallery.filter((g) => g !== url);
+          if (prev && !next.includes(prev)) next.push(prev);
+          set("gallery", next);
+          toast.success("Главна снимка обновена");
+        }}
+        onImport={(d: ImportedBike) => {
+          setForm((f) => ({
+            ...f,
+            ...d,
+            slug: d.slug || bikeSlugify(d.brand ?? f.brand, d.model ?? f.model, d.year ?? f.year),
+            highlights: d.highlights ?? f.highlights,
+            specs: d.specs ?? f.specs,
+            ebike: d.ebike ?? f.ebike,
+            ratings: d.ratings ?? f.ratings,
+            gallery: Array.isArray(d.gallery) ? d.gallery : f.gallery,
+            intended_use: Array.isArray(d.intended_use) ? d.intended_use : f.intended_use,
+            terrain: Array.isArray(d.terrain) ? d.terrain : f.terrain,
+            keywords: Array.isArray(d.keywords) ? d.keywords : f.keywords,
+            accessories: Array.isArray(d.accessories) ? d.accessories : f.accessories,
+            awards: Array.isArray(d.awards) ? d.awards : f.awards,
+            videos: Array.isArray(d.videos) ? d.videos : f.videos,
+            faq: Array.isArray(d.faq) ? d.faq : f.faq,
+          }));
+          if (d.slug) setSlugTouched(true);
+        }}
+      />
+
 
       <Tabs defaultValue="basic">
         <TabsList className="bg-zinc-900 border border-zinc-800 flex-wrap h-auto">
