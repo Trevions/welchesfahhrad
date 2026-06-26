@@ -103,13 +103,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "radmap.de" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:title", content: "radmap.de – Fahrrad-News, Tests & Ratgeber" },
-      { name: "twitter:title", content: "radmap.de – Fahrrad-News, Tests & Ratgeber" },
-      { name: "description", content: "Aktuelle News, ehrliche Tests, Kaufberatung und Praxis-Tipps rund ums Rad und E-Bike. Täglich neu, immer unabhängig." },
-      { property: "og:description", content: "Aktuelle News, ehrliche Tests, Kaufberatung und Praxis-Tipps rund ums Rad und E-Bike. Täglich neu, immer unabhängig." },
-      { name: "twitter:description", content: "Aktuelle News, ehrliche Tests, Kaufberatung und Praxis-Tipps rund ums Rad und E-Bike. Täglich neu, immer unabhängig." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DQfUar8YcyQZOSMZV6R2J2trAoX2/social-images/social-1781289587892-ChatGPT_Image_12.06.2026_г.,_21_39_33.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DQfUar8YcyQZOSMZV6R2J2trAoX2/social-images/social-1781289587892-ChatGPT_Image_12.06.2026_г.,_21_39_33.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
