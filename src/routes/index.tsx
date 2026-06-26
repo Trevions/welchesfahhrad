@@ -227,7 +227,11 @@ function Index() {
                   <p className="mt-3 font-display text-lg leading-tight italic">
                     Ausgabe No. 24:<br />Licht & Schatten.
                   </p>
-                  <button className="mt-auto self-start eyebrow-sm border-b border-border pb-1 hover:border-foreground transition-colors">
+                  <button
+                    type="button"
+                    aria-label="Kiosk-Finder öffnen"
+                    className="mt-auto self-start eyebrow-sm border-b border-border pb-1 hover:border-foreground transition-colors"
+                  >
                     Kiosk-Finder
                   </button>
                 </div>
