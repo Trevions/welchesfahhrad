@@ -307,6 +307,9 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
           <TabsTrigger value="specs">Specs</TabsTrigger>
           <TabsTrigger value="ebike" disabled={form.category !== "ebike"}>E-Bike</TabsTrigger>
           <TabsTrigger value="ratings">Bewertung</TabsTrigger>
+          <TabsTrigger value="suitability">Eignung &amp; Performance</TabsTrigger>
+          <TabsTrigger value="extras">Erweitert (JSON)</TabsTrigger>
+          <TabsTrigger value="faq">FAQ &amp; KI</TabsTrigger>
           <TabsTrigger value="media">Medien</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
