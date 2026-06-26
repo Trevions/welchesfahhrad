@@ -65,7 +65,7 @@ const groups: Group[] = [
       { title: "Fahrrad-Wetter", desc: "Stundengenaue Prognose über Open-Meteo.", icon: CloudSun, to: "/tools/fahrrad-wetter" },
       { title: "Pollen & Luftqualität", desc: "AQI, Feinstaub und Pollenflug live.", icon: Wind, to: "/tools/luftqualitaet" },
       { title: "Sonnenauf-/untergang", desc: "Lichtzeiten und Dämmerung für deine Tour.", icon: Sunrise, to: "/tools/sonnenzeiten" },
-      { title: "Eco Route Planner", desc: "Live-Routing mit Radwegen, Wetter & CO₂-Bilanz.", icon: Map, to: "/tools/eco-route" },
+      
       { title: "Tourenplaner", desc: "Empfohlene externe Planer im Vergleich.", icon: Map, to: "/tools/tourenplaner" },
     ],
   },
