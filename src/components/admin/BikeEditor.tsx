@@ -44,6 +44,28 @@ type Form = {
   keywords: string[];
   featured: boolean;
   published: boolean;
+  // Extended
+  geometry: Record<string, any>;
+  cockpit: Record<string, any>;
+  wheelset: Record<string, any>;
+  drivetrain_detail: Record<string, any>;
+  brakes_detail: Record<string, any>;
+  ebike_detail: Record<string, any>;
+  suitability: Record<string, number>;
+  performance: Record<string, number>;
+  range_matrix: Record<string, any>;
+  maintenance: Record<string, any>;
+  costs: Record<string, any>;
+  environmental: Record<string, any>;
+  safety_features: Record<string, any>;
+  accessories: string[];
+  awards: { name: string; year?: number; source?: string }[];
+  model_history: Record<string, any>;
+  videos: { url: string; title?: string }[];
+  faq: { q: string; a: string }[];
+  ai_summary: Record<string, any>;
+  availability: string;
+  expert_rating: number | null;
 };
 
 const empty: Form = {
@@ -71,6 +93,27 @@ const empty: Form = {
   keywords: [],
   featured: false,
   published: false,
+  geometry: {},
+  cockpit: {},
+  wheelset: {},
+  drivetrain_detail: {},
+  brakes_detail: {},
+  ebike_detail: {},
+  suitability: {},
+  performance: {},
+  range_matrix: {},
+  maintenance: {},
+  costs: {},
+  environmental: {},
+  safety_features: {},
+  accessories: [],
+  awards: [],
+  model_history: {},
+  videos: [],
+  faq: [],
+  ai_summary: {},
+  availability: "",
+  expert_rating: null,
 };
 
 function fromBike(b: Bike): Form {
@@ -100,6 +143,27 @@ function fromBike(b: Bike): Form {
     keywords: b.keywords ?? [],
     featured: b.featured,
     published: b.published,
+    geometry: b.geometry ?? {},
+    cockpit: b.cockpit ?? {},
+    wheelset: b.wheelset ?? {},
+    drivetrain_detail: b.drivetrain_detail ?? {},
+    brakes_detail: b.brakes_detail ?? {},
+    ebike_detail: b.ebike_detail ?? {},
+    suitability: (b.suitability as any) ?? {},
+    performance: (b.performance as any) ?? {},
+    range_matrix: b.range_matrix ?? {},
+    maintenance: b.maintenance ?? {},
+    costs: b.costs ?? {},
+    environmental: b.environmental ?? {},
+    safety_features: b.safety_features ?? {},
+    accessories: b.accessories ?? [],
+    awards: b.awards ?? [],
+    model_history: b.model_history ?? {},
+    videos: b.videos ?? [],
+    faq: b.faq ?? [],
+    ai_summary: b.ai_summary ?? {},
+    availability: b.availability ?? "",
+    expert_rating: b.expert_rating,
   };
 }
 
@@ -146,6 +210,53 @@ const RATING_FIELDS: { key: string; label: string }[] = [
   { key: "equipment", label: "Ausstattung" },
   { key: "value", label: "Preis-Leistung" },
   { key: "overall", label: "Gesamt" },
+];
+
+const SUITABILITY_FIELDS: { key: string; label: string }[] = [
+  { key: "beginner", label: "Anfänger" },
+  { key: "intermediate", label: "Fortgeschritten" },
+  { key: "pro", label: "Profi" },
+  { key: "commuting", label: "Pendeln" },
+  { key: "touring", label: "Tour" },
+  { key: "gravel", label: "Gravel" },
+  { key: "mountain", label: "Mountainbike" },
+  { key: "bikepacking", label: "Bikepacking" },
+  { key: "city", label: "Stadt" },
+  { key: "family", label: "Familie" },
+  { key: "cargo", label: "Cargo" },
+  { key: "racing", label: "Racing" },
+];
+
+const PERFORMANCE_FIELDS: { key: string; label: string }[] = [
+  { key: "comfort", label: "Komfort" },
+  { key: "handling", label: "Handling" },
+  { key: "cornering", label: "Kurvenlage" },
+  { key: "stability", label: "Stabilität" },
+  { key: "acceleration", label: "Beschleunigung" },
+  { key: "climbing", label: "Bergauf" },
+  { key: "descending", label: "Bergab" },
+  { key: "offroad", label: "Offroad" },
+  { key: "city", label: "Stadt" },
+  { key: "longdistance", label: "Langstrecke" },
+  { key: "sportiness", label: "Sportlichkeit" },
+  { key: "suspension", label: "Federung" },
+];
+
+const JSON_GROUPS: { key: keyof Form; label: string; hint?: string }[] = [
+  { key: "geometry", label: "Geometrie", hint: "wheelbase_mm, stack_mm, reach_mm, seat_tube_mm, head_tube_mm, bottom_bracket_mm, frame_weight_kg, max_rider_weight_kg" },
+  { key: "cockpit", label: "Cockpit", hint: "handlebar, stem, seatpost, saddle, grips" },
+  { key: "wheelset", label: "Laufradsatz", hint: "rims, hubs, spokes, tubeless_ready, tire_pressure_recommended" },
+  { key: "drivetrain_detail", label: "Antrieb (Detail)", hint: "crankset, bb, chain, cassette, rear_der, front_der, shifters, pedals, gear_ratios" },
+  { key: "brakes_detail", label: "Bremsen (Detail)", hint: "model, rotor_front_mm, rotor_rear_mm, type" },
+  { key: "ebike_detail", label: "E-Bike System (erweitert)", hint: "peak_power_w, voltage, ah, cell_type, charge_cycles, dual_battery, fast_charging, bluetooth, gps, app, ota, walk_assist, usb_charging, assist_modes, security_features" },
+  { key: "range_matrix", label: "Reichweite Matrix", hint: '{ "eco": { "75kg_flat": 120, "75kg_hills": 90 }, ... }' },
+  { key: "maintenance", label: "Wartung", hint: "schedule, chain_km, brake_pads_km, disc_km, battery_care, suspension_service_km, lubricants, annual_cost_eur" },
+  { key: "costs", label: "Laufende Kosten", hint: "electricity_kwh_price, cost_per_charge_eur, cost_per_100km_eur, annual_electricity_eur, five_year_total_eur" },
+  { key: "environmental", label: "Umwelt", hint: "co2_saved_kg_year, fuel_saved_l_year, money_saved_eur_year, trees_equivalent, sustainability_score" },
+  { key: "safety_features", label: "Sicherheit", hint: "integrated_lights, abs, gps, alarm, frame_lock, airtag, nfc, recommended_locks[], visibility_score, night_score" },
+  { key: "model_history", label: "Modell-Historie", hint: "launch_year, previous_generations[], whats_new, improvements, known_issues, common_upgrades" },
+  { key: "awards", label: "Auszeichnungen", hint: '[{ "name": "Design & Innovation Award", "year": 2025, "source": "Eurobike" }]' },
+  { key: "videos", label: "Videos", hint: '[{ "url": "https://...", "title": "Test" }]' },
 ];
 
 export function BikeEditor({ initial }: { initial?: Bike }) {
@@ -202,6 +313,7 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
         description: form.description || null,
         meta_title: form.meta_title || null,
         meta_description: form.meta_description || null,
+        availability: form.availability || null,
       };
       const res = await save({ data: payload });
       toast.success(publish ? "Veröffentlicht" : "Gespeichert");
@@ -243,6 +355,9 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
           <TabsTrigger value="specs">Specs</TabsTrigger>
           <TabsTrigger value="ebike" disabled={form.category !== "ebike"}>E-Bike</TabsTrigger>
           <TabsTrigger value="ratings">Bewertung</TabsTrigger>
+          <TabsTrigger value="suitability">Eignung &amp; Performance</TabsTrigger>
+          <TabsTrigger value="extras">Erweitert (JSON)</TabsTrigger>
+          <TabsTrigger value="faq">FAQ &amp; KI</TabsTrigger>
           <TabsTrigger value="media">Medien</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
@@ -437,6 +552,102 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
           </Section>
         </TabsContent>
 
+        {/* SUITABILITY & PERFORMANCE */}
+        <TabsContent value="suitability" className="space-y-4 mt-4">
+          <Section title="Eignung (0–10)">
+            <div className="grid md:grid-cols-3 gap-4">
+              {SUITABILITY_FIELDS.map((s) => (
+                <Field key={s.key} label={s.label}>
+                  <Input type="number" min={0} max={10} step={0.5}
+                    value={(form.suitability[s.key] as any) ?? ""}
+                    onChange={(e) => set("suitability", { ...form.suitability, [s.key]: Number(e.target.value) })}
+                    className={inputC} />
+                </Field>
+              ))}
+            </div>
+          </Section>
+          <Section title="Performance (0–10)">
+            <div className="grid md:grid-cols-3 gap-4">
+              {PERFORMANCE_FIELDS.map((s) => (
+                <Field key={s.key} label={s.label}>
+                  <Input type="number" min={0} max={10} step={0.5}
+                    value={(form.performance[s.key] as any) ?? ""}
+                    onChange={(e) => set("performance", { ...form.performance, [s.key]: Number(e.target.value) })}
+                    className={inputC} />
+                </Field>
+              ))}
+            </div>
+          </Section>
+          <Section title="Experten-Wertung & Verfügbarkeit">
+            <div className="grid md:grid-cols-2 gap-4">
+              <Field label="Experten-Gesamtnote (0–10)">
+                <Input type="number" min={0} max={10} step={0.1}
+                  value={form.expert_rating ?? ""}
+                  onChange={(e) => set("expert_rating", e.target.value ? Number(e.target.value) : null)}
+                  className={inputC} />
+              </Field>
+              <Field label="Verfügbarkeit (Text)">
+                <Input value={form.availability} onChange={(e) => set("availability", e.target.value)}
+                  className={inputC} placeholder="Auf Lager · Lieferzeit 2 Wochen · …" />
+              </Field>
+            </div>
+          </Section>
+          <Section title="Kompatibles Zubehör">
+            <ChipList label="Zubehör" items={form.accessories} onChange={(v) => set("accessories", v)} placeholder="Schutzbleche, Gepäckträger, Kindersitz…" />
+          </Section>
+        </TabsContent>
+
+        {/* EXTRAS (JSON) */}
+        <TabsContent value="extras" className="space-y-4 mt-4">
+          <p className="text-xs text-zinc-500">Diese Felder akzeptieren JSON. Lassen Sie das Feld leer ({"{}"} oder []) wenn keine Daten vorhanden sind.</p>
+          {JSON_GROUPS.map((g) => (
+            <JsonField key={g.key} label={g.label} hint={g.hint}
+              value={form[g.key] as any}
+              onChange={(v) => set(g.key as any, v as any)} />
+          ))}
+        </TabsContent>
+
+        {/* FAQ */}
+        <TabsContent value="faq" className="space-y-4 mt-4">
+          <Section title="FAQ">
+            <div className="space-y-3">
+              {form.faq.map((f, i) => (
+                <div key={i} className="grid md:grid-cols-2 gap-2 border border-zinc-800 p-3">
+                  <Input value={f.q} placeholder="Frage" className={inputC}
+                    onChange={(e) => { const c = [...form.faq]; c[i] = { ...c[i], q: e.target.value }; set("faq", c); }} />
+                  <Textarea rows={2} value={f.a} placeholder="Antwort" className={inputC}
+                    onChange={(e) => { const c = [...form.faq]; c[i] = { ...c[i], a: e.target.value }; set("faq", c); }} />
+                  <button onClick={() => set("faq", form.faq.filter((_, j) => j !== i))} className="text-xs text-rose-400 col-span-2 text-left hover:text-rose-300">Entfernen</button>
+                </div>
+              ))}
+              <Button variant="outline" size="sm" onClick={() => set("faq", [...form.faq, { q: "", a: "" }])} className="border-zinc-800 text-zinc-100 hover:bg-zinc-900">
+                <Plus className="h-3.5 w-3.5 mr-1" /> FAQ hinzufügen
+              </Button>
+            </div>
+          </Section>
+          <Section title="KI-Zusammenfassung (manuell)">
+            <Field label="Stärken (eine pro Zeile)">
+              <Textarea rows={4} className={inputC}
+                value={(form.ai_summary.strengths || []).join("\n")}
+                onChange={(e) => set("ai_summary", { ...form.ai_summary, strengths: e.target.value.split("\n").filter(Boolean) })} />
+            </Field>
+            <Field label="Schwächen (eine pro Zeile)">
+              <Textarea rows={4} className={inputC}
+                value={(form.ai_summary.weaknesses || []).join("\n")}
+                onChange={(e) => set("ai_summary", { ...form.ai_summary, weaknesses: e.target.value.split("\n").filter(Boolean) })} />
+            </Field>
+            <Field label="Ideal für">
+              <Input className={inputC} value={form.ai_summary.best_for || ""}
+                onChange={(e) => set("ai_summary", { ...form.ai_summary, best_for: e.target.value })} />
+            </Field>
+            <Field label="Nicht empfohlen wenn">
+              <Input className={inputC} value={form.ai_summary.avoid_if || ""}
+                onChange={(e) => set("ai_summary", { ...form.ai_summary, avoid_if: e.target.value })} />
+            </Field>
+          </Section>
+        </TabsContent>
+
+
         {/* SEO */}
         <TabsContent value="seo" className="space-y-4 mt-4">
           <Section title="SEO">
@@ -571,6 +782,31 @@ function ChipList({
           <Plus className="h-3.5 w-3.5" />
         </Button>
       </div>
+    </div>
+  );
+}
+
+function JsonField({ label, hint, value, onChange }: { label: string; hint?: string; value: any; onChange: (v: any) => void }) {
+  const [text, setText] = useState(() => JSON.stringify(value ?? (Array.isArray(value) ? [] : {}), null, 2));
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => { setText(JSON.stringify(value ?? {}, null, 2)); /* eslint-disable-next-line */ }, []);
+  return (
+    <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg p-4">
+      <div className="flex items-baseline justify-between mb-2">
+        <Label className="text-sm font-semibold text-zinc-100">{label}</Label>
+        {err && <span className="text-xs text-rose-400">{err}</span>}
+      </div>
+      {hint && <p className="text-[11px] text-zinc-500 mb-2 font-mono">{hint}</p>}
+      <Textarea rows={6} value={text} onChange={(e) => {
+        setText(e.target.value);
+        try {
+          const parsed = e.target.value.trim() === "" ? {} : JSON.parse(e.target.value);
+          onChange(parsed);
+          setErr(null);
+        } catch (ex) {
+          setErr("Ungültiges JSON");
+        }
+      }} className={`${inputC} font-mono text-xs`} spellCheck={false} />
     </div>
   );
 }
