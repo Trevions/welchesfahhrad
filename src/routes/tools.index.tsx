@@ -276,7 +276,7 @@ function ToolsPage() {
             </p>
           </div>
         ) : (
-          <>
+          <div>
             {/* FEATURED — Eco Route Planner */}
             <section className="mb-10 md:mb-14">
               <Link to="/tools/eco-route" className="group block">
