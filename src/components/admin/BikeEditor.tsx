@@ -504,6 +504,102 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
           </Section>
         </TabsContent>
 
+        {/* SUITABILITY & PERFORMANCE */}
+        <TabsContent value="suitability" className="space-y-4 mt-4">
+          <Section title="Eignung (0–10)">
+            <div className="grid md:grid-cols-3 gap-4">
+              {SUITABILITY_FIELDS.map((s) => (
+                <Field key={s.key} label={s.label}>
+                  <Input type="number" min={0} max={10} step={0.5}
+                    value={(form.suitability[s.key] as any) ?? ""}
+                    onChange={(e) => set("suitability", { ...form.suitability, [s.key]: Number(e.target.value) })}
+                    className={inputC} />
+                </Field>
+              ))}
+            </div>
+          </Section>
+          <Section title="Performance (0–10)">
+            <div className="grid md:grid-cols-3 gap-4">
+              {PERFORMANCE_FIELDS.map((s) => (
+                <Field key={s.key} label={s.label}>
+                  <Input type="number" min={0} max={10} step={0.5}
+                    value={(form.performance[s.key] as any) ?? ""}
+                    onChange={(e) => set("performance", { ...form.performance, [s.key]: Number(e.target.value) })}
+                    className={inputC} />
+                </Field>
+              ))}
+            </div>
+          </Section>
+          <Section title="Experten-Wertung & Verfügbarkeit">
+            <div className="grid md:grid-cols-2 gap-4">
+              <Field label="Experten-Gesamtnote (0–10)">
+                <Input type="number" min={0} max={10} step={0.1}
+                  value={form.expert_rating ?? ""}
+                  onChange={(e) => set("expert_rating", e.target.value ? Number(e.target.value) : null)}
+                  className={inputC} />
+              </Field>
+              <Field label="Verfügbarkeit (Text)">
+                <Input value={form.availability} onChange={(e) => set("availability", e.target.value)}
+                  className={inputC} placeholder="Auf Lager · Lieferzeit 2 Wochen · …" />
+              </Field>
+            </div>
+          </Section>
+          <Section title="Kompatibles Zubehör">
+            <ChipList label="Zubehör" items={form.accessories} onChange={(v) => set("accessories", v)} placeholder="Schutzbleche, Gepäckträger, Kindersitz…" />
+          </Section>
+        </TabsContent>
+
+        {/* EXTRAS (JSON) */}
+        <TabsContent value="extras" className="space-y-4 mt-4">
+          <p className="text-xs text-zinc-500">Diese Felder akzeptieren JSON. Lassen Sie das Feld leer ({"{}"} oder []) wenn keine Daten vorhanden sind.</p>
+          {JSON_GROUPS.map((g) => (
+            <JsonField key={g.key} label={g.label} hint={g.hint}
+              value={form[g.key] as any}
+              onChange={(v) => set(g.key as any, v as any)} />
+          ))}
+        </TabsContent>
+
+        {/* FAQ */}
+        <TabsContent value="faq" className="space-y-4 mt-4">
+          <Section title="FAQ">
+            <div className="space-y-3">
+              {form.faq.map((f, i) => (
+                <div key={i} className="grid md:grid-cols-2 gap-2 border border-zinc-800 p-3">
+                  <Input value={f.q} placeholder="Frage" className={inputC}
+                    onChange={(e) => { const c = [...form.faq]; c[i] = { ...c[i], q: e.target.value }; set("faq", c); }} />
+                  <Textarea rows={2} value={f.a} placeholder="Antwort" className={inputC}
+                    onChange={(e) => { const c = [...form.faq]; c[i] = { ...c[i], a: e.target.value }; set("faq", c); }} />
+                  <button onClick={() => set("faq", form.faq.filter((_, j) => j !== i))} className="text-xs text-rose-400 col-span-2 text-left hover:text-rose-300">Entfernen</button>
+                </div>
+              ))}
+              <Button variant="outline" size="sm" onClick={() => set("faq", [...form.faq, { q: "", a: "" }])} className="border-zinc-800 text-zinc-100 hover:bg-zinc-900">
+                <Plus className="h-3.5 w-3.5 mr-1" /> FAQ hinzufügen
+              </Button>
+            </div>
+          </Section>
+          <Section title="KI-Zusammenfassung (manuell)">
+            <Field label="Stärken (eine pro Zeile)">
+              <Textarea rows={4} className={inputC}
+                value={(form.ai_summary.strengths || []).join("\n")}
+                onChange={(e) => set("ai_summary", { ...form.ai_summary, strengths: e.target.value.split("\n").filter(Boolean) })} />
+            </Field>
+            <Field label="Schwächen (eine pro Zeile)">
+              <Textarea rows={4} className={inputC}
+                value={(form.ai_summary.weaknesses || []).join("\n")}
+                onChange={(e) => set("ai_summary", { ...form.ai_summary, weaknesses: e.target.value.split("\n").filter(Boolean) })} />
+            </Field>
+            <Field label="Ideal für">
+              <Input className={inputC} value={form.ai_summary.best_for || ""}
+                onChange={(e) => set("ai_summary", { ...form.ai_summary, best_for: e.target.value })} />
+            </Field>
+            <Field label="Nicht empfohlen wenn">
+              <Input className={inputC} value={form.ai_summary.avoid_if || ""}
+                onChange={(e) => set("ai_summary", { ...form.ai_summary, avoid_if: e.target.value })} />
+            </Field>
+          </Section>
+        </TabsContent>
+
+
         {/* SEO */}
         <TabsContent value="seo" className="space-y-4 mt-4">
           <Section title="SEO">
