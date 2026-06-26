@@ -48,6 +48,7 @@ const groups: Group[] = [
     eyebrow: "01",
     title: "Rechner & Tools",
     tools: [
+      { title: "Eco Route Planner", desc: "Live-Routing mit Radwegen, Wetter & CO₂-Bilanz.", icon: Leaf, to: "/tools/eco-route" },
       { title: "Reifendruck-Rechner", desc: "Optimaler Luftdruck für Gewicht & Reifenbreite.", icon: Gauge, to: "/tools/reifendruck" },
       { title: "Rahmengrößen-Rechner", desc: "Passende Rahmenhöhe nach Körpermaßen.", icon: Ruler, to: "/tools/rahmengroesse" },
       { title: "Übersetzungs-Rechner", desc: "Entfaltung, Kadenz und Geschwindigkeit.", icon: Cog, to: "/tools/uebersetzung" },
