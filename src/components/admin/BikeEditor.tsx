@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { Save, Loader2, Upload, X, Plus, Trash2 } from "lucide-react";
 import { BIKE_TYPES, bikeSlugify, type Bike } from "@/lib/bike-types";
+import { BikeFileImport, type ImportedBike } from "@/components/admin/BikeFileImport";
 
 type Form = {
   id?: string;
@@ -347,6 +348,33 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
           </Button>
         </div>
       </div>
+
+      {!form.id && (
+        <BikeFileImport
+          onImport={(d: ImportedBike) => {
+            setForm((f) => ({
+              ...f,
+              ...d,
+              // re-derive slug unless explicitly provided
+              slug: d.slug || bikeSlugify(d.brand ?? f.brand, d.model ?? f.model, d.year ?? f.year),
+              // ensure required nested shapes
+              highlights: d.highlights ?? f.highlights,
+              specs: d.specs ?? f.specs,
+              ebike: d.ebike ?? f.ebike,
+              ratings: d.ratings ?? f.ratings,
+              gallery: Array.isArray(d.gallery) ? d.gallery : f.gallery,
+              intended_use: Array.isArray(d.intended_use) ? d.intended_use : f.intended_use,
+              terrain: Array.isArray(d.terrain) ? d.terrain : f.terrain,
+              keywords: Array.isArray(d.keywords) ? d.keywords : f.keywords,
+              accessories: Array.isArray(d.accessories) ? d.accessories : f.accessories,
+              awards: Array.isArray(d.awards) ? d.awards : f.awards,
+              videos: Array.isArray(d.videos) ? d.videos : f.videos,
+              faq: Array.isArray(d.faq) ? d.faq : f.faq,
+            }));
+            if (d.slug) setSlugTouched(true);
+          }}
+        />
+      )}
 
       <Tabs defaultValue="basic">
         <TabsList className="bg-zinc-900 border border-zinc-800 flex-wrap h-auto">
