@@ -30,15 +30,41 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Tagesaktuelle Fahrrad-News, E-Bike-Tests und Ratgeber für Deutschland.",
       },
-      { property: "og:url", content: "/" },
-      { property: "og:image", content: hero },
-      { name: "twitter:image", content: hero },
+      { property: "og:url", content: "https://radmap.de/" },
+      { property: "og:image", content: `https://radmap.de${hero}` },
+      { name: "twitter:image", content: `https://radmap.de${hero}` },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://radmap.de/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "radmap.de",
+          url: "https://radmap.de/",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://radmap.de/nachrichten?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "radmap.de",
+          url: "https://radmap.de/",
+          logo: "https://radmap.de/icons/icon-192.png",
+        }),
+      },
+    ],
   }),
   errorComponent: ({ error }) => (
     <div className="pt-32 px-6 text-center">
-      <h1 className="font-display text-3xl font-black">Fehler beim Laden</h1>
+      <h2 className="font-display text-3xl font-black">Fehler beim Laden</h2>
       <p className="mt-3 text-muted-foreground text-sm">{error.message}</p>
     </div>
   ),
