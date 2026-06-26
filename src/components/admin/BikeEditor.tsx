@@ -365,24 +365,83 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
           toast.success("Главна снимка обновена");
         }}
         onImport={(d: ImportedBike) => {
-          setForm((f) => ({
-            ...f,
-            ...d,
-            slug: d.slug || bikeSlugify(d.brand ?? f.brand, d.model ?? f.model, d.year ?? f.year),
-            highlights: d.highlights ?? f.highlights,
-            specs: d.specs ?? f.specs,
-            ebike: d.ebike ?? f.ebike,
-            ratings: d.ratings ?? f.ratings,
-            gallery: Array.isArray(d.gallery) ? d.gallery : f.gallery,
-            intended_use: Array.isArray(d.intended_use) ? d.intended_use : f.intended_use,
-            terrain: Array.isArray(d.terrain) ? d.terrain : f.terrain,
-            keywords: Array.isArray(d.keywords) ? d.keywords : f.keywords,
-            accessories: Array.isArray(d.accessories) ? d.accessories : f.accessories,
-            awards: Array.isArray(d.awards) ? d.awards : f.awards,
-            videos: Array.isArray(d.videos) ? d.videos : f.videos,
-            faq: Array.isArray(d.faq) ? d.faq : f.faq,
-          }));
-          if (d.slug) setSlugTouched(true);
+          try {
+            const arr = (v: any): any[] => (Array.isArray(v) ? v : []);
+            const strArr = (v: any): string[] => arr(v).map((x) => String(x)).filter(Boolean);
+            const obj = (v: any): Record<string, any> =>
+              v && typeof v === "object" && !Array.isArray(v) ? v : {};
+            const str = (v: any): string => (v == null ? "" : String(v));
+            const num = (v: any): number | null => {
+              if (v == null || v === "") return null;
+              const n = Number(v);
+              return Number.isFinite(n) ? n : null;
+            };
+
+            setForm((f) => ({
+              ...f,
+              brand: d.brand ? str(d.brand) : f.brand,
+              model: d.model ? str(d.model) : f.model,
+              year: d.year != null ? num(d.year) : f.year,
+              category: d.category === "ebike" || d.category === "bike" ? d.category : f.category,
+              bike_type: d.bike_type ? str(d.bike_type) : f.bike_type,
+              price_eur: d.price_eur != null ? num(d.price_eur) : f.price_eur,
+              image_url: d.image_url ? str(d.image_url) : f.image_url,
+              manufacturer_url: d.manufacturer_url ? str(d.manufacturer_url) : f.manufacturer_url,
+              excerpt: d.excerpt ? str(d.excerpt) : f.excerpt,
+              description: d.description ? str(d.description) : f.description,
+              availability: d.availability ? str(d.availability) : f.availability,
+              expert_rating: d.expert_rating != null ? num(d.expert_rating) : f.expert_rating,
+              meta_title: d.meta_title ? str(d.meta_title) : f.meta_title,
+              meta_description: d.meta_description ? str(d.meta_description) : f.meta_description,
+              og_image_url: d.og_image_url ? str(d.og_image_url) : f.og_image_url,
+              gallery: d.gallery !== undefined ? strArr(d.gallery) : f.gallery,
+              intended_use: d.intended_use !== undefined ? strArr(d.intended_use) : f.intended_use,
+              terrain: d.terrain !== undefined ? strArr(d.terrain) : f.terrain,
+              keywords: d.keywords !== undefined ? strArr(d.keywords) : f.keywords,
+              accessories: d.accessories !== undefined ? strArr(d.accessories) : f.accessories,
+              highlights: d.highlights
+                ? { pros: strArr(obj(d.highlights).pros), cons: strArr(obj(d.highlights).cons) }
+                : f.highlights,
+              specs: d.specs !== undefined ? obj(d.specs) : f.specs,
+              ebike: d.ebike !== undefined ? obj(d.ebike) : f.ebike,
+              ratings: d.ratings !== undefined ? obj(d.ratings) : f.ratings,
+              suitability: d.suitability !== undefined ? obj(d.suitability) : f.suitability,
+              performance: d.performance !== undefined ? obj(d.performance) : f.performance,
+              geometry: d.geometry !== undefined ? obj(d.geometry) : f.geometry,
+              cockpit: d.cockpit !== undefined ? obj(d.cockpit) : f.cockpit,
+              wheelset: d.wheelset !== undefined ? obj(d.wheelset) : f.wheelset,
+              drivetrain_detail: d.drivetrain_detail !== undefined ? obj(d.drivetrain_detail) : f.drivetrain_detail,
+              brakes_detail: d.brakes_detail !== undefined ? obj(d.brakes_detail) : f.brakes_detail,
+              ebike_detail: d.ebike_detail !== undefined ? obj(d.ebike_detail) : f.ebike_detail,
+              range_matrix: d.range_matrix !== undefined ? obj(d.range_matrix) : f.range_matrix,
+              maintenance: d.maintenance !== undefined ? obj(d.maintenance) : f.maintenance,
+              costs: d.costs !== undefined ? obj(d.costs) : f.costs,
+              environmental: d.environmental !== undefined ? obj(d.environmental) : f.environmental,
+              safety_features: d.safety_features !== undefined ? obj(d.safety_features) : f.safety_features,
+              model_history: d.model_history !== undefined ? obj(d.model_history) : f.model_history,
+              ai_summary: d.ai_summary !== undefined ? obj(d.ai_summary) : f.ai_summary,
+              awards: (arr(d.awards)
+                .map((a) => (typeof a === "object" && a && a.name ? { name: str(a.name), year: num(a.year) ?? undefined, source: a.source ? str(a.source) : undefined } : null))
+                .filter(Boolean)) as { name: string; year?: number; source?: string }[],
+              videos: (arr(d.videos)
+                .map((v) => (typeof v === "object" && v && v.url ? { url: str(v.url), title: v.title ? str(v.title) : undefined } : null))
+                .filter(Boolean)) as { url: string; title?: string }[],
+              faq: (arr(d.faq)
+                .map((q) => (typeof q === "object" && q && q.q ? { q: str(q.q), a: str(q.a) } : null))
+                .filter(Boolean)) as { q: string; a: string }[],
+              slug: d.slug
+                ? str(d.slug)
+                : bikeSlugify(
+                    d.brand ? str(d.brand) : f.brand,
+                    d.model ? str(d.model) : f.model,
+                    d.year != null ? num(d.year) : f.year,
+                  ),
+            }));
+            if (d.slug) setSlugTouched(true);
+          } catch (err) {
+            console.error("Bike import merge failed", err);
+            toast.error("Грешка при попълване на полетата от файла");
+          }
         }}
       />
 
