@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { InlineSearch } from "@/components/InlineSearch";
 import type { Suggestion } from "@/components/InlineSearch";
 import {
+  Leaf,
   Gauge,
   Ruler,
   Cog,
