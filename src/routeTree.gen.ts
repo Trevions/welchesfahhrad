@@ -27,6 +27,7 @@ import { Route as MediadatenRouteImport } from './routes/mediadaten'
 import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as KarteRouteImport } from './routes/karte'
 import { Route as ImpressumRouteImport } from './routes/impressum'
+import { Route as FavoritenRouteImport } from './routes/favoriten'
 import { Route as FahrraederRouteImport } from './routes/fahrraeder'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
@@ -170,6 +171,11 @@ const KarteRoute = KarteRouteImport.update({
 const ImpressumRoute = ImpressumRouteImport.update({
   id: '/impressum',
   path: '/impressum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritenRoute = FavoritenRouteImport.update({
+  id: '/favoriten',
+  path: '/favoriten',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FahrraederRoute = FahrraederRouteImport.update({
@@ -463,6 +469,7 @@ export interface FileRoutesByFullPath {
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
   '/fahrraeder': typeof FahrraederRouteWithChildren
+  '/favoriten': typeof FavoritenRoute
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
@@ -536,6 +543,7 @@ export interface FileRoutesByTo {
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
   '/fahrraeder': typeof FahrraederRouteWithChildren
+  '/favoriten': typeof FavoritenRoute
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
@@ -609,6 +617,7 @@ export interface FileRoutesById {
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
   '/fahrraeder': typeof FahrraederRouteWithChildren
+  '/favoriten': typeof FavoritenRoute
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
@@ -684,6 +693,7 @@ export interface FileRouteTypes {
     | '/datenschutz'
     | '/e-bikes'
     | '/fahrraeder'
+    | '/favoriten'
     | '/impressum'
     | '/karte'
     | '/kontakt'
@@ -757,6 +767,7 @@ export interface FileRouteTypes {
     | '/datenschutz'
     | '/e-bikes'
     | '/fahrraeder'
+    | '/favoriten'
     | '/impressum'
     | '/karte'
     | '/kontakt'
@@ -829,6 +840,7 @@ export interface FileRouteTypes {
     | '/datenschutz'
     | '/e-bikes'
     | '/fahrraeder'
+    | '/favoriten'
     | '/impressum'
     | '/karte'
     | '/kontakt'
@@ -904,6 +916,7 @@ export interface RootRouteChildren {
   DatenschutzRoute: typeof DatenschutzRoute
   EBikesRoute: typeof EBikesRoute
   FahrraederRoute: typeof FahrraederRouteWithChildren
+  FavoritenRoute: typeof FavoritenRoute
   ImpressumRoute: typeof ImpressumRoute
   KarteRoute: typeof KarteRoute
   KontaktRoute: typeof KontaktRoute
@@ -1058,6 +1071,13 @@ declare module '@tanstack/react-router' {
       path: '/impressum'
       fullPath: '/impressum'
       preLoaderRoute: typeof ImpressumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoriten': {
+      id: '/favoriten'
+      path: '/favoriten'
+      fullPath: '/favoriten'
+      preLoaderRoute: typeof FavoritenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fahrraeder': {
@@ -1561,6 +1581,7 @@ const rootRouteChildren: RootRouteChildren = {
   DatenschutzRoute: DatenschutzRoute,
   EBikesRoute: EBikesRoute,
   FahrraederRoute: FahrraederRouteWithChildren,
+  FavoritenRoute: FavoritenRoute,
   ImpressumRoute: ImpressumRoute,
   KarteRoute: KarteRoute,
   KontaktRoute: KontaktRoute,
@@ -1591,13 +1612,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

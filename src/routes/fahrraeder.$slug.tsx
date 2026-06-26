@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ExternalLink, Zap, Check, X, ArrowLeft, Scale, Bookmark, Share2, Printer, Copy,
+  ExternalLink, Zap, Check, X, ArrowLeft, Scale, Share2, Printer, Copy,
   Award, Star, ShieldCheck, Wrench, Battery, Activity, Leaf, Map as MapIcon, MessageSquare,
   ChevronDown, Search, Calendar,
 } from "lucide-react";
@@ -12,7 +12,7 @@ import { getPublicBikeBySlug } from "@/lib/bikes.functions";
 import { articleImageUrl } from "@/lib/article-image-url";
 import { BikeRatingRadar } from "@/components/bikes/BikeRatingRadar";
 import { compareStore, subscribeCompare } from "@/lib/bike-compare";
-import { useBookmarks } from "@/hooks/use-bookmarks";
+import { BikeFavoriteButton } from "@/components/bikes/BikeFavoriteButton";
 import { ShareMenu } from "@/components/ShareMenu";
 import { listBikeReviews, submitBikeReview, type BikeReview } from "@/lib/bike-reviews.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -416,13 +416,11 @@ function UserRatingBox({ bikeId }: { bikeId: string }) {
 }
 
 function ActionBar({ bike }: { bike: Bike }) {
-  const { isBookmarked, toggle } = useBookmarks();
   const [inCompare, setInCompare] = useState(false);
   useEffect(() => {
     setInCompare(compareStore.has(bike.slug));
     return subscribeCompare(() => setInCompare(compareStore.has(bike.slug)));
   }, [bike.slug]);
-  const bm = isBookmarked(bike.slug);
 
   const handleCompare = () => {
     const res = compareStore.toggle(bike.slug);
@@ -450,12 +448,19 @@ function ActionBar({ bike }: { bike: Bike }) {
         }`}>
         <Scale className="h-3.5 w-3.5" /> {inCompare ? "Im Vergleich" : "Vergleichen"}
       </button>
-      <button onClick={() => toggle({ slug: bike.slug, title: `${bike.brand} ${bike.model}`, excerpt: bike.excerpt ?? "", image: bike.image_url ?? "", category: "Fahrrad", date: "", readTime: "" })}
-        className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs uppercase tracking-wider font-bold border transition-colors ${
-          bm ? "bg-foreground text-background border-foreground" : "border-border text-foreground hover:border-signal hover:text-signal"
-        }`}>
-        <Bookmark className="h-3.5 w-3.5" /> {bm ? "Gemerkt" : "Merken"}
-      </button>
+      <BikeFavoriteButton
+        variant="full"
+        bike={{
+          slug: bike.slug,
+          brand: bike.brand,
+          model: bike.model,
+          year: bike.year ?? null,
+          image: bike.image_url ?? "",
+          category: bike.category ?? null,
+          bikeType: bike.bike_type ?? null,
+          priceEur: bike.price_eur ?? null,
+        }}
+      />
       <ShareMenu url={`https://radmap.de/fahrraeder/${bike.slug}`} title={`${bike.brand} ${bike.model}`} text={bike.excerpt ?? ""} image={bike.image_url ?? ""}
         className="inline-flex items-center gap-1.5 px-3 py-2 text-xs uppercase tracking-wider font-bold border border-border text-foreground hover:border-signal hover:text-signal" />
       <button onClick={() => window.print()}
