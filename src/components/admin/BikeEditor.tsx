@@ -212,6 +212,53 @@ const RATING_FIELDS: { key: string; label: string }[] = [
   { key: "overall", label: "Gesamt" },
 ];
 
+const SUITABILITY_FIELDS: { key: string; label: string }[] = [
+  { key: "beginner", label: "Anfänger" },
+  { key: "intermediate", label: "Fortgeschritten" },
+  { key: "pro", label: "Profi" },
+  { key: "commuting", label: "Pendeln" },
+  { key: "touring", label: "Tour" },
+  { key: "gravel", label: "Gravel" },
+  { key: "mountain", label: "Mountainbike" },
+  { key: "bikepacking", label: "Bikepacking" },
+  { key: "city", label: "Stadt" },
+  { key: "family", label: "Familie" },
+  { key: "cargo", label: "Cargo" },
+  { key: "racing", label: "Racing" },
+];
+
+const PERFORMANCE_FIELDS: { key: string; label: string }[] = [
+  { key: "comfort", label: "Komfort" },
+  { key: "handling", label: "Handling" },
+  { key: "cornering", label: "Kurvenlage" },
+  { key: "stability", label: "Stabilität" },
+  { key: "acceleration", label: "Beschleunigung" },
+  { key: "climbing", label: "Bergauf" },
+  { key: "descending", label: "Bergab" },
+  { key: "offroad", label: "Offroad" },
+  { key: "city", label: "Stadt" },
+  { key: "longdistance", label: "Langstrecke" },
+  { key: "sportiness", label: "Sportlichkeit" },
+  { key: "suspension", label: "Federung" },
+];
+
+const JSON_GROUPS: { key: keyof Form; label: string; hint?: string }[] = [
+  { key: "geometry", label: "Geometrie", hint: "wheelbase_mm, stack_mm, reach_mm, seat_tube_mm, head_tube_mm, bottom_bracket_mm, frame_weight_kg, max_rider_weight_kg" },
+  { key: "cockpit", label: "Cockpit", hint: "handlebar, stem, seatpost, saddle, grips" },
+  { key: "wheelset", label: "Laufradsatz", hint: "rims, hubs, spokes, tubeless_ready, tire_pressure_recommended" },
+  { key: "drivetrain_detail", label: "Antrieb (Detail)", hint: "crankset, bb, chain, cassette, rear_der, front_der, shifters, pedals, gear_ratios" },
+  { key: "brakes_detail", label: "Bremsen (Detail)", hint: "model, rotor_front_mm, rotor_rear_mm, type" },
+  { key: "ebike_detail", label: "E-Bike System (erweitert)", hint: "peak_power_w, voltage, ah, cell_type, charge_cycles, dual_battery, fast_charging, bluetooth, gps, app, ota, walk_assist, usb_charging, assist_modes, security_features" },
+  { key: "range_matrix", label: "Reichweite Matrix", hint: '{ "eco": { "75kg_flat": 120, "75kg_hills": 90 }, ... }' },
+  { key: "maintenance", label: "Wartung", hint: "schedule, chain_km, brake_pads_km, disc_km, battery_care, suspension_service_km, lubricants, annual_cost_eur" },
+  { key: "costs", label: "Laufende Kosten", hint: "electricity_kwh_price, cost_per_charge_eur, cost_per_100km_eur, annual_electricity_eur, five_year_total_eur" },
+  { key: "environmental", label: "Umwelt", hint: "co2_saved_kg_year, fuel_saved_l_year, money_saved_eur_year, trees_equivalent, sustainability_score" },
+  { key: "safety_features", label: "Sicherheit", hint: "integrated_lights, abs, gps, alarm, frame_lock, airtag, nfc, recommended_locks[], visibility_score, night_score" },
+  { key: "model_history", label: "Modell-Historie", hint: "launch_year, previous_generations[], whats_new, improvements, known_issues, common_upgrades" },
+  { key: "awards", label: "Auszeichnungen", hint: '[{ "name": "Design & Innovation Award", "year": 2025, "source": "Eurobike" }]' },
+  { key: "videos", label: "Videos", hint: '[{ "url": "https://...", "title": "Test" }]' },
+];
+
 export function BikeEditor({ initial }: { initial?: Bike }) {
   const [form, setForm] = useState<Form>(() => (initial ? fromBike(initial) : empty));
   const [slugTouched, setSlugTouched] = useState(!!initial?.slug);
