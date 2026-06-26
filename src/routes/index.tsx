@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Wrench, Gauge, CloudSun, Scale, Sparkles } from "lucide-react";
+import { ArrowRight, Wrench, Gauge, CloudSun, Scale, Sparkles, Map, Leaf } from "lucide-react";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import hero from "@/assets/hero-bike.jpg";
 import magazineCover from "@/assets/magazine-cover.jpg";
@@ -88,6 +88,44 @@ function Index() {
     <>
       {/* FAHRRAD-WETTER BAR */}
       <BikeWeatherBar />
+
+      {/* ECO ROUTE PLANNER PROMO — prominent homepage banner */}
+      <section className="border-b border-border bg-[#050505] text-zinc-100 relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(700px 300px at 20% -20%, color-mix(in oklch, var(--signal) 40%, transparent), transparent 60%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-[1400px] px-6 md:px-8 py-5 md:py-6">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="grid h-10 w-10 place-items-center rounded-xl border border-signal/40 bg-signal/10 text-signal">
+                <Leaf className="h-5 w-5" strokeWidth={1.75} />
+              </div>
+              <div>
+                <div className="eyebrow-sm text-signal">Neu</div>
+                <div className="font-display text-sm font-bold tracking-tight text-zinc-100">
+                  Eco Route Planner
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-zinc-400 leading-relaxed md:max-w-lg">
+              Plane echte Fahrradrouten in Deutschland — mit Live-Wetter, Höhenprofil, CO₂-Bilanz und GPX-Export. Kostenlos & ohne Account.
+            </p>
+            <Link
+              to="/tools/eco-route"
+              className="md:ml-auto inline-flex items-center gap-2 shrink-0 border border-signal/60 bg-signal/10 px-5 py-2.5 text-signal transition-all duration-300 hover:bg-signal hover:text-[#050505] hover:border-signal"
+            >
+              <Map className="h-4 w-4" strokeWidth={1.75} />
+              <span className="eyebrow-sm">Route planen</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* SPLIT HERO */}
       {featured && (
