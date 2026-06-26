@@ -340,6 +340,7 @@ function ToolsPage() {
               </div>
             </section>
           ))
+          </>
         )}
 
         <p className="mt-16 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
