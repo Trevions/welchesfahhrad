@@ -420,15 +420,15 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
               safety_features: d.safety_features !== undefined ? obj(d.safety_features) : f.safety_features,
               model_history: d.model_history !== undefined ? obj(d.model_history) : f.model_history,
               ai_summary: d.ai_summary !== undefined ? obj(d.ai_summary) : f.ai_summary,
-              awards: arr(d.awards)
-                .map((a) => (typeof a === "object" && a ? { name: str(a.name), year: num(a.year) ?? undefined, source: a.source ? str(a.source) : undefined } : null))
-                .filter((a): a is { name: string; year?: number; source?: string } => !!a && !!a.name),
-              videos: arr(d.videos)
-                .map((v) => (typeof v === "object" && v ? { url: str(v.url), title: v.title ? str(v.title) : undefined } : null))
-                .filter((v): v is { url: string; title?: string } => !!v && !!v.url),
-              faq: arr(d.faq)
-                .map((q) => (typeof q === "object" && q ? { q: str(q.q), a: str(q.a) } : null))
-                .filter((q): q is { q: string; a: string } => !!q && !!q.q),
+              awards: (arr(d.awards)
+                .map((a) => (typeof a === "object" && a && a.name ? { name: str(a.name), year: num(a.year) ?? undefined, source: a.source ? str(a.source) : undefined } : null))
+                .filter(Boolean)) as { name: string; year?: number; source?: string }[],
+              videos: (arr(d.videos)
+                .map((v) => (typeof v === "object" && v && v.url ? { url: str(v.url), title: v.title ? str(v.title) : undefined } : null))
+                .filter(Boolean)) as { url: string; title?: string }[],
+              faq: (arr(d.faq)
+                .map((q) => (typeof q === "object" && q && q.q ? { q: str(q.q), a: str(q.a) } : null))
+                .filter(Boolean)) as { q: string; a: string }[],
               slug: d.slug
                 ? str(d.slug)
                 : bikeSlugify(
