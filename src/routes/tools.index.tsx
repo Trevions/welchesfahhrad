@@ -4,6 +4,7 @@ import { InlineSearch } from "@/components/InlineSearch";
 import type { Suggestion } from "@/components/InlineSearch";
 import {
   Leaf,
+  ArrowRight,
   Gauge,
   Ruler,
   Cog,
