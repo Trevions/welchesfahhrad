@@ -784,3 +784,28 @@ function ChipList({
     </div>
   );
 }
+
+function JsonField({ label, hint, value, onChange }: { label: string; hint?: string; value: any; onChange: (v: any) => void }) {
+  const [text, setText] = useState(() => JSON.stringify(value ?? (Array.isArray(value) ? [] : {}), null, 2));
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => { setText(JSON.stringify(value ?? {}, null, 2)); /* eslint-disable-next-line */ }, []);
+  return (
+    <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg p-4">
+      <div className="flex items-baseline justify-between mb-2">
+        <Label className="text-sm font-semibold text-zinc-100">{label}</Label>
+        {err && <span className="text-xs text-rose-400">{err}</span>}
+      </div>
+      {hint && <p className="text-[11px] text-zinc-500 mb-2 font-mono">{hint}</p>}
+      <Textarea rows={6} value={text} onChange={(e) => {
+        setText(e.target.value);
+        try {
+          const parsed = e.target.value.trim() === "" ? {} : JSON.parse(e.target.value);
+          onChange(parsed);
+          setErr(null);
+        } catch (ex) {
+          setErr("Ungültiges JSON");
+        }
+      }} className={`${inputC} font-mono text-xs`} spellCheck={false} />
+    </div>
+  );
+}
