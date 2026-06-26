@@ -76,8 +76,13 @@ function AddBikePicker({ selected }: { selected: string[] }) {
     let cancel = false;
     (async () => {
       try {
-        const res = await listPublicBikes({ data: { search: q || undefined, limit: 12 } });
-        if (!cancel) setResults(res.bikes);
+        const res = await listPublicBikes();
+        if (cancel) return;
+        const list = res.bikes ?? [];
+        const filtered = q.trim()
+          ? list.filter((b) => `${b.brand} ${b.model}`.toLowerCase().includes(q.trim().toLowerCase()))
+          : list;
+        setResults(filtered.slice(0, 12));
       } catch { /* ignore */ }
     })();
     return () => { cancel = true; };
