@@ -202,95 +202,208 @@ export type Database = {
         }
         Relationships: []
       }
+      bike_reviews: {
+        Row: {
+          bike_id: string
+          body: string
+          created_at: string
+          id: string
+          photos: Json
+          rating: number
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+          verified_owner: boolean
+        }
+        Insert: {
+          bike_id: string
+          body: string
+          created_at?: string
+          id?: string
+          photos?: Json
+          rating: number
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          verified_owner?: boolean
+        }
+        Update: {
+          bike_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          photos?: Json
+          rating?: number
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          verified_owner?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bike_reviews_bike_id_fkey"
+            columns: ["bike_id"]
+            isOneToOne: false
+            referencedRelation: "bikes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bikes: {
         Row: {
+          accessories: Json
+          ai_summary: Json
+          availability: string | null
+          awards: Json
           bike_type: string | null
+          brakes_detail: Json
           brand: string
           category: string
+          cockpit: Json
+          costs: Json
           created_at: string
           description: string | null
+          drivetrain_detail: Json
           ebike: Json | null
+          ebike_detail: Json
+          environmental: Json
           excerpt: string | null
+          expert_rating: number | null
+          faq: Json
           featured: boolean
           gallery: Json
+          geometry: Json
           highlights: Json
           id: string
           image_url: string | null
           intended_use: string[]
           keywords: string[]
+          maintenance: Json
           manufacturer_url: string | null
           meta_description: string | null
           meta_title: string | null
           model: string
+          model_history: Json
           og_image_url: string | null
+          performance: Json
           price_eur: number | null
           published: boolean
           published_at: string | null
+          range_matrix: Json
           ratings: Json
+          safety_features: Json
           slug: string
           specs: Json
+          suitability: Json
           terrain: string[]
           updated_at: string
+          videos: Json
+          wheelset: Json
           year: number | null
         }
         Insert: {
+          accessories?: Json
+          ai_summary?: Json
+          availability?: string | null
+          awards?: Json
           bike_type?: string | null
+          brakes_detail?: Json
           brand: string
           category: string
+          cockpit?: Json
+          costs?: Json
           created_at?: string
           description?: string | null
+          drivetrain_detail?: Json
           ebike?: Json | null
+          ebike_detail?: Json
+          environmental?: Json
           excerpt?: string | null
+          expert_rating?: number | null
+          faq?: Json
           featured?: boolean
           gallery?: Json
+          geometry?: Json
           highlights?: Json
           id?: string
           image_url?: string | null
           intended_use?: string[]
           keywords?: string[]
+          maintenance?: Json
           manufacturer_url?: string | null
           meta_description?: string | null
           meta_title?: string | null
           model: string
+          model_history?: Json
           og_image_url?: string | null
+          performance?: Json
           price_eur?: number | null
           published?: boolean
           published_at?: string | null
+          range_matrix?: Json
           ratings?: Json
+          safety_features?: Json
           slug: string
           specs?: Json
+          suitability?: Json
           terrain?: string[]
           updated_at?: string
+          videos?: Json
+          wheelset?: Json
           year?: number | null
         }
         Update: {
+          accessories?: Json
+          ai_summary?: Json
+          availability?: string | null
+          awards?: Json
           bike_type?: string | null
+          brakes_detail?: Json
           brand?: string
           category?: string
+          cockpit?: Json
+          costs?: Json
           created_at?: string
           description?: string | null
+          drivetrain_detail?: Json
           ebike?: Json | null
+          ebike_detail?: Json
+          environmental?: Json
           excerpt?: string | null
+          expert_rating?: number | null
+          faq?: Json
           featured?: boolean
           gallery?: Json
+          geometry?: Json
           highlights?: Json
           id?: string
           image_url?: string | null
           intended_use?: string[]
           keywords?: string[]
+          maintenance?: Json
           manufacturer_url?: string | null
           meta_description?: string | null
           meta_title?: string | null
           model?: string
+          model_history?: Json
           og_image_url?: string | null
+          performance?: Json
           price_eur?: number | null
           published?: boolean
           published_at?: string | null
+          range_matrix?: Json
           ratings?: Json
+          safety_features?: Json
           slug?: string
           specs?: Json
+          suitability?: Json
           terrain?: string[]
           updated_at?: string
+          videos?: Json
+          wheelset?: Json
           year?: number | null
         }
         Relationships: []
