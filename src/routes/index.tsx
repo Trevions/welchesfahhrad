@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Wrench, Gauge, CloudSun, Scale, Sparkles } from "lucide-react";
+import { ArrowRight, Wrench, Gauge, CloudSun, Scale, Sparkles, Map, Leaf } from "lucide-react";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import hero from "@/assets/hero-bike.jpg";
 import magazineCover from "@/assets/magazine-cover.jpg";
