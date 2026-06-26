@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import { listPublicBikes } from "@/lib/bikes.functions";
 import { BikeCard } from "@/components/bikes/BikeCard";
 import { BIKE_TYPES } from "@/lib/bike-types";
-import { Search } from "lucide-react";
+import { Search, Heart } from "lucide-react";
+import { useBikeFavorites } from "@/hooks/use-bike-favorites";
 
 const bikesQuery = queryOptions({
   queryKey: ["public-bikes"],
@@ -45,6 +46,7 @@ type Filter = "all" | "bike" | "ebike";
 
 function FahrraederPage() {
   const { data } = useSuspenseQuery(bikesQuery);
+  const { favorites } = useBikeFavorites();
   const [filter, setFilter] = useState<Filter>("all");
   const [type, setType] = useState<string>("all");
   const [q, setQ] = useState("");
@@ -96,7 +98,14 @@ function FahrraederPage() {
                 {f === "all" ? "Alle" : f === "bike" ? "Fahrräder" : "E-Bikes"}
               </button>
             ))}
-            <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+            <Link
+              to="/favoriten"
+              className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] uppercase tracking-wider font-semibold border border-border text-foreground hover:border-signal hover:text-signal transition-colors"
+            >
+              <Heart className={"h-3.5 w-3.5 " + (favorites.length > 0 ? "fill-signal text-signal" : "")} />
+              Favoriten{favorites.length > 0 ? ` (${favorites.length})` : ""}
+            </Link>
+            <span className="text-xs text-muted-foreground tabular-nums">
               {bikes.length} {bikes.length === 1 ? "Modell" : "Modelle"}
             </span>
           </div>
