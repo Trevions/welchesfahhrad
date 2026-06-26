@@ -61,6 +61,59 @@ export type BikeRatings = {
 
 export type BikeHighlights = { pros: string[]; cons: string[] };
 
+export type BikeGeometry = {
+  wheelbase_mm?: number;
+  stack_mm?: number;
+  reach_mm?: number;
+  seat_tube_mm?: number;
+  head_tube_mm?: number;
+  bottom_bracket_mm?: number;
+  frame_weight_kg?: number;
+  max_rider_weight_kg?: number;
+};
+
+export type BikeSuitability = Partial<{
+  beginner: number;
+  intermediate: number;
+  pro: number;
+  commuting: number;
+  touring: number;
+  gravel: number;
+  mountain: number;
+  bikepacking: number;
+  city: number;
+  family: number;
+  cargo: number;
+  racing: number;
+}>;
+
+export type BikePerformance = Partial<{
+  comfort: number;
+  handling: number;
+  cornering: number;
+  stability: number;
+  acceleration: number;
+  climbing: number;
+  descending: number;
+  offroad: number;
+  city: number;
+  longdistance: number;
+  sportiness: number;
+  suspension: number;
+}>;
+
+export type BikeFaq = { q: string; a: string };
+export type BikeAward = { name: string; year?: number; source?: string };
+export type BikeVideo = { url: string; title?: string };
+
+export type BikeAiSummary = {
+  strengths?: string[];
+  weaknesses?: string[];
+  best_for?: string;
+  avoid_if?: string;
+  alternatives?: string[];
+};
+
 export type Bike = {
   id: string;
   slug: string;
@@ -90,6 +143,28 @@ export type Bike = {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  // Extended fields
+  geometry: BikeGeometry;
+  cockpit: Record<string, any>;
+  wheelset: Record<string, any>;
+  drivetrain_detail: Record<string, any>;
+  brakes_detail: Record<string, any>;
+  ebike_detail: Record<string, any>;
+  suitability: BikeSuitability;
+  performance: BikePerformance;
+  range_matrix: Record<string, any>;
+  maintenance: Record<string, any>;
+  costs: Record<string, any>;
+  environmental: Record<string, any>;
+  safety_features: Record<string, any>;
+  accessories: string[];
+  awards: BikeAward[];
+  model_history: Record<string, any>;
+  videos: BikeVideo[];
+  faq: BikeFaq[];
+  ai_summary: BikeAiSummary;
+  availability: string | null;
+  expert_rating: number | null;
 };
 
 export function bikeSlugify(brand: string, model: string, year?: number | null): string {
