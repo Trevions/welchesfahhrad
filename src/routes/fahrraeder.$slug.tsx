@@ -1,10 +1,31 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { ExternalLink, Zap, Check, X, ArrowLeft } from "lucide-react";
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ExternalLink, Zap, Check, X, ArrowLeft, Scale, Bookmark, Share2, Printer, Copy,
+  Award, Star, ShieldCheck, Wrench, Battery, Activity, Leaf, Map as MapIcon, MessageSquare,
+  ChevronDown, Search, Calendar,
+} from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { getPublicBikeBySlug } from "@/lib/bikes.functions";
 import { articleImageUrl } from "@/lib/article-image-url";
-import { BikeRangeChart } from "@/components/bikes/BikeRangeChart";
 import { BikeRatingRadar } from "@/components/bikes/BikeRatingRadar";
+import { compareStore, subscribeCompare } from "@/lib/bike-compare";
+import { useBookmarks } from "@/hooks/use-bookmarks";
+import { ShareMenu } from "@/components/ShareMenu";
+import { listBikeReviews, submitBikeReview, type BikeReview } from "@/lib/bike-reviews.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip,
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+} from "recharts";
+import type { Bike } from "@/lib/bike-types";
 
 const bikeQuery = (slug: string) =>
   queryOptions({
@@ -22,14 +43,16 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
   head: ({ params, loaderData }) => {
     const b = loaderData?.bike;
     if (!b) return { meta: [{ title: "Fahrrad — radmap.de" }] };
-    const title = b.meta_title || `${b.brand} ${b.model}${b.year ? ` (${b.year})` : ""} — Test & Specs | radmap.de`;
+    const title = b.meta_title || `${b.brand} ${b.model}${b.year ? ` (${b.year})` : ""} — Test, Specs & Bewertung | radmap.de`;
     const desc =
       b.meta_description ||
       b.excerpt ||
-      `Alle Specs, Bewertungen und Details zum ${b.brand} ${b.model}${b.year ? ` (${b.year})` : ""}.`;
-    const og = articleImageUrl(b.og_image_url ?? b.image_url ?? "") || b.image_url || "/og.jpg";
-    const url = `/fahrraeder/${params.slug}`;
-    const jsonLd = {
+      b.ai_summary?.best_for ||
+      `Alle Specs, Geometrie, Reichweite, Wartung und Bewertungen zum ${b.brand} ${b.model}${b.year ? ` (${b.year})` : ""}.`;
+    const ogRaw = b.og_image_url ?? b.image_url ?? b.gallery?.[0] ?? "";
+    const og = articleImageUrl(ogRaw) || ogRaw || "/og.jpg";
+    const url = `https://radmap.de/fahrraeder/${params.slug}`;
+    const product: any = {
       "@context": "https://schema.org",
       "@type": "Product",
       name: `${b.brand} ${b.model}`,
@@ -38,28 +61,39 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
       image: og,
       description: desc,
       category: b.category === "ebike" ? "E-Bike" : "Fahrrad",
-      ...(b.price_eur
-        ? {
-            offers: {
-              "@type": "Offer",
-              priceCurrency: "EUR",
-              price: b.price_eur,
-              availability: "https://schema.org/InStock",
-              url: b.manufacturer_url || url,
-            },
-          }
-        : {}),
-      ...(b.ratings?.overall
-        ? {
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: b.ratings.overall,
-              bestRating: 10,
-              ratingCount: 1,
-            },
-          }
-        : {}),
     };
+    if (b.price_eur) {
+      product.offers = {
+        "@type": "Offer",
+        priceCurrency: "EUR",
+        price: b.price_eur,
+        availability: "https://schema.org/InStock",
+        url: b.manufacturer_url || url,
+      };
+    }
+    if (b.expert_rating || b.ratings?.overall) {
+      product.aggregateRating = {
+        "@type": "AggregateRating",
+        ratingValue: b.expert_rating ?? b.ratings.overall,
+        bestRating: 10,
+        ratingCount: 1,
+      };
+    }
+    const scripts: any[] = [{ type: "application/ld+json", children: JSON.stringify(product) }];
+    if ((b.faq ?? []).length > 0) {
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: b.faq.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      });
+    }
     return {
       meta: [
         { title },
@@ -74,7 +108,7 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
         ...(b.keywords?.length ? [{ name: "keywords", content: b.keywords.join(", ") }] : []),
       ],
       links: [{ rel: "canonical", href: url }],
-      scripts: [{ type: "application/ld+json", children: JSON.stringify(jsonLd) }],
+      scripts,
     };
   },
   errorComponent: ({ error }) => (
@@ -94,101 +128,135 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
   component: BikeDetailPage,
 });
 
-const SPEC_GROUPS: { title: string; rows: [string, string][] }[] = [
-  {
-    title: "Rahmen",
-    rows: [
-      ["frame_material", "Material"],
-      ["frame_sizes", "Rahmengrößen"],
-      ["fork", "Gabel"],
-      ["weight_kg", "Gewicht (kg)"],
-    ],
-  },
-  {
-    title: "Antrieb",
-    rows: [
-      ["drivetrain", "Schaltgruppe"],
-      ["gears", "Gänge"],
-    ],
-  },
-  {
-    title: "Bremsen & Räder",
-    rows: [
-      ["brakes", "Bremsen"],
-      ["wheels", "Laufräder"],
-      ["tire_brand", "Reifenmarke"],
-      ["tire_size", "Reifengröße"],
-      ["tire_tread", "Profil"],
-    ],
-  },
-  {
-    title: "Komfort & Ausstattung",
-    rows: [
-      ["saddle", "Sattel"],
-      ["handlebar", "Lenker"],
-      ["stem", "Vorbau"],
-      ["lights", "Beleuchtung"],
-      ["rack", "Gepäckträger"],
-      ["fenders", "Schutzbleche"],
-    ],
-  },
+// ---------- helpers ----------
+
+const SECTIONS: { id: string; label: string }[] = [
+  { id: "overview", label: "Überblick" },
+  { id: "quick-facts", label: "Quick Facts" },
+  { id: "suitability", label: "Für wen?" },
+  { id: "specs", label: "Spezifikationen" },
+  { id: "geometry", label: "Geometrie" },
+  { id: "ebike-system", label: "E-Bike System" },
+  { id: "range", label: "Reichweite" },
+  { id: "performance", label: "Fahrgefühl" },
+  { id: "maintenance", label: "Wartung" },
+  { id: "costs", label: "Kosten" },
+  { id: "environment", label: "Umwelt" },
+  { id: "safety", label: "Sicherheit" },
+  { id: "accessories", label: "Zubehör" },
+  { id: "calculators", label: "Smart-Rechner" },
+  { id: "ai-analysis", label: "KI-Analyse" },
+  { id: "pros-cons", label: "Pro & Contra" },
+  { id: "faq", label: "FAQ" },
+  { id: "history", label: "Historie" },
+  { id: "reviews", label: "Bewertungen" },
 ];
+
+const SUIT_LABELS: Record<string, string> = {
+  beginner: "Anfänger", intermediate: "Fortgeschritten", pro: "Profi",
+  commuting: "Pendeln", touring: "Tour", gravel: "Gravel", mountain: "Mountainbike",
+  bikepacking: "Bikepacking", city: "Stadt", family: "Familie", cargo: "Cargo", racing: "Racing",
+};
+
+const PERF_LABELS: Record<string, string> = {
+  comfort: "Komfort", handling: "Handling", cornering: "Kurven", stability: "Stabilität",
+  acceleration: "Beschleunigung", climbing: "Bergauf", descending: "Bergab",
+  offroad: "Offroad", city: "Stadt", longdistance: "Langstrecke",
+  sportiness: "Sportlichkeit", suspension: "Federung",
+};
+
+// ---------- page ----------
 
 function BikeDetailPage() {
   const params = Route.useParams();
   const { data } = useSuspenseQuery(bikeQuery(params.slug));
   const b = data.bike!;
-  const img = articleImageUrl(b.image_url ?? "") || b.image_url || "/og.jpg";
-  const specs = b.specs as Record<string, any>;
-  const ebike = b.ebike;
+  const heroImg = articleImageUrl(b.image_url ?? "") || b.image_url || b.gallery?.[0] || "/og.jpg";
+  const [active, setActive] = useState<string>("overview");
+  const [activeImg, setActiveImg] = useState<string>(heroImg);
+  const [query, setQuery] = useState("");
+
+  // Scrollspy
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    const seen = new Map<string, number>();
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => seen.set(e.target.id, e.intersectionRatio));
+        let best = "overview"; let bestR = 0;
+        seen.forEach((r, id) => { if (r > bestR) { bestR = r; best = id; } });
+        if (bestR > 0) setActive(best);
+      },
+      { rootMargin: "-30% 0px -55% 0px", threshold: [0, 0.2, 0.5, 1] },
+    );
+    SECTIONS.forEach((s) => { const el = document.getElementById(s.id); if (el) obs.observe(el); });
+    observers.push(obs);
+    return () => observers.forEach((o) => o.disconnect());
+  }, [b.id]);
+
+  const visibleSections = useMemo(() => {
+    if (!query.trim()) return SECTIONS;
+    const q = query.trim().toLowerCase();
+    return SECTIONS.filter((s) => s.label.toLowerCase().includes(q));
+  }, [query]);
 
   return (
     <article className="bg-background">
       {/* HERO */}
-      <header className="border-b border-border bg-card">
+      <header id="overview" className="border-b border-border bg-card scroll-mt-24">
         <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-6 md:py-10 border-x border-border">
           <Link to="/fahrraeder" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-signal mb-6">
             <ArrowLeft className="h-3.5 w-3.5" /> Alle Fahrräder
           </Link>
-          <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
-            <div className="relative aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
-              <img src={img} alt={`${b.brand} ${b.model}`} className="absolute inset-0 h-full w-full object-cover" />
-              {b.category === "ebike" && (
-                <span className="absolute top-3 left-3 inline-flex items-center gap-1 bg-signal text-[#050505] text-[10px] uppercase tracking-wider font-bold px-2 py-1">
-                  <Zap className="h-3 w-3" /> E-Bike
-                </span>
-              )}
-            </div>
+          <div className="grid lg:grid-cols-[1.1fr_1fr] gap-6 lg:gap-12 items-start">
+            <BikeGallery bike={b} active={activeImg} onSelect={setActiveImg} />
             <div>
               <div className="eyebrow text-signal">{b.brand}</div>
-              <h1 className="font-display font-black tracking-tight leading-[0.95] text-[clamp(2rem,6vw,4rem)] mt-2">
+              <h1 className="font-display font-black tracking-tight leading-[0.95] text-[clamp(2rem,6vw,3.75rem)] mt-2">
                 {b.model}
               </h1>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground font-mono">
+                {b.category === "ebike" && (
+                  <span className="inline-flex items-center gap-1 bg-signal text-[#050505] text-[10px] uppercase tracking-wider font-bold px-2 py-1">
+                    <Zap className="h-3 w-3" /> E-Bike
+                  </span>
+                )}
                 {b.bike_type && <span className="px-2 py-0.5 border border-border">{b.bike_type}</span>}
                 {b.year && <span>Modelljahr {b.year}</span>}
+                {b.availability && <span className="text-emerald-500">{b.availability}</span>}
               </div>
+
+              {b.awards.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {b.awards.map((a, i) => (
+                    <span key={i} className="inline-flex items-center gap-1.5 text-[11px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-1">
+                      <Award className="h-3 w-3" /> {a.name}{a.year ? ` ${a.year}` : ""}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               {b.excerpt && <p className="mt-5 text-base md:text-lg text-muted-foreground leading-relaxed">{b.excerpt}</p>}
-              <div className="mt-6 flex flex-wrap items-center gap-4">
+
+              {/* Rating + price */}
+              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {b.expert_rating != null && (
+                  <RatingBox label="Experten-Note" value={b.expert_rating} />
+                )}
+                <UserRatingBox bikeId={b.id} />
                 {b.price_eur != null && (
-                  <div>
+                  <div className="border border-border p-3">
                     <div className="text-[10px] uppercase tracking-wider text-muted-foreground">UVP ab</div>
-                    <div className="font-display text-2xl font-black tabular-nums">
+                    <div className="font-display text-xl md:text-2xl font-black tabular-nums">
                       {b.price_eur.toLocaleString("de-DE")} €
                     </div>
                   </div>
                 )}
-                {b.manufacturer_url && (
-                  <a
-                    href={b.manufacturer_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-signal text-[#050505] px-4 py-2.5 text-xs uppercase tracking-wider font-bold hover:opacity-90"
-                  >
-                    Beim Hersteller ansehen <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                )}
               </div>
+
+              {/* Actions */}
+              <ActionBar bike={b} />
+
               <p className="mt-3 text-[10px] uppercase tracking-wider text-muted-foreground">
                 Hinweis: radmap.de verkauft keine Räder — wir verlinken zum Hersteller.
               </p>
@@ -197,156 +265,84 @@ function BikeDetailPage() {
         </div>
       </header>
 
-      {/* QUICK FACTS */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-8 border-x border-border">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {b.category === "ebike" && ebike?.motor_nm && (
-              <Fact label="Motor" value={`${ebike.motor_nm} Nm`} />
-            )}
-            {b.category === "ebike" && ebike?.battery_wh && (
-              <Fact label="Akku" value={`${ebike.battery_wh} Wh`} />
-            )}
-            {b.category === "ebike" && ebike?.range_tour_km && (
-              <Fact label="Reichweite Tour" value={`${ebike.range_tour_km} km`} />
-            )}
-            {specs.weight_kg && <Fact label="Gewicht" value={`${specs.weight_kg} kg`} />}
-            {specs.brakes && <Fact label="Bremsen" value={String(specs.brakes)} />}
-            {specs.drivetrain && <Fact label="Schaltung" value={String(specs.drivetrain)} />}
-            {specs.frame_material && <Fact label="Rahmen" value={String(specs.frame_material)} />}
-            {specs.tire_size && <Fact label="Reifen" value={String(specs.tire_size)} />}
-          </div>
-        </div>
-      </section>
-
-      {/* DESCRIPTION */}
-      {b.description && (
-        <section className="border-b border-border">
-          <div className="mx-auto max-w-[860px] px-4 md:px-8 py-12 md:py-16">
-            <h2 className="font-display font-black text-2xl md:text-3xl mb-4">Im Detail</h2>
-            <div className="prose prose-zinc dark:prose-invert max-w-none text-base leading-relaxed whitespace-pre-wrap">
-              {b.description}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* E-BIKE BLOCK */}
-      {b.category === "ebike" && ebike && (
-        <section className="border-b border-border bg-card">
-          <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-12 md:py-16 border-x border-border">
-            <div className="flex items-center gap-3 mb-6">
-              <Zap className="h-5 w-5 text-signal" />
-              <h2 className="font-display font-black text-2xl md:text-3xl">Motor & Akku</h2>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4 mb-10">
-              <div className="border border-border p-5 bg-background">
-                <div className="eyebrow-sm text-muted-foreground mb-2">Antrieb</div>
-                <div className="font-display text-lg font-bold">
-                  {ebike.motor_brand} {ebike.motor_model}
-                </div>
-                <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                  {ebike.motor_nm != null && <Spec k="Drehmoment" v={`${ebike.motor_nm} Nm`} />}
-                  {ebike.motor_w != null && <Spec k="Leistung" v={`${ebike.motor_w} W`} />}
-                  {ebike.assist_kmh != null && <Spec k="Unterstützung bis" v={`${ebike.assist_kmh} km/h`} />}
-                  {ebike.sensor && <Spec k="Sensor" v={String(ebike.sensor)} />}
-                  {ebike.display && <Spec k="Display" v={String(ebike.display)} />}
-                </dl>
+      {/* STICKY NAV + CONTENT */}
+      <div className="mx-auto max-w-[1400px] px-4 md:px-8 border-x border-border">
+        <div className="lg:grid lg:grid-cols-[220px_1fr] lg:gap-10">
+          <aside className="hidden lg:block">
+            <div className="sticky top-24 py-10">
+              <div className="relative mb-3">
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Abschnitt suchen…"
+                  className="pl-8 h-9 text-xs"
+                />
               </div>
-              <div className="border border-border p-5 bg-background">
-                <div className="eyebrow-sm text-muted-foreground mb-2">Energie</div>
-                <div className="font-display text-lg font-bold">
-                  {ebike.battery_wh ? `${ebike.battery_wh} Wh` : "Akku"}
-                </div>
-                <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                  {ebike.battery_removable != null && (
-                    <Spec k="Abnehmbar" v={ebike.battery_removable ? "Ja" : "Nein"} />
-                  )}
-                  {ebike.charge_time_h != null && <Spec k="Ladezeit" v={`${ebike.charge_time_h} h`} />}
-                </dl>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="eyebrow text-signal mb-3">Reichweite nach Modus</h3>
-                <BikeRangeChart ebike={ebike} />
-              </div>
-              {Object.keys(b.ratings).length > 0 && (
-                <div>
-                  <h3 className="eyebrow text-signal mb-3">Bewertung</h3>
-                  <BikeRatingRadar ratings={b.ratings} />
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* SPECS */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-12 md:py-16 border-x border-border">
-          <h2 className="font-display font-black text-2xl md:text-3xl mb-8">Vollständige Spezifikationen</h2>
-          <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
-            {SPEC_GROUPS.map((g) => {
-              const rows = g.rows.filter(([k]) => specs[k] != null && specs[k] !== "");
-              if (rows.length === 0) return null;
-              return (
-                <div key={g.title}>
-                  <h3 className="eyebrow text-signal mb-3">{g.title}</h3>
-                  <dl className="divide-y divide-border border-t border-b border-border">
-                    {rows.map(([k, label]) => (
-                      <div key={k} className="flex items-center justify-between py-2.5 text-sm gap-4">
-                        <dt className="text-muted-foreground">{label}</dt>
-                        <dd className="text-right font-medium">{String(specs[k])}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* PROS / CONS */}
-      {(b.highlights.pros.length > 0 || b.highlights.cons.length > 0) && (
-        <section className="border-b border-border bg-card">
-          <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-12 md:py-16 border-x border-border grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="eyebrow text-emerald-500 mb-4">Stärken</h3>
-              <ul className="space-y-2">
-                {b.highlights.pros.map((p, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" /> {p}
-                  </li>
+              <nav className="space-y-0.5 text-xs">
+                {visibleSections.map((s) => (
+                  <a
+                    key={s.id}
+                    href={`#${s.id}`}
+                    className={`block py-1.5 px-2 border-l-2 transition-colors ${
+                      active === s.id
+                        ? "border-signal text-foreground font-semibold"
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                    }`}
+                  >
+                    {s.label}
+                  </a>
                 ))}
-              </ul>
+              </nav>
             </div>
-            <div>
-              <h3 className="eyebrow text-rose-500 mb-4">Schwächen</h3>
-              <ul className="space-y-2">
-                {b.highlights.cons.map((c, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
-                    <X className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" /> {c}
-                  </li>
-                ))}
-              </ul>
+          </aside>
+
+          {/* Mobile sticky tab strip */}
+          <div className="lg:hidden sticky top-14 z-20 -mx-4 mb-4 mt-4 bg-background/95 backdrop-blur border-y border-border overflow-x-auto">
+            <div className="flex gap-1 px-4 py-2">
+              {SECTIONS.map((s) => (
+                <a key={s.id} href={`#${s.id}`}
+                  className={`whitespace-nowrap text-[11px] uppercase tracking-wider px-2.5 py-1 border ${
+                    active === s.id ? "bg-signal text-[#050505] border-signal" : "border-border text-muted-foreground"
+                  }`}>{s.label}</a>
+              ))}
             </div>
           </div>
-        </section>
-      )}
 
-      {/* GALLERY */}
+          <main className="py-6 lg:py-10 space-y-12 md:space-y-16">
+            <QuickFactsSection b={b} />
+            <SuitabilitySection b={b} />
+            <SpecsSection b={b} />
+            <GeometrySection b={b} />
+            {b.category === "ebike" && <EbikeSystemSection b={b} />}
+            <RangeSection b={b} />
+            <PerformanceSection b={b} />
+            <MaintenanceSection b={b} />
+            <CostsSection b={b} />
+            <EnvironmentSection b={b} />
+            <SafetySection b={b} />
+            <AccessoriesSection b={b} />
+            <CalculatorsSection />
+            <AiAnalysisSection b={b} />
+            <ProsConsSection b={b} />
+            <FaqSection b={b} />
+            <HistorySection b={b} />
+            <ReviewsSection bikeId={b.id} />
+          </main>
+        </div>
+      </div>
+
+      {/* GALLERY full */}
       {b.gallery.length > 0 && (
-        <section className="border-b border-border">
+        <section className="border-t border-border">
           <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-12 border-x border-border">
             <h2 className="font-display font-black text-2xl md:text-3xl mb-6">Galerie</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {b.gallery.map((g, i) => (
-                <a key={i} href={articleImageUrl(g) || g} target="_blank" rel="noreferrer" className="aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
-                  <img src={articleImageUrl(g) || g} alt="" loading="lazy" className="h-full w-full object-cover hover:scale-105 transition-transform" />
+                <a key={i} href={articleImageUrl(g) || g} target="_blank" rel="noreferrer"
+                  className="aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
+                  <img src={articleImageUrl(g) || g} alt="" loading="lazy"
+                    className="h-full w-full object-cover hover:scale-105 transition-transform" />
                 </a>
               ))}
             </div>
@@ -357,11 +353,300 @@ function BikeDetailPage() {
   );
 }
 
-function Fact({ label, value }: { label: string; value: string }) {
+// ---------- subcomponents ----------
+
+function BikeGallery({ bike, active, onSelect }: { bike: Bike; active: string; onSelect: (s: string) => void }) {
+  const main = articleImageUrl(active) || active;
+  const thumbs = useMemo(() => {
+    const list = [bike.image_url, ...bike.gallery].filter(Boolean) as string[];
+    return Array.from(new Set(list));
+  }, [bike]);
+  return (
+    <div>
+      <div className="relative aspect-[4/3] bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
+        <img src={main} alt={`${bike.brand} ${bike.model}`} className="absolute inset-0 h-full w-full object-cover" />
+      </div>
+      {thumbs.length > 1 && (
+        <div className="mt-2 grid grid-cols-6 gap-1.5">
+          {thumbs.slice(0, 6).map((t, i) => {
+            const url = articleImageUrl(t) || t;
+            const isActive = url === main;
+            return (
+              <button key={i} onClick={() => onSelect(t)}
+                className={`aspect-square overflow-hidden border-2 ${isActive ? "border-signal" : "border-transparent"} bg-zinc-100 dark:bg-zinc-900`}>
+                <img src={url} alt="" loading="lazy" className="h-full w-full object-cover" />
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RatingBox({ label, value }: { label: string; value: number }) {
   return (
     <div className="border border-border p-3">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="font-display text-lg font-black mt-1 tabular-nums">{value}</div>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+        <Star className="h-3 w-3 text-amber-400 fill-amber-400" /> {label}
+      </div>
+      <div className="font-display text-xl md:text-2xl font-black tabular-nums mt-0.5">{value.toFixed(1)}<span className="text-sm text-muted-foreground font-normal">/10</span></div>
+    </div>
+  );
+}
+
+function UserRatingBox({ bikeId }: { bikeId: string }) {
+  const fetchReviews = useServerFn(listBikeReviews);
+  const { data } = useQuery({
+    queryKey: ["bike-reviews", bikeId],
+    queryFn: () => fetchReviews({ data: { bikeId } }),
+    staleTime: 30_000,
+  });
+  return (
+    <div className="border border-border p-3">
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+        <MessageSquare className="h-3 w-3" /> Nutzer
+      </div>
+      <div className="font-display text-xl md:text-2xl font-black tabular-nums mt-0.5">
+        {data && data.count > 0 ? data.average.toFixed(1) : "—"}
+        <span className="text-sm text-muted-foreground font-normal">{data && data.count ? ` (${data.count})` : ""}</span>
+      </div>
+    </div>
+  );
+}
+
+function ActionBar({ bike }: { bike: Bike }) {
+  const { isBookmarked, toggle } = useBookmarks();
+  const [inCompare, setInCompare] = useState(false);
+  useEffect(() => {
+    setInCompare(compareStore.has(bike.slug));
+    return subscribeCompare(() => setInCompare(compareStore.has(bike.slug)));
+  }, [bike.slug]);
+  const bm = isBookmarked(bike.slug);
+
+  const handleCompare = () => {
+    const res = compareStore.toggle(bike.slug);
+    if (res.full) toast.error(`Maximal ${compareStore.MAX} Räder vergleichbar`);
+    else toast.success(res.added ? "Zum Vergleich hinzugefügt" : "Aus Vergleich entfernt");
+  };
+
+  const handleCopySpecs = async () => {
+    const lines: string[] = [`# ${bike.brand} ${bike.model}${bike.year ? ` (${bike.year})` : ""}`];
+    Object.entries(bike.specs || {}).forEach(([k, v]) => v && lines.push(`- ${k}: ${v}`));
+    if (bike.ebike) Object.entries(bike.ebike).forEach(([k, v]) => v != null && v !== "" && lines.push(`- ${k}: ${v}`));
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"));
+      toast.success("Spezifikationen kopiert");
+    } catch {
+      toast.error("Kopieren fehlgeschlagen");
+    }
+  };
+
+  return (
+    <div className="mt-6 flex flex-wrap items-center gap-2">
+      <button onClick={handleCompare}
+        className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs uppercase tracking-wider font-bold border transition-colors ${
+          inCompare ? "bg-signal text-[#050505] border-signal" : "border-border text-foreground hover:border-signal hover:text-signal"
+        }`}>
+        <Scale className="h-3.5 w-3.5" /> {inCompare ? "Im Vergleich" : "Vergleichen"}
+      </button>
+      <button onClick={() => toggle({ slug: bike.slug, title: `${bike.brand} ${bike.model}`, excerpt: bike.excerpt ?? "", image: bike.image_url ?? "", category: "Fahrrad", date: "", readTime: "" })}
+        className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs uppercase tracking-wider font-bold border transition-colors ${
+          bm ? "bg-foreground text-background border-foreground" : "border-border text-foreground hover:border-signal hover:text-signal"
+        }`}>
+        <Bookmark className="h-3.5 w-3.5" /> {bm ? "Gemerkt" : "Merken"}
+      </button>
+      <ShareMenu url={`https://radmap.de/fahrraeder/${bike.slug}`} title={`${bike.brand} ${bike.model}`} text={bike.excerpt ?? ""} image={bike.image_url ?? ""}
+        className="inline-flex items-center gap-1.5 px-3 py-2 text-xs uppercase tracking-wider font-bold border border-border text-foreground hover:border-signal hover:text-signal" />
+      <button onClick={() => window.print()}
+        className="inline-flex items-center gap-1.5 px-3 py-2 text-xs uppercase tracking-wider font-bold border border-border text-foreground hover:border-signal hover:text-signal">
+        <Printer className="h-3.5 w-3.5" /> Drucken
+      </button>
+      <button onClick={handleCopySpecs}
+        className="inline-flex items-center gap-1.5 px-3 py-2 text-xs uppercase tracking-wider font-bold border border-border text-foreground hover:border-signal hover:text-signal">
+        <Copy className="h-3.5 w-3.5" /> Specs kopieren
+      </button>
+      {bike.manufacturer_url && (
+        <a href={bike.manufacturer_url} target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-signal text-[#050505] px-4 py-2 text-xs uppercase tracking-wider font-bold hover:opacity-90">
+          Hersteller <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+      )}
+    </div>
+  );
+}
+
+function Section({ id, title, icon: Icon, children }: { id: string; title: string; icon?: any; children: React.ReactNode }) {
+  return (
+    <section id={id} className="scroll-mt-28">
+      <div className="flex items-center gap-2 mb-5">
+        {Icon && <Icon className="h-5 w-5 text-signal" />}
+        <h2 className="font-display font-black text-2xl md:text-3xl tracking-tight">{title}</h2>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function QuickFactsSection({ b }: { b: Bike }) {
+  const facts: { label: string; value: string }[] = [];
+  if (b.specs?.weight_kg) facts.push({ label: "Gewicht", value: `${b.specs.weight_kg} kg` });
+  if (b.specs?.frame_material) facts.push({ label: "Rahmen", value: String(b.specs.frame_material) });
+  if (b.category === "ebike" && b.ebike?.motor_nm) facts.push({ label: "Motor", value: `${b.ebike.motor_nm} Nm` });
+  if (b.category === "ebike" && b.ebike?.battery_wh) facts.push({ label: "Akku", value: `${b.ebike.battery_wh} Wh` });
+  if (b.category === "ebike" && b.ebike?.range_tour_km) facts.push({ label: "Reichweite", value: `${b.ebike.range_tour_km} km` });
+  if (b.category === "ebike" && b.ebike?.assist_kmh) facts.push({ label: "Top-Speed", value: `${b.ebike.assist_kmh} km/h` });
+  if (b.specs?.wheels) facts.push({ label: "Räder", value: String(b.specs.wheels) });
+  if (b.specs?.drivetrain) facts.push({ label: "Schaltung", value: String(b.specs.drivetrain) });
+  if (b.specs?.brakes) facts.push({ label: "Bremsen", value: String(b.specs.brakes) });
+  if (b.specs?.tire_size) facts.push({ label: "Reifen", value: String(b.specs.tire_size) });
+  if (!facts.length) return null;
+  return (
+    <Section id="quick-facts" title="Quick Facts" icon={Activity}>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {facts.map((f, i) => (
+          <div key={i} className="border border-border p-3">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{f.label}</div>
+            <div className="font-display text-lg font-black mt-1 tabular-nums">{f.value}</div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function ScoreBar({ value, max = 10 }: { value: number; max?: number }) {
+  const pct = Math.max(0, Math.min(100, (value / max) * 100));
+  return (
+    <div className="h-1.5 bg-border w-full">
+      <div className="h-full bg-signal transition-all" style={{ width: `${pct}%` }} />
+    </div>
+  );
+}
+
+function SuitabilitySection({ b }: { b: Bike }) {
+  const entries = Object.entries(b.suitability || {}).filter(([_, v]) => typeof v === "number");
+  if (!entries.length) return null;
+  return (
+    <Section id="suitability" title="Für wen ist dieses Rad?" icon={Star}>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        {entries.map(([k, v]) => (
+          <div key={k} className="border border-border p-3">
+            <div className="flex items-baseline justify-between gap-2 mb-2">
+              <div className="text-xs font-semibold">{SUIT_LABELS[k] ?? k}</div>
+              <div className="tabular-nums text-sm font-mono">{Number(v).toFixed(1)}</div>
+            </div>
+            <ScoreBar value={Number(v)} />
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function SpecsSection({ b }: { b: Bike }) {
+  const groups: { title: string; data: Record<string, any> }[] = [
+    { title: "Rahmen & Komponenten", data: b.specs as any },
+    { title: "Cockpit", data: b.cockpit },
+    { title: "Laufradsatz", data: b.wheelset },
+    { title: "Antrieb (Detail)", data: b.drivetrain_detail },
+    { title: "Bremsen (Detail)", data: b.brakes_detail },
+  ].filter((g) => g.data && Object.keys(g.data).length > 0);
+  if (!groups.length) return null;
+  return (
+    <Section id="specs" title="Vollständige Spezifikationen" icon={Wrench}>
+      <Accordion type="multiple" defaultValue={["g0"]} className="border border-border">
+        {groups.map((g, i) => (
+          <AccordionItem key={i} value={`g${i}`} className="border-b border-border last:border-b-0">
+            <AccordionTrigger className="px-4 hover:no-underline">{g.title}</AccordionTrigger>
+            <AccordionContent className="px-4 pb-4">
+              <dl className="grid sm:grid-cols-2 gap-x-8">
+                {Object.entries(g.data).filter(([_, v]) => v != null && v !== "").map(([k, v]) => (
+                  <div key={k} className="flex justify-between gap-4 py-2 border-b border-border text-sm">
+                    <dt className="text-muted-foreground capitalize">{String(k).replace(/_/g, " ")}</dt>
+                    <dd className="text-right font-medium">{String(v)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </Section>
+  );
+}
+
+function GeometrySection({ b }: { b: Bike }) {
+  const g = b.geometry || {};
+  if (!Object.keys(g).length) return null;
+  return (
+    <Section id="geometry" title="Geometrie" icon={Activity}>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {Object.entries(g).filter(([_, v]) => v != null && v !== "").map(([k, v]) => (
+          <div key={k} className="border border-border p-3">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.replace(/_/g, " ")}</div>
+            <div className="font-display text-lg font-black mt-1 tabular-nums">{String(v)}</div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function EbikeSystemSection({ b }: { b: Bike }) {
+  const e = b.ebike ?? {};
+  const d = b.ebike_detail ?? {};
+  return (
+    <Section id="ebike-system" title="E-Bike System" icon={Battery}>
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="border border-border p-5 bg-card">
+          <div className="eyebrow text-signal mb-2">Antrieb</div>
+          <div className="font-display text-lg font-bold">{e.motor_brand} {e.motor_model}</div>
+          <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+            {e.motor_nm != null && <Spec k="Drehmoment" v={`${e.motor_nm} Nm`} />}
+            {e.motor_w != null && <Spec k="Nennleistung" v={`${e.motor_w} W`} />}
+            {d.peak_power_w != null && <Spec k="Peak-Leistung" v={`${d.peak_power_w} W`} />}
+            {e.assist_kmh != null && <Spec k="Unterstützung bis" v={`${e.assist_kmh} km/h`} />}
+            {e.sensor && <Spec k="Sensor" v={String(e.sensor)} />}
+            {e.display && <Spec k="Display" v={String(e.display)} />}
+            {d.walk_assist != null && <Spec k="Schiebehilfe" v={d.walk_assist ? "Ja" : "Nein"} />}
+          </dl>
+        </div>
+        <div className="border border-border p-5 bg-card">
+          <div className="eyebrow text-signal mb-2">Energie</div>
+          <div className="font-display text-lg font-bold">{e.battery_wh ? `${e.battery_wh} Wh` : "Akku"}</div>
+          <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+            {d.voltage != null && <Spec k="Spannung" v={`${d.voltage} V`} />}
+            {d.ah != null && <Spec k="Kapazität" v={`${d.ah} Ah`} />}
+            {d.cell_type && <Spec k="Zellen" v={String(d.cell_type)} />}
+            {e.battery_removable != null && <Spec k="Abnehmbar" v={e.battery_removable ? "Ja" : "Nein"} />}
+            {d.fast_charging != null && <Spec k="Schnellladen" v={d.fast_charging ? "Ja" : "Nein"} />}
+            {e.charge_time_h != null && <Spec k="Ladezeit" v={`${e.charge_time_h} h`} />}
+            {d.charge_cycles != null && <Spec k="Ladezyklen" v={`${d.charge_cycles}`} />}
+            {d.dual_battery != null && <Spec k="Dual-Akku" v={d.dual_battery ? "Ja" : "Nein"} />}
+          </dl>
+        </div>
+      </div>
+      {(d.bluetooth != null || d.gps != null || d.app || d.ota != null || d.usb_charging != null) && (
+        <div className="mt-4 border border-border p-5 bg-card">
+          <div className="eyebrow text-signal mb-3">Konnektivität</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            {d.bluetooth != null && <Capability label="Bluetooth" on={!!d.bluetooth} />}
+            {d.gps != null && <Capability label="GPS" on={!!d.gps} />}
+            {d.app != null && <Capability label="Mobile App" on={!!d.app} />}
+            {d.ota != null && <Capability label="OTA-Updates" on={!!d.ota} />}
+            {d.usb_charging != null && <Capability label="USB-Ladung" on={!!d.usb_charging} />}
+          </div>
+        </div>
+      )}
+    </Section>
+  );
+}
+
+function Capability({ label, on }: { label: string; on: boolean }) {
+  return (
+    <div className={`flex items-center gap-2 ${on ? "text-emerald-500" : "text-muted-foreground line-through"}`}>
+      {on ? <Check className="h-4 w-4" /> : <X className="h-4 w-4" />} {label}
     </div>
   );
 }
@@ -372,5 +657,498 @@ function Spec({ k, v }: { k: string; v: string }) {
       <dt className="text-muted-foreground text-xs uppercase tracking-wider">{k}</dt>
       <dd className="font-medium text-right">{v}</dd>
     </div>
+  );
+}
+
+function RangeSection({ b }: { b: Bike }) {
+  // Build chart data from range_matrix if exists, otherwise from ebike values
+  const matrix = b.range_matrix as Record<string, any>;
+  const e = b.ebike ?? {};
+
+  const [weight, setWeight] = useState(75);
+  const [terrain, setTerrain] = useState<"flat" | "hills" | "mountains">("flat");
+
+  const data = useMemo(() => {
+    const modes = ["eco", "tour", "sport", "turbo"] as const;
+    const key = `${weight}kg_${terrain}`;
+    return modes.map((mode) => {
+      let val: number | undefined;
+      if (matrix?.[mode]?.[key] != null) val = Number(matrix[mode][key]);
+      else if (mode === "eco" && e.range_eco_km) val = e.range_eco_km;
+      else if (mode === "tour" && e.range_tour_km) val = e.range_tour_km;
+      else if (mode === "turbo" && e.range_turbo_km) val = e.range_turbo_km;
+      else if (mode === "sport" && e.range_tour_km && e.range_turbo_km) val = Math.round((e.range_tour_km + e.range_turbo_km) / 2);
+      // adjust for weight/terrain if no matrix
+      if (val != null && !matrix?.[mode]?.[key]) {
+        const wFactor = 1 - (weight - 75) * 0.005;
+        const tFactor = terrain === "flat" ? 1 : terrain === "hills" ? 0.82 : 0.65;
+        val = Math.round(val * wFactor * tFactor);
+      }
+      return { mode: mode.charAt(0).toUpperCase() + mode.slice(1), km: val ?? 0 };
+    });
+  }, [matrix, e, weight, terrain]);
+
+  if (b.category !== "ebike") return null;
+  const hasAnyData = data.some((d) => d.km > 0);
+  if (!hasAnyData) return null;
+
+  return (
+    <Section id="range" title="Realistische Reichweite" icon={Battery}>
+      <p className="text-sm text-muted-foreground mb-4">
+        Anpassbare Schätzung basierend auf Fahrergewicht, Gelände und Unterstützungsstufe. Werte sind Richtwerte — Wind, Temperatur und Fahrstil beeinflussen die tatsächliche Reichweite.
+      </p>
+      <div className="grid md:grid-cols-[260px_1fr] gap-6 items-start">
+        <div className="space-y-5 border border-border p-4">
+          <div>
+            <div className="flex justify-between text-xs mb-2"><span>Fahrergewicht</span><span className="tabular-nums font-bold">{weight} kg</span></div>
+            <Slider value={[weight]} min={50} max={130} step={5} onValueChange={(v) => setWeight(v[0])} />
+          </div>
+          <div>
+            <div className="text-xs mb-2">Gelände</div>
+            <div className="grid grid-cols-3 gap-1">
+              {(["flat", "hills", "mountains"] as const).map((t) => (
+                <button key={t} onClick={() => setTerrain(t)}
+                  className={`text-[11px] uppercase py-1.5 border ${terrain === t ? "bg-signal text-[#050505] border-signal" : "border-border text-muted-foreground"}`}>
+                  {t === "flat" ? "Flach" : t === "hills" ? "Hügel" : "Berg"}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="border border-border bg-card p-3">
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data}>
+                <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="mode" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} unit=" km" />
+                <RTooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", fontSize: 12 }} />
+                <Bar dataKey="km" fill="hsl(var(--signal, 19 100% 55%))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+function PerformanceSection({ b }: { b: Bike }) {
+  const entries = Object.entries(b.performance || {}).filter(([_, v]) => typeof v === "number");
+  if (!entries.length && !Object.keys(b.ratings ?? {}).length) return null;
+  const data = entries.map(([k, v]) => ({ subject: PERF_LABELS[k] ?? k, value: Number(v) }));
+  return (
+    <Section id="performance" title="Fahrgefühl & Komfort" icon={Activity}>
+      <div className="grid md:grid-cols-2 gap-6">
+        {data.length > 0 && (
+          <div className="border border-border bg-card p-3 h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={data}>
+                <PolarGrid stroke="hsl(var(--border))" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                <PolarRadiusAxis domain={[0, 10]} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                <Radar dataKey="value" stroke="hsl(var(--signal, 19 100% 55%))" fill="hsl(var(--signal, 19 100% 55%))" fillOpacity={0.4} />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+        {Object.keys(b.ratings ?? {}).length > 0 && (
+          <div>
+            <h3 className="eyebrow text-signal mb-3">Redaktions-Bewertung</h3>
+            <BikeRatingRadar ratings={b.ratings} />
+          </div>
+        )}
+      </div>
+    </Section>
+  );
+}
+
+function MaintenanceSection({ b }: { b: Bike }) {
+  const m = b.maintenance ?? {};
+  const keys = Object.keys(m);
+  if (!keys.length) return null;
+  return (
+    <Section id="maintenance" title="Wartung & Pflege" icon={Wrench}>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {Object.entries(m).filter(([_, v]) => v != null && v !== "").map(([k, v]) => (
+          <div key={k} className="border border-border p-4 bg-card">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.replace(/_/g, " ")}</div>
+            <div className="font-display text-base font-black mt-1">{String(v)}</div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function CostsSection({ b }: { b: Bike }) {
+  const c = b.costs ?? {};
+  const [kwh, setKwh] = useState<number>(Number(c.electricity_kwh_price ?? 0.35));
+  const [km, setKm] = useState<number>(2500);
+  const battery = b.ebike?.battery_wh ?? 0;
+  const cyclesPerYear = battery > 0 ? km / Math.max(1, (b.ebike?.range_tour_km ?? 60)) : 0;
+  const energyPerYear = battery > 0 ? (battery / 1000) * cyclesPerYear : 0;
+  const annual = energyPerYear * kwh + (Number(b.maintenance?.annual_cost_eur ?? 120));
+  const fiveYear = annual * 5 + (b.price_eur ?? 0);
+  const carCmp = km * 0.30 * 5;
+
+  return (
+    <Section id="costs" title="Laufende Kosten" icon={Activity}>
+      <div className="grid md:grid-cols-[260px_1fr] gap-6 items-start">
+        <div className="space-y-5 border border-border p-4">
+          <div>
+            <div className="flex justify-between text-xs mb-2"><span>Strompreis</span><span className="tabular-nums font-bold">{kwh.toFixed(2)} €/kWh</span></div>
+            <Slider value={[kwh]} min={0.15} max={0.60} step={0.01} onValueChange={(v) => setKwh(v[0])} />
+          </div>
+          <div>
+            <div className="flex justify-between text-xs mb-2"><span>Kilometer / Jahr</span><span className="tabular-nums font-bold">{km.toLocaleString("de-DE")} km</span></div>
+            <Slider value={[km]} min={500} max={15000} step={500} onValueChange={(v) => setKm(v[0])} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <CostCard label="Energie / Jahr" value={`${energyPerYear.toFixed(0)} kWh`} sub={`${(energyPerYear * kwh).toFixed(0)} €`} />
+          <CostCard label="Wartung / Jahr" value={`${Number(b.maintenance?.annual_cost_eur ?? 120).toFixed(0)} €`} sub="Richtwert" />
+          <CostCard label="Jährliche Kosten" value={`${annual.toFixed(0)} €`} sub="Strom + Wartung" highlight />
+          <CostCard label="5-Jahres-Kosten" value={`${fiveYear.toFixed(0)} €`} sub="inkl. Anschaffung" highlight />
+          <CostCard label="Auto-Vergleich (5 J.)" value={`${carCmp.toFixed(0)} €`} sub={`~ 0,30 €/km`} />
+          <CostCard label="Ersparnis vs. Auto" value={`${Math.max(0, carCmp - fiveYear).toFixed(0)} €`} sub="über 5 Jahre" />
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+function CostCard({ label, value, sub, highlight }: { label: string; value: string; sub?: string; highlight?: boolean }) {
+  return (
+    <div className={`border p-4 ${highlight ? "border-signal bg-signal/5" : "border-border"}`}>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="font-display text-xl font-black mt-1 tabular-nums">{value}</div>
+      {sub && <div className="text-[10px] text-muted-foreground mt-0.5">{sub}</div>}
+    </div>
+  );
+}
+
+function EnvironmentSection({ b }: { b: Bike }) {
+  const env = b.environmental ?? {};
+  const entries = Object.entries(env).filter(([_, v]) => v != null && v !== "");
+  if (!entries.length) return null;
+  const ICONS: Record<string, string> = {
+    co2_saved_kg_year: "CO₂", fuel_saved_l_year: "Benzin", money_saved_eur_year: "Ersparnis",
+    trees_equivalent: "Bäume", sustainability_score: "Score",
+  };
+  return (
+    <Section id="environment" title="Umweltbilanz" icon={Leaf}>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        {entries.map(([k, v]) => (
+          <div key={k} className="border border-emerald-500/30 bg-emerald-500/5 p-3">
+            <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400">{ICONS[k] ?? k.replace(/_/g, " ")}</div>
+            <div className="font-display text-lg font-black mt-1 tabular-nums">{String(v)}</div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function SafetySection({ b }: { b: Bike }) {
+  const s = b.safety_features ?? {};
+  if (!Object.keys(s).length) return null;
+  const bools: [string, string][] = [
+    ["integrated_lights", "Integrierte Beleuchtung"],
+    ["abs", "ABS"],
+    ["gps", "GPS-Tracker"],
+    ["alarm", "Alarm"],
+    ["frame_lock", "Rahmenschloss"],
+    ["airtag", "AirTag-kompatibel"],
+    ["nfc", "NFC"],
+  ];
+  return (
+    <Section id="safety" title="Sicherheit" icon={ShieldCheck}>
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="border border-border p-4 bg-card grid grid-cols-2 gap-2 text-sm">
+          {bools.filter(([k]) => s[k] != null).map(([k, label]) => (
+            <Capability key={k} label={label} on={!!s[k]} />
+          ))}
+        </div>
+        <div className="border border-border p-4 bg-card space-y-3">
+          {s.visibility_score != null && (
+            <div>
+              <div className="flex justify-between text-xs mb-1"><span>Sichtbarkeit</span><span className="font-bold">{Number(s.visibility_score).toFixed(1)}/10</span></div>
+              <ScoreBar value={Number(s.visibility_score)} />
+            </div>
+          )}
+          {s.night_score != null && (
+            <div>
+              <div className="flex justify-between text-xs mb-1"><span>Nacht-Fahrt</span><span className="font-bold">{Number(s.night_score).toFixed(1)}/10</span></div>
+              <ScoreBar value={Number(s.night_score)} />
+            </div>
+          )}
+          {Array.isArray(s.recommended_locks) && s.recommended_locks.length > 0 && (
+            <div>
+              <div className="text-xs text-muted-foreground mb-1">Empfohlene Schlösser</div>
+              <div className="flex flex-wrap gap-1">
+                {s.recommended_locks.map((l: string, i: number) => (
+                  <span key={i} className="text-[11px] border border-border px-2 py-0.5">{l}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+function AccessoriesSection({ b }: { b: Bike }) {
+  if (!b.accessories.length) return null;
+  return (
+    <Section id="accessories" title="Kompatibles Zubehör" icon={Wrench}>
+      <div className="flex flex-wrap gap-2">
+        {b.accessories.map((a, i) => (
+          <span key={i} className="border border-border bg-card px-3 py-1.5 text-sm">{a}</span>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function CalculatorsSection() {
+  const links = [
+    { to: "/tools/rahmengroesse", label: "Rahmengröße" },
+    { to: "/tools/reifendruck", label: "Reifendruck" },
+    { to: "/tools/ebike-reichweite", label: "Reichweite" },
+    { to: "/tools/kalorien", label: "Kalorien" },
+    { to: "/tools/foerderung", label: "Förderung" },
+    { to: "/tools/eco-route", label: "Eco Route" },
+  ];
+  return (
+    <Section id="calculators" title="Smart-Rechner" icon={Activity}>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+        {links.map((l) => (
+          <Link key={l.to} to={l.to as any}
+            className="border border-border bg-card hover:border-signal hover:text-signal transition-colors p-3 text-center text-xs uppercase tracking-wider font-bold">
+            {l.label}
+          </Link>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function AiAnalysisSection({ b }: { b: Bike }) {
+  const a = b.ai_summary ?? {};
+  const hasAny = (a.strengths?.length || a.weaknesses?.length || a.best_for || a.avoid_if || a.alternatives?.length);
+  if (!hasAny) return null;
+  return (
+    <Section id="ai-analysis" title="KI-Analyse" icon={Activity}>
+      <div className="grid md:grid-cols-2 gap-4">
+        {a.strengths?.length ? (
+          <div className="border border-emerald-500/30 bg-emerald-500/5 p-4">
+            <div className="eyebrow text-emerald-500 mb-2">Stärken</div>
+            <ul className="space-y-1.5 text-sm">{a.strengths.map((s, i) => <li key={i} className="flex gap-2"><Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />{s}</li>)}</ul>
+          </div>
+        ) : null}
+        {a.weaknesses?.length ? (
+          <div className="border border-rose-500/30 bg-rose-500/5 p-4">
+            <div className="eyebrow text-rose-500 mb-2">Schwächen</div>
+            <ul className="space-y-1.5 text-sm">{a.weaknesses.map((s, i) => <li key={i} className="flex gap-2"><X className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />{s}</li>)}</ul>
+          </div>
+        ) : null}
+        {a.best_for ? (
+          <div className="border border-border p-4 bg-card md:col-span-1">
+            <div className="eyebrow text-signal mb-2">Ideal für</div>
+            <p className="text-sm">{a.best_for}</p>
+          </div>
+        ) : null}
+        {a.avoid_if ? (
+          <div className="border border-border p-4 bg-card md:col-span-1">
+            <div className="eyebrow text-muted-foreground mb-2">Eher nicht geeignet</div>
+            <p className="text-sm">{a.avoid_if}</p>
+          </div>
+        ) : null}
+      </div>
+    </Section>
+  );
+}
+
+function ProsConsSection({ b }: { b: Bike }) {
+  if (!b.highlights.pros.length && !b.highlights.cons.length) return null;
+  return (
+    <Section id="pros-cons" title="Stärken & Schwächen" icon={Star}>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <h3 className="eyebrow text-emerald-500 mb-4">Pro</h3>
+          <ul className="space-y-2">
+            {b.highlights.pros.map((p, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm"><Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />{p}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 className="eyebrow text-rose-500 mb-4">Contra</h3>
+          <ul className="space-y-2">
+            {b.highlights.cons.map((c, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm"><X className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />{c}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+function FaqSection({ b }: { b: Bike }) {
+  if (!b.faq.length) return null;
+  return (
+    <Section id="faq" title="Häufige Fragen" icon={MessageSquare}>
+      <Accordion type="single" collapsible className="border border-border">
+        {b.faq.map((f, i) => (
+          <AccordionItem key={i} value={`q${i}`} className="border-b border-border last:border-b-0">
+            <AccordionTrigger className="px-4 hover:no-underline text-left">{f.q}</AccordionTrigger>
+            <AccordionContent className="px-4 pb-4 text-sm leading-relaxed whitespace-pre-wrap">{f.a}</AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </Section>
+  );
+}
+
+function HistorySection({ b }: { b: Bike }) {
+  const h = b.model_history ?? {};
+  const hasAny = h.launch_year || h.whats_new || h.improvements || h.known_issues || h.common_upgrades || (Array.isArray(h.previous_generations) && h.previous_generations.length);
+  if (!hasAny) return null;
+  return (
+    <Section id="history" title="Modell-Historie" icon={Calendar}>
+      <div className="border-l-2 border-signal pl-5 space-y-4">
+        {h.launch_year && (
+          <div><div className="eyebrow text-signal">Markteinführung</div><div className="text-base font-bold">{h.launch_year}</div></div>
+        )}
+        {h.whats_new && <Timeline title="Neu in dieser Generation" body={h.whats_new} />}
+        {h.improvements && <Timeline title="Verbesserungen" body={h.improvements} />}
+        {Array.isArray(h.previous_generations) && h.previous_generations.length > 0 && (
+          <div>
+            <div className="eyebrow text-signal mb-1">Frühere Generationen</div>
+            <ul className="text-sm space-y-1 list-disc pl-5">
+              {h.previous_generations.map((g: string, i: number) => <li key={i}>{g}</li>)}
+            </ul>
+          </div>
+        )}
+        {h.known_issues && <Timeline title="Bekannte Probleme" body={h.known_issues} />}
+        {h.common_upgrades && <Timeline title="Beliebte Upgrades" body={h.common_upgrades} />}
+      </div>
+    </Section>
+  );
+}
+
+function Timeline({ title, body }: { title: string; body: string }) {
+  return (
+    <div>
+      <div className="eyebrow text-signal mb-1">{title}</div>
+      <p className="text-sm whitespace-pre-wrap">{body}</p>
+    </div>
+  );
+}
+
+// ---------- Reviews ----------
+
+function ReviewsSection({ bikeId }: { bikeId: string }) {
+  const fetchReviews = useServerFn(listBikeReviews);
+  const submit = useServerFn(submitBikeReview);
+  const { data, refetch } = useQuery({
+    queryKey: ["bike-reviews", bikeId],
+    queryFn: () => fetchReviews({ data: { bikeId } }),
+    staleTime: 30_000,
+  });
+  const [user, setUser] = useState<{ id: string } | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user ? { id: data.user.id } : null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setUser(s?.user ? { id: s.user.id } : null));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const [rating, setRating] = useState(8);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const onSubmit = async () => {
+    if (title.trim().length < 3) { toast.error("Titel zu kurz"); return; }
+    if (body.trim().length < 10) { toast.error("Bewertung zu kurz"); return; }
+    setSending(true);
+    try {
+      await submit({ data: { bikeId, rating, title: title.trim(), body: body.trim() } });
+      toast.success("Bewertung gespeichert");
+      setTitle(""); setBody(""); setRating(8);
+      refetch();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Fehler");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const reviews = data?.reviews ?? [];
+
+  return (
+    <Section id="reviews" title="Nutzer-Bewertungen" icon={MessageSquare}>
+      {data && data.count > 0 && (
+        <div className="mb-6 border border-border p-4 bg-card flex items-center gap-6">
+          <div>
+            <div className="font-display text-4xl font-black tabular-nums">{data.average.toFixed(1)}<span className="text-base text-muted-foreground font-normal">/10</span></div>
+            <div className="text-xs text-muted-foreground">{data.count} Bewertung{data.count === 1 ? "" : "en"}</div>
+          </div>
+          <div className="flex-1">
+            <ScoreBar value={data.average} />
+          </div>
+        </div>
+      )}
+
+      {user ? (
+        <div className="border border-border p-4 mb-6 bg-card">
+          <div className="eyebrow text-signal mb-3">Eigene Bewertung abgeben</div>
+          <div className="grid md:grid-cols-[180px_1fr] gap-4">
+            <div>
+              <div className="flex justify-between text-xs mb-2"><span>Note</span><span className="tabular-nums font-bold">{rating}/10</span></div>
+              <Slider value={[rating]} min={1} max={10} step={1} onValueChange={(v) => setRating(v[0])} />
+            </div>
+            <div className="space-y-2">
+              <Input placeholder="Titel" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={140} />
+              <Textarea rows={4} placeholder="Deine Erfahrung mit diesem Rad…" value={body} onChange={(e) => setBody(e.target.value)} maxLength={4000} />
+              <Button onClick={onSubmit} disabled={sending} className="bg-signal text-[#050505] hover:bg-signal/90">
+                {sending ? "Senden…" : "Bewertung absenden"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="border border-dashed border-border p-4 mb-6 text-sm text-muted-foreground">
+          <Link to="/auth" className="text-signal underline">Anmelden</Link> um eine Bewertung zu schreiben.
+        </div>
+      )}
+
+      {reviews.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Noch keine Nutzer-Bewertungen. Sei der Erste!</p>
+      ) : (
+        <ul className="space-y-3">
+          {reviews.map((r) => <ReviewCard key={r.id} r={r} />)}
+        </ul>
+      )}
+    </Section>
+  );
+}
+
+function ReviewCard({ r }: { r: BikeReview }) {
+  return (
+    <li className="border border-border p-4 bg-card">
+      <div className="flex items-baseline justify-between gap-3 mb-2">
+        <h4 className="font-bold">{r.title}</h4>
+        <span className="font-mono tabular-nums text-sm bg-signal/10 text-signal px-2 py-0.5">{r.rating}/10</span>
+      </div>
+      <div className="text-[11px] text-muted-foreground mb-2">
+        {r.display_name ?? "Nutzer"} · {new Date(r.created_at).toLocaleDateString("de-DE")}
+        {r.verified_owner && <span className="ml-2 text-emerald-500">✓ Verifiziert</span>}
+      </div>
+      <p className="text-sm whitespace-pre-wrap leading-relaxed">{r.body}</p>
+    </li>
   );
 }
