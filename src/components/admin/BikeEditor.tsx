@@ -44,6 +44,28 @@ type Form = {
   keywords: string[];
   featured: boolean;
   published: boolean;
+  // Extended
+  geometry: Record<string, any>;
+  cockpit: Record<string, any>;
+  wheelset: Record<string, any>;
+  drivetrain_detail: Record<string, any>;
+  brakes_detail: Record<string, any>;
+  ebike_detail: Record<string, any>;
+  suitability: Record<string, number>;
+  performance: Record<string, number>;
+  range_matrix: Record<string, any>;
+  maintenance: Record<string, any>;
+  costs: Record<string, any>;
+  environmental: Record<string, any>;
+  safety_features: Record<string, any>;
+  accessories: string[];
+  awards: { name: string; year?: number; source?: string }[];
+  model_history: Record<string, any>;
+  videos: { url: string; title?: string }[];
+  faq: { q: string; a: string }[];
+  ai_summary: Record<string, any>;
+  availability: string;
+  expert_rating: number | null;
 };
 
 const empty: Form = {
@@ -71,6 +93,27 @@ const empty: Form = {
   keywords: [],
   featured: false,
   published: false,
+  geometry: {},
+  cockpit: {},
+  wheelset: {},
+  drivetrain_detail: {},
+  brakes_detail: {},
+  ebike_detail: {},
+  suitability: {},
+  performance: {},
+  range_matrix: {},
+  maintenance: {},
+  costs: {},
+  environmental: {},
+  safety_features: {},
+  accessories: [],
+  awards: [],
+  model_history: {},
+  videos: [],
+  faq: [],
+  ai_summary: {},
+  availability: "",
+  expert_rating: null,
 };
 
 function fromBike(b: Bike): Form {
@@ -100,6 +143,27 @@ function fromBike(b: Bike): Form {
     keywords: b.keywords ?? [],
     featured: b.featured,
     published: b.published,
+    geometry: b.geometry ?? {},
+    cockpit: b.cockpit ?? {},
+    wheelset: b.wheelset ?? {},
+    drivetrain_detail: b.drivetrain_detail ?? {},
+    brakes_detail: b.brakes_detail ?? {},
+    ebike_detail: b.ebike_detail ?? {},
+    suitability: (b.suitability as any) ?? {},
+    performance: (b.performance as any) ?? {},
+    range_matrix: b.range_matrix ?? {},
+    maintenance: b.maintenance ?? {},
+    costs: b.costs ?? {},
+    environmental: b.environmental ?? {},
+    safety_features: b.safety_features ?? {},
+    accessories: b.accessories ?? [],
+    awards: b.awards ?? [],
+    model_history: b.model_history ?? {},
+    videos: b.videos ?? [],
+    faq: b.faq ?? [],
+    ai_summary: b.ai_summary ?? {},
+    availability: b.availability ?? "",
+    expert_rating: b.expert_rating,
   };
 }
 
