@@ -54,6 +54,7 @@ import { Route as ToolsKalorienRouteImport } from './routes/tools.kalorien'
 import { Route as ToolsJobradLeasingRouteImport } from './routes/tools.jobrad-leasing'
 import { Route as ToolsFoerderungRouteImport } from './routes/tools.foerderung'
 import { Route as ToolsFahrradWetterRouteImport } from './routes/tools.fahrrad-wetter'
+import { Route as ToolsEcoRouteRouteImport } from './routes/tools.eco-route'
 import { Route as ToolsEbikeReichweiteRouteImport } from './routes/tools.ebike-reichweite'
 import { Route as ToolsDiebstahlschutzRouteImport } from './routes/tools.diebstahlschutz'
 import { Route as ToolsBussgeldRouteImport } from './routes/tools.bussgeld'
@@ -304,6 +305,11 @@ const ToolsFahrradWetterRoute = ToolsFahrradWetterRouteImport.update({
   path: '/fahrrad-wetter',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsEcoRouteRoute = ToolsEcoRouteRouteImport.update({
+  id: '/eco-route',
+  path: '/eco-route',
+  getParentRoute: () => ToolsRoute,
+} as any)
 const ToolsEbikeReichweiteRoute = ToolsEbikeReichweiteRouteImport.update({
   id: '/ebike-reichweite',
   path: '/ebike-reichweite',
@@ -476,6 +482,7 @@ export interface FileRoutesByFullPath {
   '/tools/bussgeld': typeof ToolsBussgeldRoute
   '/tools/diebstahlschutz': typeof ToolsDiebstahlschutzRoute
   '/tools/ebike-reichweite': typeof ToolsEbikeReichweiteRoute
+  '/tools/eco-route': typeof ToolsEcoRouteRoute
   '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/tools/foerderung': typeof ToolsFoerderungRoute
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
@@ -545,6 +552,7 @@ export interface FileRoutesByTo {
   '/tools/bussgeld': typeof ToolsBussgeldRoute
   '/tools/diebstahlschutz': typeof ToolsDiebstahlschutzRoute
   '/tools/ebike-reichweite': typeof ToolsEbikeReichweiteRoute
+  '/tools/eco-route': typeof ToolsEcoRouteRoute
   '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/tools/foerderung': typeof ToolsFoerderungRoute
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
@@ -618,6 +626,7 @@ export interface FileRoutesById {
   '/tools/bussgeld': typeof ToolsBussgeldRoute
   '/tools/diebstahlschutz': typeof ToolsDiebstahlschutzRoute
   '/tools/ebike-reichweite': typeof ToolsEbikeReichweiteRoute
+  '/tools/eco-route': typeof ToolsEcoRouteRoute
   '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/tools/foerderung': typeof ToolsFoerderungRoute
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
@@ -691,6 +700,7 @@ export interface FileRouteTypes {
     | '/tools/bussgeld'
     | '/tools/diebstahlschutz'
     | '/tools/ebike-reichweite'
+    | '/tools/eco-route'
     | '/tools/fahrrad-wetter'
     | '/tools/foerderung'
     | '/tools/jobrad-leasing'
@@ -760,6 +770,7 @@ export interface FileRouteTypes {
     | '/tools/bussgeld'
     | '/tools/diebstahlschutz'
     | '/tools/ebike-reichweite'
+    | '/tools/eco-route'
     | '/tools/fahrrad-wetter'
     | '/tools/foerderung'
     | '/tools/jobrad-leasing'
@@ -832,6 +843,7 @@ export interface FileRouteTypes {
     | '/tools/bussgeld'
     | '/tools/diebstahlschutz'
     | '/tools/ebike-reichweite'
+    | '/tools/eco-route'
     | '/tools/fahrrad-wetter'
     | '/tools/foerderung'
     | '/tools/jobrad-leasing'
@@ -1224,6 +1236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsFahrradWetterRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/eco-route': {
+      id: '/tools/eco-route'
+      path: '/eco-route'
+      fullPath: '/tools/eco-route'
+      preLoaderRoute: typeof ToolsEcoRouteRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/ebike-reichweite': {
       id: '/tools/ebike-reichweite'
       path: '/ebike-reichweite'
@@ -1462,6 +1481,7 @@ interface ToolsRouteChildren {
   ToolsBussgeldRoute: typeof ToolsBussgeldRoute
   ToolsDiebstahlschutzRoute: typeof ToolsDiebstahlschutzRoute
   ToolsEbikeReichweiteRoute: typeof ToolsEbikeReichweiteRoute
+  ToolsEcoRouteRoute: typeof ToolsEcoRouteRoute
   ToolsFahrradWetterRoute: typeof ToolsFahrradWetterRoute
   ToolsFoerderungRoute: typeof ToolsFoerderungRoute
   ToolsJobradLeasingRoute: typeof ToolsJobradLeasingRoute
@@ -1487,6 +1507,7 @@ const ToolsRouteChildren: ToolsRouteChildren = {
   ToolsBussgeldRoute: ToolsBussgeldRoute,
   ToolsDiebstahlschutzRoute: ToolsDiebstahlschutzRoute,
   ToolsEbikeReichweiteRoute: ToolsEbikeReichweiteRoute,
+  ToolsEcoRouteRoute: ToolsEcoRouteRoute,
   ToolsFahrradWetterRoute: ToolsFahrradWetterRoute,
   ToolsFoerderungRoute: ToolsFoerderungRoute,
   ToolsJobradLeasingRoute: ToolsJobradLeasingRoute,
