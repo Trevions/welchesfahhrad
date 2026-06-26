@@ -284,10 +284,6 @@ function ToolsPage() {
                   <div
                     aria-hidden
                     className="pointer-events-none absolute inset-0 opacity-20"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(600px 280px at 85% -10%, color-mix(in oklch, var(--signal) 70%, transparent), transparent 60%)",
-                    }}
                   />
                   <div className="relative flex flex-col md:flex-row md:items-center gap-5 md:gap-8">
                     <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-signal/50 bg-signal/10 text-signal">
