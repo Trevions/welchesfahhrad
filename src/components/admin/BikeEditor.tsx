@@ -313,6 +313,7 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
         description: form.description || null,
         meta_title: form.meta_title || null,
         meta_description: form.meta_description || null,
+        availability: form.availability || null,
       };
       const res = await save({ data: payload });
       toast.success(publish ? "Veröffentlicht" : "Gespeichert");
