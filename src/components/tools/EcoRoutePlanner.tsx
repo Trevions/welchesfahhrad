@@ -803,7 +803,8 @@ export default function EcoRoutePlanner() {
           style={{ background: "#0b1118" }}
         >
           <TileLayer
-            url="https://tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png"
+            url="https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png"
+            subdomains={["a", "b", "c"]}
             attribution='&copy; OpenStreetMap, CyclOSM'
             maxZoom={19}
           />
