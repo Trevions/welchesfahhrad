@@ -276,44 +276,7 @@ function ToolsPage() {
             </p>
           </div>
         ) : (
-          <div>
-            {/* FEATURED — Eco Route Planner */}
-            <section className="mb-10 md:mb-14">
-              <Link to="/tools/eco-route" className="group block">
-                <div className="relative overflow-hidden rounded-2xl border border-signal/40 bg-[#050505] p-6 md:p-8 transition-all duration-300 hover:border-signal hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)]">
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 opacity-20"
-                  />
-                  <div className="relative flex flex-col md:flex-row md:items-center gap-5 md:gap-8">
-                    <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-signal/50 bg-signal/10 text-signal">
-                      <Leaf className="h-7 w-7" strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-signal">
-                        <span className="h-px w-6 bg-signal" />
-                        Neu · Empfohlen
-                      </div>
-                      <h2 className="mt-2 font-display text-2xl md:text-3xl font-black italic tracking-tight text-zinc-100">
-                        Eco Route Planner
-                      </h2>
-                      <p className="mt-2 text-sm md:text-base text-zinc-400 leading-relaxed max-w-2xl">
-                        Plane echte Fahrradrouten in Deutschland — mit Live-Wetter, Höhenprofil,
-                        CO₂-Bilanz und GPX-Export. Kostenlos und ohne Account.
-                      </p>
-                    </div>
-                    <div className="shrink-0">
-                      <span className="inline-flex items-center gap-2 border border-signal/60 bg-signal/10 px-5 py-2.5 text-signal transition-all duration-300 group-hover:bg-signal group-hover:text-[#050505] group-hover:border-signal">
-                        <span className="eyebrow-sm">Route planen</span>
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </section>
-
-            {filtered.map((g, gi) => (
+          filtered.map((g, gi) => (
             <section key={g.id} className={gi > 0 ? "mt-14 md:mt-20" : ""}>
               <header className="mb-6 flex items-end justify-between gap-4 md:mb-8">
                 <div className="min-w-0">
@@ -337,7 +300,6 @@ function ToolsPage() {
               </div>
             </section>
           ))
-          </div>
         )}
 
         <p className="mt-16 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
