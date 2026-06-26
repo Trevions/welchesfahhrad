@@ -577,7 +577,7 @@ function SpecsSection({ b }: { b: Bike }) {
 }
 
 function GeometrySection({ b }: { b: Bike }) {
-  const g = b.geometry || {};
+  const g: Record<string, any> = (b.geometry as any) || {};
   if (!Object.keys(g).length) return null;
   return (
     <Section id="geometry" title="Geometrie" icon={Activity}>
