@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VergleichRouteImport } from './routes/vergleich'
 import { Route as UeberUnsRouteImport } from './routes/ueber-uns'
 import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as TestsRouteImport } from './routes/tests'
@@ -81,6 +82,11 @@ import { Route as AuthenticatedMnvBikesIdRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMnvArticlesNewRouteImport } from './routes/_authenticated/mnv.articles_.new'
 import { Route as AuthenticatedMnvArticlesIdRouteImport } from './routes/_authenticated/mnv.articles_.$id'
 
+const VergleichRoute = VergleichRouteImport.update({
+  id: '/vergleich',
+  path: '/vergleich',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UeberUnsRoute = UeberUnsRouteImport.update({
   id: '/ueber-uns',
   path: '/ueber-uns',
@@ -474,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/tests': typeof TestsRoute
   '/tools': typeof ToolsRouteWithChildren
   '/ueber-uns': typeof UeberUnsRoute
+  '/vergleich': typeof VergleichRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/fahrraeder/$slug': typeof FahrraederSlugRoute
@@ -545,6 +552,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
+  '/vergleich': typeof VergleichRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/fahrraeder/$slug': typeof FahrraederSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
@@ -618,6 +626,7 @@ export interface FileRoutesById {
   '/tests': typeof TestsRoute
   '/tools': typeof ToolsRouteWithChildren
   '/ueber-uns': typeof UeberUnsRoute
+  '/vergleich': typeof VergleichRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/fahrraeder/$slug': typeof FahrraederSlugRoute
@@ -692,6 +701,7 @@ export interface FileRouteTypes {
     | '/tests'
     | '/tools'
     | '/ueber-uns'
+    | '/vergleich'
     | '/mnv'
     | '/artikel/$slug'
     | '/fahrraeder/$slug'
@@ -763,6 +773,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/tests'
     | '/ueber-uns'
+    | '/vergleich'
     | '/artikel/$slug'
     | '/fahrraeder/$slug'
     | '/newsletter/abmelden'
@@ -835,6 +846,7 @@ export interface FileRouteTypes {
     | '/tests'
     | '/tools'
     | '/ueber-uns'
+    | '/vergleich'
     | '/_authenticated/mnv'
     | '/artikel/$slug'
     | '/fahrraeder/$slug'
@@ -909,6 +921,7 @@ export interface RootRouteChildren {
   TestsRoute: typeof TestsRoute
   ToolsRoute: typeof ToolsRouteWithChildren
   UeberUnsRoute: typeof UeberUnsRoute
+  VergleichRoute: typeof VergleichRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
   NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
   NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
@@ -921,6 +934,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vergleich': {
+      id: '/vergleich'
+      path: '/vergleich'
+      fullPath: '/vergleich'
+      preLoaderRoute: typeof VergleichRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ueber-uns': {
       id: '/ueber-uns'
       path: '/ueber-uns'
@@ -1558,6 +1578,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestsRoute: TestsRoute,
   ToolsRoute: ToolsRouteWithChildren,
   UeberUnsRoute: UeberUnsRoute,
+  VergleichRoute: VergleichRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
   NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,
   NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
