@@ -97,6 +97,7 @@ const groups: Group[] = [
     eyebrow: "05",
     title: "Kaufberatung",
     tools: [
+      { title: "KI-Kaufberater", desc: "Rahmen, Reifen, Motor, Budget — komplett berechnet + KI-Analyse.", icon: Sparkles, to: "/tools/kaufberater-ai" },
       { title: "Kaufberater-Quiz", desc: "In wenigen Fragen zum passenden Rad.", icon: Sparkles, to: "/tools/kaufberater" },
       { title: "Vergleichstool", desc: "Modelle nach Ausstattung und Preis vergleichen.", icon: GitCompare, to: "/tools/vergleich" },
       { title: "Förderungs-Finder", desc: "Zuschüsse und Prämien in deiner Region.", icon: HandCoins, to: "/tools/foerderung" },
