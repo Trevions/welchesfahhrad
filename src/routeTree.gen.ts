@@ -51,6 +51,7 @@ import { Route as ToolsReifendruckRouteImport } from './routes/tools.reifendruck
 import { Route as ToolsRahmengroesseRouteImport } from './routes/tools.rahmengroesse'
 import { Route as ToolsPannenhilfeRouteImport } from './routes/tools.pannenhilfe'
 import { Route as ToolsLuftqualitaetRouteImport } from './routes/tools.luftqualitaet'
+import { Route as ToolsKaufberaterAiRouteImport } from './routes/tools.kaufberater-ai'
 import { Route as ToolsKaufberaterRouteImport } from './routes/tools.kaufberater'
 import { Route as ToolsKalorienRouteImport } from './routes/tools.kalorien'
 import { Route as ToolsJobradLeasingRouteImport } from './routes/tools.jobrad-leasing'
@@ -292,6 +293,11 @@ const ToolsLuftqualitaetRoute = ToolsLuftqualitaetRouteImport.update({
   path: '/luftqualitaet',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsKaufberaterAiRoute = ToolsKaufberaterAiRouteImport.update({
+  id: '/kaufberater-ai',
+  path: '/kaufberater-ai',
+  getParentRoute: () => ToolsRoute,
+} as any)
 const ToolsKaufberaterRoute = ToolsKaufberaterRouteImport.update({
   id: '/kaufberater',
   path: '/kaufberater',
@@ -502,6 +508,7 @@ export interface FileRoutesByFullPath {
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
   '/tools/kalorien': typeof ToolsKalorienRoute
   '/tools/kaufberater': typeof ToolsKaufberaterRoute
+  '/tools/kaufberater-ai': typeof ToolsKaufberaterAiRoute
   '/tools/luftqualitaet': typeof ToolsLuftqualitaetRoute
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
@@ -574,6 +581,7 @@ export interface FileRoutesByTo {
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
   '/tools/kalorien': typeof ToolsKalorienRoute
   '/tools/kaufberater': typeof ToolsKaufberaterRoute
+  '/tools/kaufberater-ai': typeof ToolsKaufberaterAiRoute
   '/tools/luftqualitaet': typeof ToolsLuftqualitaetRoute
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
@@ -650,6 +658,7 @@ export interface FileRoutesById {
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
   '/tools/kalorien': typeof ToolsKalorienRoute
   '/tools/kaufberater': typeof ToolsKaufberaterRoute
+  '/tools/kaufberater-ai': typeof ToolsKaufberaterAiRoute
   '/tools/luftqualitaet': typeof ToolsLuftqualitaetRoute
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
@@ -726,6 +735,7 @@ export interface FileRouteTypes {
     | '/tools/jobrad-leasing'
     | '/tools/kalorien'
     | '/tools/kaufberater'
+    | '/tools/kaufberater-ai'
     | '/tools/luftqualitaet'
     | '/tools/pannenhilfe'
     | '/tools/rahmengroesse'
@@ -798,6 +808,7 @@ export interface FileRouteTypes {
     | '/tools/jobrad-leasing'
     | '/tools/kalorien'
     | '/tools/kaufberater'
+    | '/tools/kaufberater-ai'
     | '/tools/luftqualitaet'
     | '/tools/pannenhilfe'
     | '/tools/rahmengroesse'
@@ -873,6 +884,7 @@ export interface FileRouteTypes {
     | '/tools/jobrad-leasing'
     | '/tools/kalorien'
     | '/tools/kaufberater'
+    | '/tools/kaufberater-ai'
     | '/tools/luftqualitaet'
     | '/tools/pannenhilfe'
     | '/tools/rahmengroesse'
@@ -1241,6 +1253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsLuftqualitaetRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/kaufberater-ai': {
+      id: '/tools/kaufberater-ai'
+      path: '/kaufberater-ai'
+      fullPath: '/tools/kaufberater-ai'
+      preLoaderRoute: typeof ToolsKaufberaterAiRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/kaufberater': {
       id: '/tools/kaufberater'
       path: '/kaufberater'
@@ -1527,6 +1546,7 @@ interface ToolsRouteChildren {
   ToolsJobradLeasingRoute: typeof ToolsJobradLeasingRoute
   ToolsKalorienRoute: typeof ToolsKalorienRoute
   ToolsKaufberaterRoute: typeof ToolsKaufberaterRoute
+  ToolsKaufberaterAiRoute: typeof ToolsKaufberaterAiRoute
   ToolsLuftqualitaetRoute: typeof ToolsLuftqualitaetRoute
   ToolsPannenhilfeRoute: typeof ToolsPannenhilfeRoute
   ToolsRahmengroesseRoute: typeof ToolsRahmengroesseRoute
@@ -1553,6 +1573,7 @@ const ToolsRouteChildren: ToolsRouteChildren = {
   ToolsJobradLeasingRoute: ToolsJobradLeasingRoute,
   ToolsKalorienRoute: ToolsKalorienRoute,
   ToolsKaufberaterRoute: ToolsKaufberaterRoute,
+  ToolsKaufberaterAiRoute: ToolsKaufberaterAiRoute,
   ToolsLuftqualitaetRoute: ToolsLuftqualitaetRoute,
   ToolsPannenhilfeRoute: ToolsPannenhilfeRoute,
   ToolsRahmengroesseRoute: ToolsRahmengroesseRoute,

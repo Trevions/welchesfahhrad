@@ -266,32 +266,60 @@ function ToolsPage() {
       </section>
 
       <div className="mx-auto max-w-[1400px] px-5 py-12 md:px-8 md:py-16">
-        {/* FEATURED — Eco Route Planner */}
+        {/* FEATURED */}
         {!norm && (
-          <section className="mb-10 md:mb-14">
-            <Link to="/tools/eco-route" className="group block">
-              <div className="relative overflow-hidden rounded-2xl border border-signal/40 bg-[#050505] p-6 md:p-8 transition-all duration-300 hover:border-signal hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)]">
+          <section className="mb-10 md:mb-14 grid gap-4 md:gap-5">
+            <Link to="/tools/kaufberater-ai" className="group block">
+              <div className="relative overflow-hidden rounded-2xl border border-signal/60 bg-[#050505] p-6 md:p-8 transition-all duration-300 hover:border-signal hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)]">
                 <div className="relative flex flex-col md:flex-row md:items-center gap-5 md:gap-8">
                   <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-signal/50 bg-signal/10 text-signal">
-                    <Leaf className="h-7 w-7" strokeWidth={1.5} />
+                    <Sparkles className="h-7 w-7" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-signal">
                       <span className="h-px w-6 bg-signal" />
-                      Neu · Empfohlen
+                      Neu · KI-Kaufberater
                     </div>
                     <h2 className="mt-2 font-display text-2xl md:text-3xl font-black italic tracking-tight text-zinc-100">
-                      Eco Route Planner
+                      Deutschlands genauester Fahrrad-Kaufberater
                     </h2>
                     <p className="mt-2 text-sm md:text-base text-zinc-400 leading-relaxed max-w-2xl">
-                      Plane echte Fahrradrouten in Deutschland — mit Live-Wetter, Höhenprofil,
-                      CO₂-Bilanz und GPX-Export. Kostenlos und ohne Account.
+                      Rahmengröße, Reifen, Motor, Reichweite und Budget — vollständig berechnet nach
+                      Hinault/LeMond, Holmes und Silca-Modell, plus KI-Analyse mit konkreten
+                      Rad-Empfehlungen aus unserer Datenbank. Für Fahrräder &amp; E-Bikes.
                     </p>
                   </div>
                   <div className="shrink-0">
                     <span className="inline-flex items-center gap-2 border border-signal/60 bg-signal/10 px-5 py-2.5 text-signal transition-all duration-300 group-hover:bg-signal group-hover:text-[#050505] group-hover:border-signal">
-                      <span className="eyebrow-sm">Route planen</span>
+                      <span className="eyebrow-sm">Beratung starten</span>
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            <Link to="/tools/eco-route" className="group block">
+              <div className="relative overflow-hidden rounded-2xl border border-signal/40 bg-[#050505] p-5 md:p-6 transition-all duration-300 hover:border-signal hover:-translate-y-0.5">
+                <div className="relative flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-signal/50 bg-signal/10 text-signal">
+                    <Leaf className="h-6 w-6" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-signal">
+                      Empfohlen
+                    </div>
+                    <h2 className="mt-1 font-display text-xl md:text-2xl font-black italic tracking-tight text-zinc-100">
+                      Eco Route Planner
+                    </h2>
+                    <p className="mt-1 text-sm text-zinc-400 max-w-2xl">
+                      Fahrradrouten in Deutschland — Live-Wetter, Höhenprofil, CO₂-Bilanz, GPX.
+                    </p>
+                  </div>
+                  <div className="shrink-0">
+                    <span className="inline-flex items-center gap-2 border border-signal/60 bg-signal/10 px-4 py-2 text-signal transition-all duration-300 group-hover:bg-signal group-hover:text-[#050505]">
+                      <span className="eyebrow-sm">Route planen</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
                 </div>
