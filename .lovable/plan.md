@@ -1,222 +1,124 @@
-## Goal
 
-1. Fix hover ефекта на бутона „Eco Route Planner" (рамката да остане бяла).
-2. Превърни `/fahrraeder/$slug` в най-пълната, премиум страница за велосипед — с разширена база, нов админ, side-by-side сравнение до 4 велосипеда, потребителски отзиви и интерактивни калкулатори.
+# Ultimativer Fahrrad-Kaufberater (AI)
+
+Neuer Premium-Rechner unter `/tools/kaufberater-ai` — der genaueste Kaufberater für normale Räder und E-Bikes in Deutschland. Vollständige Geometrie-Berechnung + KI-Analyse in einem Flow.
 
-Всичко в един голям PR.
-
----
-
-## 1. Hover fix (бърз)
-
-`src/routes/index.tsx` — Eco Route Planner бутон:
-- Премахни `hover:bg-white`, `hover:border-white`, `hover:text-[#050505]`.
-- Запази `border-white/60` постоянно. Hover само за лек fade на фон/иконата (`hover:bg-white/5`), без промяна на цвета на рамката или текста.
-
----
-
-## 2. Разширена база данни (миграция)
-
-### `bikes` — нови JSONB колони (групирани, за да не правим 60 нови полета)
-
-- `geometry jsonb` — wheelbase, stack, reach, seat_tube, head_tube, bottom_bracket, max_rider_weight_kg, frame_weight_kg, …
-- `cockpit jsonb` — handlebar, stem, seatpost, saddle, grips
-- `wheelset jsonb` — rims, hubs, spokes, tubeless_ready, tire_pressure_recommended
-- `drivetrain_detail jsonb` — crankset, bb, chain, cassette, rear_der, front_der, shifters, pedals, gear_ratios
-- `brakes_detail jsonb` — model, rotor_front_mm, rotor_rear_mm, type
-- `ebike_detail jsonb` (надстройка над `ebike`) — peak_power_w, voltage, ah, cell_type, charge_cycles, dual_battery, fast_charging, bluetooth, gps, app, ota, walk_assist, usb_charging, security_features[], assist_modes[]
-- `suitability jsonb` — { beginner, intermediate, pro, commuting, touring, gravel, mountain, bikepacking, city, family, cargo, racing } всяко 0–10
-- `performance jsonb` — { ratings: comfort, handling, cornering, stability, acceleration, climbing, descending, offroad, city, longdistance, sportiness, suspension }
-- `range_matrix jsonb` — { eco/tour/sport/turbo × 60/75/90/110kg × flat/hills/mountains/cold/summer/headwind }
-- `maintenance jsonb` — schedule, chain_km, brake_pads_km, disc_km, battery_care, suspension_service_km, lubricants, annual_cost_eur
-- `costs jsonb` — electricity_kwh_price, cost_per_charge_eur, cost_per_100km_eur, annual_electricity_eur, five_year_total_eur
-- `environmental jsonb` — co2_saved_kg_year, fuel_saved_l_year, money_saved_eur_year, trees_equivalent, sustainability_score
-- `safety_features jsonb` — integrated_lights, abs, gps, alarm, frame_lock, airtag, nfc, recommended_locks[], visibility_score, night_score
-- `accessories jsonb` — compatible[] (mudguards, racks, bags, …)
-- `awards jsonb` — [{ name, year, source }]
-- `model_history jsonb` — launch_year, previous_generations[], whats_new, improvements, known_issues, common_upgrades
-- `videos jsonb` — [{ url, title }]
-- `availability text`
-- `expert_rating numeric(3,1)`
-- `faq jsonb` — [{ q, a }] (AI-генерира при save или при on-demand)
-- `ai_summary jsonb` — { strengths, weaknesses, best_for, avoid_if, alternatives }
-
-Всички DEFAULT `'{}'::jsonb` / `'[]'::jsonb` — обратна съвместимост запазена.
-
-### Нови таблици
-
-`bike_reviews`:
-- id, bike_id (fk → bikes), user_id (fk → auth.users), rating int 1–10, title, body, photos jsonb default '[]', verified_owner bool, created_at, updated_at
-- RLS: всеки (anon) може SELECT (само `status='published'`); authenticated INSERT със собствен user_id; UPDATE/DELETE собствен; admin всичко. GRANT SELECT TO anon, ALL CRUD TO authenticated, ALL TO service_role.
-- status text default 'published' (бъдеща модерация).
-
-`bike_review_votes` (опционално helpful votes) — пропускаме за първи PR.
-
-### Грантове и RLS
-
-Всеки CREATE TABLE → GRANT → ENABLE RLS → POLICIES, по правилата.
-
----
-
-## 3. Админ панел — `BikeEditor` разширение
-
-`src/components/admin/BikeEditor.tsx`:
-- Нов tab navigation: **Basis · Geometrie · Cockpit · Antrieb · Bremsen · Laufräder · E-Bike · Eignung · Performance · Reichweite · Wartung · Kosten · Umwelt · Sicherheit · Zubehör · Auszeichnungen · Historie · Medien · SEO**.
-- Всеки таб = форма за съответната JSONB група.
-- Бутон **„AI ausfüllen"** (използва Lovable AI Gateway, `google/gemini-2.5-flash`) — попълва празни полета на база `brand + model + year`. Реализирано чрез нов server fn `generateBikeMeta`.
-- Запазва се видът на listing/edit маршрутите (`mnv/bikes`, `mnv/bikes_/new`, `mnv/bikes_/$id`).
-
----
-
-## 4. Premium UI редизайн на `/fahrraeder/$slug`
-
-Пълно пренаписване на `src/routes/fahrraeder.$slug.tsx` + нови компоненти под `src/components/bikes/detail/`:
-
-### Структура (sticky sidebar nav вляво на desktop, top tabs на mobile)
-
-```
-Hero
-├─ Gallery (main + thumbnails, lightbox, video секция ако videos[])
-├─ Title block (brand · model · year · category badge · awards)
-├─ Rating block (Expert score, User score) + price
-└─ Action bar: [Vergleichen] [Merken] [Teilen] [Drucken] [Specs kopieren] [Hersteller-Website]
-
-QuickFacts (8 карти: Gewicht · Material · Motor · Akku · Reichweite · Top-Speed · Federweg · Räder · Schaltung · Bremsen)
-
-Wofür ist dieses Rad? (12 use-case карти със score bars 1–10)
-
-Vollständige Specs (tabs / accordion: Rahmen, Cockpit, Laufräder, Antrieb, Bremsen, E-Bike-System)
-
-Realistische Reichweite (interactive chart — switcher Eco/Tour/Sport/Turbo × Gewicht × Bedingungen)
-
-Fahrgefühl & Komfort (radar chart с 12 оценки)
-
-Wartung (timeline-card)
-
-Laufende Kosten (interactive калкулатор — kWh цена slider, km/година slider → 5-year cost, vs auto, vs MIV)
-
-Umweltbilanz (карти + estimated CO₂/година)
-
-Sicherheit (карти + score-rings)
-
-Kompatibles Zubehör (icon grid)
-
-Smart-Rechner (linkове към съществуващите /tools)
-
-KI-Analyse (strengths/weaknesses/best for/avoid)
-
-Pros & Cons (вече има — restyle)
-
-FAQ (accordion)
-
-Modell-Historie (timeline)
-
-Reviews (експертни + user, формуляр за authenticated user)
-
-Vergleich-Banner ("Mit anderem Rad vergleichen")
-```
-
-### Sticky навигация
-- Desktop: лява колона sticky `<nav>` с ankor линкове + scrollspy подсветка на активна секция (IntersectionObserver).
-- Mobile: top horizontal sticky scroller под header.
-
-### Search inside page
-- Малък search input в sticky nav — филтрира видими секции по ключови думи (client-side `useMemo` индекс на section titles + spec keys).
-
-### Действия
-- **Vergleichen** → toggle в localStorage `radmap.compare[]` (max 4) + toast + бутон навигира към `/vergleich`.
-- **Merken** → използва съществуващия `useBookmarks`.
-- **Teilen** → съществуващ `ShareMenu`.
-- **Drucken** → `window.print()` + print CSS (`@media print` в `src/styles.css` — премахни sticky/sidebars).
-- **Specs kopieren** → JSON/Markdown в clipboard.
-
-### Dark mode
-- Само семантични токени (`bg-card`, `text-foreground`, `border-border`, `text-signal`). Никакви hardcoded цветове.
-
----
-
-## 5. Сравнителна страница `/vergleich`
-
-Нов рут `src/routes/vergleich.tsx`:
-- Чете до 4 slug-а от search params.
-- Сравнителна таблица (всички spec групи vertical, велосипеди в колони).
-- Подсветва: най-добра стойност в зелено, най-лоша в червено (numeric specs).
-- "Радар overlay" — superimposed radar на performance ratings.
-- Selector за добавяне/смяна (autocomplete от `bikes` таблицата).
-- Public route (без auth).
-
----
-
-## 6. Отзиви
-
-Компонент `BikeReviewsSection`:
-- Списък с публикувани отзиви (rating, title, body, verified badge, дата).
-- Average + distribution histogram.
-- За authenticated: формуляр (Zod validation, max length).
-- За anonymous: CTA „Anmelden um eine Bewertung zu schreiben".
-
-Server fns в `src/lib/bike-reviews.functions.ts`:
-- `listBikeReviews({ bikeId })` — публичен (server publishable client).
-- `submitBikeReview({ bikeId, rating, title, body })` — `requireSupabaseAuth`.
-- `deleteBikeReview({ id })` — own или admin.
-
----
-
-## 7. Интерактивни калкулатори (в страницата)
-
-- **Reichweiten-Simulator**: slider за weight, terrain, weather, assist → използва `range_matrix` за interpolation.
-- **Kostenrechner**: slider за kWh цена, km/година, charges/седмица → output 5-year cost, ROI vs auto/public.
-- **CO₂-Sparen**: km/год × emission factor → kg CO₂/год + дървета.
-- Recharts за всички графики (вече dependency).
-
----
-
-## 8. SEO
-
-- JSON-LD: разшири с `Product`, `AggregateRating` (от reviews), `FAQPage` (от faq[]), `BreadcrumbList`.
-- og:image от gallery[0].
-- meta description от `ai_summary.best_for` като fallback.
-
----
-
-## 9. Технически детайли
-
-- Нови файлове:
-  - `src/components/bikes/detail/StickyNav.tsx`
-  - `src/components/bikes/detail/HeroBlock.tsx`
-  - `src/components/bikes/detail/QuickFactsGrid.tsx`
-  - `src/components/bikes/detail/SuitabilityGrid.tsx`
-  - `src/components/bikes/detail/SpecsTabs.tsx`
-  - `src/components/bikes/detail/RangeSimulator.tsx`
-  - `src/components/bikes/detail/CostCalculator.tsx`
-  - `src/components/bikes/detail/EnvironmentCards.tsx`
-  - `src/components/bikes/detail/SafetyCards.tsx`
-  - `src/components/bikes/detail/AccessoryGrid.tsx`
-  - `src/components/bikes/detail/AiAnalysis.tsx`
-  - `src/components/bikes/detail/FaqAccordion.tsx`
-  - `src/components/bikes/detail/HistoryTimeline.tsx`
-  - `src/components/bikes/detail/ReviewsSection.tsx`
-  - `src/components/bikes/detail/ActionBar.tsx`
-  - `src/components/bikes/detail/CompareDrawer.tsx`
-  - `src/lib/bike-compare.ts` (localStorage)
-  - `src/lib/bike-reviews.functions.ts`
-  - `src/lib/bike-ai.functions.ts` (AI fill, AI summary, FAQ gen)
-  - `src/routes/vergleich.tsx`
-- Разшири: `src/lib/bike-types.ts`, `src/lib/bikes.functions.ts`, `src/components/admin/BikeEditor.tsx`.
-- Print CSS блок в `src/styles.css`.
-
----
-
-## Ред на изпълнение
-
-1. Hover fix.
-2. Миграция (bikes JSONB + bike_reviews + RLS + GRANT). 
-3. Обнови `bike-types.ts` и server fns.
-4. Разшири `BikeEditor` с табове и AI fill.
-5. Изгради новата детайл страница + всички компоненти.
-6. `/vergleich` страница.
-7. Reviews UI + server fns.
-8. SEO JSON-LD разширение.
-9. Build + sanity check.
-
-Поради големия обхват очаквай ~25-30 нови/променени файла и една миграция.
+## Was der Nutzer eingibt (Wizard, 4 Schritte)
+
+**1. Körpermaße** (Pflicht für exakte Berechnung)
+- Körpergröße (cm)
+- Schrittlänge / Innenbein (cm) — mit Buch-an-Wand-Anleitung
+- Armlänge (optional, für Reach)
+- Torsolänge (optional)
+- Körpergewicht (kg) — treibt Reifendruck & E-Bike-Reichweite
+- Geschlecht (m/w/divers) — Frauen: kürzerer Oberkörper → kürzerer Reach
+- Alter & Flexibilität (Slider) — beeinflusst Stack/Überhöhung
+
+**2. Einsatz & Anspruch**
+- Radtyp: Rennrad · Gravel · MTB Hardtail · MTB Fully · Trekking · City · E-Trekking · E-MTB · E-City · Lastenrad
+- Haupteinsatz: Pendeln · Touren · Sport/Training · Offroad · Familie · Reise
+- Wochenkilometer + typische Tourlänge
+- Gelände: flach · hügelig · bergig · mixed
+- Untergrund %: Asphalt / Schotter / Trail
+
+**3. E-Bike-Spezifika** (nur wenn E-Bike gewählt)
+- Motor-Präferenz (Bosch, Shimano, Brose, egal)
+- Akku-Kapazität-Wunsch (Wh) oder gewünschte Reichweite (km)
+- Unterstützungslevel (Eco/Tour/Sport/Turbo bevorzugt)
+
+**4. Budget & Prioritäten**
+- Budget (€) — Slider
+- Prioritäten (Radar/Slider 1–5): Komfort · Sportlichkeit · Haltbarkeit · Gewicht · Wartungsarm · Optik
+- Muss-Features (Multi-Select): Schutzbleche, Gepäckträger, Beleuchtung, Nabenschaltung, Riemen, Federgabel, Tubeless, Scheibenbremsen hydraulisch
+
+## Was berechnet wird (deterministisch, vor der KI)
+
+**Rahmengeometrie** (pro Radtyp eigene Faktoren, Quellen: Hinault/LeMond, Steve Hogg, Cyclefit, Trek/Giant Size-Charts):
+- **Rahmenhöhe** = Schrittlänge × Faktor (Rennrad 0.665, MTB 0.226″, Gravel 0.67, Trekking 0.66, City 0.685)
+- **Konfektionsgröße** (XS–XXL) mit Bereich (z.B. „54–56 cm / M")
+- **Stack & Reach Zielwerte** aus Körpergröße + Torso + Flexibilität + Einsatz (sport → tiefer/länger, komfort → höher/kürzer)
+- **Sattelhöhe** = Schrittlänge × 0.883 (Holmes-Methode) + Range ±5 mm
+- **Sattel-Setback** aus Torso
+- **Lenkerbreite** aus Schulterbreite-Schätzung (Rennrad 38/40/42/44, MTB 700–780 mm nach Fahrstil)
+- **Vorbaulänge** & Spacer-Empfehlung
+- **Kurbellänge** aus Schrittlänge (Formel Kirby, 165–175 mm)
+
+**Reifen-Empfehlung**:
+- **Breite** je Radtyp × Einsatz × Gewicht (Rennrad 25–32, Gravel 38–50, MTB 2.25–2.6″, Trekking 40–50, City 37–47)
+- **Profil**: Slick / Semi-Slick / Stollen (basiert auf Untergrund-Prozenten)
+- **Tubeless ja/nein** (Empfehlung ab Gravel/MTB oder ≥5000 km/Jahr)
+- **Reifendruck** je Rad (V/H) mit Silca/Berto-Modell: Systemgewicht + Reifenbreite + Untergrund → Bar/PSI (bereits vorhanden in `/tools/reifendruck` — Formel wird geteilt)
+
+**Bremsen & Schaltung**:
+- Scheibe hydraulisch bei Gewicht > 85 kg, bergig, E-Bike, viel Regen, >3.000 € Rad
+- Nabenschaltung + Riemen bei Pendel/Wartungsarm/City
+- 1× vs 2× vs 3× nach Einsatz und Geländeprofil
+
+**E-Bike-Berechnungen** (nur bei E-Bike):
+- **Reichweite** = Akku Wh / (Verbrauch Wh/km) — Verbrauch aus Gewicht+Gelände+Unterstützung (10–25 Wh/km-Modell, kalibriert an Bosch/Shimano-Daten)
+- **Empfohlene Akku-Kapazität** aus gewünschter Reichweite + Sicherheitspuffer 20 %
+- **Motor-Empfehlung**: Bosch CX (MTB/steil), Bosch Performance Line (Trekking), Shimano EP6/EP8 (leicht/sportlich), Brose S Mag (leise), Bosch Active Line (City) — Regelwerk aus Einsatz + Gelände
+- **Drehmoment-Bedarf** (Nm): flach 40–50, hügelig 65–75, bergig 85+
+
+**Budget-Ranges** pro Segment (aktuelle DE-Marktpreise 2025/26):
+- Einstieg / Mittelklasse / Premium / High-End Grenzen je Radtyp
+- Warnung bei zu niedrigem Budget für gewünschte Ausstattung
+- Wo-liegt-mein-Budget-Balken
+
+## KI-Analyse (Lovable AI Gateway)
+
+Nach dem Absenden — Server-Function `analyzeBikePurchase.functions.ts` mit `requireSupabaseAuth` NICHT nötig (öffentlich, kein DB-Write), stattdessen **öffentliche Server-Function ohne Auth**, rate-limited pro IP.
+
+- Modell: `google/gemini-3-flash-preview` (schnell, günstig, gutes Deutsch)
+- Input: Alle berechneten Zahlen + Nutzer-Prioritäten
+- Output (structured via `Output.object` mit Zod):
+  - `summary` (2–3 Sätze — für wen ist welches Segment ideal)
+  - `frameRecommendation` — warum genau diese Größe, was bei Grenzfall zu wählen (S/M-Konflikt)
+  - `alternativeSizes` — wann kleiner / größer sinnvoll ist
+  - `topPicks[]` — 3 konkrete Rad-Empfehlungen aus der eigenen `bikes`-DB (via Server-Query gefiltert nach Typ+Budget+Größe) mit Begründung
+  - `warnings[]` — z.B. „Budget zu niedrig für hydraulische Scheibenbremsen bei E-Bike"
+  - `checklistBeforeBuy[]` — Probefahrt-Punkte, Passform-Check
+  - `financing` — JobRad/Leasing-Hinweis wenn zutreffend
+
+Fehlerfälle: 429/402 sauber als Toast, deterministische Werte bleiben sichtbar.
+
+## Integration
+
+**Profil-Verzahnung** — Zieht bestehende Werte aus `bike-profile.ts` (Körpergröße, Schrittlänge, Gewicht, Radtyp, Interessen) und vorfüllt. Ergebnis „In mein Radprofil übernehmen"-Button aktualisiert `saveBikeProfile()`.
+
+**Bike-DB-Verzahnung** — `topPicks` verlinken zu `/fahrraeder/<slug>`. Falls DB leer für ein Segment: KI empfiehlt Marken/Modelle textuell.
+
+**Favoriten** — Empfohlene Räder direkt via `useBikeFavorites` speicherbar.
+
+**Sharing/Print** — Ergebnis-Seite hat „PDF drucken"-Button (nur CSS `@media print`).
+
+## Platzierung
+
+- **`src/routes/tools.kaufberater-ai.tsx`** — neuer Wizard + Ergebnis-Seite
+- **`src/routes/tools.index.tsx`** — als „Featured" **an Position 2** direkt nach Eco Route Planner mit auffälliger Karte („🚴 KI-Kaufberater — der genaueste in Deutschland")
+- **`src/routes/index.tsx`** — kleiner Promo-Button neben Eco Route Planner
+- **`src/routes/tools.kaufberater.tsx`** (bestehend, einfach): Banner oben „Neu: KI-Kaufberater mit Geometrie-Analyse →"
+
+## Technische Details
+
+- **Files neu**:
+  - `src/routes/tools.kaufberater-ai.tsx` (Wizard UI + Ergebnis)
+  - `src/lib/kaufberater/calculations.ts` (alle deterministischen Formeln, mit Unit-Kommentaren + Quellen)
+  - `src/lib/kaufberater/analysis.functions.ts` (Server-Function für KI-Analyse via Lovable AI Gateway)
+  - `src/lib/kaufberater/types.ts` (Zod-Schemas Input/Output)
+  - `src/lib/ai-gateway.server.ts` (falls noch nicht vorhanden — Provider-Helper)
+- **Files edit**:
+  - `src/routes/tools.index.tsx` (neue Featured-Karte)
+  - `src/routes/index.tsx` (Promo-Button)
+  - `src/routes/tools.kaufberater.tsx` (Cross-Link-Banner)
+  - `src/lib/bike-profile.ts` (evtl. neue Felder: torsoLengthCm, flexibility)
+- **Keine DB-Migration nötig** (rein Client + AI + read-only Zugriff auf `bikes`).
+- **SEO**: `toolHead()` mit „KI-Kaufberater Fahrrad & E-Bike | radmap.de", JSON-LD `SoftwareApplication`.
+
+## Qualität / „100 % korrekt"
+
+- Jede Formel mit Quelle als Kommentar (Hinault/LeMond, Silca-Reifendruck, Bosch-Reichweiten-Whitepaper).
+- Alle Berechnungen mit Ranges (Min–Max), nicht nur Einzelwerten — bildet Realität ab.
+- Grenzfall-Warnungen wenn Nutzer zwischen zwei Größen liegt (< 2 cm Abstand).
+- Disclaimer: Probefahrt bleibt Pflicht, Berechnung ist Startpunkt.
+- Keine Fake-Modelle — nur Räder aus eigener DB oder generische Marken-Hinweise.
