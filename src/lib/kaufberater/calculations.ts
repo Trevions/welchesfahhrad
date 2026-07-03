@@ -226,8 +226,12 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
   const nextBoundary = [50, 53, 56, 59, 48, 52, 60, 43, 48, 53].map((b) => Math.abs(cm - b));
   const borderline = Math.min(...nextBoundary) < 1.0;
   if (borderline) {
+    const ebikeHint = isEbike(input.bikeType)
+      ? " Bei E-Bikes wegen Mehrgewicht und Wendigkeit im Zweifel die kleinere Größe wählen."
+      : "";
     notes.push(
-      "Deine Größe liegt an der Grenze zwischen zwei Rahmen. Bei Sport/Rennen eher die kleinere, bei Touren/Komfort die größere wählen — und Probefahrt Pflicht.",
+      "Deine Größe liegt an der Grenze zwischen zwei Rahmen. Bei Sport/Rennen eher die kleinere, bei Touren/Komfort die größere wählen — und Probefahrt Pflicht." +
+        ebikeHint,
     );
   }
 
