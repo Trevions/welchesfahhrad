@@ -1,10 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
-import { KaufberaterInputSchema, type AiAnalysis } from "./types";
+import { KaufberaterInputSchema, type AiAnalysis, type BikeFitScore } from "./types";
 import { calculateRecommendation } from "./calculations";
+import { scoreCandidates } from "./geometry";
 
 const LOVABLE_AI = "https://ai.gateway.lovable.dev/v1";
 
-type BikePick = {
+type BikeRow = {
   slug: string;
   brand: string;
   model: string;
@@ -13,9 +14,12 @@ type BikePick = {
   bike_type: string | null;
   category: string;
   excerpt: string | null;
+  image_url: string | null;
+  availability: string | null;
+  geometry: { reach_mm?: number | null; stack_mm?: number | null } | null;
 };
 
-async function loadCandidateBikes(bikeType: string, budget: number): Promise<BikePick[]> {
+async function loadCandidateBikes(bikeType: string, budget: number): Promise<BikeRow[]> {
   try {
     const { createClient } = await import("@supabase/supabase-js");
     const sb = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
@@ -24,14 +28,14 @@ async function loadCandidateBikes(bikeType: string, budget: number): Promise<Bik
     const isEbike = bikeType.startsWith("e-") || bikeType === "cargo";
     const { data } = await sb
       .from("bikes")
-      .select("slug, brand, model, year, price_eur, bike_type, category, excerpt")
+      .select("slug, brand, model, year, price_eur, bike_type, category, excerpt, image_url, availability, geometry")
       .eq("published", true)
       .eq("category", isEbike ? "ebike" : "bike")
       .lte("price_eur", Math.round(budget * 1.15))
       .gte("price_eur", Math.round(budget * 0.5))
       .order("price_eur", { ascending: false })
-      .limit(12);
-    return (data as BikePick[]) ?? [];
+      .limit(24);
+    return (data as BikeRow[]) ?? [];
   } catch {
     return [];
   }
@@ -42,11 +46,12 @@ export const analyzeKaufberater = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const calc = calculateRecommendation(data);
     const candidates = await loadCandidateBikes(data.bikeType, data.budgetEur);
+    const scored: BikeFitScore[] = scoreCandidates(candidates, calc);
+    const topScored = scored.slice(0, 8);
 
     const key = process.env.LOVABLE_API_KEY;
     if (!key) {
-      // Ohne KI: nur deterministische Werte + leere Analyse.
-      return { calc, analysis: null as AiAnalysis | null };
+      return { calc, analysis: null as AiAnalysis | null, scoredCandidates: topScored };
     }
 
     const bikeTypeLabel: Record<string, string> = {
@@ -97,7 +102,7 @@ REGELN:
         },
       },
       berechnung: calc,
-      kandidaten_aus_datenbank: candidates.map((c) => ({
+      kandidaten_aus_datenbank: topScored.map((c) => ({
         slug: c.slug,
         marke: c.brand,
         modell: c.model,
@@ -105,6 +110,10 @@ REGELN:
         preis_eur: c.price_eur,
         typ: c.bike_type,
         kurz: c.excerpt,
+        fit_score: c.fitScore,
+        delta_reach_mm: c.deltaReachMm,
+        delta_stack_mm: c.deltaStackMm,
+        verfuegbarkeit: c.availability,
       })),
     });
 
@@ -167,6 +176,7 @@ REGELN:
         return {
           calc,
           analysis: null,
+          scoredCandidates: topScored,
           error: `KI-Analyse nicht verfügbar (${resp.status}). Alle Berechnungen unten sind korrekt und nutzbar.${resp.status === 402 ? " Credits erschöpft." : resp.status === 429 ? " Rate-Limit — kurz warten und erneut versuchen." : ""}`,
           _debug: t.slice(0, 200),
         };
@@ -183,11 +193,12 @@ REGELN:
         slug: p.slug && allowed.has(p.slug) ? p.slug : null,
       }));
 
-      return { calc, analysis };
+      return { calc, analysis, scoredCandidates: topScored };
     } catch (e) {
       return {
         calc,
         analysis: null,
+        scoredCandidates: topScored,
         error: `KI-Analyse fehlgeschlagen: ${(e as Error).message.slice(0, 120)}`,
       };
     }

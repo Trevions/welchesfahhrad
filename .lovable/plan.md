@@ -1,124 +1,154 @@
 
-# Ultimativer Fahrrad-Kaufberater (AI)
+# Kaufberater Pro — Deutschlands präzisester Rad-Kaufberater
 
-Neuer Premium-Rechner unter `/tools/kaufberater-ai` — der genaueste Kaufberater für normale Räder und E-Bikes in Deutschland. Vollständige Geometrie-Berechnung + KI-Analyse in einem Flow.
+Ziel: `/tools/kaufberater-ai` wird zum eindeutigen Marktführer in Deutschland — messbar präziser (Bikefitter-Niveau statt Faustformel), tiefer (Motoren-, Reichweiten-, Kostenrealität) und weiter (Ende-zu-Ende bis Probefahrt/Leasing) als alle bekannten Konkurrenten.
 
-## Was der Nutzer eingibt (Wizard, 4 Schritte)
+Umsetzung in vier Bauphasen, die einzeln lauffähig und sichtbar sind. Datenquellen-Frage (eigene DB vs. Feeds vs. Affiliate) bleibt offen — Phase 1–3 laufen auf der bestehenden `bikes`-Tabelle; Phase 4 legt die Skeleton-Infrastruktur, konkrete Quelle wird später entschieden.
 
-**1. Körpermaße** (Pflicht für exakte Berechnung)
-- Körpergröße (cm)
-- Schrittlänge / Innenbein (cm) — mit Buch-an-Wand-Anleitung
-- Armlänge (optional, für Reach)
-- Torsolänge (optional)
-- Körpergewicht (kg) — treibt Reifendruck & E-Bike-Reichweite
-- Geschlecht (m/w/divers) — Frauen: kürzerer Oberkörper → kürzerer Reach
-- Alter & Flexibilität (Slider) — beeinflusst Stack/Überhöhung
+---
 
-**2. Einsatz & Anspruch**
-- Radtyp: Rennrad · Gravel · MTB Hardtail · MTB Fully · Trekking · City · E-Trekking · E-MTB · E-City · Lastenrad
-- Haupteinsatz: Pendeln · Touren · Sport/Training · Offroad · Familie · Reise
-- Wochenkilometer + typische Tourlänge
-- Gelände: flach · hügelig · bergig · mixed
-- Untergrund %: Asphalt / Schotter / Trail
+## Phase 1 — Fit-Genauigkeit auf Bikefitter-Niveau
 
-**3. E-Bike-Spezifika** (nur wenn E-Bike gewählt)
-- Motor-Präferenz (Bosch, Shimano, Brose, egal)
-- Akku-Kapazität-Wunsch (Wh) oder gewünschte Reichweite (km)
-- Unterstützungslevel (Eco/Tour/Sport/Turbo bevorzugt)
+Statt einer Faktor-mal-Schrittlänge-Rechnung ein vollständiges Fit-Modell nach Retül/BikeFit-Standard.
 
-**4. Budget & Prioritäten**
-- Budget (€) — Slider
-- Prioritäten (Radar/Slider 1–5): Komfort · Sportlichkeit · Haltbarkeit · Gewicht · Wartungsarm · Optik
-- Muss-Features (Multi-Select): Schutzbleche, Gepäckträger, Beleuchtung, Nabenschaltung, Riemen, Federgabel, Tubeless, Scheibenbremsen hydraulisch
+**Neue Eingaben (Schritt 1 erweitert):**
+- Schulterbreite, Torso (C7 → Sitzknochen), Arm (Schulter → Handgelenk), Oberschenkel, Unterschenkel, Sitzknochen-Abstand, Fußlänge
+- Wahlweise „schnell" (nur Größe+Schrittlänge, wir schätzen den Rest per Anthropometrie-Regressionen aus DIN 33402-2) oder „präzise" (Vollmessung)
+- „Beweglichkeit" wird durch drei konkrete Tests ersetzt: Sit-and-Reach, Schulter-Rotation, Hüftflex — jeweils cm/Grad
 
-## Was berechnet wird (deterministisch, vor der KI)
+**Neue Berechnungen (`calculations.ts` erweitert um Bikefit-Modul):**
+- Sattelhöhe: Holmes (Standard), LeMond (0.883 vs. 0.885 nach Kurbellänge), Hamley — als Bandbreite
+- Sattel-Setback: KOPS-berechnet aus Oberschenkellänge + Sitzknochen
+- Effektive Oberrohrlänge (ETT) aus Torso × 0.47 + Arm × 0.14, korrigiert um Beweglichkeit
+- Reach/Stack: Kombinationsformel aus Torso, Arm, Flexibilität, Einsatz — mit Vertrauensintervall
+- Sattelbreite aus Sitzknochen +20/+25/+30 mm je Sitzposition
+- Cleat-Position bei Klickpedal-Nutzern
+- Kurbellänge: Neuere „Short Cranks"-Empfehlung (2.1–2.2 % der Körpergröße + Hüftflex-Korrektur), nicht Faustformel
 
-**Rahmengeometrie** (pro Radtyp eigene Faktoren, Quellen: Hinault/LeMond, Steve Hogg, Cyclefit, Trek/Giant Size-Charts):
-- **Rahmenhöhe** = Schrittlänge × Faktor (Rennrad 0.665, MTB 0.226″, Gravel 0.67, Trekking 0.66, City 0.685)
-- **Konfektionsgröße** (XS–XXL) mit Bereich (z.B. „54–56 cm / M")
-- **Stack & Reach Zielwerte** aus Körpergröße + Torso + Flexibilität + Einsatz (sport → tiefer/länger, komfort → höher/kürzer)
-- **Sattelhöhe** = Schrittlänge × 0.883 (Holmes-Methode) + Range ±5 mm
-- **Sattel-Setback** aus Torso
-- **Lenkerbreite** aus Schulterbreite-Schätzung (Rennrad 38/40/42/44, MTB 700–780 mm nach Fahrstil)
-- **Vorbaulänge** & Spacer-Empfehlung
-- **Kurbellänge** aus Schrittlänge (Formel Kirby, 165–175 mm)
+**Neue Ergebnis-Karte: Bikefit-Report**
+- Interaktive **SVG-Rahmengeometrie-Grafik** (`BikeGeometryChart.tsx`) — zeichnet den empfohlenen Rahmen (Reach/Stack/STA/HTA/Kettenstrebe) und legt die User-Position drüber. Sitzposition, Cockpit, Sattelhöhe live.
+- Vergleich mit Rahmengeometrie realer Modelle aus `bikes.geometry_json` — für jedes Kandidat-Rad wird ein „Fit-Score" berechnet (Δ Reach + Δ Stack + Δ STA gewichtet).
 
-**Reifen-Empfehlung**:
-- **Breite** je Radtyp × Einsatz × Gewicht (Rennrad 25–32, Gravel 38–50, MTB 2.25–2.6″, Trekking 40–50, City 37–47)
-- **Profil**: Slick / Semi-Slick / Stollen (basiert auf Untergrund-Prozenten)
-- **Tubeless ja/nein** (Empfehlung ab Gravel/MTB oder ≥5000 km/Jahr)
-- **Reifendruck** je Rad (V/H) mit Silca/Berto-Modell: Systemgewicht + Reifenbreite + Untergrund → Bar/PSI (bereits vorhanden in `/tools/reifendruck` — Formel wird geteilt)
+**Schema-Erweiterung (Migration):**
+`bikes.geometry_json JSONB` mit `{ size, reach_mm, stack_mm, seat_tube_angle, head_tube_angle, top_tube_mm, chainstay_mm, wheelbase_mm, standover_mm }[]` — optional, nullable, für den Score fällt Rad ohne Geometrie automatisch zurück auf Größenlabel-Match.
 
-**Bremsen & Schaltung**:
-- Scheibe hydraulisch bei Gewicht > 85 kg, bergig, E-Bike, viel Regen, >3.000 € Rad
-- Nabenschaltung + Riemen bei Pendel/Wartungsarm/City
-- 1× vs 2× vs 3× nach Einsatz und Geländeprofil
+---
 
-**E-Bike-Berechnungen** (nur bei E-Bike):
-- **Reichweite** = Akku Wh / (Verbrauch Wh/km) — Verbrauch aus Gewicht+Gelände+Unterstützung (10–25 Wh/km-Modell, kalibriert an Bosch/Shimano-Daten)
-- **Empfohlene Akku-Kapazität** aus gewünschter Reichweite + Sicherheitspuffer 20 %
-- **Motor-Empfehlung**: Bosch CX (MTB/steil), Bosch Performance Line (Trekking), Shimano EP6/EP8 (leicht/sportlich), Brose S Mag (leise), Bosch Active Line (City) — Regelwerk aus Einsatz + Gelände
-- **Drehmoment-Bedarf** (Nm): flach 40–50, hügelig 65–75, bergig 85+
+## Phase 2 — E-Bike-Tiefe: Motor-DB, echte Routen-Reichweite, TCO, Förderung
 
-**Budget-Ranges** pro Segment (aktuelle DE-Marktpreise 2025/26):
-- Einstieg / Mittelklasse / Premium / High-End Grenzen je Radtyp
-- Warnung bei zu niedrigem Budget für gewünschte Ausstattung
-- Wo-liegt-mein-Budget-Balken
+**Motor-Datenbank (neue Tabelle `ebike_motors`):**
+- Alle relevanten Modelle 2025/26: Bosch (Performance CX Gen5, CX Race, SX, Line, Active+, Cargo Line), Shimano (EP801/EP6/E7000), Brose (S Mag, Drive T), TQ HPR50, Mahle (X20, X35), Specialized (SL 1.2/2.2), DJI Avinox, Fazua Ride 60, Yamaha PW-X3/PWseries CD
+- Kennwerte: Drehmoment (Nm), Nennleistung (W), Peak (W), Gewicht (kg), Verbrauch Wh/km bei Standardprofil (75 kg System, flach, Tour), Geräusch dB, Wartungsintervall km, Preisniveau, Anwendungs-Tags (mtb/trekking/road/cargo/city), Empfehlungsscore je Terrain
+- Manuelle Pflege via `/mnv/motors` Admin-Editor (analog zu Bikes)
+- Migration inkl. Seed mit ~20 Top-Motoren
 
-## KI-Analyse (Lovable AI Gateway)
+**Echte Routen-Reichweite (`RouteRangeSimulator.tsx`):**
+- Leaflet-Karte (bereits im Projekt) — Nutzer setzt Start + Ziel
+- Höhenprofil via **Open-Elevation API** (kostenlos, keine Keys) mit Fallback auf **OpenTopoData**
+- Windprognose via **Open-Meteo** (schon integriert für `tools.fahrrad-wetter`)
+- Physik-Modell: Rollwiderstand (Crr aus Reifentyp), Luftwiderstand (CdA aus Sitzposition), Steigungsleistung (mgh), Motor-Wirkungsgrad je Modus
+- Simuliert Verbrauch Wh/km segmentweise → präzise Reichweite und „schafft dein Akku diese Route?"-Anzeige
+- Output: km pro Modus + Wh-Bedarf pro Segment + Warnung „letzten 12 km auf Eco fahren"
 
-Nach dem Absenden — Server-Function `analyzeBikePurchase.functions.ts` mit `requireSupabaseAuth` NICHT nötig (öffentlich, kein DB-Write), stattdessen **öffentliche Server-Function ohne Auth**, rate-limited pro IP.
+**TCO-Rechner (`TCOCalculator.tsx`):**
+- 5-Jahres-Kostenmodell: Anschaffung − Wiederverkauf + Strom (Wh × 0.35 €/kWh × jährliche km) + Wartung (350–600 €/Jahr je Kategorie) + Akku-Ersatz Jahr 5 (Bosch/Shimano-Preise 2025) + Versicherung (aus `tools.versicherung`-Logik)
+- Vergleich E-Bike vs. Auto (0.30 €/km ADAC) und E-Bike vs. Muskelrad
+- Sichtbar als Balkendiagramm (Recharts, bereits im Projekt)
 
-- Modell: `google/gemini-3-flash-preview` (schnell, günstig, gutes Deutsch)
-- Input: Alle berechneten Zahlen + Nutzer-Prioritäten
-- Output (structured via `Output.object` mit Zod):
-  - `summary` (2–3 Sätze — für wen ist welches Segment ideal)
-  - `frameRecommendation` — warum genau diese Größe, was bei Grenzfall zu wählen (S/M-Konflikt)
-  - `alternativeSizes` — wann kleiner / größer sinnvoll ist
-  - `topPicks[]` — 3 konkrete Rad-Empfehlungen aus der eigenen `bikes`-DB (via Server-Query gefiltert nach Typ+Budget+Größe) mit Begründung
-  - `warnings[]` — z.B. „Budget zu niedrig für hydraulische Scheibenbremsen bei E-Bike"
-  - `checklistBeforeBuy[]` — Probefahrt-Punkte, Passform-Check
-  - `financing` — JobRad/Leasing-Hinweis wenn zutreffend
+**Förderung & Leasing (`FinancingAnalysis.tsx`):**
+- Alle aktuellen DE-Förderprogramme in einer JSON-Tabelle (`src/lib/kaufberater/subsidies.ts`): NRW Zuschuss Lastenrad, Baden-Württemberg Kaufprämie, München/Berlin/Hamburg Kommunalzuschüsse, KfW-Kredite, gewerbliche AfA
+- Automatischer Check per PLZ (Nutzer gibt PLZ ein) → passende Förderungen mit Höhe, Frist, Antragslink
+- Leasing-Vergleich: JobRad vs. Eurorad vs. Bikeleasing vs. Kauf mit echter Steuerberechnung (Bruttolohn-Eingabe, geldwerter Vorteil 0.25 %, Ersparnis Steuer+SV)
+- Empfehlung: „Bei deinem Brutto 55 000 € spart JobRad 42 % vs. Direktkauf — 1 630 € über 36 Monate"
 
-Fehlerfälle: 429/402 sauber als Toast, deterministische Werte bleiben sichtbar.
+---
 
-## Integration
+## Phase 3 — Ergebnis-Auslieferung: Score-Ranking, PDF, Händler, Share
 
-**Profil-Verzahnung** — Zieht bestehende Werte aus `bike-profile.ts` (Körpergröße, Schrittlänge, Gewicht, Radtyp, Interessen) und vorfüllt. Ergebnis „In mein Radprofil übernehmen"-Button aktualisiert `saveBikeProfile()`.
+**Top-5-Räder mit Score-Breakdown (`BikeRankingCard.tsx`):**
+Kandidaten aus `bikes` werden mit einem 6-Kriterien-Score bewertet (statt reiner KI-Ausgabe):
+- Fit-Score (0–100): Δ Reach/Stack/STA vs. User-Ziel
+- Motor-Score (0–100): Nm-Match, Verbrauch, Terrain-Eignung (nur E-Bike)
+- Reichweiten-Score (0–100): Ist-Akku vs. Bedarf aus Routen-Simulation
+- Ausstattungs-Score: Muss-Features abgedeckt (Schutzblech, StVZO, Bremsen, Schaltung, Tubeless)
+- Preis-Leistungs-Score: Preis vs. Segment-Median
+- Verfügbarkeits-Score: `bikes.availability` (falls gepflegt)
 
-**Bike-DB-Verzahnung** — `topPicks` verlinken zu `/fahrraeder/<slug>`. Falls DB leer für ein Segment: KI empfiehlt Marken/Modelle textuell.
+Gewichte kommen aus den Prioritäts-Slidern des Nutzers. Ausgabe: horizontaler Balken je Kriterium plus Gesamtscore, sortierte Top-5.
 
-**Favoriten** — Empfohlene Räder direkt via `useBikeFavorites` speicherbar.
+Die KI-Analyse (Gemini 3 Flash) schreibt Prosa zur Erklärung, aber der Score ist deterministisch und reproduzierbar.
 
-**Sharing/Print** — Ergebnis-Seite hat „PDF drucken"-Button (nur CSS `@media print`).
+**PDF-Export & Share-Link:**
+- Server-Route `POST /api/kaufberater/pdf`: rendert Report mit `@react-pdf/renderer` (Worker-kompatibel) — vollständiger Report inkl. Fit-Werte, Geometrie-Grafik als SVG, Motor-Empfehlung, Top-5, TCO, Förderung
+- Share-Link: `POST /api/public/kaufberater/report` speichert den Report unter Slug in neuer Tabelle `kaufberater_reports` (RLS: public read per Slug, delete nach 90 Tagen via pg_cron). URL: `/beratung/{slug}` — server-rendered mit OG-Bild.
 
-## Platzierung
+**Probefahrt & Händler-Finder (`DealerFinder.tsx`):**
+- Nutzer-PLZ + Radius → Karte mit Händlern (Overpass-API auf OSM `shop=bicycle`)
+- Filter nach empfohlenen Marken aus Top-5
+- Direktlink „Termin anfragen" per `mailto:` oder Telefon
+- Für Direktvertriebs-Marken (Canyon, Rose, Cube): Link zu deren Test-Center-Netzen
 
-- **`src/routes/tools.kaufberater-ai.tsx`** — neuer Wizard + Ergebnis-Seite
-- **`src/routes/tools.index.tsx`** — als „Featured" **an Position 2** direkt nach Eco Route Planner mit auffälliger Karte („🚴 KI-Kaufberater — der genaueste in Deutschland")
-- **`src/routes/index.tsx`** — kleiner Promo-Button neben Eco Route Planner
-- **`src/routes/tools.kaufberater.tsx`** (bestehend, einfach): Banner oben „Neu: KI-Kaufberater mit Geometrie-Analyse →"
+---
+
+## Phase 4 — UX-Politur & Vertrauens-Signale
+
+- **Wizard-Redesign**: 5 Schritte statt 4, Fortschrittsleiste mit Zeit-Schätzung, „Schnell-Modus" (2 Min) vs. „Präzise" (8 Min) direkt auf Schritt 1
+- **Live-Vorschau rechts**: aktualisiert bereits während Eingabe (Rahmengröße, geschätzte Kandidatenzahl aus `bikes` Live-Count)
+- **Vertrauens-Sektion** unter dem Report: Quellen-Belege für jede Formel (Hinault/LeMond/Retül/DIN 33402-2/Bosch-Whitepaper), Update-Datum der Motor-DB, Datenschutz-Hinweis („keine Eingabe verlässt deinen Browser außer für die KI-Zusammenfassung"), Disclaimer „Probefahrt bleibt Pflicht"
+- **SEO**: strukturierte Daten `SoftwareApplication` + FAQPage-JSON-LD, Ziel-Keywords: „Fahrrad Kaufberater", „E-Bike Rahmengröße Rechner", „E-Bike Reichweite Rechner", „Motor Vergleich E-Bike"
+- **Redaktioneller Anker**: `/ratgeber`-Artikel „Wie wählt man das richtige E-Bike 2026" mit Deep-Link zum Berater
+
+---
 
 ## Technische Details
 
-- **Files neu**:
-  - `src/routes/tools.kaufberater-ai.tsx` (Wizard UI + Ergebnis)
-  - `src/lib/kaufberater/calculations.ts` (alle deterministischen Formeln, mit Unit-Kommentaren + Quellen)
-  - `src/lib/kaufberater/analysis.functions.ts` (Server-Function für KI-Analyse via Lovable AI Gateway)
-  - `src/lib/kaufberater/types.ts` (Zod-Schemas Input/Output)
-  - `src/lib/ai-gateway.server.ts` (falls noch nicht vorhanden — Provider-Helper)
-- **Files edit**:
-  - `src/routes/tools.index.tsx` (neue Featured-Karte)
-  - `src/routes/index.tsx` (Promo-Button)
-  - `src/routes/tools.kaufberater.tsx` (Cross-Link-Banner)
-  - `src/lib/bike-profile.ts` (evtl. neue Felder: torsoLengthCm, flexibility)
-- **Keine DB-Migration nötig** (rein Client + AI + read-only Zugriff auf `bikes`).
-- **SEO**: `toolHead()` mit „KI-Kaufberater Fahrrad & E-Bike | radmap.de", JSON-LD `SoftwareApplication`.
+**Neue Dateien:**
+```
+src/lib/kaufberater/
+  bikefit.ts              # Bikefitter-Modell (Retül/DIN-Regressionen)
+  geometry.ts             # Rahmen-Fit-Score vs. bikes.geometry_json
+  route-range.ts          # Physik-Modell für Routen-Reichweite
+  tco.ts                  # 5-Jahres-Kostenrechner
+  subsidies.ts            # Deutsche Förderprogramme (statische Tabelle)
+  leasing.ts              # JobRad/Eurorad/Bikeleasing-Rechner
+  scoring.ts              # 6-Kriterien-Score
+  motors.functions.ts     # Server-Fn: Motor-Kandidaten laden
+  report.functions.ts     # Server-Fn: Report speichern
+  pdf.server.ts           # @react-pdf/renderer Setup
 
-## Qualität / „100 % korrekt"
+src/components/tools/kaufberater/
+  BikeGeometryChart.tsx   # SVG-Rahmengeometrie-Visualisierung
+  RouteRangeSimulator.tsx # Leaflet + Höhenprofil
+  TCOChart.tsx            # Kostenbalken
+  FinancingCompare.tsx    # Leasing vs. Kauf
+  BikeRankingCard.tsx     # Score-Breakdown-Karte
+  DealerFinder.tsx        # OSM-Händlerkarte
 
-- Jede Formel mit Quelle als Kommentar (Hinault/LeMond, Silca-Reifendruck, Bosch-Reichweiten-Whitepaper).
-- Alle Berechnungen mit Ranges (Min–Max), nicht nur Einzelwerten — bildet Realität ab.
-- Grenzfall-Warnungen wenn Nutzer zwischen zwei Größen liegt (< 2 cm Abstand).
-- Disclaimer: Probefahrt bleibt Pflicht, Berechnung ist Startpunkt.
-- Keine Fake-Modelle — nur Räder aus eigener DB oder generische Marken-Hinweise.
+src/routes/
+  api/public/kaufberater.pdf.ts        # PDF-Endpoint
+  api/public/kaufberater.report.ts     # Report-Persistierung
+  beratung.$slug.tsx                   # Public Share-Seite
+
+src/routes/_authenticated/
+  mnv.motors.tsx           # Motor-DB Admin-Übersicht
+  mnv.motors_.$id.tsx      # Motor-Editor
+  mnv.motors_.new.tsx      # Neuer Motor
+```
+
+**Datenbank-Migrationen:**
+1. `bikes.geometry_json JSONB` (nullable) + `bikes.availability TEXT` (in_stock/limited/preorder/eol)
+2. Neue Tabelle `ebike_motors` — vollständige Motor-Spezifikationen, RLS: public read, admin write, Seed mit ~20 Motoren
+3. Neue Tabelle `kaufberater_reports` — id, slug, input_json, result_json, created_at, expires_at (90 Tage), RLS: public read per Slug, insert von jedem, delete nur admin/service_role. GRANT-Block nach Regel.
+4. pg_cron: täglicher Cleanup abgelaufener Reports
+
+**Externe APIs (alle keinesfrei / bereits verbunden):**
+- Open-Elevation (Höhenprofil)
+- Open-Meteo (Wind, schon integriert)
+- Overpass API (OSM-Händler)
+- Nominatim (PLZ → Koordinaten)
+- Lovable AI Gateway mit `google/gemini-3-flash-preview` (Prosa) — keine Änderung am Modell
+
+**Reihenfolge & Sichtbarkeit:**
+Jede Phase liefert eigenständig sichtbaren Mehrwert und geht sofort live. Ich baue Phase 1 komplett fertig, danach Phase 2, dann 3, dann 4 — mit Freigabe-Checkpoint nach jeder Phase, damit du früh siehst, was der Berater kann, und Kurskorrekturen leicht sind.
+
+Startklar. Freigabe → Phase 1 beginnt mit Fit-Modell, Geometrie-Grafik und Fit-Score über die vorhandene `bikes`-Tabelle.
