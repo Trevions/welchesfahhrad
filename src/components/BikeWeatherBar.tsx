@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { MapPin, Wind, Droplets, Loader2, RefreshCw, ChevronRight } from "lucide-react";
 import { useBikeWeather, weatherCodeInfo, windDirLabel } from "@/hooks/use-bike-weather";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { BikeWeatherDetails } from "@/components/BikeWeatherDetails";
+import { computeRadelScore } from "@/lib/tools/radel-score";
+
 
 export function BikeWeatherBar() {
   const { status, data, accept, decline, reload, error } = useBikeWeather();
@@ -71,12 +73,30 @@ export function BikeWeatherBar() {
   if (!data) return null;
   const c = data.current;
   const wc = weatherCodeInfo(c.weatherCode, c.isDay);
-  const scoreColor =
-    data.bikeScore.score >= 75
-      ? "text-emerald-400"
-      : data.bikeScore.score >= 55
-        ? "text-signal"
-        : "text-amber-400";
+
+  // Same score as der Radel-Score-Badge — identische Formel, identische Zahl
+  const radel = useMemo(() => {
+    const next3 = data.hourly.slice(0, 3);
+    const precipProb =
+      next3.length > 0
+        ? next3.reduce((s, h) => s + (h.precipProb ?? 0), 0) / next3.length
+        : c.precipProb;
+    let minutesToSunset: number | null = null;
+    const today = data.daily[0];
+    if (today?.sunset) {
+      minutesToSunset = Math.round((new Date(today.sunset).getTime() - Date.now()) / 60000);
+    }
+    return computeRadelScore({
+      precipProb,
+      precipNow: c.precip,
+      windSpeed: c.windSpeed,
+      windGust: c.windGust,
+      apparentTemp: c.apparent,
+      humidity: c.humidity,
+      minutesToSunset,
+    });
+  }, [data, c]);
+
 
   return (
     <>
@@ -108,9 +128,10 @@ export function BikeWeatherBar() {
             </div>
 
             <div className="ml-auto flex items-center gap-2 shrink-0">
-              <span className={`text-[11px] font-bold ${scoreColor}`}>
-                {data.bikeScore.score} · <span className="hidden sm:inline">{data.bikeScore.rating}</span>
+              <span className="text-[11px] font-bold" style={{ color: radel.colorHex }}>
+                {radel.score} · <span className="hidden sm:inline">{radel.rating}</span>
               </span>
+
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground">
                 <ChevronRight className="h-3.5 w-3.5" />
               </span>
