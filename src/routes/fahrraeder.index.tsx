@@ -13,7 +13,7 @@ const bikesQuery = queryOptions({
   staleTime: 60_000,
 });
 
-export const Route = createFileRoute("/fahrraeder")({
+export const Route = createFileRoute("/fahrraeder/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(bikesQuery),
   head: () => ({
     meta: [
