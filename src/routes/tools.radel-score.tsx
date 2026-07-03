@@ -22,9 +22,9 @@ const FAQ = [
       "Live-Wetter (Temperatur, gefühlte Temperatur, Niederschlagswahrscheinlichkeit, Wind, Böen, Sonnenuntergang) von Open-Meteo und optional die Pollen-Prognose aus der Open-Meteo Air-Quality-API (CAMS Europe). Standort per Geolocation, jederzeit widerrufbar.",
   },
   {
-    question: "Was heißt „Beste Fahrzeit heute"?",
+    question: "Was heißt Beste Fahrzeit heute?",
     answer:
-      "Wir berechnen den Radel-Score stündlich für die nächsten 12 Stunden und markieren die Fenster mit dem höchsten Wert. Das beantwortet die eigentlich wichtige Frage: „Wenn jetzt nicht — wann dann?"",
+      "Wir berechnen den Radel-Score stündlich für die nächsten 12 Stunden und markieren die Fenster mit dem höchsten Wert. Das beantwortet die eigentlich wichtige Frage: Wenn jetzt nicht — wann dann?",
   },
   {
     question: "Ersetzt der Score meine eigene Einschätzung?",
