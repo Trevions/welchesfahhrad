@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Save, Loader2, Upload, X, Plus, Trash2 } from "lucide-react";
 import { BIKE_TYPES, bikeSlugify, type Bike } from "@/lib/bike-types";
 import { BikeFileImport, type ImportedBike } from "@/components/admin/BikeFileImport";
+import { parseBikeNumber } from "@/lib/bike-import";
 
 type Form = {
   id?: string;
@@ -367,14 +368,26 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
         onImport={(d: ImportedBike) => {
           try {
             const arr = (v: any): any[] => (Array.isArray(v) ? v : []);
-            const strArr = (v: any): string[] => arr(v).map((x) => String(x)).filter(Boolean);
+            const strArr = (v: any): string[] => {
+              if (Array.isArray(v)) return v.map((x) => String(x).trim()).filter(Boolean);
+              if (typeof v === "string") {
+                return v.split(/\r?\n|;|\s\|\s|,/g).map((x) => x.trim()).filter(Boolean);
+              }
+              return [];
+            };
             const obj = (v: any): Record<string, any> =>
               v && typeof v === "object" && !Array.isArray(v) ? v : {};
             const str = (v: any): string => (v == null ? "" : String(v));
             const num = (v: any): number | null => {
               if (v == null || v === "") return null;
-              const n = Number(v);
+              const n = parseBikeNumber(v);
               return Number.isFinite(n) ? n : null;
+            };
+            const has = (v: any): boolean => {
+              if (v == null || v === "") return false;
+              if (Array.isArray(v)) return v.length > 0;
+              if (typeof v === "object") return Object.keys(v).length > 0;
+              return true;
             };
 
             setForm((f) => ({
@@ -420,15 +433,15 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
               safety_features: d.safety_features !== undefined ? obj(d.safety_features) : f.safety_features,
               model_history: d.model_history !== undefined ? obj(d.model_history) : f.model_history,
               ai_summary: d.ai_summary !== undefined ? obj(d.ai_summary) : f.ai_summary,
-              awards: (arr(d.awards)
+              awards: d.awards !== undefined ? (arr(d.awards)
                 .map((a) => (typeof a === "object" && a && a.name ? { name: str(a.name), year: num(a.year) ?? undefined, source: a.source ? str(a.source) : undefined } : null))
-                .filter(Boolean)) as { name: string; year?: number; source?: string }[],
-              videos: (arr(d.videos)
+                .filter(Boolean)) as { name: string; year?: number; source?: string }[] : f.awards,
+              videos: d.videos !== undefined ? (arr(d.videos)
                 .map((v) => (typeof v === "object" && v && v.url ? { url: str(v.url), title: v.title ? str(v.title) : undefined } : null))
-                .filter(Boolean)) as { url: string; title?: string }[],
-              faq: (arr(d.faq)
+                .filter(Boolean)) as { url: string; title?: string }[] : f.videos,
+              faq: d.faq !== undefined ? (arr(d.faq)
                 .map((q) => (typeof q === "object" && q && q.q ? { q: str(q.q), a: str(q.a) } : null))
-                .filter(Boolean)) as { q: string; a: string }[],
+                .filter(Boolean)) as { q: string; a: string }[] : f.faq,
               slug: d.slug
                 ? str(d.slug)
                 : bikeSlugify(
@@ -437,7 +450,7 @@ export function BikeEditor({ initial }: { initial?: Bike }) {
                     d.year != null ? num(d.year) : f.year,
                   ),
             }));
-            if (d.slug) setSlugTouched(true);
+            if (d.slug || has(d.brand) || has(d.model)) setSlugTouched(!!d.slug);
           } catch (err) {
             console.error("Bike import merge failed", err);
             toast.error("Грешка при попълване на полетата от файла");
