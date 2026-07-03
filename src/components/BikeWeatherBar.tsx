@@ -96,32 +96,11 @@ export function BikeWeatherBar() {
     );
   }
 
-  if (!data) return null;
+  if (!data || !radel) return null;
   const c = data.current;
   const wc = weatherCodeInfo(c.weatherCode, c.isDay);
 
-  // Same score as der Radel-Score-Badge — identische Formel, identische Zahl
-  const radel = useMemo(() => {
-    const next3 = data.hourly.slice(0, 3);
-    const precipProb =
-      next3.length > 0
-        ? next3.reduce((s, h) => s + (h.precipProb ?? 0), 0) / next3.length
-        : c.precipProb;
-    let minutesToSunset: number | null = null;
-    const today = data.daily[0];
-    if (today?.sunset) {
-      minutesToSunset = Math.round((new Date(today.sunset).getTime() - Date.now()) / 60000);
-    }
-    return computeRadelScore({
-      precipProb,
-      precipNow: c.precip,
-      windSpeed: c.windSpeed,
-      windGust: c.windGust,
-      apparentTemp: c.apparent,
-      humidity: c.humidity,
-      minutesToSunset,
-    });
-  }, [data, c]);
+
 
 
   return (
