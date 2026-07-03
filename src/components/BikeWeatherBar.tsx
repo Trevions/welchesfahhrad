@@ -128,9 +128,10 @@ export function BikeWeatherBar() {
             </div>
 
             <div className="ml-auto flex items-center gap-2 shrink-0">
-              <span className={`text-[11px] font-bold ${scoreColor}`}>
-                {data.bikeScore.score} · <span className="hidden sm:inline">{data.bikeScore.rating}</span>
+              <span className="text-[11px] font-bold" style={{ color: radel.colorHex }}>
+                {radel.score} · <span className="hidden sm:inline">{radel.rating}</span>
               </span>
+
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground">
                 <ChevronRight className="h-3.5 w-3.5" />
               </span>
