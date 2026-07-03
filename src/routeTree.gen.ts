@@ -47,6 +47,7 @@ import { Route as ToolsTourenplanerRouteImport } from './routes/tools.tourenplan
 import { Route as ToolsStvoRouteImport } from './routes/tools.stvo'
 import { Route as ToolsSonnenzeitenRouteImport } from './routes/tools.sonnenzeiten'
 import { Route as ToolsSicherheitsCheckRouteImport } from './routes/tools.sicherheits-check'
+import { Route as ToolsReifendruckRechnerRouteImport } from './routes/tools.reifendruck-rechner'
 import { Route as ToolsReifendruckRouteImport } from './routes/tools.reifendruck'
 import { Route as ToolsRahmengroesseRouteImport } from './routes/tools.rahmengroesse'
 import { Route as ToolsPannenhilfeRouteImport } from './routes/tools.pannenhilfe'
@@ -271,6 +272,11 @@ const ToolsSonnenzeitenRoute = ToolsSonnenzeitenRouteImport.update({
 const ToolsSicherheitsCheckRoute = ToolsSicherheitsCheckRouteImport.update({
   id: '/sicherheits-check',
   path: '/sicherheits-check',
+  getParentRoute: () => ToolsRoute,
+} as any)
+const ToolsReifendruckRechnerRoute = ToolsReifendruckRechnerRouteImport.update({
+  id: '/reifendruck-rechner',
+  path: '/reifendruck-rechner',
   getParentRoute: () => ToolsRoute,
 } as any)
 const ToolsReifendruckRoute = ToolsReifendruckRouteImport.update({
@@ -513,6 +519,7 @@ export interface FileRoutesByFullPath {
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
   '/tools/reifendruck': typeof ToolsReifendruckRoute
+  '/tools/reifendruck-rechner': typeof ToolsReifendruckRechnerRoute
   '/tools/sicherheits-check': typeof ToolsSicherheitsCheckRoute
   '/tools/sonnenzeiten': typeof ToolsSonnenzeitenRoute
   '/tools/stvo': typeof ToolsStvoRoute
@@ -586,6 +593,7 @@ export interface FileRoutesByTo {
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
   '/tools/reifendruck': typeof ToolsReifendruckRoute
+  '/tools/reifendruck-rechner': typeof ToolsReifendruckRechnerRoute
   '/tools/sicherheits-check': typeof ToolsSicherheitsCheckRoute
   '/tools/sonnenzeiten': typeof ToolsSonnenzeitenRoute
   '/tools/stvo': typeof ToolsStvoRoute
@@ -663,6 +671,7 @@ export interface FileRoutesById {
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
   '/tools/reifendruck': typeof ToolsReifendruckRoute
+  '/tools/reifendruck-rechner': typeof ToolsReifendruckRechnerRoute
   '/tools/sicherheits-check': typeof ToolsSicherheitsCheckRoute
   '/tools/sonnenzeiten': typeof ToolsSonnenzeitenRoute
   '/tools/stvo': typeof ToolsStvoRoute
@@ -740,6 +749,7 @@ export interface FileRouteTypes {
     | '/tools/pannenhilfe'
     | '/tools/rahmengroesse'
     | '/tools/reifendruck'
+    | '/tools/reifendruck-rechner'
     | '/tools/sicherheits-check'
     | '/tools/sonnenzeiten'
     | '/tools/stvo'
@@ -813,6 +823,7 @@ export interface FileRouteTypes {
     | '/tools/pannenhilfe'
     | '/tools/rahmengroesse'
     | '/tools/reifendruck'
+    | '/tools/reifendruck-rechner'
     | '/tools/sicherheits-check'
     | '/tools/sonnenzeiten'
     | '/tools/stvo'
@@ -889,6 +900,7 @@ export interface FileRouteTypes {
     | '/tools/pannenhilfe'
     | '/tools/rahmengroesse'
     | '/tools/reifendruck'
+    | '/tools/reifendruck-rechner'
     | '/tools/sicherheits-check'
     | '/tools/sonnenzeiten'
     | '/tools/stvo'
@@ -1225,6 +1237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsSicherheitsCheckRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/reifendruck-rechner': {
+      id: '/tools/reifendruck-rechner'
+      path: '/reifendruck-rechner'
+      fullPath: '/tools/reifendruck-rechner'
+      preLoaderRoute: typeof ToolsReifendruckRechnerRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/reifendruck': {
       id: '/tools/reifendruck'
       path: '/reifendruck'
@@ -1551,6 +1570,7 @@ interface ToolsRouteChildren {
   ToolsPannenhilfeRoute: typeof ToolsPannenhilfeRoute
   ToolsRahmengroesseRoute: typeof ToolsRahmengroesseRoute
   ToolsReifendruckRoute: typeof ToolsReifendruckRoute
+  ToolsReifendruckRechnerRoute: typeof ToolsReifendruckRechnerRoute
   ToolsSicherheitsCheckRoute: typeof ToolsSicherheitsCheckRoute
   ToolsSonnenzeitenRoute: typeof ToolsSonnenzeitenRoute
   ToolsStvoRoute: typeof ToolsStvoRoute
@@ -1578,6 +1598,7 @@ const ToolsRouteChildren: ToolsRouteChildren = {
   ToolsPannenhilfeRoute: ToolsPannenhilfeRoute,
   ToolsRahmengroesseRoute: ToolsRahmengroesseRoute,
   ToolsReifendruckRoute: ToolsReifendruckRoute,
+  ToolsReifendruckRechnerRoute: ToolsReifendruckRechnerRoute,
   ToolsSicherheitsCheckRoute: ToolsSicherheitsCheckRoute,
   ToolsSonnenzeitenRoute: ToolsSonnenzeitenRoute,
   ToolsStvoRoute: ToolsStvoRoute,
