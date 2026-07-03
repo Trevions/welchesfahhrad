@@ -24,6 +24,18 @@ export const GENDER_OPTIONS = ["m", "w", "d"] as const;
 
 export const MOTOR_OPTIONS = ["any", "bosch", "shimano", "brose", "yamaha"] as const;
 
+export const MOTOR_POSITION_OPTIONS = ["any", "mid", "rear", "front"] as const;
+export type KbMotorPosition = (typeof MOTOR_POSITION_OPTIONS)[number];
+
+export const ASSIST_PROFILE_OPTIONS = ["economy", "balanced", "power"] as const;
+export type KbAssistProfile = (typeof ASSIST_PROFILE_OPTIONS)[number];
+
+export const SPEED_CLASS_OPTIONS = ["pedelec25", "sPedelec45"] as const;
+export type KbSpeedClass = (typeof SPEED_CLASS_OPTIONS)[number];
+
+export const FRAME_STYLE_OPTIONS = ["any", "diamond", "trapeze", "wave"] as const;
+export type KbFrameStyle = (typeof FRAME_STYLE_OPTIONS)[number];
+
 export const KaufberaterInputSchema = z.object({
   bodyHeightCm: z.number().min(120).max(220),
   inseamCm: z.number().min(55).max(110),
