@@ -52,6 +52,7 @@ import { Route as ToolsReifendruckRechnerRouteImport } from './routes/tools.reif
 import { Route as ToolsReifendruckRouteImport } from './routes/tools.reifendruck'
 import { Route as ToolsRahmengroessenRechnerRouteImport } from './routes/tools.rahmengroessen-rechner'
 import { Route as ToolsRahmengroesseRouteImport } from './routes/tools.rahmengroesse'
+import { Route as ToolsRadelScoreGuideRouteImport } from './routes/tools.radel-score-guide'
 import { Route as ToolsRadelScoreRouteImport } from './routes/tools.radel-score'
 import { Route as ToolsPannenhilfeRouteImport } from './routes/tools.pannenhilfe'
 import { Route as ToolsLuftqualitaetRouteImport } from './routes/tools.luftqualitaet'
@@ -307,6 +308,11 @@ const ToolsRahmengroessenRechnerRoute =
 const ToolsRahmengroesseRoute = ToolsRahmengroesseRouteImport.update({
   id: '/rahmengroesse',
   path: '/rahmengroesse',
+  getParentRoute: () => ToolsRoute,
+} as any)
+const ToolsRadelScoreGuideRoute = ToolsRadelScoreGuideRouteImport.update({
+  id: '/radel-score-guide',
+  path: '/radel-score-guide',
   getParentRoute: () => ToolsRoute,
 } as any)
 const ToolsRadelScoreRoute = ToolsRadelScoreRouteImport.update({
@@ -576,6 +582,7 @@ export interface FileRoutesByFullPath {
   '/tools/luftqualitaet': typeof ToolsLuftqualitaetRoute
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/radel-score': typeof ToolsRadelScoreRoute
+  '/tools/radel-score-guide': typeof ToolsRadelScoreGuideRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
   '/tools/rahmengroessen-rechner': typeof ToolsRahmengroessenRechnerRoute
   '/tools/reifendruck': typeof ToolsReifendruckRoute
@@ -658,6 +665,7 @@ export interface FileRoutesByTo {
   '/tools/luftqualitaet': typeof ToolsLuftqualitaetRoute
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/radel-score': typeof ToolsRadelScoreRoute
+  '/tools/radel-score-guide': typeof ToolsRadelScoreGuideRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
   '/tools/rahmengroessen-rechner': typeof ToolsRahmengroessenRechnerRoute
   '/tools/reifendruck': typeof ToolsReifendruckRoute
@@ -744,6 +752,7 @@ export interface FileRoutesById {
   '/tools/luftqualitaet': typeof ToolsLuftqualitaetRoute
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/radel-score': typeof ToolsRadelScoreRoute
+  '/tools/radel-score-guide': typeof ToolsRadelScoreGuideRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
   '/tools/rahmengroessen-rechner': typeof ToolsRahmengroessenRechnerRoute
   '/tools/reifendruck': typeof ToolsReifendruckRoute
@@ -830,6 +839,7 @@ export interface FileRouteTypes {
     | '/tools/luftqualitaet'
     | '/tools/pannenhilfe'
     | '/tools/radel-score'
+    | '/tools/radel-score-guide'
     | '/tools/rahmengroesse'
     | '/tools/rahmengroessen-rechner'
     | '/tools/reifendruck'
@@ -912,6 +922,7 @@ export interface FileRouteTypes {
     | '/tools/luftqualitaet'
     | '/tools/pannenhilfe'
     | '/tools/radel-score'
+    | '/tools/radel-score-guide'
     | '/tools/rahmengroesse'
     | '/tools/rahmengroessen-rechner'
     | '/tools/reifendruck'
@@ -997,6 +1008,7 @@ export interface FileRouteTypes {
     | '/tools/luftqualitaet'
     | '/tools/pannenhilfe'
     | '/tools/radel-score'
+    | '/tools/radel-score-guide'
     | '/tools/rahmengroesse'
     | '/tools/rahmengroessen-rechner'
     | '/tools/reifendruck'
@@ -1373,6 +1385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsRahmengroesseRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/radel-score-guide': {
+      id: '/tools/radel-score-guide'
+      path: '/radel-score-guide'
+      fullPath: '/tools/radel-score-guide'
+      preLoaderRoute: typeof ToolsRadelScoreGuideRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/radel-score': {
       id: '/tools/radel-score'
       path: '/radel-score'
@@ -1731,6 +1750,7 @@ interface ToolsRouteChildren {
   ToolsLuftqualitaetRoute: typeof ToolsLuftqualitaetRoute
   ToolsPannenhilfeRoute: typeof ToolsPannenhilfeRoute
   ToolsRadelScoreRoute: typeof ToolsRadelScoreRoute
+  ToolsRadelScoreGuideRoute: typeof ToolsRadelScoreGuideRoute
   ToolsRahmengroesseRoute: typeof ToolsRahmengroesseRoute
   ToolsRahmengroessenRechnerRoute: typeof ToolsRahmengroessenRechnerRoute
   ToolsReifendruckRoute: typeof ToolsReifendruckRoute
@@ -1767,6 +1787,7 @@ const ToolsRouteChildren: ToolsRouteChildren = {
   ToolsLuftqualitaetRoute: ToolsLuftqualitaetRoute,
   ToolsPannenhilfeRoute: ToolsPannenhilfeRoute,
   ToolsRadelScoreRoute: ToolsRadelScoreRoute,
+  ToolsRadelScoreGuideRoute: ToolsRadelScoreGuideRoute,
   ToolsRahmengroesseRoute: ToolsRahmengroesseRoute,
   ToolsRahmengroessenRechnerRoute: ToolsRahmengroessenRechnerRoute,
   ToolsReifendruckRoute: ToolsReifendruckRoute,
