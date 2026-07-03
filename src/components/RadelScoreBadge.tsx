@@ -38,15 +38,15 @@ export function RadelScoreBadge({ className = "" }: { className?: string }) {
     });
   }, [data]);
 
-  // Platzhalter — gleiche Größe/Form wie der Eco-Button, damit das Layout stabil bleibt
+  // Platzhalter — gleiche Höhe wie der Eco-Button, damit das Layout stabil bleibt
   if (!score) {
     return (
       <span
-        className={`inline-flex items-center gap-2 border border-white/25 bg-white/[0.03] px-5 py-2.5 text-white/50 ${className}`}
+        className={`inline-flex shrink-0 items-center gap-1.5 md:gap-2 border border-white/25 bg-white/[0.03] px-2.5 md:px-5 py-2.5 text-white/50 ${className}`}
         aria-hidden
       >
         <Activity className="h-4 w-4" strokeWidth={1.75} />
-        <span className="eyebrow-sm">Radel-Score …</span>
+        <span className="eyebrow-sm">Score …</span>
       </span>
     );
   }
@@ -55,7 +55,7 @@ export function RadelScoreBadge({ className = "" }: { className?: string }) {
     <Link
       to="/tools/radel-score"
       aria-label={`Radel-Score ${score.score} von 100 — ${score.rating}. Details öffnen.`}
-      className="group inline-flex items-center gap-2 border px-5 py-2.5 text-white transition-colors duration-300 hover:bg-white/10"
+      className="group inline-flex shrink-0 items-center gap-1.5 md:gap-2 border px-2.5 md:px-5 py-2.5 text-white transition-colors duration-300 hover:bg-white/10"
       style={{
         borderColor: score.colorHex,
         backgroundColor: `color-mix(in oklch, ${score.colorHex} 14%, transparent)`,
@@ -66,13 +66,14 @@ export function RadelScoreBadge({ className = "" }: { className?: string }) {
         className="inline-block h-2 w-2 rounded-full"
         style={{ backgroundColor: score.colorHex, boxShadow: `0 0 8px ${score.colorHex}` }}
       />
-      <span className="eyebrow-sm">
-        Radel-Score{" "}
+      <span className="eyebrow-sm whitespace-nowrap">
+        <span className="hidden md:inline">Radel-</span>Score{" "}
         <span className="font-bold" style={{ color: score.colorHex }}>
           {score.score}
-        </span>{" "}
-        · {score.rating}
+        </span>
+        <span className="hidden sm:inline"> · {score.rating}</span>
       </span>
     </Link>
   );
 }
+
