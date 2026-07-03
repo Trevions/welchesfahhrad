@@ -41,6 +41,11 @@ export const RELATED: Record<string, RelatedLink[]> = {
     { slug: "fahrrad-kaufberatung-2026", title: "Fahrrad-Kaufberatung 2026" },
     { slug: "ebike-testsieger-2026", title: "E-Bike-Testsieger 2026" },
   ],
+  "radel-score": [
+    { slug: "fahrrad-beleuchtung-stvzo", title: "Fahrrad-Beleuchtung nach StVZO — was Pflicht ist" },
+    { slug: "radfahren-bei-regen-tipps", title: "Radfahren bei Regen: Ausrüstung & Sicherheit" },
+    { slug: "gegenwind-strategie-radfahren", title: "Gegenwind meistern: Strategien für windige Tage" },
+  ],
 };
 
 export function relatedFor(slug: string): RelatedLink[] {
