@@ -500,7 +500,7 @@ function KaufberaterAi() {
                     ))}
                   </div>
                   {!surfaceOk && (
-                    <p className="mt-2 text-xs text-amber-400">
+                    <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
                       Summe: {totalSurface} % — muss genau 100 % ergeben.
                     </p>
                   )}
@@ -868,7 +868,7 @@ function Result({
       </div>
 
       {error && (
-        <div className="flex items-start gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-200">
+        <div className="flex items-start gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-800 dark:text-amber-200">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> {error}
         </div>
       )}
@@ -882,7 +882,7 @@ function Result({
           Deine Rahmengröße: {calc.frame.size}
         </h3>
         {calc.frame.borderline && (
-          <p className="mt-2 text-xs text-amber-400">
+          <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
             Grenzfall — Empfehlung: {calc.frame.heightCm.recommended} cm ± 1,5 cm. Probefahrt beider Größen.
           </p>
         )}
@@ -953,7 +953,7 @@ function Result({
             bikefit.confidence === "high"
               ? "border-signal/50 text-signal"
               : bikefit.confidence === "medium"
-              ? "border-amber-500/40 text-amber-300"
+              ? "border-amber-500/40 text-amber-700 dark:text-amber-300"
               : "border-border text-muted-foreground"
           }`}>
             Confidence: {bikefit.confidence}
@@ -1159,7 +1159,7 @@ function Result({
           </span>
         </div>
         {calc.budget.warning && (
-          <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-200">
+          <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {calc.budget.warning}
           </div>
         )}
@@ -1209,7 +1209,7 @@ function Result({
                           c.fitScore >= 85
                             ? "bg-signal/20 text-signal"
                             : c.fitScore >= 70
-                            ? "bg-amber-500/15 text-amber-300"
+                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"
                             : "bg-muted/30 text-muted-foreground"
                         }`}
                       >
@@ -1308,8 +1308,8 @@ function Result({
 
           {analysis.warnings.length > 0 && (
             <div className="mt-5">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-amber-400">Warnungen</div>
-              <ul className="mt-2 space-y-1 text-sm text-amber-200">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">Warnungen</div>
+              <ul className="mt-2 space-y-1 text-sm text-amber-800 dark:text-amber-200">
                 {analysis.warnings.map((w, i) => (
                   <li key={i}>· {w}</li>
                 ))}
