@@ -108,9 +108,14 @@ export type CalculationResult = {
   ebike?: {
     consumptionWhPerKm: number;
     recommendedBatteryWh: number;
+    dualBatteryRecommended: boolean;
     estRangeKm: { eco: number; tour: number; sport: number; turbo: number };
     torqueNm: { min: number; max: number };
     motorPick: string;
+    motorPosition: "mid" | "rear" | "front";
+    speedClass: "pedelec25" | "sPedelec45";
+    assistProfile: "economy" | "balanced" | "power";
+    notes: string[];
   };
   budget: {
     segment: "einstieg" | "mittelklasse" | "premium" | "highend";
