@@ -269,62 +269,73 @@ function ToolsPage() {
       <div className="mx-auto max-w-[1400px] px-5 py-12 md:px-8 md:py-16">
         {/* FEATURED */}
         {!norm && (
-          <section className="mb-10 md:mb-14 grid gap-4 md:gap-5">
+          <section className="mb-8 md:mb-14 grid gap-3 md:gap-5 md:grid-cols-[2fr_1fr]">
             <Link to="/tools/kaufberater-ai" className="group block">
-              <div className="relative overflow-hidden rounded-2xl border border-signal/60 bg-[#050505] p-6 md:p-8 transition-all duration-300 hover:border-signal hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)]">
-                <div className="relative flex flex-col md:flex-row md:items-center gap-5 md:gap-8">
-                  <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-signal/50 bg-signal/10 text-signal">
-                    <Sparkles className="h-7 w-7" strokeWidth={1.5} />
+              <article
+                className="relative overflow-hidden rounded-3xl border border-signal/40 p-4 md:p-8 transition-all duration-300 hover:border-signal hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-30px_color-mix(in_oklch,var(--signal)_45%,transparent)]"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(120% 140% at 100% 0%, color-mix(in oklch, var(--signal) 22%, transparent), transparent 55%), linear-gradient(135deg, color-mix(in oklch, var(--signal) 8%, var(--card)) 0%, var(--card) 60%)",
+                }}
+              >
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full blur-3xl opacity-40"
+                  style={{ background: "radial-gradient(circle, var(--signal), transparent 70%)" }}
+                />
+                <div className="relative flex items-start gap-3 md:gap-6">
+                  <div className="grid h-11 w-11 md:h-14 md:w-14 shrink-0 place-items-center rounded-2xl border border-signal/50 bg-signal/15 text-signal">
+                    <Sparkles className="h-5 w-5 md:h-7 md:w-7" strokeWidth={1.5} />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-signal">
-                      <span className="h-px w-6 bg-signal" />
-                      Neu · KI-Kaufberater
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 text-[10px] md:text-[11px] uppercase tracking-[0.22em] text-signal">
+                      <span className="rounded-full bg-signal/15 px-2 py-0.5 font-bold">Neu</span>
+                      <span className="truncate">KI-Kaufberater</span>
                     </div>
-                    <h2 className="mt-2 font-display text-2xl md:text-3xl font-black italic tracking-tight text-zinc-100">
+                    <h2 className="mt-1.5 md:mt-2 font-display text-lg md:text-3xl font-black italic tracking-tight text-foreground leading-[1.15]">
                       Deutschlands genauester Fahrrad-Kaufberater
                     </h2>
-                    <p className="mt-2 text-sm md:text-base text-zinc-400 leading-relaxed max-w-2xl">
-                      Rahmengröße, Reifen, Motor, Reichweite und Budget — vollständig berechnet nach
-                      Hinault/LeMond, Holmes und Silca-Modell, plus KI-Analyse mit konkreten
-                      Rad-Empfehlungen aus unserer Datenbank. Für Fahrräder &amp; E-Bikes.
+                    <p className="mt-1.5 md:mt-2 text-[13px] md:text-base text-muted-foreground leading-relaxed line-clamp-2 md:line-clamp-none">
+                      Rahmen, Reifen, Motor, Reichweite &amp; Budget — nach Holmes, LeMond &amp; Silca, plus KI-Analyse aus unserer Datenbank.
                     </p>
-                  </div>
-                  <div className="shrink-0">
-                    <span className="inline-flex items-center gap-2 border border-signal/60 bg-signal/10 px-5 py-2.5 text-signal transition-all duration-300 group-hover:bg-signal group-hover:text-[#050505] group-hover:border-signal">
-                      <span className="eyebrow-sm">Beratung starten</span>
-                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                    <span className="mt-3 md:mt-4 inline-flex items-center gap-1.5 rounded-full border border-signal/60 bg-signal/10 px-3 md:px-4 py-1.5 md:py-2 text-[11px] md:text-xs font-bold uppercase tracking-[0.18em] text-signal transition-all duration-300 group-hover:bg-signal group-hover:text-background">
+                      Beratung starten
+                      <ArrowRight className="h-3 w-3 md:h-3.5 md:w-3.5 transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>
                 </div>
-              </div>
+              </article>
             </Link>
 
             <Link to="/tools/eco-route" className="group block">
-              <div className="relative overflow-hidden rounded-2xl border border-signal/40 bg-[#050505] p-5 md:p-6 transition-all duration-300 hover:border-signal hover:-translate-y-0.5">
-                <div className="relative flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
-                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-signal/50 bg-signal/10 text-signal">
-                    <Leaf className="h-6 w-6" strokeWidth={1.5} />
+              <article
+                className="relative h-full overflow-hidden rounded-3xl border border-border p-4 md:p-6 transition-all duration-300 hover:border-signal/60 hover:-translate-y-0.5"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(135deg, color-mix(in oklch, var(--signal) 6%, var(--card)) 0%, var(--card) 70%)",
+                }}
+              >
+                <div className="relative flex items-start gap-3 md:flex-col md:gap-4">
+                  <div className="grid h-11 w-11 md:h-12 md:w-12 shrink-0 place-items-center rounded-2xl border border-signal/40 bg-signal/10 text-signal">
+                    <Leaf className="h-5 w-5 md:h-6 md:w-6" strokeWidth={1.5} />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-signal">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] md:text-[11px] uppercase tracking-[0.22em] text-signal font-bold">
                       Empfohlen
                     </div>
-                    <h2 className="mt-1 font-display text-xl md:text-2xl font-black italic tracking-tight text-zinc-100">
+                    <h2 className="mt-1 font-display text-base md:text-xl font-black italic tracking-tight text-foreground leading-tight">
                       Eco Route Planner
                     </h2>
-                    <p className="mt-1 text-sm text-zinc-400 max-w-2xl">
-                      Fahrradrouten in Deutschland — Live-Wetter, Höhenprofil, CO₂-Bilanz, GPX.
+                    <p className="mt-1 text-[12px] md:text-sm text-muted-foreground line-clamp-2">
+                      Live-Wetter, Höhenprofil, CO₂-Bilanz &amp; GPX.
                     </p>
-                  </div>
-                  <div className="shrink-0">
-                    <span className="inline-flex items-center gap-2 border border-signal/60 bg-signal/10 px-4 py-2 text-signal transition-all duration-300 group-hover:bg-signal group-hover:text-[#050505]">
-                      <span className="eyebrow-sm">Route planen</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
+                    <span className="mt-2 md:mt-3 inline-flex items-center gap-1 text-[11px] md:text-xs font-bold uppercase tracking-[0.18em] text-signal">
+                      Öffnen
+                      <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>
                 </div>
-              </div>
+              </article>
             </Link>
           </section>
         )}
