@@ -404,10 +404,10 @@ function KaufberaterAi() {
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-signal">
                 <Battery className="h-3.5 w-3.5" /> Schritt 3 · E-Bike
               </div>
-              <h2 className="mt-2 font-display text-xl font-bold tracking-tight">Motor & Akku</h2>
+              <h2 className="mt-2 font-display text-xl font-bold tracking-tight">Motor, Akku &amp; Rahmen</h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <ToolLabel>Motor-Präferenz</ToolLabel>
+                  <ToolLabel>Motor-Marke</ToolLabel>
                   <ToolSelect
                     value={input.motorPref ?? "any"}
                     onChange={(e) => patch("motorPref", e.target.value as KaufberaterInput["motorPref"])}
@@ -417,6 +417,39 @@ function KaufberaterAi() {
                     <option value="shimano">Shimano</option>
                     <option value="brose">Brose</option>
                     <option value="yamaha">Yamaha</option>
+                  </ToolSelect>
+                </div>
+                <div>
+                  <ToolLabel>Motor-Position</ToolLabel>
+                  <ToolSelect
+                    value={input.motorPosition ?? "any"}
+                    onChange={(e) => patch("motorPosition", e.target.value as KaufberaterInput["motorPosition"])}
+                  >
+                    <option value="any">Automatisch wählen</option>
+                    <option value="mid">Mittelmotor (Standard, beste Balance)</option>
+                    <option value="rear">Hinterradnabe (leise, flach/S-Pedelec)</option>
+                    <option value="front">Vorderradnabe (Einstieg, günstig)</option>
+                  </ToolSelect>
+                </div>
+                <div>
+                  <ToolLabel>Fahrprofil</ToolLabel>
+                  <ToolSelect
+                    value={input.assistProfile ?? "balanced"}
+                    onChange={(e) => patch("assistProfile", e.target.value as KaufberaterInput["assistProfile"])}
+                  >
+                    <option value="economy">Sparsam — meist Eco, viel Muskelkraft</option>
+                    <option value="balanced">Ausgewogen — Tour-Modus Standard</option>
+                    <option value="power">Kraftvoll — häufig Sport/Turbo</option>
+                  </ToolSelect>
+                </div>
+                <div>
+                  <ToolLabel>Geschwindigkeitsklasse</ToolLabel>
+                  <ToolSelect
+                    value={input.speedClass ?? "pedelec25"}
+                    onChange={(e) => patch("speedClass", e.target.value as KaufberaterInput["speedClass"])}
+                  >
+                    <option value="pedelec25">Pedelec 25 km/h (Standard, kein Kennzeichen)</option>
+                    <option value="sPedelec45">S-Pedelec 45 km/h (Kennzeichen &amp; Helm)</option>
                   </ToolSelect>
                 </div>
                 <div>
@@ -431,6 +464,47 @@ function KaufberaterAi() {
                     <option value="turbo">Turbo (max.)</option>
                   </ToolSelect>
                 </div>
+                <div>
+                  <ToolLabel>Min. Drehmoment (Nm, optional)</ToolLabel>
+                  <ToolInput
+                    type="number"
+                    min={30}
+                    max={120}
+                    value={input.minTorqueNm ?? ""}
+                    placeholder="z. B. 85"
+                    onChange={(e) => patch("minTorqueNm", e.target.value ? +e.target.value : null)}
+                  />
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Berge / hohe Zuladung: 85 Nm+ · Flach / City: 50–65 Nm reichen.
+                  </p>
+                </div>
+                <div>
+                  <ToolLabel>Rahmenstil</ToolLabel>
+                  <ToolSelect
+                    value={input.frameStyle ?? "any"}
+                    onChange={(e) => patch("frameStyle", e.target.value as KaufberaterInput["frameStyle"])}
+                  >
+                    <option value="any">Automatisch empfehlen</option>
+                    <option value="diamond">Diamant (sportlich, steif)</option>
+                    <option value="trapeze">Trapez (leichter Einstieg)</option>
+                    <option value="wave">Wave / Tiefeinsteiger</option>
+                  </ToolSelect>
+                </div>
+                <div>
+                  <ToolLabel>Zuladung Kinder / Cargo: {input.extraLoadKg ?? 0} kg</ToolLabel>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={5}
+                    value={input.extraLoadKg ?? 0}
+                    onChange={(e) => patch("extraLoadKg", +e.target.value)}
+                    className="mt-3 w-full accent-signal"
+                  />
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Kindersitz ~15 kg · 1 Kind ~25 kg · Cargo-Box mit Einkauf 30–60 kg.
+                  </p>
+                </div>
                 <div className="sm:col-span-2">
                   <ToolLabel>Gewünschte Reichweite: {input.desiredRangeKm} km</ToolLabel>
                   <input
@@ -443,9 +517,19 @@ function KaufberaterAi() {
                     className="mt-3 w-full accent-signal"
                   />
                   <p className="mt-1 text-[11px] text-muted-foreground">
-                    Reichweite pro Akkuladung im Tour-Modus. Puffer 20 % wird automatisch berücksichtigt.
+                    Reichweite pro Ladung im Tour-Modus mit 20 % Puffer. Bei &gt; 750 Wh empfehlen wir automatisch
+                    Dual-Battery.
                   </p>
                 </div>
+                <label className="sm:col-span-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={!!input.dualBattery}
+                    onChange={(e) => patch("dualBattery", e.target.checked)}
+                    className="accent-signal"
+                  />
+                  Dual-Battery / Range Extender explizit gewünscht
+                </label>
               </div>
             </div>
           )}
