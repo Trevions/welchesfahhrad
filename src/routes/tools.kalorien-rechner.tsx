@@ -28,7 +28,7 @@ const FAQ = [
   {
     question: "Ab wann brauche ich unterwegs Kohlenhydrate?",
     answer:
-      "Der Glykogen-Speicher reicht rund 60–90 Minuten intensiver Belastung. Ab einer Stunde Fahrt sind 30–60 g Kohlenhydrate pro Stunde sinnvoll (Riegel, Banane, Iso-Getränk), ab drei Stunden 60–90 g/h. Wer den „Hungerast" einmal hatte, packt beim nächsten Mal mehr ein.",
+      "Der Glykogen-Speicher reicht rund 60–90 Minuten intensiver Belastung. Ab einer Stunde Fahrt sind 30–60 g Kohlenhydrate pro Stunde sinnvoll (Riegel, Banane, Iso-Getränk), ab drei Stunden 60–90 g/h. Wer den Hungerast einmal hatte, packt beim nächsten Mal mehr ein.",
   },
   {
     question: "Wie viel Wasser sollte ich trinken?",
