@@ -62,9 +62,11 @@ import { Route as ToolsJobradLeasingRechnerRouteImport } from './routes/tools.jo
 import { Route as ToolsJobradLeasingRouteImport } from './routes/tools.jobrad-leasing'
 import { Route as ToolsFoerderungRouteImport } from './routes/tools.foerderung'
 import { Route as ToolsFahrradWetterRouteImport } from './routes/tools.fahrrad-wetter'
+import { Route as ToolsFahrradVergleichRouteImport } from './routes/tools.fahrrad-vergleich'
 import { Route as ToolsEcoRouteRouteImport } from './routes/tools.eco-route'
 import { Route as ToolsEbikeReichweiteRechnerRouteImport } from './routes/tools.ebike-reichweite-rechner'
 import { Route as ToolsEbikeReichweiteRouteImport } from './routes/tools.ebike-reichweite'
+import { Route as ToolsEbikeFoerderungRechnerRouteImport } from './routes/tools.ebike-foerderung-rechner'
 import { Route as ToolsDiebstahlschutzRouteImport } from './routes/tools.diebstahlschutz'
 import { Route as ToolsBussgeldRouteImport } from './routes/tools.bussgeld'
 import { Route as NewsletterBestaetigenRouteImport } from './routes/newsletter.bestaetigen'
@@ -357,6 +359,11 @@ const ToolsFahrradWetterRoute = ToolsFahrradWetterRouteImport.update({
   path: '/fahrrad-wetter',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsFahrradVergleichRoute = ToolsFahrradVergleichRouteImport.update({
+  id: '/fahrrad-vergleich',
+  path: '/fahrrad-vergleich',
+  getParentRoute: () => ToolsRoute,
+} as any)
 const ToolsEcoRouteRoute = ToolsEcoRouteRouteImport.update({
   id: '/eco-route',
   path: '/eco-route',
@@ -373,6 +380,12 @@ const ToolsEbikeReichweiteRoute = ToolsEbikeReichweiteRouteImport.update({
   path: '/ebike-reichweite',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsEbikeFoerderungRechnerRoute =
+  ToolsEbikeFoerderungRechnerRouteImport.update({
+    id: '/ebike-foerderung-rechner',
+    path: '/ebike-foerderung-rechner',
+    getParentRoute: () => ToolsRoute,
+  } as any)
 const ToolsDiebstahlschutzRoute = ToolsDiebstahlschutzRouteImport.update({
   id: '/diebstahlschutz',
   path: '/diebstahlschutz',
@@ -541,9 +554,11 @@ export interface FileRoutesByFullPath {
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
   '/tools/diebstahlschutz': typeof ToolsDiebstahlschutzRoute
+  '/tools/ebike-foerderung-rechner': typeof ToolsEbikeFoerderungRechnerRoute
   '/tools/ebike-reichweite': typeof ToolsEbikeReichweiteRoute
   '/tools/ebike-reichweite-rechner': typeof ToolsEbikeReichweiteRechnerRoute
   '/tools/eco-route': typeof ToolsEcoRouteRoute
+  '/tools/fahrrad-vergleich': typeof ToolsFahrradVergleichRoute
   '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/tools/foerderung': typeof ToolsFoerderungRoute
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
@@ -620,9 +635,11 @@ export interface FileRoutesByTo {
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
   '/tools/diebstahlschutz': typeof ToolsDiebstahlschutzRoute
+  '/tools/ebike-foerderung-rechner': typeof ToolsEbikeFoerderungRechnerRoute
   '/tools/ebike-reichweite': typeof ToolsEbikeReichweiteRoute
   '/tools/ebike-reichweite-rechner': typeof ToolsEbikeReichweiteRechnerRoute
   '/tools/eco-route': typeof ToolsEcoRouteRoute
+  '/tools/fahrrad-vergleich': typeof ToolsFahrradVergleichRoute
   '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/tools/foerderung': typeof ToolsFoerderungRoute
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
@@ -703,9 +720,11 @@ export interface FileRoutesById {
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
   '/tools/diebstahlschutz': typeof ToolsDiebstahlschutzRoute
+  '/tools/ebike-foerderung-rechner': typeof ToolsEbikeFoerderungRechnerRoute
   '/tools/ebike-reichweite': typeof ToolsEbikeReichweiteRoute
   '/tools/ebike-reichweite-rechner': typeof ToolsEbikeReichweiteRechnerRoute
   '/tools/eco-route': typeof ToolsEcoRouteRoute
+  '/tools/fahrrad-vergleich': typeof ToolsFahrradVergleichRoute
   '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/tools/foerderung': typeof ToolsFoerderungRoute
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
@@ -786,9 +805,11 @@ export interface FileRouteTypes {
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
     | '/tools/diebstahlschutz'
+    | '/tools/ebike-foerderung-rechner'
     | '/tools/ebike-reichweite'
     | '/tools/ebike-reichweite-rechner'
     | '/tools/eco-route'
+    | '/tools/fahrrad-vergleich'
     | '/tools/fahrrad-wetter'
     | '/tools/foerderung'
     | '/tools/jobrad-leasing'
@@ -865,9 +886,11 @@ export interface FileRouteTypes {
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
     | '/tools/diebstahlschutz'
+    | '/tools/ebike-foerderung-rechner'
     | '/tools/ebike-reichweite'
     | '/tools/ebike-reichweite-rechner'
     | '/tools/eco-route'
+    | '/tools/fahrrad-vergleich'
     | '/tools/fahrrad-wetter'
     | '/tools/foerderung'
     | '/tools/jobrad-leasing'
@@ -947,9 +970,11 @@ export interface FileRouteTypes {
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
     | '/tools/diebstahlschutz'
+    | '/tools/ebike-foerderung-rechner'
     | '/tools/ebike-reichweite'
     | '/tools/ebike-reichweite-rechner'
     | '/tools/eco-route'
+    | '/tools/fahrrad-vergleich'
     | '/tools/fahrrad-wetter'
     | '/tools/foerderung'
     | '/tools/jobrad-leasing'
@@ -1406,6 +1431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsFahrradWetterRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/fahrrad-vergleich': {
+      id: '/tools/fahrrad-vergleich'
+      path: '/fahrrad-vergleich'
+      fullPath: '/tools/fahrrad-vergleich'
+      preLoaderRoute: typeof ToolsFahrradVergleichRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/eco-route': {
       id: '/tools/eco-route'
       path: '/eco-route'
@@ -1425,6 +1457,13 @@ declare module '@tanstack/react-router' {
       path: '/ebike-reichweite'
       fullPath: '/tools/ebike-reichweite'
       preLoaderRoute: typeof ToolsEbikeReichweiteRouteImport
+      parentRoute: typeof ToolsRoute
+    }
+    '/tools/ebike-foerderung-rechner': {
+      id: '/tools/ebike-foerderung-rechner'
+      path: '/ebike-foerderung-rechner'
+      fullPath: '/tools/ebike-foerderung-rechner'
+      preLoaderRoute: typeof ToolsEbikeFoerderungRechnerRouteImport
       parentRoute: typeof ToolsRoute
     }
     '/tools/diebstahlschutz': {
@@ -1657,9 +1696,11 @@ const FahrraederRouteWithChildren = FahrraederRoute._addFileChildren(
 interface ToolsRouteChildren {
   ToolsBussgeldRoute: typeof ToolsBussgeldRoute
   ToolsDiebstahlschutzRoute: typeof ToolsDiebstahlschutzRoute
+  ToolsEbikeFoerderungRechnerRoute: typeof ToolsEbikeFoerderungRechnerRoute
   ToolsEbikeReichweiteRoute: typeof ToolsEbikeReichweiteRoute
   ToolsEbikeReichweiteRechnerRoute: typeof ToolsEbikeReichweiteRechnerRoute
   ToolsEcoRouteRoute: typeof ToolsEcoRouteRoute
+  ToolsFahrradVergleichRoute: typeof ToolsFahrradVergleichRoute
   ToolsFahrradWetterRoute: typeof ToolsFahrradWetterRoute
   ToolsFoerderungRoute: typeof ToolsFoerderungRoute
   ToolsJobradLeasingRoute: typeof ToolsJobradLeasingRoute
@@ -1690,9 +1731,11 @@ interface ToolsRouteChildren {
 const ToolsRouteChildren: ToolsRouteChildren = {
   ToolsBussgeldRoute: ToolsBussgeldRoute,
   ToolsDiebstahlschutzRoute: ToolsDiebstahlschutzRoute,
+  ToolsEbikeFoerderungRechnerRoute: ToolsEbikeFoerderungRechnerRoute,
   ToolsEbikeReichweiteRoute: ToolsEbikeReichweiteRoute,
   ToolsEbikeReichweiteRechnerRoute: ToolsEbikeReichweiteRechnerRoute,
   ToolsEcoRouteRoute: ToolsEcoRouteRoute,
+  ToolsFahrradVergleichRoute: ToolsFahrradVergleichRoute,
   ToolsFahrradWetterRoute: ToolsFahrradWetterRoute,
   ToolsFoerderungRoute: ToolsFoerderungRoute,
   ToolsJobradLeasingRoute: ToolsJobradLeasingRoute,
