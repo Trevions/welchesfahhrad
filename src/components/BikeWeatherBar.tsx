@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { MapPin, Wind, Droplets, Loader2, RefreshCw, ChevronRight } from "lucide-react";
 import { useBikeWeather, weatherCodeInfo, windDirLabel } from "@/hooks/use-bike-weather";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { BikeWeatherDetails } from "@/components/BikeWeatherDetails";
+import { computeRadelScore } from "@/lib/tools/radel-score";
+
 
 export function BikeWeatherBar() {
   const { status, data, accept, decline, reload, error } = useBikeWeather();
