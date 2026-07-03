@@ -882,6 +882,22 @@ function Result({
             {ebike.motorPick} · {ebike.torqueNm.min}
             {ebike.torqueNm.max > ebike.torqueNm.min ? `–${ebike.torqueNm.max}` : ""} Nm
           </h3>
+          <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
+            <span className="rounded-full border border-border px-2 py-0.5 text-muted-foreground">
+              Position: {ebike.motorPosition === "mid" ? "Mittelmotor" : ebike.motorPosition === "rear" ? "Hinterradnabe" : "Vorderradnabe"}
+            </span>
+            <span className="rounded-full border border-border px-2 py-0.5 text-muted-foreground">
+              Klasse: {ebike.speedClass === "sPedelec45" ? "S-Pedelec 45 km/h" : "Pedelec 25 km/h"}
+            </span>
+            <span className="rounded-full border border-border px-2 py-0.5 text-muted-foreground">
+              Profil: {ebike.assistProfile === "economy" ? "sparsam" : ebike.assistProfile === "power" ? "kraftvoll" : "ausgewogen"}
+            </span>
+            {ebike.dualBatteryRecommended && (
+              <span className="rounded-full border border-signal/50 bg-signal/10 px-2 py-0.5 text-signal">
+                Dual-Battery empfohlen
+              </span>
+            )}
+          </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <ToolResultStat
               label="Empf. Akku"
@@ -893,6 +909,30 @@ function Result({
             <ToolResultStat label="Tour" value={ebike.estRangeKm.tour} unit="km" />
             <ToolResultStat label="Sport" value={ebike.estRangeKm.sport} unit="km" />
           </div>
+          {ebike.notes.length > 0 && (
+            <ul className="mt-4 space-y-1 text-xs text-muted-foreground">
+              {ebike.notes.map((n, i) => (
+                <li key={i}>· {n}</li>
+              ))}
+            </ul>
+          )}
+          {calc.frame.styleRecommendation && calc.frame.styleRecommendation !== "any" && (
+            <div className="mt-4 rounded-xl border border-border bg-background/40 p-4">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                Empfohlener Rahmenstil
+              </div>
+              <div className="mt-1 font-semibold capitalize">
+                {calc.frame.styleRecommendation === "wave"
+                  ? "Wave / Tiefeinsteiger"
+                  : calc.frame.styleRecommendation === "trapeze"
+                  ? "Trapez"
+                  : "Diamant"}
+              </div>
+              {calc.frame.styleReason && (
+                <p className="mt-1 text-xs text-muted-foreground">{calc.frame.styleReason}</p>
+              )}
+            </div>
+          )}
         </ToolCard>
       )}
 
