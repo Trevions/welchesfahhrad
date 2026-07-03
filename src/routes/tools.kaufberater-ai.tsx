@@ -841,28 +841,36 @@ function Result({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4 rounded-2xl border border-signal/40 bg-signal/5 p-5">
-        <div className="flex items-center gap-3">
-          <CheckCircle2 className="h-6 w-6 text-signal" />
-          <div>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-signal/40 bg-signal/5 p-4 sm:p-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-signal sm:h-6 sm:w-6" />
+          <div className="min-w-0">
             <div className="text-[10px] uppercase tracking-[0.18em] text-signal">Deine Analyse</div>
-            <div className="font-display text-lg font-bold">Ergebnis fertig — {calc.frame.size}</div>
+            <div className="truncate font-display text-sm font-bold sm:text-lg">
+              Ergebnis fertig — {calc.frame.size}
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={onApplyProfile}
-            className="rounded-full border border-signal/50 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-signal hover:bg-signal/10"
+            title="In Radprofil übernehmen"
+            aria-label="In Radprofil übernehmen"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-signal/50 px-3 text-xs font-medium text-signal hover:bg-signal/10"
           >
-            In Radprofil übernehmen
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline uppercase tracking-[0.12em]">Übernehmen</span>
           </button>
           <button
             type="button"
             onClick={printPage}
-            className="rounded-full border border-border px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
+            title="Drucken"
+            aria-label="Drucken"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
           >
-            <Printer className="mr-1 inline h-3 w-3" /> Drucken
+            <Printer className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline uppercase tracking-[0.12em]">Drucken</span>
           </button>
         </div>
       </div>
