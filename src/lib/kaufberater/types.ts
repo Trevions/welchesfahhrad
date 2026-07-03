@@ -56,6 +56,13 @@ export const KaufberaterInputSchema = z.object({
 
   // e-bike (optional)
   motorPref: z.enum(MOTOR_OPTIONS).nullable().optional(),
+  motorPosition: z.enum(MOTOR_POSITION_OPTIONS).nullable().optional(),
+  assistProfile: z.enum(ASSIST_PROFILE_OPTIONS).nullable().optional(),
+  minTorqueNm: z.number().min(30).max(120).nullable().optional(),
+  dualBattery: z.boolean().nullable().optional(),
+  speedClass: z.enum(SPEED_CLASS_OPTIONS).nullable().optional(),
+  frameStyle: z.enum(FRAME_STYLE_OPTIONS).nullable().optional(),
+  extraLoadKg: z.number().min(0).max(120).nullable().optional(),
   desiredRangeKm: z.number().min(10).max(400).nullable().optional(),
   supportLevel: z.enum(["eco", "tour", "sport", "turbo"]).nullable().optional(),
 
