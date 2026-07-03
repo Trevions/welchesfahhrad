@@ -328,27 +328,30 @@ function keyOf(value: string): string {
     .replace(/^_+|_+$/g, "");
 }
 
+function looseKeyOf(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[\s\-.]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function mappedKey(rawKey: string, aliases: Record<string, string>): string {
+  const loose = looseKeyOf(rawKey);
+  const ascii = keyOf(rawKey);
+  return aliases[loose] ?? aliases[ascii] ?? ascii || loose;
+}
+
 function remapKeys(input: any): any {
   if (Array.isArray(input)) return input.map(remapKeys);
   if (input && typeof input === "object") {
     const out: Record<string, any> = {};
     for (const [k, v] of Object.entries(input)) {
-      const normalized = keyOf(k);
-      out[ALIASES[normalized] ?? normalized] = remapKeys(v);
+      out[mappedKey(k, ALIASES)] = remapKeys(v);
     }
     return out;
   }
   return input;
-}
-
-function readValue(obj: Record<string, any>, aliases: string[]): any {
-  for (const alias of aliases) {
-    const k = keyOf(alias);
-    if (obj[k] != null && obj[k] !== "") return obj[k];
-    const mapped = ALIASES[k];
-    if (mapped && obj[mapped] != null && obj[mapped] !== "") return obj[mapped];
-  }
-  return undefined;
 }
 
 export function parseBikeNumber(value: any): number | null {
@@ -427,8 +430,7 @@ function mergeMappedGroup(source: any, aliases: Record<string, string>, numberKe
   const input = asObject(source);
   const out: Record<string, any> = {};
   for (const [rawKey, rawValue] of Object.entries(input)) {
-    const k = keyOf(rawKey);
-    const mapped = aliases[k] ?? k;
+    const mapped = mappedKey(rawKey, aliases);
     const numeric = numberKeys.has(mapped) || /(_kg|_km|_mm|_wh|_nm|_w|_h|score|rating)$/.test(mapped);
     out[mapped] = numeric ? parseBikeNumber(rawValue) : rawValue;
   }
