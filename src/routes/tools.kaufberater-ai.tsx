@@ -876,7 +876,7 @@ function Result({
       </div>
 
       {error && (
-        <div className="flex items-start gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-800 dark:text-amber-200">
+        <div className="flex items-start gap-2 rounded-2xl border border-amber-600/40 bg-amber-500/15 dark:border-amber-500/40 dark:bg-amber-500/10 p-4 text-sm text-amber-800 dark:text-amber-200">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> {error}
         </div>
       )}
@@ -961,7 +961,7 @@ function Result({
             bikefit.confidence === "high"
               ? "border-signal/50 text-signal"
               : bikefit.confidence === "medium"
-              ? "border-amber-500/40 text-amber-700 dark:text-amber-300"
+              ? "border-amber-600/50 text-amber-700 dark:text-amber-300"
               : "border-border text-muted-foreground"
           }`}>
             Confidence: {bikefit.confidence}
@@ -1167,7 +1167,7 @@ function Result({
           </span>
         </div>
         {calc.budget.warning && (
-          <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
+          <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-600/40 bg-amber-500/15 dark:border-amber-500/40 dark:bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {calc.budget.warning}
           </div>
         )}
@@ -1217,7 +1217,7 @@ function Result({
                           c.fitScore >= 85
                             ? "bg-signal/20 text-signal"
                             : c.fitScore >= 70
-                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                            ? "bg-amber-500/20 text-amber-800 dark:text-amber-300"
                             : "bg-muted/30 text-muted-foreground"
                         }`}
                       >
