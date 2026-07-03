@@ -299,7 +299,8 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
   const widthMm = { min: tBase.min, recommended: widthRec, max: tBase.max };
   const bikeStaticKg =
     input.bikeType === "road" ? 8 : input.bikeType === "gravel" ? 9.5 : input.bikeType.includes("mtb") ? 13 : isEbike(input.bikeType) ? 24 : 12;
-  const systemWeight = input.weightKg + bikeStaticKg;
+  const extraLoad = isEbike(input.bikeType) ? input.extraLoadKg ?? 0 : 0;
+  const systemWeight = input.weightKg + bikeStaticKg + extraLoad;
   const pPsi = tirePressure(systemWeight, widthRec);
   const pressurePsi = { front: round(pPsi.front, 0), rear: round(pPsi.rear, 0) };
   const pressureBar = { front: round(psiToBar(pPsi.front), 1), rear: round(psiToBar(pPsi.rear), 1) };
