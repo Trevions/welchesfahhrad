@@ -250,8 +250,15 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
   const useMult = input.use === "sport" ? 1.03 : input.use === "commute" || input.use === "family" ? 0.97 : 1.0;
   const genderMult = input.gender === "w" ? 0.97 : 1.0;
   const flexAdj = (input.flexibility - 3) * 0.015; // ±3 %
-  const reachMid = baseReach * useMult * genderMult * (1 + flexAdj);
-  const stackMid = baseStack * (input.use === "sport" ? 0.98 : input.use === "commute" ? 1.04 : 1.0) * (1 - flexAdj);
+  // E-Bikes fahren aufrechter: mehr Stack, weniger Reach
+  const ebikePostureReach = isEbike(input.bikeType) ? 0.97 : 1.0;
+  const ebikePostureStack = isEbike(input.bikeType) ? 1.03 : 1.0;
+  const reachMid = baseReach * useMult * genderMult * ebikePostureReach * (1 + flexAdj);
+  const stackMid =
+    baseStack *
+    (input.use === "sport" ? 0.98 : input.use === "commute" ? 1.04 : 1.0) *
+    ebikePostureStack *
+    (1 - flexAdj);
   const reachMm = { min: round(reachMid - 10), max: round(reachMid + 10) };
   const stackMm = { min: round(stackMid - 15), max: round(stackMid + 15) };
 
