@@ -342,12 +342,12 @@ function mappedKey(rawKey: string, aliases: Record<string, string>): string {
   return aliases[loose] ?? aliases[ascii] ?? (ascii || loose);
 }
 
-function remapKeys(input: any): any {
-  if (Array.isArray(input)) return input.map(remapKeys);
+function remapKeys(input: any, applyAliases = true): any {
+  if (Array.isArray(input)) return input.map((item) => remapKeys(item, false));
   if (input && typeof input === "object") {
     const out: Record<string, any> = {};
     for (const [k, v] of Object.entries(input)) {
-      out[mappedKey(k, ALIASES)] = remapKeys(v);
+      out[applyAliases ? mappedKey(k, ALIASES) : mappedKey(k, {})] = remapKeys(v, false);
     }
     return out;
   }
