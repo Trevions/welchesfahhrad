@@ -42,23 +42,31 @@ import { Route as ToolsWerkzeugListeRouteImport } from './routes/tools.werkzeug-
 import { Route as ToolsWartungsintervalleRouteImport } from './routes/tools.wartungsintervalle'
 import { Route as ToolsVersicherungRouteImport } from './routes/tools.versicherung'
 import { Route as ToolsVergleichRouteImport } from './routes/tools.vergleich'
+import { Route as ToolsUebersetzungRechnerRouteImport } from './routes/tools.uebersetzung-rechner'
 import { Route as ToolsUebersetzungRouteImport } from './routes/tools.uebersetzung'
 import { Route as ToolsTourenplanerRouteImport } from './routes/tools.tourenplaner'
 import { Route as ToolsStvoRouteImport } from './routes/tools.stvo'
 import { Route as ToolsSonnenzeitenRouteImport } from './routes/tools.sonnenzeiten'
 import { Route as ToolsSicherheitsCheckRouteImport } from './routes/tools.sicherheits-check'
+import { Route as ToolsReifendruckRechnerRouteImport } from './routes/tools.reifendruck-rechner'
 import { Route as ToolsReifendruckRouteImport } from './routes/tools.reifendruck'
+import { Route as ToolsRahmengroessenRechnerRouteImport } from './routes/tools.rahmengroessen-rechner'
 import { Route as ToolsRahmengroesseRouteImport } from './routes/tools.rahmengroesse'
 import { Route as ToolsPannenhilfeRouteImport } from './routes/tools.pannenhilfe'
 import { Route as ToolsLuftqualitaetRouteImport } from './routes/tools.luftqualitaet'
 import { Route as ToolsKaufberaterAiRouteImport } from './routes/tools.kaufberater-ai'
 import { Route as ToolsKaufberaterRouteImport } from './routes/tools.kaufberater'
+import { Route as ToolsKalorienRechnerRouteImport } from './routes/tools.kalorien-rechner'
 import { Route as ToolsKalorienRouteImport } from './routes/tools.kalorien'
+import { Route as ToolsJobradLeasingRechnerRouteImport } from './routes/tools.jobrad-leasing-rechner'
 import { Route as ToolsJobradLeasingRouteImport } from './routes/tools.jobrad-leasing'
 import { Route as ToolsFoerderungRouteImport } from './routes/tools.foerderung'
 import { Route as ToolsFahrradWetterRouteImport } from './routes/tools.fahrrad-wetter'
+import { Route as ToolsFahrradVergleichRouteImport } from './routes/tools.fahrrad-vergleich'
 import { Route as ToolsEcoRouteRouteImport } from './routes/tools.eco-route'
+import { Route as ToolsEbikeReichweiteRechnerRouteImport } from './routes/tools.ebike-reichweite-rechner'
 import { Route as ToolsEbikeReichweiteRouteImport } from './routes/tools.ebike-reichweite'
+import { Route as ToolsEbikeFoerderungRechnerRouteImport } from './routes/tools.ebike-foerderung-rechner'
 import { Route as ToolsDiebstahlschutzRouteImport } from './routes/tools.diebstahlschutz'
 import { Route as ToolsBussgeldRouteImport } from './routes/tools.bussgeld'
 import { Route as NewsletterBestaetigenRouteImport } from './routes/newsletter.bestaetigen'
@@ -248,6 +256,12 @@ const ToolsVergleichRoute = ToolsVergleichRouteImport.update({
   path: '/vergleich',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsUebersetzungRechnerRoute =
+  ToolsUebersetzungRechnerRouteImport.update({
+    id: '/uebersetzung-rechner',
+    path: '/uebersetzung-rechner',
+    getParentRoute: () => ToolsRoute,
+  } as any)
 const ToolsUebersetzungRoute = ToolsUebersetzungRouteImport.update({
   id: '/uebersetzung',
   path: '/uebersetzung',
@@ -273,11 +287,22 @@ const ToolsSicherheitsCheckRoute = ToolsSicherheitsCheckRouteImport.update({
   path: '/sicherheits-check',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsReifendruckRechnerRoute = ToolsReifendruckRechnerRouteImport.update({
+  id: '/reifendruck-rechner',
+  path: '/reifendruck-rechner',
+  getParentRoute: () => ToolsRoute,
+} as any)
 const ToolsReifendruckRoute = ToolsReifendruckRouteImport.update({
   id: '/reifendruck',
   path: '/reifendruck',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsRahmengroessenRechnerRoute =
+  ToolsRahmengroessenRechnerRouteImport.update({
+    id: '/rahmengroessen-rechner',
+    path: '/rahmengroessen-rechner',
+    getParentRoute: () => ToolsRoute,
+  } as any)
 const ToolsRahmengroesseRoute = ToolsRahmengroesseRouteImport.update({
   id: '/rahmengroesse',
   path: '/rahmengroesse',
@@ -303,11 +328,22 @@ const ToolsKaufberaterRoute = ToolsKaufberaterRouteImport.update({
   path: '/kaufberater',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsKalorienRechnerRoute = ToolsKalorienRechnerRouteImport.update({
+  id: '/kalorien-rechner',
+  path: '/kalorien-rechner',
+  getParentRoute: () => ToolsRoute,
+} as any)
 const ToolsKalorienRoute = ToolsKalorienRouteImport.update({
   id: '/kalorien',
   path: '/kalorien',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsJobradLeasingRechnerRoute =
+  ToolsJobradLeasingRechnerRouteImport.update({
+    id: '/jobrad-leasing-rechner',
+    path: '/jobrad-leasing-rechner',
+    getParentRoute: () => ToolsRoute,
+  } as any)
 const ToolsJobradLeasingRoute = ToolsJobradLeasingRouteImport.update({
   id: '/jobrad-leasing',
   path: '/jobrad-leasing',
@@ -323,16 +359,33 @@ const ToolsFahrradWetterRoute = ToolsFahrradWetterRouteImport.update({
   path: '/fahrrad-wetter',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsFahrradVergleichRoute = ToolsFahrradVergleichRouteImport.update({
+  id: '/fahrrad-vergleich',
+  path: '/fahrrad-vergleich',
+  getParentRoute: () => ToolsRoute,
+} as any)
 const ToolsEcoRouteRoute = ToolsEcoRouteRouteImport.update({
   id: '/eco-route',
   path: '/eco-route',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsEbikeReichweiteRechnerRoute =
+  ToolsEbikeReichweiteRechnerRouteImport.update({
+    id: '/ebike-reichweite-rechner',
+    path: '/ebike-reichweite-rechner',
+    getParentRoute: () => ToolsRoute,
+  } as any)
 const ToolsEbikeReichweiteRoute = ToolsEbikeReichweiteRouteImport.update({
   id: '/ebike-reichweite',
   path: '/ebike-reichweite',
   getParentRoute: () => ToolsRoute,
 } as any)
+const ToolsEbikeFoerderungRechnerRoute =
+  ToolsEbikeFoerderungRechnerRouteImport.update({
+    id: '/ebike-foerderung-rechner',
+    path: '/ebike-foerderung-rechner',
+    getParentRoute: () => ToolsRoute,
+  } as any)
 const ToolsDiebstahlschutzRoute = ToolsDiebstahlschutzRouteImport.update({
   id: '/diebstahlschutz',
   path: '/diebstahlschutz',
@@ -501,23 +554,31 @@ export interface FileRoutesByFullPath {
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
   '/tools/diebstahlschutz': typeof ToolsDiebstahlschutzRoute
+  '/tools/ebike-foerderung-rechner': typeof ToolsEbikeFoerderungRechnerRoute
   '/tools/ebike-reichweite': typeof ToolsEbikeReichweiteRoute
+  '/tools/ebike-reichweite-rechner': typeof ToolsEbikeReichweiteRechnerRoute
   '/tools/eco-route': typeof ToolsEcoRouteRoute
+  '/tools/fahrrad-vergleich': typeof ToolsFahrradVergleichRoute
   '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/tools/foerderung': typeof ToolsFoerderungRoute
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
+  '/tools/jobrad-leasing-rechner': typeof ToolsJobradLeasingRechnerRoute
   '/tools/kalorien': typeof ToolsKalorienRoute
+  '/tools/kalorien-rechner': typeof ToolsKalorienRechnerRoute
   '/tools/kaufberater': typeof ToolsKaufberaterRoute
   '/tools/kaufberater-ai': typeof ToolsKaufberaterAiRoute
   '/tools/luftqualitaet': typeof ToolsLuftqualitaetRoute
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
+  '/tools/rahmengroessen-rechner': typeof ToolsRahmengroessenRechnerRoute
   '/tools/reifendruck': typeof ToolsReifendruckRoute
+  '/tools/reifendruck-rechner': typeof ToolsReifendruckRechnerRoute
   '/tools/sicherheits-check': typeof ToolsSicherheitsCheckRoute
   '/tools/sonnenzeiten': typeof ToolsSonnenzeitenRoute
   '/tools/stvo': typeof ToolsStvoRoute
   '/tools/tourenplaner': typeof ToolsTourenplanerRoute
   '/tools/uebersetzung': typeof ToolsUebersetzungRoute
+  '/tools/uebersetzung-rechner': typeof ToolsUebersetzungRechnerRoute
   '/tools/vergleich': typeof ToolsVergleichRoute
   '/tools/versicherung': typeof ToolsVersicherungRoute
   '/tools/wartungsintervalle': typeof ToolsWartungsintervalleRoute
@@ -574,23 +635,31 @@ export interface FileRoutesByTo {
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
   '/tools/diebstahlschutz': typeof ToolsDiebstahlschutzRoute
+  '/tools/ebike-foerderung-rechner': typeof ToolsEbikeFoerderungRechnerRoute
   '/tools/ebike-reichweite': typeof ToolsEbikeReichweiteRoute
+  '/tools/ebike-reichweite-rechner': typeof ToolsEbikeReichweiteRechnerRoute
   '/tools/eco-route': typeof ToolsEcoRouteRoute
+  '/tools/fahrrad-vergleich': typeof ToolsFahrradVergleichRoute
   '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/tools/foerderung': typeof ToolsFoerderungRoute
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
+  '/tools/jobrad-leasing-rechner': typeof ToolsJobradLeasingRechnerRoute
   '/tools/kalorien': typeof ToolsKalorienRoute
+  '/tools/kalorien-rechner': typeof ToolsKalorienRechnerRoute
   '/tools/kaufberater': typeof ToolsKaufberaterRoute
   '/tools/kaufberater-ai': typeof ToolsKaufberaterAiRoute
   '/tools/luftqualitaet': typeof ToolsLuftqualitaetRoute
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
+  '/tools/rahmengroessen-rechner': typeof ToolsRahmengroessenRechnerRoute
   '/tools/reifendruck': typeof ToolsReifendruckRoute
+  '/tools/reifendruck-rechner': typeof ToolsReifendruckRechnerRoute
   '/tools/sicherheits-check': typeof ToolsSicherheitsCheckRoute
   '/tools/sonnenzeiten': typeof ToolsSonnenzeitenRoute
   '/tools/stvo': typeof ToolsStvoRoute
   '/tools/tourenplaner': typeof ToolsTourenplanerRoute
   '/tools/uebersetzung': typeof ToolsUebersetzungRoute
+  '/tools/uebersetzung-rechner': typeof ToolsUebersetzungRechnerRoute
   '/tools/vergleich': typeof ToolsVergleichRoute
   '/tools/versicherung': typeof ToolsVersicherungRoute
   '/tools/wartungsintervalle': typeof ToolsWartungsintervalleRoute
@@ -651,23 +720,31 @@ export interface FileRoutesById {
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
   '/tools/diebstahlschutz': typeof ToolsDiebstahlschutzRoute
+  '/tools/ebike-foerderung-rechner': typeof ToolsEbikeFoerderungRechnerRoute
   '/tools/ebike-reichweite': typeof ToolsEbikeReichweiteRoute
+  '/tools/ebike-reichweite-rechner': typeof ToolsEbikeReichweiteRechnerRoute
   '/tools/eco-route': typeof ToolsEcoRouteRoute
+  '/tools/fahrrad-vergleich': typeof ToolsFahrradVergleichRoute
   '/tools/fahrrad-wetter': typeof ToolsFahrradWetterRoute
   '/tools/foerderung': typeof ToolsFoerderungRoute
   '/tools/jobrad-leasing': typeof ToolsJobradLeasingRoute
+  '/tools/jobrad-leasing-rechner': typeof ToolsJobradLeasingRechnerRoute
   '/tools/kalorien': typeof ToolsKalorienRoute
+  '/tools/kalorien-rechner': typeof ToolsKalorienRechnerRoute
   '/tools/kaufberater': typeof ToolsKaufberaterRoute
   '/tools/kaufberater-ai': typeof ToolsKaufberaterAiRoute
   '/tools/luftqualitaet': typeof ToolsLuftqualitaetRoute
   '/tools/pannenhilfe': typeof ToolsPannenhilfeRoute
   '/tools/rahmengroesse': typeof ToolsRahmengroesseRoute
+  '/tools/rahmengroessen-rechner': typeof ToolsRahmengroessenRechnerRoute
   '/tools/reifendruck': typeof ToolsReifendruckRoute
+  '/tools/reifendruck-rechner': typeof ToolsReifendruckRechnerRoute
   '/tools/sicherheits-check': typeof ToolsSicherheitsCheckRoute
   '/tools/sonnenzeiten': typeof ToolsSonnenzeitenRoute
   '/tools/stvo': typeof ToolsStvoRoute
   '/tools/tourenplaner': typeof ToolsTourenplanerRoute
   '/tools/uebersetzung': typeof ToolsUebersetzungRoute
+  '/tools/uebersetzung-rechner': typeof ToolsUebersetzungRechnerRoute
   '/tools/vergleich': typeof ToolsVergleichRoute
   '/tools/versicherung': typeof ToolsVersicherungRoute
   '/tools/wartungsintervalle': typeof ToolsWartungsintervalleRoute
@@ -728,23 +805,31 @@ export interface FileRouteTypes {
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
     | '/tools/diebstahlschutz'
+    | '/tools/ebike-foerderung-rechner'
     | '/tools/ebike-reichweite'
+    | '/tools/ebike-reichweite-rechner'
     | '/tools/eco-route'
+    | '/tools/fahrrad-vergleich'
     | '/tools/fahrrad-wetter'
     | '/tools/foerderung'
     | '/tools/jobrad-leasing'
+    | '/tools/jobrad-leasing-rechner'
     | '/tools/kalorien'
+    | '/tools/kalorien-rechner'
     | '/tools/kaufberater'
     | '/tools/kaufberater-ai'
     | '/tools/luftqualitaet'
     | '/tools/pannenhilfe'
     | '/tools/rahmengroesse'
+    | '/tools/rahmengroessen-rechner'
     | '/tools/reifendruck'
+    | '/tools/reifendruck-rechner'
     | '/tools/sicherheits-check'
     | '/tools/sonnenzeiten'
     | '/tools/stvo'
     | '/tools/tourenplaner'
     | '/tools/uebersetzung'
+    | '/tools/uebersetzung-rechner'
     | '/tools/vergleich'
     | '/tools/versicherung'
     | '/tools/wartungsintervalle'
@@ -801,23 +886,31 @@ export interface FileRouteTypes {
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
     | '/tools/diebstahlschutz'
+    | '/tools/ebike-foerderung-rechner'
     | '/tools/ebike-reichweite'
+    | '/tools/ebike-reichweite-rechner'
     | '/tools/eco-route'
+    | '/tools/fahrrad-vergleich'
     | '/tools/fahrrad-wetter'
     | '/tools/foerderung'
     | '/tools/jobrad-leasing'
+    | '/tools/jobrad-leasing-rechner'
     | '/tools/kalorien'
+    | '/tools/kalorien-rechner'
     | '/tools/kaufberater'
     | '/tools/kaufberater-ai'
     | '/tools/luftqualitaet'
     | '/tools/pannenhilfe'
     | '/tools/rahmengroesse'
+    | '/tools/rahmengroessen-rechner'
     | '/tools/reifendruck'
+    | '/tools/reifendruck-rechner'
     | '/tools/sicherheits-check'
     | '/tools/sonnenzeiten'
     | '/tools/stvo'
     | '/tools/tourenplaner'
     | '/tools/uebersetzung'
+    | '/tools/uebersetzung-rechner'
     | '/tools/vergleich'
     | '/tools/versicherung'
     | '/tools/wartungsintervalle'
@@ -877,23 +970,31 @@ export interface FileRouteTypes {
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
     | '/tools/diebstahlschutz'
+    | '/tools/ebike-foerderung-rechner'
     | '/tools/ebike-reichweite'
+    | '/tools/ebike-reichweite-rechner'
     | '/tools/eco-route'
+    | '/tools/fahrrad-vergleich'
     | '/tools/fahrrad-wetter'
     | '/tools/foerderung'
     | '/tools/jobrad-leasing'
+    | '/tools/jobrad-leasing-rechner'
     | '/tools/kalorien'
+    | '/tools/kalorien-rechner'
     | '/tools/kaufberater'
     | '/tools/kaufberater-ai'
     | '/tools/luftqualitaet'
     | '/tools/pannenhilfe'
     | '/tools/rahmengroesse'
+    | '/tools/rahmengroessen-rechner'
     | '/tools/reifendruck'
+    | '/tools/reifendruck-rechner'
     | '/tools/sicherheits-check'
     | '/tools/sonnenzeiten'
     | '/tools/stvo'
     | '/tools/tourenplaner'
     | '/tools/uebersetzung'
+    | '/tools/uebersetzung-rechner'
     | '/tools/vergleich'
     | '/tools/versicherung'
     | '/tools/wartungsintervalle'
@@ -1190,6 +1291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsVergleichRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/uebersetzung-rechner': {
+      id: '/tools/uebersetzung-rechner'
+      path: '/uebersetzung-rechner'
+      fullPath: '/tools/uebersetzung-rechner'
+      preLoaderRoute: typeof ToolsUebersetzungRechnerRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/uebersetzung': {
       id: '/tools/uebersetzung'
       path: '/uebersetzung'
@@ -1225,11 +1333,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsSicherheitsCheckRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/reifendruck-rechner': {
+      id: '/tools/reifendruck-rechner'
+      path: '/reifendruck-rechner'
+      fullPath: '/tools/reifendruck-rechner'
+      preLoaderRoute: typeof ToolsReifendruckRechnerRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/reifendruck': {
       id: '/tools/reifendruck'
       path: '/reifendruck'
       fullPath: '/tools/reifendruck'
       preLoaderRoute: typeof ToolsReifendruckRouteImport
+      parentRoute: typeof ToolsRoute
+    }
+    '/tools/rahmengroessen-rechner': {
+      id: '/tools/rahmengroessen-rechner'
+      path: '/rahmengroessen-rechner'
+      fullPath: '/tools/rahmengroessen-rechner'
+      preLoaderRoute: typeof ToolsRahmengroessenRechnerRouteImport
       parentRoute: typeof ToolsRoute
     }
     '/tools/rahmengroesse': {
@@ -1267,11 +1389,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsKaufberaterRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/kalorien-rechner': {
+      id: '/tools/kalorien-rechner'
+      path: '/kalorien-rechner'
+      fullPath: '/tools/kalorien-rechner'
+      preLoaderRoute: typeof ToolsKalorienRechnerRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/kalorien': {
       id: '/tools/kalorien'
       path: '/kalorien'
       fullPath: '/tools/kalorien'
       preLoaderRoute: typeof ToolsKalorienRouteImport
+      parentRoute: typeof ToolsRoute
+    }
+    '/tools/jobrad-leasing-rechner': {
+      id: '/tools/jobrad-leasing-rechner'
+      path: '/jobrad-leasing-rechner'
+      fullPath: '/tools/jobrad-leasing-rechner'
+      preLoaderRoute: typeof ToolsJobradLeasingRechnerRouteImport
       parentRoute: typeof ToolsRoute
     }
     '/tools/jobrad-leasing': {
@@ -1295,6 +1431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsFahrradWetterRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/fahrrad-vergleich': {
+      id: '/tools/fahrrad-vergleich'
+      path: '/fahrrad-vergleich'
+      fullPath: '/tools/fahrrad-vergleich'
+      preLoaderRoute: typeof ToolsFahrradVergleichRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/eco-route': {
       id: '/tools/eco-route'
       path: '/eco-route'
@@ -1302,11 +1445,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsEcoRouteRouteImport
       parentRoute: typeof ToolsRoute
     }
+    '/tools/ebike-reichweite-rechner': {
+      id: '/tools/ebike-reichweite-rechner'
+      path: '/ebike-reichweite-rechner'
+      fullPath: '/tools/ebike-reichweite-rechner'
+      preLoaderRoute: typeof ToolsEbikeReichweiteRechnerRouteImport
+      parentRoute: typeof ToolsRoute
+    }
     '/tools/ebike-reichweite': {
       id: '/tools/ebike-reichweite'
       path: '/ebike-reichweite'
       fullPath: '/tools/ebike-reichweite'
       preLoaderRoute: typeof ToolsEbikeReichweiteRouteImport
+      parentRoute: typeof ToolsRoute
+    }
+    '/tools/ebike-foerderung-rechner': {
+      id: '/tools/ebike-foerderung-rechner'
+      path: '/ebike-foerderung-rechner'
+      fullPath: '/tools/ebike-foerderung-rechner'
+      preLoaderRoute: typeof ToolsEbikeFoerderungRechnerRouteImport
       parentRoute: typeof ToolsRoute
     }
     '/tools/diebstahlschutz': {
@@ -1539,23 +1696,31 @@ const FahrraederRouteWithChildren = FahrraederRoute._addFileChildren(
 interface ToolsRouteChildren {
   ToolsBussgeldRoute: typeof ToolsBussgeldRoute
   ToolsDiebstahlschutzRoute: typeof ToolsDiebstahlschutzRoute
+  ToolsEbikeFoerderungRechnerRoute: typeof ToolsEbikeFoerderungRechnerRoute
   ToolsEbikeReichweiteRoute: typeof ToolsEbikeReichweiteRoute
+  ToolsEbikeReichweiteRechnerRoute: typeof ToolsEbikeReichweiteRechnerRoute
   ToolsEcoRouteRoute: typeof ToolsEcoRouteRoute
+  ToolsFahrradVergleichRoute: typeof ToolsFahrradVergleichRoute
   ToolsFahrradWetterRoute: typeof ToolsFahrradWetterRoute
   ToolsFoerderungRoute: typeof ToolsFoerderungRoute
   ToolsJobradLeasingRoute: typeof ToolsJobradLeasingRoute
+  ToolsJobradLeasingRechnerRoute: typeof ToolsJobradLeasingRechnerRoute
   ToolsKalorienRoute: typeof ToolsKalorienRoute
+  ToolsKalorienRechnerRoute: typeof ToolsKalorienRechnerRoute
   ToolsKaufberaterRoute: typeof ToolsKaufberaterRoute
   ToolsKaufberaterAiRoute: typeof ToolsKaufberaterAiRoute
   ToolsLuftqualitaetRoute: typeof ToolsLuftqualitaetRoute
   ToolsPannenhilfeRoute: typeof ToolsPannenhilfeRoute
   ToolsRahmengroesseRoute: typeof ToolsRahmengroesseRoute
+  ToolsRahmengroessenRechnerRoute: typeof ToolsRahmengroessenRechnerRoute
   ToolsReifendruckRoute: typeof ToolsReifendruckRoute
+  ToolsReifendruckRechnerRoute: typeof ToolsReifendruckRechnerRoute
   ToolsSicherheitsCheckRoute: typeof ToolsSicherheitsCheckRoute
   ToolsSonnenzeitenRoute: typeof ToolsSonnenzeitenRoute
   ToolsStvoRoute: typeof ToolsStvoRoute
   ToolsTourenplanerRoute: typeof ToolsTourenplanerRoute
   ToolsUebersetzungRoute: typeof ToolsUebersetzungRoute
+  ToolsUebersetzungRechnerRoute: typeof ToolsUebersetzungRechnerRoute
   ToolsVergleichRoute: typeof ToolsVergleichRoute
   ToolsVersicherungRoute: typeof ToolsVersicherungRoute
   ToolsWartungsintervalleRoute: typeof ToolsWartungsintervalleRoute
@@ -1566,23 +1731,31 @@ interface ToolsRouteChildren {
 const ToolsRouteChildren: ToolsRouteChildren = {
   ToolsBussgeldRoute: ToolsBussgeldRoute,
   ToolsDiebstahlschutzRoute: ToolsDiebstahlschutzRoute,
+  ToolsEbikeFoerderungRechnerRoute: ToolsEbikeFoerderungRechnerRoute,
   ToolsEbikeReichweiteRoute: ToolsEbikeReichweiteRoute,
+  ToolsEbikeReichweiteRechnerRoute: ToolsEbikeReichweiteRechnerRoute,
   ToolsEcoRouteRoute: ToolsEcoRouteRoute,
+  ToolsFahrradVergleichRoute: ToolsFahrradVergleichRoute,
   ToolsFahrradWetterRoute: ToolsFahrradWetterRoute,
   ToolsFoerderungRoute: ToolsFoerderungRoute,
   ToolsJobradLeasingRoute: ToolsJobradLeasingRoute,
+  ToolsJobradLeasingRechnerRoute: ToolsJobradLeasingRechnerRoute,
   ToolsKalorienRoute: ToolsKalorienRoute,
+  ToolsKalorienRechnerRoute: ToolsKalorienRechnerRoute,
   ToolsKaufberaterRoute: ToolsKaufberaterRoute,
   ToolsKaufberaterAiRoute: ToolsKaufberaterAiRoute,
   ToolsLuftqualitaetRoute: ToolsLuftqualitaetRoute,
   ToolsPannenhilfeRoute: ToolsPannenhilfeRoute,
   ToolsRahmengroesseRoute: ToolsRahmengroesseRoute,
+  ToolsRahmengroessenRechnerRoute: ToolsRahmengroessenRechnerRoute,
   ToolsReifendruckRoute: ToolsReifendruckRoute,
+  ToolsReifendruckRechnerRoute: ToolsReifendruckRechnerRoute,
   ToolsSicherheitsCheckRoute: ToolsSicherheitsCheckRoute,
   ToolsSonnenzeitenRoute: ToolsSonnenzeitenRoute,
   ToolsStvoRoute: ToolsStvoRoute,
   ToolsTourenplanerRoute: ToolsTourenplanerRoute,
   ToolsUebersetzungRoute: ToolsUebersetzungRoute,
+  ToolsUebersetzungRechnerRoute: ToolsUebersetzungRechnerRoute,
   ToolsVergleichRoute: ToolsVergleichRoute,
   ToolsVersicherungRoute: ToolsVersicherungRoute,
   ToolsWartungsintervalleRoute: ToolsWartungsintervalleRoute,

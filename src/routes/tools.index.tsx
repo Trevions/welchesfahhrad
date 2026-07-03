@@ -50,12 +50,12 @@ const groups: Group[] = [
     title: "Rechner & Tools",
     tools: [
       { title: "Eco Route Planner", desc: "Live-Routing mit Radwegen, Wetter & CO₂-Bilanz.", icon: Leaf, to: "/tools/eco-route" },
-      { title: "Reifendruck-Rechner", desc: "Optimaler Luftdruck für Gewicht & Reifenbreite.", icon: Gauge, to: "/tools/reifendruck" },
-      { title: "Rahmengrößen-Rechner", desc: "Passende Rahmenhöhe nach Körpermaßen.", icon: Ruler, to: "/tools/rahmengroesse" },
-      { title: "Übersetzungs-Rechner", desc: "Entfaltung, Kadenz und Geschwindigkeit.", icon: Cog, to: "/tools/uebersetzung" },
-      { title: "E-Bike Reichweite", desc: "Reichweite nach Akku, Profil und Modus.", icon: BatteryCharging, to: "/tools/ebike-reichweite" },
-      { title: "Kalorien-Rechner", desc: "Energieverbrauch auf der Tour bestimmen.", icon: Flame, to: "/tools/kalorien" },
-      { title: "JobRad / Leasing", desc: "Monatsrate und Ersparnis kalkulieren.", icon: Wallet, to: "/tools/jobrad-leasing" },
+      { title: "Reifendruck-Rechner", desc: "Optimaler Luftdruck für Gewicht & Reifenbreite.", icon: Gauge, to: "/tools/reifendruck-rechner" },
+      { title: "Rahmengrößen-Rechner", desc: "Passende Rahmenhöhe nach Körpermaßen.", icon: Ruler, to: "/tools/rahmengroessen-rechner" },
+      { title: "Übersetzungs-Rechner", desc: "Entfaltung, Kadenz und Geschwindigkeit.", icon: Cog, to: "/tools/uebersetzung-rechner" },
+      { title: "E-Bike Reichweite", desc: "Reichweite nach Akku, Profil und Modus.", icon: BatteryCharging, to: "/tools/ebike-reichweite-rechner" },
+      { title: "Kalorien-Rechner", desc: "Energieverbrauch auf der Tour bestimmen.", icon: Flame, to: "/tools/kalorien-rechner" },
+      { title: "JobRad / Leasing", desc: "Monatsrate und Ersparnis kalkulieren.", icon: Wallet, to: "/tools/jobrad-leasing-rechner" },
     ],
   },
   {
@@ -99,8 +99,8 @@ const groups: Group[] = [
     tools: [
       { title: "KI-Kaufberater", desc: "Rahmen, Reifen, Motor, Budget — komplett berechnet + KI-Analyse.", icon: Sparkles, to: "/tools/kaufberater-ai" },
       { title: "Kaufberater-Quiz", desc: "In wenigen Fragen zum passenden Rad.", icon: Sparkles, to: "/tools/kaufberater" },
-      { title: "Vergleichstool", desc: "Modelle nach Ausstattung und Preis vergleichen.", icon: GitCompare, to: "/tools/vergleich" },
-      { title: "Förderungs-Finder", desc: "Zuschüsse und Prämien in deiner Region.", icon: HandCoins, to: "/tools/foerderung" },
+      { title: "Vergleichstool", desc: "Modelle nach Ausstattung und Preis vergleichen.", icon: GitCompare, to: "/tools/fahrrad-vergleich" },
+      { title: "Förderungs-Finder", desc: "Zuschüsse und Prämien in deiner Region.", icon: HandCoins, to: "/tools/ebike-foerderung-rechner" },
     ],
   },
 ];
