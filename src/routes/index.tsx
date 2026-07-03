@@ -99,7 +99,8 @@ function Index() {
               "radial-gradient(700px 300px at 20% -20%, color-mix(in oklch, var(--signal) 40%, transparent), transparent 60%)",
           }}
         />
-        <div className="relative mx-auto max-w-[1400px] px-6 md:px-8 py-5 md:py-6 flex items-center justify-end">
+        <div className="relative mx-auto max-w-[1400px] px-6 md:px-8 py-5 md:py-6 flex items-center justify-end gap-3 flex-wrap">
+          <RadelScoreBadge />
           <Link
             to="/tools/eco-route"
             className="inline-flex items-center gap-2 border border-white/60 bg-signal/10 px-5 py-2.5 text-white transition-colors duration-300 hover:bg-white/10 hover:border-white/60"
