@@ -125,35 +125,55 @@ function ebikeConsumption(input: KaufberaterInput, systemWeight: number): number
   // Gelände
   const terrainMult =
     input.terrain === "flat" ? 1.0 : input.terrain === "hilly" ? 1.3 : input.terrain === "mountainous" ? 1.6 : 1.15;
-  return round((base + weightAdj) * terrainMult, 1);
+  // Fahrstil / Assist-Profil (economy: sparsam pedaliert, power: dauerhaft hoher Modus)
+  const profileMult =
+    input.assistProfile === "economy" ? 0.82 : input.assistProfile === "power" ? 1.28 : 1.0;
+  // S-Pedelec (45 km/h) hat deutlich höheren Luftwiderstand: ~1.45×
+  const speedMult = input.speedClass === "sPedelec45" ? 1.45 : 1.0;
+  return round((base + weightAdj) * terrainMult * profileMult * speedMult, 1);
 }
 
-function motorPick(input: KaufberaterInput): { name: string; torque: { min: number; max: number } } {
+function motorPick(
+  input: KaufberaterInput,
+): { name: string; torque: { min: number; max: number }; position: "mid" | "rear" | "front" } {
   const isMountain = input.terrain === "mountainous";
   const isHilly = input.terrain === "hilly" || isMountain;
-  const torque: { min: number; max: number } = isMountain
+  const minReq = input.minTorqueNm ?? 0;
+  const torqueBase: { min: number; max: number } = isMountain
     ? { min: 85, max: 95 }
     : isHilly
     ? { min: 65, max: 85 }
     : { min: 50, max: 70 };
+  const torque = { min: Math.max(torqueBase.min, minReq), max: Math.max(torqueBase.max, minReq) };
   const pref = input.motorPref ?? "any";
+  const posPref = input.motorPosition ?? "any";
+
+  // Rear-Hub Motor sinnvoll nur für flaches Terrain, City, S-Pedelec, kein MTB/Cargo
+  if (
+    (posPref === "rear" || (posPref === "any" && input.speedClass === "sPedelec45" && !isHilly)) &&
+    input.bikeType !== "e-mtb" &&
+    input.bikeType !== "cargo"
+  ) {
+    return { name: "Mahle X20 / Neodrives (Hinterradnabe)", torque: { min: 55, max: 65 }, position: "rear" };
+  }
+
   if (input.bikeType === "e-mtb") {
-    if (pref === "shimano") return { name: "Shimano EP8/EP801", torque: { min: 85, max: 85 } };
-    if (pref === "brose") return { name: "Brose Drive S Mag", torque: { min: 90, max: 90 } };
-    return { name: "Bosch Performance Line CX", torque: { min: 85, max: 85 } };
+    if (pref === "shimano") return { name: "Shimano EP8/EP801", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
+    if (pref === "brose") return { name: "Brose Drive S Mag", torque: { ...torque, min: 90, max: 90 }, position: "mid" };
+    return { name: "Bosch Performance Line CX", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
   }
   if (input.bikeType === "e-trekking") {
-    if (pref === "shimano") return { name: "Shimano EP6", torque: { min: 85, max: 85 } };
-    if (isHilly) return { name: "Bosch Performance Line CX", torque: { min: 85, max: 85 } };
-    return { name: "Bosch Performance Line", torque: { min: 75, max: 75 } };
+    if (pref === "shimano") return { name: "Shimano EP6", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
+    if (isHilly) return { name: "Bosch Performance Line CX", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
+    return { name: "Bosch Performance Line", torque: { ...torque, min: 75, max: 75 }, position: "mid" };
   }
   if (input.bikeType === "e-city") {
-    return { name: "Bosch Active Line Plus", torque: { min: 50, max: 50 } };
+    return { name: "Bosch Active Line Plus", torque: { ...torque, min: 50, max: 50 }, position: "mid" };
   }
   if (input.bikeType === "cargo") {
-    return { name: "Bosch Cargo Line", torque: { min: 85, max: 85 } };
+    return { name: "Bosch Cargo Line", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
   }
-  return { name: "Bosch Performance Line", torque };
+  return { name: "Bosch Performance Line", torque, position: "mid" };
 }
 
 // ------------------ Budget ------------------
@@ -206,8 +226,12 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
   const nextBoundary = [50, 53, 56, 59, 48, 52, 60, 43, 48, 53].map((b) => Math.abs(cm - b));
   const borderline = Math.min(...nextBoundary) < 1.0;
   if (borderline) {
+    const ebikeHint = isEbike(input.bikeType)
+      ? " Bei E-Bikes wegen Mehrgewicht und Wendigkeit im Zweifel die kleinere Größe wählen."
+      : "";
     notes.push(
-      "Deine Größe liegt an der Grenze zwischen zwei Rahmen. Bei Sport/Rennen eher die kleinere, bei Touren/Komfort die größere wählen — und Probefahrt Pflicht.",
+      "Deine Größe liegt an der Grenze zwischen zwei Rahmen. Bei Sport/Rennen eher die kleinere, bei Touren/Komfort die größere wählen — und Probefahrt Pflicht." +
+        ebikeHint,
     );
   }
 
@@ -226,8 +250,15 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
   const useMult = input.use === "sport" ? 1.03 : input.use === "commute" || input.use === "family" ? 0.97 : 1.0;
   const genderMult = input.gender === "w" ? 0.97 : 1.0;
   const flexAdj = (input.flexibility - 3) * 0.015; // ±3 %
-  const reachMid = baseReach * useMult * genderMult * (1 + flexAdj);
-  const stackMid = baseStack * (input.use === "sport" ? 0.98 : input.use === "commute" ? 1.04 : 1.0) * (1 - flexAdj);
+  // E-Bikes fahren aufrechter: mehr Stack, weniger Reach
+  const ebikePostureReach = isEbike(input.bikeType) ? 0.97 : 1.0;
+  const ebikePostureStack = isEbike(input.bikeType) ? 1.03 : 1.0;
+  const reachMid = baseReach * useMult * genderMult * ebikePostureReach * (1 + flexAdj);
+  const stackMid =
+    baseStack *
+    (input.use === "sport" ? 0.98 : input.use === "commute" ? 1.04 : 1.0) *
+    ebikePostureStack *
+    (1 - flexAdj);
   const reachMm = { min: round(reachMid - 10), max: round(reachMid + 10) };
   const stackMm = { min: round(stackMid - 15), max: round(stackMid + 15) };
 
@@ -279,7 +310,8 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
   const widthMm = { min: tBase.min, recommended: widthRec, max: tBase.max };
   const bikeStaticKg =
     input.bikeType === "road" ? 8 : input.bikeType === "gravel" ? 9.5 : input.bikeType.includes("mtb") ? 13 : isEbike(input.bikeType) ? 24 : 12;
-  const systemWeight = input.weightKg + bikeStaticKg;
+  const extraLoad = isEbike(input.bikeType) ? input.extraLoadKg ?? 0 : 0;
+  const systemWeight = input.weightKg + bikeStaticKg + extraLoad;
   const pPsi = tirePressure(systemWeight, widthRec);
   const pressurePsi = { front: round(pPsi.front, 0), rear: round(pPsi.rear, 0) };
   const pressureBar = { front: round(psiToBar(pPsi.front), 1), rear: round(psiToBar(pPsi.rear), 1) };
@@ -304,10 +336,20 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
 
   // E-Bike
   let ebike: CalculationResult["ebike"] | undefined;
+  let frameStyleRec: "diamond" | "trapeze" | "wave" | "any" = "any";
+  let frameStyleReason: string | undefined;
   if (isEbike(input.bikeType)) {
     const consumption = ebikeConsumption(input, systemWeight);
     const desired = input.desiredRangeKm ?? 80;
-    const recommendedBatteryWh = Math.ceil((consumption * desired * 1.2) / 25) * 25; // 20 % Puffer, auf 25 Wh gerundet
+    const rawWh = consumption * desired * 1.2; // 20 % Puffer
+    // Größte Standard-Akkus: 750 Wh (Bosch PowerTube), 800 Wh (Shimano),
+    // sonst Dual-Battery-Empfehlung (bis ~1500 Wh).
+    const singleCap = 750;
+    const dualBatteryRecommended = rawWh > singleCap || (input.dualBattery ?? false);
+    const recommendedBatteryWh = Math.min(
+      dualBatteryRecommended ? 1500 : singleCap,
+      Math.ceil(rawWh / 25) * 25,
+    );
     // Reichweiten je Modus (Modifikatoren auf consumption)
     const est = {
       eco: round(recommendedBatteryWh / (consumption * 0.75)),
@@ -316,13 +358,62 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
       turbo: round(recommendedBatteryWh / (consumption * 1.8)),
     };
     const mp = motorPick(input);
+    const ebNotes: string[] = [];
+    if (dualBatteryRecommended)
+      ebNotes.push(
+        `Für ${desired} km bei deinem Profil reicht ein Standard-Akku (≤ 750 Wh) nicht sicher — Dual-Battery oder Range Extender einplanen.`,
+      );
+    if (input.speedClass === "sPedelec45")
+      ebNotes.push(
+        "S-Pedelec (45 km/h): Versicherungskennzeichen, Helmpflicht, Führerschein AM, kein Radweg — höhere Betriebskosten.",
+      );
+    if (mp.position === "rear")
+      ebNotes.push(
+        "Hinterradnabenmotor: leise, günstig, gut für flaches Terrain & S-Pedelec — aber kein Anfahren aus dem Stand am Berg und keine Rekuperation ohne spezielle Systeme.",
+      );
+    if ((input.extraLoadKg ?? 0) >= 25)
+      ebNotes.push(
+        "Hohe Zuladung (Kinder/Cargo): Motor mit ≥ 85 Nm und stabilen Bremsen (4-Kolben) wählen, Reifen breiter und mit Pannenschutz.",
+      );
+    if (input.bikeType === "e-mtb" && input.terrain === "mountainous")
+      ebNotes.push("Bergiges E-MTB-Terrain: 85 Nm+ und mind. 625 Wh sind das realistische Minimum.");
+
     ebike = {
       consumptionWhPerKm: consumption,
       recommendedBatteryWh,
+      dualBatteryRecommended,
       estRangeKm: est,
       torqueNm: mp.torque,
       motorPick: mp.name,
+      motorPosition: mp.position,
+      speedClass: input.speedClass ?? "pedelec25",
+      assistProfile: input.assistProfile ?? "balanced",
+      notes: ebNotes,
     };
+
+    // E-Bike Rahmenstil-Empfehlung (Tiefeinsteiger bei hoher Zuladung, Alter,
+    // Cargo, City oder wenn explizit gewählt)
+    const stylePref = input.frameStyle ?? "any";
+    if (stylePref !== "any") {
+      frameStyleRec = stylePref;
+      frameStyleReason = "Explizite Präferenz übernommen.";
+    } else if (
+      input.bikeType === "cargo" ||
+      input.bikeType === "e-city" ||
+      (input.age ?? 0) >= 60 ||
+      (input.extraLoadKg ?? 0) >= 20
+    ) {
+      frameStyleRec = "wave";
+      frameStyleReason =
+        "Tiefeinsteiger (Wave): sicherer Auf-/Absteigen mit Zuladung, Kindersitz oder eingeschränkter Beweglichkeit — gerade bei schweren E-Bikes wichtig.";
+    } else if (input.bikeType === "e-trekking" && input.flexibility <= 2) {
+      frameStyleRec = "trapeze";
+      frameStyleReason =
+        "Trapez-Rahmen: leichter Einstieg als Diamant, aber steifer als Wave — gute Balance bei eingeschränkter Beweglichkeit.";
+    } else {
+      frameStyleRec = "diamond";
+      frameStyleReason = "Diamant-Rahmen: höchste Steifigkeit und beste Wippfreiheit bei stärkerem Antrieb.";
+    }
   }
 
   // Budget
@@ -338,7 +429,14 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
       "E-Bikes unter 2.200 € haben oft schwache Motoren, kleine Akkus (< 500 Wh) und günstige Komponenten — Vorsicht bei sehr günstigen Angeboten.";
 
   return {
-    frame: { heightCm, heightInch, size: sizeLabel, borderline },
+    frame: {
+      heightCm,
+      heightInch,
+      size: sizeLabel,
+      borderline,
+      styleRecommendation: frameStyleRec,
+      styleReason: frameStyleReason,
+    },
     saddleHeightMm,
     saddleSetbackMm,
     reachMm,

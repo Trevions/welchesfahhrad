@@ -24,6 +24,18 @@ export const GENDER_OPTIONS = ["m", "w", "d"] as const;
 
 export const MOTOR_OPTIONS = ["any", "bosch", "shimano", "brose", "yamaha"] as const;
 
+export const MOTOR_POSITION_OPTIONS = ["any", "mid", "rear", "front"] as const;
+export type KbMotorPosition = (typeof MOTOR_POSITION_OPTIONS)[number];
+
+export const ASSIST_PROFILE_OPTIONS = ["economy", "balanced", "power"] as const;
+export type KbAssistProfile = (typeof ASSIST_PROFILE_OPTIONS)[number];
+
+export const SPEED_CLASS_OPTIONS = ["pedelec25", "sPedelec45"] as const;
+export type KbSpeedClass = (typeof SPEED_CLASS_OPTIONS)[number];
+
+export const FRAME_STYLE_OPTIONS = ["any", "diamond", "trapeze", "wave"] as const;
+export type KbFrameStyle = (typeof FRAME_STYLE_OPTIONS)[number];
+
 export const KaufberaterInputSchema = z.object({
   bodyHeightCm: z.number().min(120).max(220),
   inseamCm: z.number().min(55).max(110),
@@ -44,6 +56,13 @@ export const KaufberaterInputSchema = z.object({
 
   // e-bike (optional)
   motorPref: z.enum(MOTOR_OPTIONS).nullable().optional(),
+  motorPosition: z.enum(MOTOR_POSITION_OPTIONS).nullable().optional(),
+  assistProfile: z.enum(ASSIST_PROFILE_OPTIONS).nullable().optional(),
+  minTorqueNm: z.number().min(30).max(120).nullable().optional(),
+  dualBattery: z.boolean().nullable().optional(),
+  speedClass: z.enum(SPEED_CLASS_OPTIONS).nullable().optional(),
+  frameStyle: z.enum(FRAME_STYLE_OPTIONS).nullable().optional(),
+  extraLoadKg: z.number().min(0).max(120).nullable().optional(),
   desiredRangeKm: z.number().min(10).max(400).nullable().optional(),
   supportLevel: z.enum(["eco", "tour", "sport", "turbo"]).nullable().optional(),
 
@@ -67,6 +86,8 @@ export type CalculationResult = {
     heightInch?: { min: number; recommended: number; max: number };
     size: string; // XS..XXL with cm range
     borderline: boolean;
+    styleRecommendation?: "diamond" | "trapeze" | "wave" | "any";
+    styleReason?: string;
   };
   saddleHeightMm: { min: number; recommended: number; max: number }; // BB → saddle top
   saddleSetbackMm: { min: number; max: number };
@@ -87,9 +108,14 @@ export type CalculationResult = {
   ebike?: {
     consumptionWhPerKm: number;
     recommendedBatteryWh: number;
+    dualBatteryRecommended: boolean;
     estRangeKm: { eco: number; tour: number; sport: number; turbo: number };
     torqueNm: { min: number; max: number };
     motorPick: string;
+    motorPosition: "mid" | "rear" | "front";
+    speedClass: "pedelec25" | "sPedelec45";
+    assistProfile: "economy" | "balanced" | "power";
+    notes: string[];
   };
   budget: {
     segment: "einstieg" | "mittelklasse" | "premium" | "highend";
