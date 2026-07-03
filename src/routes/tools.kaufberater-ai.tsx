@@ -500,7 +500,7 @@ function KaufberaterAi() {
                     ))}
                   </div>
                   {!surfaceOk && (
-                    <p className="mt-2 text-xs text-amber-400">
+                    <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
                       Summe: {totalSurface} % — muss genau 100 % ergeben.
                     </p>
                   )}
@@ -841,34 +841,42 @@ function Result({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4 rounded-2xl border border-signal/40 bg-signal/5 p-5">
-        <div className="flex items-center gap-3">
-          <CheckCircle2 className="h-6 w-6 text-signal" />
-          <div>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-signal/40 bg-signal/5 p-4 sm:p-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-signal sm:h-6 sm:w-6" />
+          <div className="min-w-0">
             <div className="text-[10px] uppercase tracking-[0.18em] text-signal">Deine Analyse</div>
-            <div className="font-display text-lg font-bold">Ergebnis fertig — {calc.frame.size}</div>
+            <div className="truncate font-display text-sm font-bold sm:text-lg">
+              Ergebnis fertig — {calc.frame.size}
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={onApplyProfile}
-            className="rounded-full border border-signal/50 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-signal hover:bg-signal/10"
+            title="In Radprofil übernehmen"
+            aria-label="In Radprofil übernehmen"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-signal/50 px-3 text-xs font-medium text-signal hover:bg-signal/10"
           >
-            In Radprofil übernehmen
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline uppercase tracking-[0.12em]">Übernehmen</span>
           </button>
           <button
             type="button"
             onClick={printPage}
-            className="rounded-full border border-border px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
+            title="Drucken"
+            aria-label="Drucken"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
           >
-            <Printer className="mr-1 inline h-3 w-3" /> Drucken
+            <Printer className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline uppercase tracking-[0.12em]">Drucken</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="flex items-start gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-200">
+        <div className="flex items-start gap-2 rounded-2xl border border-amber-600/40 bg-amber-500/15 dark:border-amber-500/40 dark:bg-amber-500/10 p-4 text-sm text-amber-800 dark:text-amber-200">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> {error}
         </div>
       )}
@@ -882,7 +890,7 @@ function Result({
           Deine Rahmengröße: {calc.frame.size}
         </h3>
         {calc.frame.borderline && (
-          <p className="mt-2 text-xs text-amber-400">
+          <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
             Grenzfall — Empfehlung: {calc.frame.heightCm.recommended} cm ± 1,5 cm. Probefahrt beider Größen.
           </p>
         )}
@@ -953,7 +961,7 @@ function Result({
             bikefit.confidence === "high"
               ? "border-signal/50 text-signal"
               : bikefit.confidence === "medium"
-              ? "border-amber-500/40 text-amber-300"
+              ? "border-amber-600/50 text-amber-700 dark:text-amber-300"
               : "border-border text-muted-foreground"
           }`}>
             Confidence: {bikefit.confidence}
@@ -1159,7 +1167,7 @@ function Result({
           </span>
         </div>
         {calc.budget.warning && (
-          <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-200">
+          <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-600/40 bg-amber-500/15 dark:border-amber-500/40 dark:bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {calc.budget.warning}
           </div>
         )}
@@ -1209,7 +1217,7 @@ function Result({
                           c.fitScore >= 85
                             ? "bg-signal/20 text-signal"
                             : c.fitScore >= 70
-                            ? "bg-amber-500/15 text-amber-300"
+                            ? "bg-amber-500/20 text-amber-800 dark:text-amber-300"
                             : "bg-muted/30 text-muted-foreground"
                         }`}
                       >
@@ -1308,8 +1316,8 @@ function Result({
 
           {analysis.warnings.length > 0 && (
             <div className="mt-5">
-              <div className="text-[10px] uppercase tracking-[0.18em] text-amber-400">Warnungen</div>
-              <ul className="mt-2 space-y-1 text-sm text-amber-200">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">Warnungen</div>
+              <ul className="mt-2 space-y-1 text-sm text-amber-800 dark:text-amber-200">
                 {analysis.warnings.map((w, i) => (
                   <li key={i}>· {w}</li>
                 ))}
