@@ -125,35 +125,55 @@ function ebikeConsumption(input: KaufberaterInput, systemWeight: number): number
   // Gelände
   const terrainMult =
     input.terrain === "flat" ? 1.0 : input.terrain === "hilly" ? 1.3 : input.terrain === "mountainous" ? 1.6 : 1.15;
-  return round((base + weightAdj) * terrainMult, 1);
+  // Fahrstil / Assist-Profil (economy: sparsam pedaliert, power: dauerhaft hoher Modus)
+  const profileMult =
+    input.assistProfile === "economy" ? 0.82 : input.assistProfile === "power" ? 1.28 : 1.0;
+  // S-Pedelec (45 km/h) hat deutlich höheren Luftwiderstand: ~1.45×
+  const speedMult = input.speedClass === "sPedelec45" ? 1.45 : 1.0;
+  return round((base + weightAdj) * terrainMult * profileMult * speedMult, 1);
 }
 
-function motorPick(input: KaufberaterInput): { name: string; torque: { min: number; max: number } } {
+function motorPick(
+  input: KaufberaterInput,
+): { name: string; torque: { min: number; max: number }; position: "mid" | "rear" | "front" } {
   const isMountain = input.terrain === "mountainous";
   const isHilly = input.terrain === "hilly" || isMountain;
-  const torque: { min: number; max: number } = isMountain
+  const minReq = input.minTorqueNm ?? 0;
+  const torqueBase: { min: number; max: number } = isMountain
     ? { min: 85, max: 95 }
     : isHilly
     ? { min: 65, max: 85 }
     : { min: 50, max: 70 };
+  const torque = { min: Math.max(torqueBase.min, minReq), max: Math.max(torqueBase.max, minReq) };
   const pref = input.motorPref ?? "any";
+  const posPref = input.motorPosition ?? "any";
+
+  // Rear-Hub Motor sinnvoll nur für flaches Terrain, City, S-Pedelec, kein MTB/Cargo
+  if (
+    (posPref === "rear" || (posPref === "any" && input.speedClass === "sPedelec45" && !isHilly)) &&
+    input.bikeType !== "e-mtb" &&
+    input.bikeType !== "cargo"
+  ) {
+    return { name: "Mahle X20 / Neodrives (Hinterradnabe)", torque: { min: 55, max: 65 }, position: "rear" };
+  }
+
   if (input.bikeType === "e-mtb") {
-    if (pref === "shimano") return { name: "Shimano EP8/EP801", torque: { min: 85, max: 85 } };
-    if (pref === "brose") return { name: "Brose Drive S Mag", torque: { min: 90, max: 90 } };
-    return { name: "Bosch Performance Line CX", torque: { min: 85, max: 85 } };
+    if (pref === "shimano") return { name: "Shimano EP8/EP801", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
+    if (pref === "brose") return { name: "Brose Drive S Mag", torque: { ...torque, min: 90, max: 90 }, position: "mid" };
+    return { name: "Bosch Performance Line CX", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
   }
   if (input.bikeType === "e-trekking") {
-    if (pref === "shimano") return { name: "Shimano EP6", torque: { min: 85, max: 85 } };
-    if (isHilly) return { name: "Bosch Performance Line CX", torque: { min: 85, max: 85 } };
-    return { name: "Bosch Performance Line", torque: { min: 75, max: 75 } };
+    if (pref === "shimano") return { name: "Shimano EP6", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
+    if (isHilly) return { name: "Bosch Performance Line CX", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
+    return { name: "Bosch Performance Line", torque: { ...torque, min: 75, max: 75 }, position: "mid" };
   }
   if (input.bikeType === "e-city") {
-    return { name: "Bosch Active Line Plus", torque: { min: 50, max: 50 } };
+    return { name: "Bosch Active Line Plus", torque: { ...torque, min: 50, max: 50 }, position: "mid" };
   }
   if (input.bikeType === "cargo") {
-    return { name: "Bosch Cargo Line", torque: { min: 85, max: 85 } };
+    return { name: "Bosch Cargo Line", torque: { ...torque, min: 85, max: 85 }, position: "mid" };
   }
-  return { name: "Bosch Performance Line", torque };
+  return { name: "Bosch Performance Line", torque, position: "mid" };
 }
 
 // ------------------ Budget ------------------
