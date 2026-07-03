@@ -480,7 +480,7 @@ function normalizeFaq(value: any): { q: string; a: string }[] {
   return value
     .map((item) => {
       if (typeof item === "string") return null;
-      const obj = remapKeys(item) as Record<string, any>;
+      const obj = remapKeys(item, false) as Record<string, any>;
       const q = asString(obj.q ?? obj.question ?? obj.frage);
       const a = asString(obj.a ?? obj.answer ?? obj.antwort);
       return q && a ? { q, a } : null;
@@ -493,7 +493,7 @@ function normalizeAwards(value: any): { name: string; year?: number; source?: st
   return value
     .map((item: any) => {
       if (typeof item === "string") return { name: item };
-      const obj = remapKeys(item) as Record<string, any>;
+      const obj = remapKeys(item, false) as Record<string, any>;
       const name = asString(obj.name ?? obj.title ?? obj.award);
       return name ? { name, year: asInt(obj.year) ?? undefined, source: asString(obj.source) || undefined } : null;
     })
@@ -505,7 +505,7 @@ function normalizeVideos(value: any): { url: string; title?: string }[] {
   return value
     .map((item: any) => {
       if (typeof item === "string") return { url: item };
-      const obj = remapKeys(item) as Record<string, any>;
+      const obj = remapKeys(item, false) as Record<string, any>;
       const url = asString(obj.url ?? obj.link);
       return url ? { url, title: asString(obj.title) || undefined } : null;
     })
@@ -515,7 +515,11 @@ function normalizeVideos(value: any): { url: string; title?: string }[] {
 function normalizeGallery(value: any): string[] {
   if (Array.isArray(value)) {
     return value
-      .map((item) => (typeof item === "object" ? asString((remapKeys(item) as any).url ?? (remapKeys(item) as any).image_url) : asString(item)))
+      .map((item) => {
+        if (typeof item !== "object") return asString(item);
+        const obj = remapKeys(item, false) as Record<string, any>;
+        return asString(obj.url ?? obj.image_url ?? obj.src);
+      })
       .filter(Boolean);
   }
   return asArray(value);
