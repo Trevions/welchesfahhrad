@@ -86,6 +86,8 @@ export type CalculationResult = {
     heightInch?: { min: number; recommended: number; max: number };
     size: string; // XS..XXL with cm range
     borderline: boolean;
+    styleRecommendation?: "diamond" | "trapeze" | "wave" | "any";
+    styleReason?: string;
   };
   saddleHeightMm: { min: number; recommended: number; max: number }; // BB → saddle top
   saddleSetbackMm: { min: number; max: number };
