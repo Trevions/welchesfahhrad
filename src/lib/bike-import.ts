@@ -339,7 +339,7 @@ function looseKeyOf(value: string): string {
 function mappedKey(rawKey: string, aliases: Record<string, string>): string {
   const loose = looseKeyOf(rawKey);
   const ascii = keyOf(rawKey);
-  return aliases[loose] ?? aliases[ascii] ?? ascii || loose;
+  return aliases[loose] ?? aliases[ascii] ?? (ascii || loose);
 }
 
 function remapKeys(input: any): any {
