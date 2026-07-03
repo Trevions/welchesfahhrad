@@ -5,6 +5,7 @@ import hero from "@/assets/hero-bike.jpg";
 import magazineCover from "@/assets/magazine-cover.jpg";
 import { ArticleCard } from "@/components/ArticleCard";
 import { BikeWeatherBar } from "@/components/BikeWeatherBar";
+import { RadelScoreBadge } from "@/components/RadelScoreBadge";
 import { ForYouStrip } from "@/components/ForYouStrip";
 import { BikeShowcase } from "@/components/bikes/BikeShowcase";
 import { getPublicArticles } from "@/lib/articles.functions";
