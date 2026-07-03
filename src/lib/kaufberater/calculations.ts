@@ -429,7 +429,14 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
       "E-Bikes unter 2.200 € haben oft schwache Motoren, kleine Akkus (< 500 Wh) und günstige Komponenten — Vorsicht bei sehr günstigen Angeboten.";
 
   return {
-    frame: { heightCm, heightInch, size: sizeLabel, borderline },
+    frame: {
+      heightCm,
+      heightInch,
+      size: sizeLabel,
+      borderline,
+      styleRecommendation: frameStyleRec,
+      styleReason: frameStyleReason,
+    },
     saddleHeightMm,
     saddleSetbackMm,
     reachMm,
