@@ -26,20 +26,22 @@ export function BikeCard({ bike }: { bike: Bike }) {
         params={{ slug: bike.slug }}
         className="block"
       >
-        <div className="relative aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
-          <img
-            src={img}
-            alt={`${bike.brand} ${bike.model}`}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-          />
+        <div className="relative aspect-[4/3] bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-black overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <img
+              src={img}
+              alt={`${bike.brand} ${bike.model}`}
+              loading="lazy"
+              className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-[1.04] drop-shadow-[0_10px_20px_rgba(0,0,0,0.15)]"
+            />
+          </div>
           {bike.category === "ebike" && (
-            <span className="absolute top-2 left-2 inline-flex items-center gap-1 bg-signal text-[#050505] text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5">
+            <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 bg-signal text-[#050505] text-[10px] uppercase tracking-wider font-bold px-2 py-1 shadow-sm">
               <Zap className="h-2.5 w-2.5" /> E-Bike
             </span>
           )}
           {bike.price_eur != null && (
-            <span className="absolute bottom-2 right-2 bg-background/90 backdrop-blur text-foreground text-[10px] font-mono tabular-nums px-2 py-0.5 border border-border">
+            <span className="absolute bottom-2.5 right-2.5 bg-background/90 backdrop-blur text-foreground text-[11px] font-mono tabular-nums px-2 py-1 border border-border shadow-sm">
               ab {bike.price_eur.toLocaleString("de-DE")} €
             </span>
           )}
