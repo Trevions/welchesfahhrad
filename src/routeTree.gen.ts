@@ -28,7 +28,6 @@ import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as KarteRouteImport } from './routes/karte'
 import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as FavoritenRouteImport } from './routes/favoriten'
-import { Route as FahrraederRouteImport } from './routes/fahrraeder'
 import { Route as EBikesRouteImport } from './routes/e-bikes'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as CookiesRouteImport } from './routes/cookies'
@@ -38,6 +37,7 @@ import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToolsIndexRouteImport } from './routes/tools.index'
+import { Route as FahrraederIndexRouteImport } from './routes/fahrraeder.index'
 import { Route as ToolsWerkzeugListeRouteImport } from './routes/tools.werkzeug-liste'
 import { Route as ToolsWartungsintervalleRouteImport } from './routes/tools.wartungsintervalle'
 import { Route as ToolsVersicherungRouteImport } from './routes/tools.versicherung'
@@ -189,11 +189,6 @@ const FavoritenRoute = FavoritenRouteImport.update({
   path: '/favoriten',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FahrraederRoute = FahrraederRouteImport.update({
-  id: '/fahrraeder',
-  path: '/fahrraeder',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const EBikesRoute = EBikesRouteImport.update({
   id: '/e-bikes',
   path: '/e-bikes',
@@ -237,6 +232,11 @@ const ToolsIndexRoute = ToolsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ToolsRoute,
+} as any)
+const FahrraederIndexRoute = FahrraederIndexRouteImport.update({
+  id: '/fahrraeder/',
+  path: '/fahrraeder/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ToolsWerkzeugListeRoute = ToolsWerkzeugListeRouteImport.update({
   id: '/werkzeug-liste',
@@ -419,9 +419,9 @@ const NewsletterAbmeldenRoute = NewsletterAbmeldenRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const FahrraederSlugRoute = FahrraederSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => FahrraederRoute,
+  id: '/fahrraeder/$slug',
+  path: '/fahrraeder/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ArtikelSlugRoute = ArtikelSlugRouteImport.update({
   id: '/artikel/$slug',
@@ -539,7 +539,6 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
-  '/fahrraeder': typeof FahrraederRouteWithChildren
   '/favoriten': typeof FavoritenRoute
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
@@ -597,6 +596,7 @@ export interface FileRoutesByFullPath {
   '/tools/versicherung': typeof ToolsVersicherungRoute
   '/tools/wartungsintervalle': typeof ToolsWartungsintervalleRoute
   '/tools/werkzeug-liste': typeof ToolsWerkzeugListeRoute
+  '/fahrraeder/': typeof FahrraederIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
@@ -624,7 +624,6 @@ export interface FileRoutesByTo {
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
-  '/fahrraeder': typeof FahrraederRouteWithChildren
   '/favoriten': typeof FavoritenRoute
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
@@ -680,6 +679,7 @@ export interface FileRoutesByTo {
   '/tools/versicherung': typeof ToolsVersicherungRoute
   '/tools/wartungsintervalle': typeof ToolsWartungsintervalleRoute
   '/tools/werkzeug-liste': typeof ToolsWerkzeugListeRoute
+  '/fahrraeder': typeof FahrraederIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
@@ -709,7 +709,6 @@ export interface FileRoutesById {
   '/cookies': typeof CookiesRoute
   '/datenschutz': typeof DatenschutzRoute
   '/e-bikes': typeof EBikesRoute
-  '/fahrraeder': typeof FahrraederRouteWithChildren
   '/favoriten': typeof FavoritenRoute
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
@@ -767,6 +766,7 @@ export interface FileRoutesById {
   '/tools/versicherung': typeof ToolsVersicherungRoute
   '/tools/wartungsintervalle': typeof ToolsWartungsintervalleRoute
   '/tools/werkzeug-liste': typeof ToolsWerkzeugListeRoute
+  '/fahrraeder/': typeof FahrraederIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
@@ -796,7 +796,6 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
-    | '/fahrraeder'
     | '/favoriten'
     | '/impressum'
     | '/karte'
@@ -854,6 +853,7 @@ export interface FileRouteTypes {
     | '/tools/versicherung'
     | '/tools/wartungsintervalle'
     | '/tools/werkzeug-liste'
+    | '/fahrraeder/'
     | '/tools/'
     | '/mnv/articles'
     | '/mnv/auto-articles'
@@ -881,7 +881,6 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
-    | '/fahrraeder'
     | '/favoriten'
     | '/impressum'
     | '/karte'
@@ -937,6 +936,7 @@ export interface FileRouteTypes {
     | '/tools/versicherung'
     | '/tools/wartungsintervalle'
     | '/tools/werkzeug-liste'
+    | '/fahrraeder'
     | '/tools'
     | '/mnv/articles'
     | '/mnv/auto-articles'
@@ -965,7 +965,6 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/datenschutz'
     | '/e-bikes'
-    | '/fahrraeder'
     | '/favoriten'
     | '/impressum'
     | '/karte'
@@ -1023,6 +1022,7 @@ export interface FileRouteTypes {
     | '/tools/versicherung'
     | '/tools/wartungsintervalle'
     | '/tools/werkzeug-liste'
+    | '/fahrraeder/'
     | '/tools/'
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/auto-articles'
@@ -1052,7 +1052,6 @@ export interface RootRouteChildren {
   CookiesRoute: typeof CookiesRoute
   DatenschutzRoute: typeof DatenschutzRoute
   EBikesRoute: typeof EBikesRoute
-  FahrraederRoute: typeof FahrraederRouteWithChildren
   FavoritenRoute: typeof FavoritenRoute
   ImpressumRoute: typeof ImpressumRoute
   KarteRoute: typeof KarteRoute
@@ -1073,8 +1072,10 @@ export interface RootRouteChildren {
   UeberUnsRoute: typeof UeberUnsRoute
   VergleichRoute: typeof VergleichRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
+  FahrraederSlugRoute: typeof FahrraederSlugRoute
   NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
   NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
+  FahrraederIndexRoute: typeof FahrraederIndexRoute
   ApiPublicArticleImagePathRoute: typeof ApiPublicArticleImagePathRoute
   ApiPublicArticlesAutoGenerateRoute: typeof ApiPublicArticlesAutoGenerateRoute
   ApiPublicNewsletterDispatchRoute: typeof ApiPublicNewsletterDispatchRoute
@@ -1217,13 +1218,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FavoritenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/fahrraeder': {
-      id: '/fahrraeder'
-      path: '/fahrraeder'
-      fullPath: '/fahrraeder'
-      preLoaderRoute: typeof FahrraederRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/e-bikes': {
       id: '/e-bikes'
       path: '/e-bikes'
@@ -1286,6 +1280,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tools/'
       preLoaderRoute: typeof ToolsIndexRouteImport
       parentRoute: typeof ToolsRoute
+    }
+    '/fahrraeder/': {
+      id: '/fahrraeder/'
+      path: '/fahrraeder'
+      fullPath: '/fahrraeder/'
+      preLoaderRoute: typeof FahrraederIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/tools/werkzeug-liste': {
       id: '/tools/werkzeug-liste'
@@ -1534,10 +1535,10 @@ declare module '@tanstack/react-router' {
     }
     '/fahrraeder/$slug': {
       id: '/fahrraeder/$slug'
-      path: '/$slug'
+      path: '/fahrraeder/$slug'
       fullPath: '/fahrraeder/$slug'
       preLoaderRoute: typeof FahrraederSlugRouteImport
-      parentRoute: typeof FahrraederRoute
+      parentRoute: typeof rootRouteImport
     }
     '/artikel/$slug': {
       id: '/artikel/$slug'
@@ -1719,18 +1720,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface FahrraederRouteChildren {
-  FahrraederSlugRoute: typeof FahrraederSlugRoute
-}
-
-const FahrraederRouteChildren: FahrraederRouteChildren = {
-  FahrraederSlugRoute: FahrraederSlugRoute,
-}
-
-const FahrraederRouteWithChildren = FahrraederRoute._addFileChildren(
-  FahrraederRouteChildren,
-)
-
 interface ToolsRouteChildren {
   ToolsBussgeldRoute: typeof ToolsBussgeldRoute
   ToolsDiebstahlschutzRoute: typeof ToolsDiebstahlschutzRoute
@@ -1816,7 +1805,6 @@ const rootRouteChildren: RootRouteChildren = {
   CookiesRoute: CookiesRoute,
   DatenschutzRoute: DatenschutzRoute,
   EBikesRoute: EBikesRoute,
-  FahrraederRoute: FahrraederRouteWithChildren,
   FavoritenRoute: FavoritenRoute,
   ImpressumRoute: ImpressumRoute,
   KarteRoute: KarteRoute,
@@ -1837,8 +1825,10 @@ const rootRouteChildren: RootRouteChildren = {
   UeberUnsRoute: UeberUnsRoute,
   VergleichRoute: VergleichRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
+  FahrraederSlugRoute: FahrraederSlugRoute,
   NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,
   NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
+  FahrraederIndexRoute: FahrraederIndexRoute,
   ApiPublicArticleImagePathRoute: ApiPublicArticleImagePathRoute,
   ApiPublicArticlesAutoGenerateRoute: ApiPublicArticlesAutoGenerateRoute,
   ApiPublicNewsletterDispatchRoute: ApiPublicNewsletterDispatchRoute,
@@ -1848,13 +1838,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
