@@ -325,10 +325,20 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
 
   // E-Bike
   let ebike: CalculationResult["ebike"] | undefined;
+  let frameStyleRec: "diamond" | "trapeze" | "wave" | "any" = "any";
+  let frameStyleReason: string | undefined;
   if (isEbike(input.bikeType)) {
     const consumption = ebikeConsumption(input, systemWeight);
     const desired = input.desiredRangeKm ?? 80;
-    const recommendedBatteryWh = Math.ceil((consumption * desired * 1.2) / 25) * 25; // 20 % Puffer, auf 25 Wh gerundet
+    const rawWh = consumption * desired * 1.2; // 20 % Puffer
+    // Größte Standard-Akkus: 750 Wh (Bosch PowerTube), 800 Wh (Shimano),
+    // sonst Dual-Battery-Empfehlung (bis ~1500 Wh).
+    const singleCap = 750;
+    const dualBatteryRecommended = rawWh > singleCap || (input.dualBattery ?? false);
+    const recommendedBatteryWh = Math.min(
+      dualBatteryRecommended ? 1500 : singleCap,
+      Math.ceil(rawWh / 25) * 25,
+    );
     // Reichweiten je Modus (Modifikatoren auf consumption)
     const est = {
       eco: round(recommendedBatteryWh / (consumption * 0.75)),
@@ -337,13 +347,62 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
       turbo: round(recommendedBatteryWh / (consumption * 1.8)),
     };
     const mp = motorPick(input);
+    const ebNotes: string[] = [];
+    if (dualBatteryRecommended)
+      ebNotes.push(
+        `Für ${desired} km bei deinem Profil reicht ein Standard-Akku (≤ 750 Wh) nicht sicher — Dual-Battery oder Range Extender einplanen.`,
+      );
+    if (input.speedClass === "sPedelec45")
+      ebNotes.push(
+        "S-Pedelec (45 km/h): Versicherungskennzeichen, Helmpflicht, Führerschein AM, kein Radweg — höhere Betriebskosten.",
+      );
+    if (mp.position === "rear")
+      ebNotes.push(
+        "Hinterradnabenmotor: leise, günstig, gut für flaches Terrain & S-Pedelec — aber kein Anfahren aus dem Stand am Berg und keine Rekuperation ohne spezielle Systeme.",
+      );
+    if ((input.extraLoadKg ?? 0) >= 25)
+      ebNotes.push(
+        "Hohe Zuladung (Kinder/Cargo): Motor mit ≥ 85 Nm und stabilen Bremsen (4-Kolben) wählen, Reifen breiter und mit Pannenschutz.",
+      );
+    if (input.bikeType === "e-mtb" && input.terrain === "mountainous")
+      ebNotes.push("Bergiges E-MTB-Terrain: 85 Nm+ und mind. 625 Wh sind das realistische Minimum.");
+
     ebike = {
       consumptionWhPerKm: consumption,
       recommendedBatteryWh,
+      dualBatteryRecommended,
       estRangeKm: est,
       torqueNm: mp.torque,
       motorPick: mp.name,
+      motorPosition: mp.position,
+      speedClass: input.speedClass ?? "pedelec25",
+      assistProfile: input.assistProfile ?? "balanced",
+      notes: ebNotes,
     };
+
+    // E-Bike Rahmenstil-Empfehlung (Tiefeinsteiger bei hoher Zuladung, Alter,
+    // Cargo, City oder wenn explizit gewählt)
+    const stylePref = input.frameStyle ?? "any";
+    if (stylePref !== "any") {
+      frameStyleRec = stylePref;
+      frameStyleReason = "Explizite Präferenz übernommen.";
+    } else if (
+      input.bikeType === "cargo" ||
+      input.bikeType === "e-city" ||
+      (input.age ?? 0) >= 60 ||
+      (input.extraLoadKg ?? 0) >= 20
+    ) {
+      frameStyleRec = "wave";
+      frameStyleReason =
+        "Tiefeinsteiger (Wave): sicherer Auf-/Absteigen mit Zuladung, Kindersitz oder eingeschränkter Beweglichkeit — gerade bei schweren E-Bikes wichtig.";
+    } else if (input.bikeType === "e-trekking" && input.flexibility <= 2) {
+      frameStyleRec = "trapeze";
+      frameStyleReason =
+        "Trapez-Rahmen: leichter Einstieg als Diamant, aber steifer als Wave — gute Balance bei eingeschränkter Beweglichkeit.";
+    } else {
+      frameStyleRec = "diamond";
+      frameStyleReason = "Diamant-Rahmen: höchste Steifigkeit und beste Wippfreiheit bei stärkerem Antrieb.";
+    }
   }
 
   // Budget
