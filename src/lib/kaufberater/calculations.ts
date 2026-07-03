@@ -12,6 +12,7 @@
 //  - Marktpreise Deutschland 2025/26 aus radmap-Redaktions-Recherche.
 
 import type { KaufberaterInput, CalculationResult } from "./types";
+import { computeBikefit } from "./bikefit";
 
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 const round = (n: number, d = 0) => {
@@ -449,6 +450,7 @@ export function calculateRecommendation(input: KaufberaterInput): CalculationRes
     drivetrain,
     ebike,
     budget: { segment, marketRange, fitsMustHaves, warning: budgetWarning },
+    bikefit: computeBikefit(input),
     notes,
   };
 }

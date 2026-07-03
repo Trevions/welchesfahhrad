@@ -30,6 +30,7 @@ import { analyzeKaufberater } from "@/lib/kaufberater/analysis.functions";
 import type { KaufberaterInput, CalculationResult, AiAnalysis } from "@/lib/kaufberater/types";
 import { getBikeProfile, saveBikeProfile } from "@/lib/bike-profile";
 import { toast } from "sonner";
+import { BikeGeometryChart } from "@/components/tools/kaufberater/BikeGeometryChart";
 
 export const Route = createFileRoute("/tools/kaufberater-ai")({
   head: () =>
@@ -95,8 +96,18 @@ function defaultInput(): KaufberaterInput {
   return {
     bodyHeightCm: p?.bodyHeightCm ?? 178,
     inseamCm: p?.inseamCm ?? 83,
+    measureMode: "quick",
     armLengthCm: null,
     torsoCm: null,
+    shoulderWidthCm: null,
+    thighCm: null,
+    shinCm: null,
+    sitBonesMm: null,
+    footLengthCm: null,
+    usesClipless: false,
+    sitAndReachCm: null,
+    shoulderRotationDeg: null,
+    hipFlexDeg: null,
     weightKg: p?.weightKg ?? 78,
     gender: "m",
     age: null,
@@ -231,7 +242,30 @@ function KaufberaterAi() {
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-signal">
                 <Ruler className="h-3.5 w-3.5" /> Schritt 1 · Körpermaße
               </div>
-              <h2 className="mt-2 font-display text-xl font-bold tracking-tight">Deine Maße</h2>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <h2 className="font-display text-xl font-bold tracking-tight">Deine Maße</h2>
+                <div className="flex gap-1 text-[10px] uppercase tracking-[0.14em]">
+                  {(["quick", "precise"] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => patch("measureMode", m)}
+                      className={`px-2.5 py-1 border transition-colors ${
+                        input.measureMode === m
+                          ? "border-signal bg-signal text-background"
+                          : "border-border text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {m === "quick" ? "Schnell (2 Min)" : "Präzise (Bikefit, 8 Min)"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                {input.measureMode === "precise"
+                  ? "Bikefitter-Niveau: alle Maße für präzise Reach/Stack/Sattelbreite. Fehlende Werte werden aus DIN 33402-2 geschätzt."
+                  : "Basis-Werte reichen — wir schätzen den Rest per Anthropometrie-Regressionen (DIN 33402-2)."}
+              </p>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>
                   <ToolLabel>Körpergröße (cm)</ToolLabel>
@@ -302,8 +336,84 @@ function KaufberaterAi() {
                   </p>
                 </div>
               </div>
+
+              {/* Präzisions-Maße (Bikefitter) */}
+              {input.measureMode === "precise" && (
+                <div className="mt-6 border-t border-border pt-5">
+                  <div className="text-[10px] uppercase tracking-[0.16em] text-signal">
+                    Bikefit-Maße
+                  </div>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Optional — je mehr du eingibst, desto präziser der Report. Leere Felder werden geschätzt.
+                  </p>
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div>
+                      <ToolLabel>Torso (C7 → Sitzknochen, cm)</ToolLabel>
+                      <ToolInput type="number" min={40} max={90} value={input.torsoCm ?? ""}
+                        onChange={(e) => patch("torsoCm", e.target.value ? +e.target.value : null)} />
+                    </div>
+                    <div>
+                      <ToolLabel>Armlänge (Schulter → Handgelenk, cm)</ToolLabel>
+                      <ToolInput type="number" min={40} max={90} value={input.armLengthCm ?? ""}
+                        onChange={(e) => patch("armLengthCm", e.target.value ? +e.target.value : null)} />
+                    </div>
+                    <div>
+                      <ToolLabel>Schulterbreite (cm)</ToolLabel>
+                      <ToolInput type="number" min={28} max={60} value={input.shoulderWidthCm ?? ""}
+                        onChange={(e) => patch("shoulderWidthCm", e.target.value ? +e.target.value : null)} />
+                    </div>
+                    <div>
+                      <ToolLabel>Oberschenkel (cm)</ToolLabel>
+                      <ToolInput type="number" min={30} max={70} value={input.thighCm ?? ""}
+                        onChange={(e) => patch("thighCm", e.target.value ? +e.target.value : null)} />
+                    </div>
+                    <div>
+                      <ToolLabel>Unterschenkel (cm)</ToolLabel>
+                      <ToolInput type="number" min={25} max={60} value={input.shinCm ?? ""}
+                        onChange={(e) => patch("shinCm", e.target.value ? +e.target.value : null)} />
+                    </div>
+                    <div>
+                      <ToolLabel>Sitzknochen-Abstand (mm)</ToolLabel>
+                      <ToolInput type="number" min={80} max={170} value={input.sitBonesMm ?? ""}
+                        onChange={(e) => patch("sitBonesMm", e.target.value ? +e.target.value : null)} />
+                      <p className="mt-1 text-[10px] text-muted-foreground">
+                        Auf Wellpappe setzen, Abdruck mitte-mitte messen.
+                      </p>
+                    </div>
+                    <div>
+                      <ToolLabel>Fußlänge (cm)</ToolLabel>
+                      <ToolInput type="number" min={18} max={35} value={input.footLengthCm ?? ""}
+                        onChange={(e) => patch("footLengthCm", e.target.value ? +e.target.value : null)} />
+                    </div>
+                    <label className="flex items-end gap-2 text-xs text-muted-foreground pb-2">
+                      <input type="checkbox" checked={!!input.usesClipless}
+                        onChange={(e) => patch("usesClipless", e.target.checked)} className="accent-signal" />
+                      Klickpedale (Cleat-Setback berechnen)
+                    </label>
+                  </div>
+
+                  <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                    <div>
+                      <ToolLabel>Sit-and-Reach (cm, ± 0 = Zehenspitzen)</ToolLabel>
+                      <ToolInput type="number" min={-30} max={40} value={input.sitAndReachCm ?? ""}
+                        onChange={(e) => patch("sitAndReachCm", e.target.value ? +e.target.value : null)} />
+                    </div>
+                    <div>
+                      <ToolLabel>Schulter-Rotation (°)</ToolLabel>
+                      <ToolInput type="number" min={0} max={200} value={input.shoulderRotationDeg ?? ""}
+                        onChange={(e) => patch("shoulderRotationDeg", e.target.value ? +e.target.value : null)} />
+                    </div>
+                    <div>
+                      <ToolLabel>Hüftflex (°)</ToolLabel>
+                      <ToolInput type="number" min={60} max={180} value={input.hipFlexDeg ?? ""}
+                        onChange={(e) => patch("hipFlexDeg", e.target.value ? +e.target.value : null)} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
+
 
           {step === 2 && (
             <div>
@@ -712,12 +822,18 @@ function Result({
   onApplyProfile,
   input,
 }: {
-  data: { calc: CalculationResult; analysis: AiAnalysis | null; error?: string };
+  data: {
+    calc: CalculationResult;
+    analysis: AiAnalysis | null;
+    error?: string;
+    scoredCandidates?: import("@/lib/kaufberater/types").BikeFitScore[];
+  };
   onApplyProfile: () => void;
   input: KaufberaterInput;
 }) {
-  const { calc, analysis, error } = data;
+  const { calc, analysis, error, scoredCandidates } = data;
   const ebike = calc.ebike;
+  const bikefit = calc.bikefit;
 
   const printPage = () => {
     if (typeof window !== "undefined") window.print();
@@ -819,7 +935,101 @@ function Result({
             ))}
           </ul>
         )}
+
+        {/* Interaktive Rahmengeometrie-Grafik */}
+        <div className="mt-6 rounded-xl border border-border bg-background/40 p-4 text-foreground">
+          <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-3">
+            Zielgeometrie visualisiert
+          </div>
+          <BikeGeometryChart calc={calc} />
+        </div>
       </ToolCard>
+
+      {/* Bikefit-Report */}
+      <ToolCard>
+        <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-signal">
+          <Ruler className="h-3.5 w-3.5" /> Bikefit-Report
+          <span className={`ml-2 rounded-full border px-2 py-0.5 text-[9px] uppercase tracking-[0.14em] ${
+            bikefit.confidence === "high"
+              ? "border-signal/50 text-signal"
+              : bikefit.confidence === "medium"
+              ? "border-amber-500/40 text-amber-300"
+              : "border-border text-muted-foreground"
+          }`}>
+            Confidence: {bikefit.confidence}
+          </span>
+        </div>
+        <h3 className="mt-2 font-display text-lg font-bold tracking-tight">
+          Präzise Bikefit-Werte {bikefit.method === "precise" ? "(volle Vermessung)" : "(Schnell-Modus)"}
+        </h3>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <ToolResultStat
+            label="Sattelhöhe Konsens"
+            value={bikefit.saddleHeight.consensusMm}
+            unit="mm"
+            hint={`Holmes ${bikefit.saddleHeight.holmesMm} · LeMond ${bikefit.saddleHeight.lemondMm} · Hamley ${bikefit.saddleHeight.hamleyMm}`}
+          />
+          <ToolResultStat
+            label="Setback (KOPS)"
+            value={`${bikefit.setbackMm.min}–${bikefit.setbackMm.max}`}
+            unit="mm"
+            hint={`Ideal: ${bikefit.setbackMm.recommended} mm`}
+          />
+          <ToolResultStat
+            label="ETT (Oberrohr eff.)"
+            value={`${bikefit.ettMm.min}–${bikefit.ettMm.max}`}
+            unit="mm"
+            hint={`Ideal: ${bikefit.ettMm.recommended} mm`}
+          />
+          <ToolResultStat
+            label="Sattelbreite"
+            value={`${bikefit.saddleWidthMm.min}–${bikefit.saddleWidthMm.max}`}
+            unit="mm"
+            hint={`Ideal: ${bikefit.saddleWidthMm.recommended} mm (Sitzknochen)`}
+          />
+          <ToolResultStat
+            label="Short-Cranks"
+            value={bikefit.crankShortMm}
+            unit="mm"
+            hint={`Standard: ${calc.crankLengthMm} mm`}
+          />
+          {bikefit.cleatSetbackMm !== undefined && (
+            <ToolResultStat
+              label="Cleat-Setback"
+              value={bikefit.cleatSetbackMm}
+              unit="mm"
+              hint="hinter Großzehen-Grundgelenk"
+            />
+          )}
+          <ToolResultStat
+            label="Sitzwinkel Ziel"
+            value={`${bikefit.seatTubeAngle.min}–${bikefit.seatTubeAngle.max}`}
+            unit="°"
+          />
+          <ToolResultStat
+            label="Steuerkopf Ziel"
+            value={`${bikefit.headTubeAngle.min}–${bikefit.headTubeAngle.max}`}
+            unit="°"
+          />
+        </div>
+
+        {bikefit.notes.length > 0 && (
+          <ul className="mt-4 space-y-1 text-xs text-muted-foreground">
+            {bikefit.notes.map((n, i) => (
+              <li key={i}>· {n}</li>
+            ))}
+          </ul>
+        )}
+
+        {bikefit.confidence !== "high" && (
+          <div className="mt-4 rounded-lg border border-border bg-background/40 p-3 text-[11px] text-muted-foreground">
+            <strong className="text-foreground">Präziser werden:</strong> Wechsel oben auf „Präzise" und gib
+            Torso, Arm, Oberschenkel und Sitzknochen ein. Fehlende Werte schätzen wir per DIN 33402-2.
+          </div>
+        )}
+      </ToolCard>
+
 
       {/* Reifen */}
       <ToolCard>
