@@ -363,8 +363,14 @@ function BikeGallery({ bike, active, onSelect }: { bike: Bike; active: string; o
   }, [bike]);
   return (
     <div>
-      <div className="relative aspect-[4/3] bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
-        <img src={main} alt={`${bike.brand} ${bike.model}`} className="absolute inset-0 h-full w-full object-cover" />
+      <div className="relative aspect-[4/3] bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-black overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10">
+          <img
+            src={main}
+            alt={`${bike.brand} ${bike.model}`}
+            className="max-h-full max-w-full object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.2)]"
+          />
+        </div>
       </div>
       {thumbs.length > 1 && (
         <div className="mt-2 grid grid-cols-6 gap-1.5">
@@ -373,8 +379,8 @@ function BikeGallery({ bike, active, onSelect }: { bike: Bike; active: string; o
             const isActive = url === main;
             return (
               <button key={i} onClick={() => onSelect(t)}
-                className={`aspect-square overflow-hidden border-2 ${isActive ? "border-signal" : "border-transparent"} bg-zinc-100 dark:bg-zinc-900`}>
-                <img src={url} alt="" loading="lazy" className="h-full w-full object-cover" />
+                className={`relative aspect-square overflow-hidden border-2 ${isActive ? "border-signal" : "border-transparent"} bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-black flex items-center justify-center p-1`}>
+                <img src={url} alt="" loading="lazy" className="max-h-full max-w-full object-contain" />
               </button>
             );
           })}
