@@ -12,6 +12,7 @@ export const REVIEWED: Record<string, string> = {
   "jobrad-leasing-rechner": "2026-07-03",
   "ebike-foerderung-rechner": "2026-07-03",
   "fahrrad-vergleich": "2026-07-03",
+  "radel-score": "2026-07-03",
 };
 
 export function reviewedAt(slug: string): string {

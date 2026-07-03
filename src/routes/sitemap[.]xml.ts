@@ -38,6 +38,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/tests", changefreq: "daily", priority: "0.8", lastmod: now },
           { path: "/tools", changefreq: "weekly", priority: "0.85", lastmod: now },
           { path: "/tools/eco-route", changefreq: "weekly", priority: "0.8", lastmod: now },
+          { path: "/tools/radel-score", changefreq: "hourly", priority: "0.85", lastmod: now },
           { path: "/tools/reifendruck-rechner", changefreq: "monthly", priority: "0.75", lastmod: now },
           { path: "/tools/rahmengroessen-rechner", changefreq: "monthly", priority: "0.75", lastmod: now },
           { path: "/tools/uebersetzung-rechner", changefreq: "monthly", priority: "0.7", lastmod: now },
