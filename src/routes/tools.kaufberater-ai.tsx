@@ -1165,7 +1165,93 @@ function Result({
         )}
       </ToolCard>
 
+      {/* Räder aus DB — gescored nach Rahmengeometrie */}
+      {scoredCandidates && scoredCandidates.length > 0 && (
+        <ToolCard>
+          <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-signal">
+            <CheckCircle2 className="h-3.5 w-3.5" /> Beste Rahmen-Matches aus unserer Datenbank
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Fit-Score = wie präzise Reach &amp; Stack des Rahmens zu deinen Zielwerten passen (100 = perfekt).
+            Räder ohne Geometrie-Daten in der DB werden nicht bewertet.
+          </p>
+          <div className="mt-4 space-y-3">
+            {scoredCandidates.slice(0, 5).map((c) => (
+              <a
+                key={c.slug}
+                href={`/rad/${c.slug}`}
+                className="flex items-start gap-3 rounded-xl border border-border bg-background/40 p-3 transition-colors hover:border-signal/50"
+              >
+                {c.image_url ? (
+                  <img
+                    src={c.image_url}
+                    alt={`${c.brand} ${c.model}`}
+                    className="h-16 w-24 flex-shrink-0 rounded object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="h-16 w-24 flex-shrink-0 rounded bg-muted/30" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <div className="truncate font-display text-sm font-semibold">
+                      {c.brand} {c.model}
+                      {c.year && <span className="ml-1 text-muted-foreground">{c.year}</span>}
+                    </div>
+                    <div className="whitespace-nowrap font-mono text-xs text-signal">
+                      {c.price_eur ? `${c.price_eur.toLocaleString("de-DE")} €` : "—"}
+                    </div>
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px]">
+                    {c.fitScore !== null ? (
+                      <span
+                        className={`rounded-full px-2 py-0.5 font-mono ${
+                          c.fitScore >= 85
+                            ? "bg-signal/20 text-signal"
+                            : c.fitScore >= 70
+                            ? "bg-amber-500/15 text-amber-300"
+                            : "bg-muted/30 text-muted-foreground"
+                        }`}
+                      >
+                        Fit {c.fitScore}/100
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-muted/20 px-2 py-0.5 text-muted-foreground">
+                        Fit n/v
+                      </span>
+                    )}
+                    {c.deltaReachMm !== null && (
+                      <span className="font-mono text-muted-foreground">
+                        ΔReach {c.deltaReachMm > 0 ? "+" : ""}
+                        {c.deltaReachMm} mm
+                      </span>
+                    )}
+                    {c.deltaStackMm !== null && (
+                      <span className="font-mono text-muted-foreground">
+                        ΔStack {c.deltaStackMm > 0 ? "+" : ""}
+                        {c.deltaStackMm} mm
+                      </span>
+                    )}
+                    {c.availability && (
+                      <span className="rounded border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        {c.availability}
+                      </span>
+                    )}
+                  </div>
+                  {c.reasons.length > 0 && (
+                    <p className="mt-1.5 line-clamp-2 text-[11px] text-muted-foreground">
+                      {c.reasons[0]}
+                    </p>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </ToolCard>
+      )}
+
       {/* KI-Analyse */}
+
       {analysis && (
         <ToolCard className="border-signal/40 bg-signal/[0.03]">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-signal">
