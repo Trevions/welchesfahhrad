@@ -111,7 +111,7 @@ export function ToolSeoSection({
   return (
     <article className="mt-12 rounded-2xl border border-border bg-card/40 p-6 md:p-10">
       <h2 className="font-display text-2xl font-black tracking-tight md:text-3xl">{heading}</h2>
-      <div className="prose prose-sm mt-6 max-w-none text-muted-foreground prose-headings:font-display prose-headings:text-foreground prose-strong:text-foreground prose-a:text-signal prose-a:no-underline hover:prose-a:underline md:prose-base">
+      <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground md:text-base [&_h3]:mt-6 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-foreground md:[&_h3]:text-xl [&_p]:leading-relaxed [&_strong]:text-foreground [&_a]:text-signal [&_a]:underline [&_a]:decoration-dotted [&_a]:underline-offset-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_table]:w-full [&_table]:text-sm [&_th]:bg-card/60 [&_th]:p-2 [&_th]:text-left [&_th]:font-semibold [&_th]:text-foreground [&_td]:border-t [&_td]:border-border [&_td]:p-2">
         {children}
       </div>
       <ToolRelatedArticles slug={slug} />
