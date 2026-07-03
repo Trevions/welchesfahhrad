@@ -493,6 +493,25 @@ function Section({ id, title, icon: Icon, children }: { id: string; title: strin
   );
 }
 
+function hasDisplayValue(value: any): boolean {
+  if (value == null || value === "") return false;
+  if (Array.isArray(value)) return value.some(hasDisplayValue);
+  if (typeof value === "object") return Object.values(value).some(hasDisplayValue);
+  return true;
+}
+
+function formatDisplayValue(value: any): string {
+  if (Array.isArray(value)) return value.map(formatDisplayValue).filter(Boolean).join(", ");
+  if (value && typeof value === "object") {
+    return Object.entries(value)
+      .filter(([_, v]) => hasDisplayValue(v))
+      .map(([k, v]) => `${k.replace(/_/g, " ")}: ${formatDisplayValue(v)}`)
+      .join(" · ");
+  }
+  if (typeof value === "boolean") return value ? "Ja" : "Nein";
+  return String(value);
+}
+
 function QuickFactsSection({ b }: { b: Bike }) {
   const facts: { label: string; value: string }[] = [];
   if (b.specs?.weight_kg) facts.push({ label: "Gewicht", value: `${b.specs.weight_kg} kg` });
@@ -556,7 +575,7 @@ function SpecsSection({ b }: { b: Bike }) {
     { title: "Laufradsatz", data: b.wheelset },
     { title: "Antrieb (Detail)", data: b.drivetrain_detail },
     { title: "Bremsen (Detail)", data: b.brakes_detail },
-  ].filter((g) => g.data && Object.keys(g.data).length > 0);
+  ].filter((g) => g.data && Object.values(g.data).some(hasDisplayValue));
   if (!groups.length) return null;
   return (
     <Section id="specs" title="Vollständige Spezifikationen" icon={Wrench}>
@@ -566,10 +585,10 @@ function SpecsSection({ b }: { b: Bike }) {
             <AccordionTrigger className="px-4 hover:no-underline">{g.title}</AccordionTrigger>
             <AccordionContent className="px-4 pb-4">
               <dl className="grid sm:grid-cols-2 gap-x-8">
-                {Object.entries(g.data).filter(([_, v]) => v != null && v !== "").map(([k, v]) => (
+                {Object.entries(g.data).filter(([_, v]) => hasDisplayValue(v)).map(([k, v]) => (
                   <div key={k} className="flex justify-between gap-4 py-2 border-b border-border text-sm">
                     <dt className="text-muted-foreground capitalize">{String(k).replace(/_/g, " ")}</dt>
-                    <dd className="text-right font-medium">{String(v)}</dd>
+                    <dd className="text-right font-medium">{formatDisplayValue(v)}</dd>
                   </div>
                 ))}
               </dl>
@@ -583,14 +602,14 @@ function SpecsSection({ b }: { b: Bike }) {
 
 function GeometrySection({ b }: { b: Bike }) {
   const g: Record<string, any> = (b.geometry as any) || {};
-  if (!Object.keys(g).length) return null;
+  if (!Object.values(g).some(hasDisplayValue)) return null;
   return (
     <Section id="geometry" title="Geometrie" icon={Activity}>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {Object.entries(g).filter(([_, v]) => v != null && v !== "").map(([k, v]) => (
+        {Object.entries(g).filter(([_, v]) => hasDisplayValue(v)).map(([k, v]) => (
           <div key={k} className="border border-border p-3">
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.replace(/_/g, " ")}</div>
-            <div className="font-display text-lg font-black mt-1 tabular-nums">{String(v)}</div>
+            <div className="font-display text-lg font-black mt-1 tabular-nums">{formatDisplayValue(v)}</div>
           </div>
         ))}
       </div>
@@ -601,38 +620,46 @@ function GeometrySection({ b }: { b: Bike }) {
 function EbikeSystemSection({ b }: { b: Bike }) {
   const e = b.ebike ?? {};
   const d = b.ebike_detail ?? {};
+  const hasDrive = hasDisplayValue(e.motor_brand) || hasDisplayValue(e.motor_model) || hasDisplayValue(e.motor_nm) || hasDisplayValue(e.motor_w) || hasDisplayValue(d.peak_power_w) || hasDisplayValue(e.assist_kmh) || hasDisplayValue(e.sensor) || hasDisplayValue(e.display) || hasDisplayValue(d.walk_assist);
+  const hasEnergy = hasDisplayValue(e.battery_wh) || hasDisplayValue(d.voltage) || hasDisplayValue(d.ah) || hasDisplayValue(d.cell_type) || hasDisplayValue(e.battery_removable) || hasDisplayValue(d.fast_charging) || hasDisplayValue(e.charge_time_h) || hasDisplayValue(d.charge_cycles) || hasDisplayValue(d.dual_battery);
+  const hasConnectivity = d.bluetooth != null || d.gps != null || d.app != null || d.ota != null || d.usb_charging != null;
+  if (!hasDrive && !hasEnergy && !hasConnectivity) return null;
   return (
     <Section id="ebike-system" title="E-Bike System" icon={Battery}>
       <div className="grid md:grid-cols-2 gap-4">
-        <div className="border border-border p-5 bg-card">
-          <div className="eyebrow text-signal mb-2">Antrieb</div>
-          <div className="font-display text-lg font-bold">{e.motor_brand} {e.motor_model}</div>
-          <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-            {e.motor_nm != null && <Spec k="Drehmoment" v={`${e.motor_nm} Nm`} />}
-            {e.motor_w != null && <Spec k="Nennleistung" v={`${e.motor_w} W`} />}
-            {d.peak_power_w != null && <Spec k="Peak-Leistung" v={`${d.peak_power_w} W`} />}
-            {e.assist_kmh != null && <Spec k="Unterstützung bis" v={`${e.assist_kmh} km/h`} />}
-            {e.sensor && <Spec k="Sensor" v={String(e.sensor)} />}
-            {e.display && <Spec k="Display" v={String(e.display)} />}
-            {d.walk_assist != null && <Spec k="Schiebehilfe" v={d.walk_assist ? "Ja" : "Nein"} />}
-          </dl>
-        </div>
-        <div className="border border-border p-5 bg-card">
-          <div className="eyebrow text-signal mb-2">Energie</div>
-          <div className="font-display text-lg font-bold">{e.battery_wh ? `${e.battery_wh} Wh` : "Akku"}</div>
-          <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-            {d.voltage != null && <Spec k="Spannung" v={`${d.voltage} V`} />}
-            {d.ah != null && <Spec k="Kapazität" v={`${d.ah} Ah`} />}
-            {d.cell_type && <Spec k="Zellen" v={String(d.cell_type)} />}
-            {e.battery_removable != null && <Spec k="Abnehmbar" v={e.battery_removable ? "Ja" : "Nein"} />}
-            {d.fast_charging != null && <Spec k="Schnellladen" v={d.fast_charging ? "Ja" : "Nein"} />}
-            {e.charge_time_h != null && <Spec k="Ladezeit" v={`${e.charge_time_h} h`} />}
-            {d.charge_cycles != null && <Spec k="Ladezyklen" v={`${d.charge_cycles}`} />}
-            {d.dual_battery != null && <Spec k="Dual-Akku" v={d.dual_battery ? "Ja" : "Nein"} />}
-          </dl>
-        </div>
+        {hasDrive && (
+          <div className="border border-border p-5 bg-card">
+            <div className="eyebrow text-signal mb-2">Antrieb</div>
+            {(e.motor_brand || e.motor_model) && <div className="font-display text-lg font-bold">{[e.motor_brand, e.motor_model].filter(Boolean).join(" ")}</div>}
+            <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+              {e.motor_nm != null && <Spec k="Drehmoment" v={`${e.motor_nm} Nm`} />}
+              {e.motor_w != null && <Spec k="Nennleistung" v={`${e.motor_w} W`} />}
+              {d.peak_power_w != null && <Spec k="Peak-Leistung" v={`${d.peak_power_w} W`} />}
+              {e.assist_kmh != null && <Spec k="Unterstützung bis" v={`${e.assist_kmh} km/h`} />}
+              {e.sensor && <Spec k="Sensor" v={String(e.sensor)} />}
+              {e.display && <Spec k="Display" v={String(e.display)} />}
+              {d.walk_assist != null && <Spec k="Schiebehilfe" v={d.walk_assist ? "Ja" : "Nein"} />}
+            </dl>
+          </div>
+        )}
+        {hasEnergy && (
+          <div className="border border-border p-5 bg-card">
+            <div className="eyebrow text-signal mb-2">Energie</div>
+            {e.battery_wh && <div className="font-display text-lg font-bold">{e.battery_wh} Wh</div>}
+            <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+              {d.voltage != null && <Spec k="Spannung" v={`${d.voltage} V`} />}
+              {d.ah != null && <Spec k="Kapazität" v={`${d.ah} Ah`} />}
+              {d.cell_type && <Spec k="Zellen" v={String(d.cell_type)} />}
+              {e.battery_removable != null && <Spec k="Abnehmbar" v={e.battery_removable ? "Ja" : "Nein"} />}
+              {d.fast_charging != null && <Spec k="Schnellladen" v={d.fast_charging ? "Ja" : "Nein"} />}
+              {e.charge_time_h != null && <Spec k="Ladezeit" v={`${e.charge_time_h} h`} />}
+              {d.charge_cycles != null && <Spec k="Ladezyklen" v={`${d.charge_cycles}`} />}
+              {d.dual_battery != null && <Spec k="Dual-Akku" v={d.dual_battery ? "Ja" : "Nein"} />}
+            </dl>
+          </div>
+        )}
       </div>
-      {(d.bluetooth != null || d.gps != null || d.app || d.ota != null || d.usb_charging != null) && (
+      {hasConnectivity && (
         <div className="mt-4 border border-border p-5 bg-card">
           <div className="eyebrow text-signal mb-3">Konnektivität</div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
@@ -770,15 +797,14 @@ function PerformanceSection({ b }: { b: Bike }) {
 
 function MaintenanceSection({ b }: { b: Bike }) {
   const m = b.maintenance ?? {};
-  const keys = Object.keys(m);
-  if (!keys.length) return null;
+  if (!Object.values(m).some(hasDisplayValue)) return null;
   return (
     <Section id="maintenance" title="Wartung & Pflege" icon={Wrench}>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {Object.entries(m).filter(([_, v]) => v != null && v !== "").map(([k, v]) => (
+        {Object.entries(m).filter(([_, v]) => hasDisplayValue(v)).map(([k, v]) => (
           <div key={k} className="border border-border p-4 bg-card">
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.replace(/_/g, " ")}</div>
-            <div className="font-display text-base font-black mt-1">{String(v)}</div>
+            <div className="font-display text-base font-black mt-1">{formatDisplayValue(v)}</div>
           </div>
         ))}
       </div>
@@ -796,6 +822,8 @@ function CostsSection({ b }: { b: Bike }) {
   const annual = energyPerYear * kwh + (Number(b.maintenance?.annual_cost_eur ?? 120));
   const fiveYear = annual * 5 + (b.price_eur ?? 0);
   const carCmp = km * 0.30 * 5;
+
+  if (!hasDisplayValue(c) && !b.price_eur && !battery && !hasDisplayValue(b.maintenance?.annual_cost_eur)) return null;
 
   return (
     <Section id="costs" title="Laufende Kosten" icon={Activity}>
@@ -835,7 +863,7 @@ function CostCard({ label, value, sub, highlight }: { label: string; value: stri
 
 function EnvironmentSection({ b }: { b: Bike }) {
   const env = b.environmental ?? {};
-  const entries = Object.entries(env).filter(([_, v]) => v != null && v !== "");
+  const entries = Object.entries(env).filter(([_, v]) => hasDisplayValue(v));
   if (!entries.length) return null;
   const ICONS: Record<string, string> = {
     co2_saved_kg_year: "CO₂", fuel_saved_l_year: "Benzin", money_saved_eur_year: "Ersparnis",
@@ -847,7 +875,7 @@ function EnvironmentSection({ b }: { b: Bike }) {
         {entries.map(([k, v]) => (
           <div key={k} className="border border-emerald-500/30 bg-emerald-500/5 p-3">
             <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400">{ICONS[k] ?? k.replace(/_/g, " ")}</div>
-            <div className="font-display text-lg font-black mt-1 tabular-nums">{String(v)}</div>
+            <div className="font-display text-lg font-black mt-1 tabular-nums">{formatDisplayValue(v)}</div>
           </div>
         ))}
       </div>
@@ -857,7 +885,7 @@ function EnvironmentSection({ b }: { b: Bike }) {
 
 function SafetySection({ b }: { b: Bike }) {
   const s = b.safety_features ?? {};
-  if (!Object.keys(s).length) return null;
+  if (!Object.values(s).some(hasDisplayValue)) return null;
   const bools: [string, string][] = [
     ["integrated_lights", "Integrierte Beleuchtung"],
     ["abs", "ABS"],
