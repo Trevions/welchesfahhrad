@@ -173,8 +173,17 @@ function BikeDetailPage() {
   const { data } = useSuspenseQuery(bikeQuery(params.slug));
   const b = data.bike!;
   const heroImg = articleImageUrl(b.image_url ?? "") || b.image_url || b.gallery?.[0] || "/og.jpg";
+  const allImages = useMemo(() => {
+    const list = [b.image_url, ...(b.gallery ?? [])].filter(Boolean) as string[];
+    return Array.from(new Set(list));
+  }, [b.image_url, b.gallery]);
   const [active, setActive] = useState<string>("overview");
   const [activeImg, setActiveImg] = useState<string>(heroImg);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const openLightbox = (src: string) => {
+    const i = allImages.indexOf(src);
+    setLightboxIndex(i >= 0 ? i : 0);
+  };
   const [query, setQuery] = useState("");
 
   // Scrollspy
