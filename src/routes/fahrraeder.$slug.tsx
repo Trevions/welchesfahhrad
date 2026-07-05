@@ -219,7 +219,7 @@ function BikeDetailPage() {
             <ArrowLeft className="h-3.5 w-3.5" /> Alle Fahrräder
           </Link>
           <div className="grid lg:grid-cols-[1.1fr_1fr] gap-6 lg:gap-12 items-start">
-            <BikeGallery bike={b} active={activeImg} onSelect={setActiveImg} />
+            <BikeGallery bike={b} active={activeImg} onSelect={setActiveImg} onOpen={openLightbox} />
             <div>
               <div className="eyebrow text-signal">{b.brand}</div>
               <h1 className="font-display font-black tracking-tight leading-[0.95] text-[clamp(2rem,6vw,3.75rem)] mt-2">
