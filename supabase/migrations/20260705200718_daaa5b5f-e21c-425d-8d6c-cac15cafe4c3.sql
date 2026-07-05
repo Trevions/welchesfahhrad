@@ -1,0 +1,1 @@
+UPDATE newsletter_issues SET status='pending' WHERE id='6e3047f5-7159-479c-81d8-f50cf8ac62e6';
