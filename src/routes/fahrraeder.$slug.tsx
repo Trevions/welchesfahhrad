@@ -4,13 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ExternalLink, Zap, Check, X, ArrowLeft, Scale, Share2, Printer, Copy,
   Award, Star, ShieldCheck, Wrench, Battery, Activity, Leaf, Map as MapIcon, MessageSquare,
-  ChevronDown, Search, Calendar,
+  ChevronDown, Search, Calendar, ZoomIn,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { getPublicBikeBySlug } from "@/lib/bikes.functions";
 import { articleImageUrl } from "@/lib/article-image-url";
 import { BikeRatingRadar } from "@/components/bikes/BikeRatingRadar";
+import { BikeImageLightbox } from "@/components/bikes/BikeImageLightbox";
 import { compareStore, subscribeCompare } from "@/lib/bike-compare";
 import { BikeFavoriteButton } from "@/components/bikes/BikeFavoriteButton";
 import { ShareMenu } from "@/components/ShareMenu";
@@ -172,8 +173,17 @@ function BikeDetailPage() {
   const { data } = useSuspenseQuery(bikeQuery(params.slug));
   const b = data.bike!;
   const heroImg = articleImageUrl(b.image_url ?? "") || b.image_url || b.gallery?.[0] || "/og.jpg";
+  const allImages = useMemo(() => {
+    const list = [b.image_url, ...(b.gallery ?? [])].filter(Boolean) as string[];
+    return Array.from(new Set(list));
+  }, [b.image_url, b.gallery]);
   const [active, setActive] = useState<string>("overview");
   const [activeImg, setActiveImg] = useState<string>(heroImg);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const openLightbox = (src: string) => {
+    const i = allImages.indexOf(src);
+    setLightboxIndex(i >= 0 ? i : 0);
+  };
   const [query, setQuery] = useState("");
 
   // Scrollspy
@@ -209,7 +219,7 @@ function BikeDetailPage() {
             <ArrowLeft className="h-3.5 w-3.5" /> Alle Fahrräder
           </Link>
           <div className="grid lg:grid-cols-[1.1fr_1fr] gap-6 lg:gap-12 items-start">
-            <BikeGallery bike={b} active={activeImg} onSelect={setActiveImg} />
+            <BikeGallery bike={b} active={activeImg} onSelect={setActiveImg} onOpen={openLightbox} />
             <div>
               <div className="eyebrow text-signal">{b.brand}</div>
               <h1 className="font-display font-black tracking-tight leading-[0.95] text-[clamp(2rem,6vw,3.75rem)] mt-2">
@@ -339,15 +349,37 @@ function BikeDetailPage() {
             <h2 className="font-display font-black text-2xl md:text-3xl mb-6">Galerie</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {b.gallery.map((g, i) => (
-                <a key={i} href={articleImageUrl(g) || g} target="_blank" rel="noreferrer"
-                  className="aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
-                  <img src={articleImageUrl(g) || g} alt="" loading="lazy"
-                    className="h-full w-full object-cover hover:scale-105 transition-transform" />
-                </a>
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => openLightbox(g)}
+                  aria-label="Bild vergrößern"
+                  className="group relative aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden cursor-zoom-in"
+                >
+                  <img
+                    src={articleImageUrl(g) || g}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                  />
+                  <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 bg-black/70 text-white text-[10px] uppercase tracking-wider font-mono px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ZoomIn className="h-3 w-3" /> Zoom
+                  </span>
+                </button>
               ))}
             </div>
           </div>
         </section>
+      )}
+
+      {lightboxIndex !== null && allImages.length > 0 && (
+        <BikeImageLightbox
+          images={allImages}
+          index={lightboxIndex}
+          onIndexChange={setLightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          alt={`${b.brand} ${b.model}`}
+        />
       )}
     </article>
   );
@@ -355,7 +387,17 @@ function BikeDetailPage() {
 
 // ---------- subcomponents ----------
 
-function BikeGallery({ bike, active, onSelect }: { bike: Bike; active: string; onSelect: (s: string) => void }) {
+function BikeGallery({
+  bike,
+  active,
+  onSelect,
+  onOpen,
+}: {
+  bike: Bike;
+  active: string;
+  onSelect: (s: string) => void;
+  onOpen: (src: string) => void;
+}) {
   const main = articleImageUrl(active) || active;
   const thumbs = useMemo(() => {
     const list = [bike.image_url, ...bike.gallery].filter(Boolean) as string[];
@@ -363,15 +405,23 @@ function BikeGallery({ bike, active, onSelect }: { bike: Bike; active: string; o
   }, [bike]);
   return (
     <div>
-      <div className="relative aspect-[4/3] bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-black overflow-hidden">
+      <button
+        type="button"
+        onClick={() => onOpen(active)}
+        aria-label="Bild vergrößern"
+        className="relative w-full aspect-[4/3] bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-black overflow-hidden cursor-zoom-in group"
+      >
         <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10">
           <img
             src={main}
             alt={`${bike.brand} ${bike.model}`}
-            className="max-h-full max-w-full object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.2)]"
+            className="max-h-full max-w-full object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.2)] transition-transform duration-500 group-hover:scale-[1.02]"
           />
         </div>
-      </div>
+        <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 bg-black/70 text-white text-[10px] uppercase tracking-wider font-mono px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <ZoomIn className="h-3 w-3" /> Zoom
+        </span>
+      </button>
       {thumbs.length > 1 && (
         <div className="mt-2 grid grid-cols-6 gap-1.5">
           {thumbs.slice(0, 6).map((t, i) => {
