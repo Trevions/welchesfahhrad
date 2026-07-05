@@ -349,15 +349,37 @@ function BikeDetailPage() {
             <h2 className="font-display font-black text-2xl md:text-3xl mb-6">Galerie</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {b.gallery.map((g, i) => (
-                <a key={i} href={articleImageUrl(g) || g} target="_blank" rel="noreferrer"
-                  className="aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
-                  <img src={articleImageUrl(g) || g} alt="" loading="lazy"
-                    className="h-full w-full object-cover hover:scale-105 transition-transform" />
-                </a>
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => openLightbox(g)}
+                  aria-label="Bild vergrößern"
+                  className="group relative aspect-square bg-zinc-100 dark:bg-zinc-900 overflow-hidden cursor-zoom-in"
+                >
+                  <img
+                    src={articleImageUrl(g) || g}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                  />
+                  <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 bg-black/70 text-white text-[10px] uppercase tracking-wider font-mono px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ZoomIn className="h-3 w-3" /> Zoom
+                  </span>
+                </button>
               ))}
             </div>
           </div>
         </section>
+      )}
+
+      {lightboxIndex !== null && allImages.length > 0 && (
+        <BikeImageLightbox
+          images={allImages}
+          index={lightboxIndex}
+          onIndexChange={setLightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          alt={`${b.brand} ${b.model}`}
+        />
       )}
     </article>
   );
@@ -365,7 +387,17 @@ function BikeDetailPage() {
 
 // ---------- subcomponents ----------
 
-function BikeGallery({ bike, active, onSelect }: { bike: Bike; active: string; onSelect: (s: string) => void }) {
+function BikeGallery({
+  bike,
+  active,
+  onSelect,
+  onOpen,
+}: {
+  bike: Bike;
+  active: string;
+  onSelect: (s: string) => void;
+  onOpen: (src: string) => void;
+}) {
   const main = articleImageUrl(active) || active;
   const thumbs = useMemo(() => {
     const list = [bike.image_url, ...bike.gallery].filter(Boolean) as string[];
@@ -373,15 +405,23 @@ function BikeGallery({ bike, active, onSelect }: { bike: Bike; active: string; o
   }, [bike]);
   return (
     <div>
-      <div className="relative aspect-[4/3] bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-black overflow-hidden">
+      <button
+        type="button"
+        onClick={() => onOpen(active)}
+        aria-label="Bild vergrößern"
+        className="relative w-full aspect-[4/3] bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-black overflow-hidden cursor-zoom-in group"
+      >
         <div className="absolute inset-0 flex items-center justify-center p-6 md:p-10">
           <img
             src={main}
             alt={`${bike.brand} ${bike.model}`}
-            className="max-h-full max-w-full object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.2)]"
+            className="max-h-full max-w-full object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.2)] transition-transform duration-500 group-hover:scale-[1.02]"
           />
         </div>
-      </div>
+        <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 bg-black/70 text-white text-[10px] uppercase tracking-wider font-mono px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <ZoomIn className="h-3 w-3" /> Zoom
+        </span>
+      </button>
       {thumbs.length > 1 && (
         <div className="mt-2 grid grid-cols-6 gap-1.5">
           {thumbs.slice(0, 6).map((t, i) => {
