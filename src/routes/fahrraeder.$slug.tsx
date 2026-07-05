@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ExternalLink, Zap, Check, X, ArrowLeft, Scale, Share2, Printer, Copy,
   Award, Star, ShieldCheck, Wrench, Battery, Activity, Leaf, Map as MapIcon, MessageSquare,
-  ChevronDown, Search, Calendar,
+  ChevronDown, Search, Calendar, ZoomIn,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
