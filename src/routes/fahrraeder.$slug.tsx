@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { getPublicBikeBySlug } from "@/lib/bikes.functions";
 import { articleImageUrl } from "@/lib/article-image-url";
 import { BikeRatingRadar } from "@/components/bikes/BikeRatingRadar";
+import { BikeImageLightbox } from "@/components/bikes/BikeImageLightbox";
 import { compareStore, subscribeCompare } from "@/lib/bike-compare";
 import { BikeFavoriteButton } from "@/components/bikes/BikeFavoriteButton";
 import { ShareMenu } from "@/components/ShareMenu";
