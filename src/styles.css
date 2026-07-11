@@ -4,6 +4,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Metric-adjusted fallbacks — eliminate CLS from font swap. */
+@font-face {
+  font-family: "DM Serif Display Fallback";
+  src: local("Georgia"), local("Times New Roman");
+  size-adjust: 108%;
+  ascent-override: 92%;
+  descent-override: 26%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial"), local("Helvetica");
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+
 /*
  * RADMAP.DE — Editorial premium design system
  * Cinematic noir base, DM Serif Display editorial headlines, orange ribbon accent.
@@ -42,8 +60,8 @@
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
 
-  --font-display: "DM Serif Display", "Georgia", "Times New Roman", serif;
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "DM Serif Display", "DM Serif Display Fallback", "Georgia", "Times New Roman", serif;
+  --font-sans: "Inter", "Inter Fallback", system-ui, -apple-system, sans-serif;
 
   --shadow-glass: 0 1px 0 0 oklch(1 0 0 / 0.04) inset, 0 24px 60px -20px oklch(0 0 0 / 0.6);
   --shadow-elevated: 0 30px 80px -30px oklch(0 0 0 / 0.85);
