@@ -32,8 +32,12 @@ export function BikeCard({ bike }: { bike: Bike }) {
               src={img}
               alt={`${bike.brand} ${bike.model}`}
               loading="lazy"
+              decoding="async"
+              width={600}
+              height={450}
               className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-[1.04] drop-shadow-[0_10px_20px_rgba(0,0,0,0.15)]"
             />
+
           </div>
           {bike.category === "ebike" && (
             <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 bg-signal text-[#050505] text-[10px] uppercase tracking-wider font-bold px-2 py-1 shadow-sm">
