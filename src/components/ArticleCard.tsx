@@ -80,9 +80,14 @@ export function ArticleCard({ article, featured, index = 0, size = "md" }: Props
         <img
           src={article.image}
           alt={article.title}
-          loading="lazy"
+          loading={index != null && index < 2 ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={index === 0 ? "high" : "auto"}
+          width={800}
+          height={600}
           className="h-full w-full object-cover grayscale-[35%] transition-all duration-[1100ms] ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:grayscale-0 group-hover:scale-[1.05]"
         />
+
         <div className="absolute top-3 left-3">
           <span className="eyebrow bg-background/85 backdrop-blur-md text-signal px-2.5 py-1.5">
             {article.category}
