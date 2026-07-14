@@ -110,8 +110,12 @@ function Index() {
 
   return (
     <>
-      {/* FAHRRAD-WETTER BAR */}
-      <BikeWeatherBar />
+      {/* FAHRRAD-WETTER BAR — client-only lazy */}
+      <ClientOnly fallback={WEATHER_BAR_FALLBACK}>
+        <Suspense fallback={WEATHER_BAR_FALLBACK}>
+          <BikeWeatherBar />
+        </Suspense>
+      </ClientOnly>
 
       {/* ECO ROUTE PLANNER PROMO — button only */}
       <section className="border-b border-border bg-[#050505] relative overflow-hidden">
