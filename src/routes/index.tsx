@@ -128,7 +128,11 @@ function Index() {
           }}
         />
         <div className="relative mx-auto max-w-[1400px] px-4 md:px-8 py-5 md:py-6 flex items-center justify-end gap-2 md:gap-3 flex-nowrap">
-          <RadelScoreBadge />
+          <ClientOnly fallback={RADEL_BADGE_FALLBACK}>
+            <Suspense fallback={RADEL_BADGE_FALLBACK}>
+              <RadelScoreBadge />
+            </Suspense>
+          </ClientOnly>
           <Link
             to="/tools/eco-route"
             className="inline-flex items-center gap-2 border border-white/60 bg-signal/10 px-5 py-2.5 text-white transition-colors duration-300 hover:bg-white/10 hover:border-white/60"
@@ -315,7 +319,11 @@ function Index() {
       )}
 
       {/* PERSONALIZED — appears right under the live ticker */}
-      <ForYouStrip />
+      <ClientOnly fallback={STRIP_FALLBACK}>
+        <Suspense fallback={STRIP_FALLBACK}>
+          <ForYouStrip />
+        </Suspense>
+      </ClientOnly>
 
       {/* BROKEN GRID */}
       {broken.length > 0 && (
@@ -487,7 +495,9 @@ function Index() {
       </section>
 
       {/* BIKE SHOWCASE — replaces old Tests block */}
-      <BikeShowcase />
+      <Suspense fallback={SHOWCASE_FALLBACK}>
+        <BikeShowcase />
+      </Suspense>
 
     </>
   );
