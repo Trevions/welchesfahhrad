@@ -9,7 +9,6 @@ export const Route = createFileRoute("/impressum")({
       { name: "description", content: "Impressum und Anbieterkennzeichnung gemäß § 5 TMG und § 18 MStV für radmap.de." },
       { property: "og:title", content: "Impressum — radmap.de" },
       { property: "og:url", content: "https://radmap.de/impressum" },
-      { name: "robots", content: "noindex" },
     ],
     links: [{ rel: "canonical", href: "https://radmap.de/impressum" }],
   }),

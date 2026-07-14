@@ -8,7 +8,6 @@ export const Route = createFileRoute("/agb")({
       { name: "description", content: "Allgemeine Geschäftsbedingungen für die Nutzung von radmap.de sowie für Werbe- und Kooperationsleistungen." },
       { property: "og:title", content: "AGB — radmap.de" },
       { property: "og:url", content: "https://radmap.de/agb" },
-      { name: "robots", content: "noindex" },
     ],
     links: [{ rel: "canonical", href: "https://radmap.de/agb" }],
   }),
