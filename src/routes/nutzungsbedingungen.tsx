@@ -8,7 +8,6 @@ export const Route = createFileRoute("/nutzungsbedingungen")({
       { name: "description", content: "Nutzungsbedingungen für radmap.de nach TMG/DDG, DSA (Verordnung (EU) 2022/2065) und Urheberrecht." },
       { property: "og:title", content: "Nutzungsbedingungen — radmap.de" },
       { property: "og:url", content: "https://radmap.de/nutzungsbedingungen" },
-      { name: "robots", content: "noindex" },
     ],
     links: [{ rel: "canonical", href: "https://radmap.de/nutzungsbedingungen" }],
   }),

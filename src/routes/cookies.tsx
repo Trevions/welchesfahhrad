@@ -8,7 +8,6 @@ export const Route = createFileRoute("/cookies")({
       { name: "description", content: "Cookie-Richtlinie nach § 25 TDDDG (vormals TTDSG), ePrivacy-Richtlinie 2002/58/EG und DSGVO. Übersicht aller auf radmap.de eingesetzten Technologien." },
       { property: "og:title", content: "Cookie-Richtlinie — radmap.de" },
       { property: "og:url", content: "https://radmap.de/cookies" },
-      { name: "robots", content: "noindex" },
     ],
     links: [{ rel: "canonical", href: "https://radmap.de/cookies" }],
   }),

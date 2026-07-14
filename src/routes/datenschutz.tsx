@@ -8,7 +8,6 @@ export const Route = createFileRoute("/datenschutz")({
       { name: "description", content: "Datenschutzerklärung nach DSGVO (Verordnung (EU) 2016/679), BDSG, TTDSG und bulgarischem ZZLD für radmap.de." },
       { property: "og:title", content: "Datenschutzerklärung — radmap.de" },
       { property: "og:url", content: "https://radmap.de/datenschutz" },
-      { name: "robots", content: "noindex" },
     ],
     links: [{ rel: "canonical", href: "https://radmap.de/datenschutz" }],
   }),
