@@ -30,18 +30,86 @@ export const Route = createFileRoute("/artikel/$slug")({
     if (!res.article) throw notFound();
     return res;
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     const a = loaderData?.article;
     const seo = loaderData?.seo;
     if (!a) return { meta: [] };
     const title = seo?.seo_title || a.title;
     const description = seo?.seo_description || a.excerpt;
     const image = abs(seo?.og_image || a.image);
+    const url = abs(`/artikel/${a.slug}`);
+    const published = seo?.published_at ?? seo?.created_at ?? undefined;
+    const modified = seo?.updated_at ?? published;
+    const categorySlugMap: Record<string, string> = {
+      Nachrichten: "/nachrichten",
+      Ratgeber: "/ratgeber",
+      "E-Bikes": "/e-bikes",
+      Tests: "/tests",
+    };
+    const catUrl = abs(categorySlugMap[a.category] ?? "/nachrichten");
+    const wordCount = (a.body ?? []).reduce(
+      (n, p) => n + (typeof p === "string" ? p.trim().split(/\s+/).length : 0),
+      0,
+    );
+
+    const articleJsonLd: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "NewsArticle",
+      "@id": `${url}#article`,
+      mainEntityOfPage: { "@type": "WebPage", "@id": url },
+      url,
+      headline: a.title,
+      description: a.excerpt,
+      image: [image],
+      inLanguage: "de-DE",
+      articleSection: a.category,
+      isAccessibleForFree: true,
+      ...(wordCount ? { wordCount } : {}),
+      ...(published ? { datePublished: published } : {}),
+      ...(modified ? { dateModified: modified } : {}),
+      ...(seo?.seo_keywords ? { keywords: seo.seo_keywords } : {}),
+      author: {
+        "@type": "Organization",
+        name: "Redaktion radmap.de",
+        url: `${SITE}/redaktion`,
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "radmap.de",
+        url: SITE,
+        logo: {
+          "@type": "ImageObject",
+          url: `${SITE}/icons/icon-192.png`,
+          width: 192,
+          height: 192,
+        },
+      },
+      isPartOf: { "@type": "WebSite", "@id": `${SITE}#website`, name: "radmap.de", url: SITE },
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: ["h1", ".drop-cap"],
+      },
+    };
+
+    const breadcrumbJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Start", item: SITE + "/" },
+        { "@type": "ListItem", position: 2, name: a.category, item: catUrl },
+        { "@type": "ListItem", position: 3, name: a.title, item: url },
+      ],
+    };
+
     return {
       meta: [
         { title: `${title} | radmap.de` },
         { name: "description", content: description },
         ...(seo?.seo_keywords ? [{ name: "keywords", content: seo.seo_keywords }] : []),
+        { name: "author", content: "Redaktion radmap.de" },
+        { name: "article:published_time", content: published ?? "" },
+        { name: "article:modified_time", content: modified ?? "" },
+        { name: "article:section", content: a.category },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "article" },
@@ -51,31 +119,29 @@ export const Route = createFileRoute("/artikel/$slug")({
         { property: "og:image:alt", content: a.title },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
-        { property: "og:url", content: abs(`/artikel/${a.slug}`) },
+        { property: "og:url", content: url },
+        ...(published ? [{ property: "article:published_time", content: published }] : []),
+        ...(modified ? [{ property: "article:modified_time", content: modified }] : []),
+        { property: "article:section", content: a.category },
         { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:site", content: "@radmap_de" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
         { name: "twitter:image", content: image },
         { name: "twitter:image:alt", content: a.title },
       ],
-      links: [{ rel: "canonical", href: abs(`/artikel/${a.slug}`) }],
+      links: [
+        { rel: "canonical", href: url },
+        { rel: "alternate", hrefLang: "de-DE", href: url },
+        { rel: "alternate", hrefLang: "x-default", href: url },
+      ],
       scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: a.title,
-            description: a.excerpt,
-            image: [image],
-            datePublished: a.date,
-            author: { "@type": "Organization", name: "radmap.de" },
-            publisher: { "@type": "Organization", name: "radmap.de" },
-          }),
-        },
+        { type: "application/ld+json", children: JSON.stringify(articleJsonLd) },
+        { type: "application/ld+json", children: JSON.stringify(breadcrumbJsonLd) },
       ],
     };
   },
+
   notFoundComponent: () => (
     <div className="pt-32 px-6 text-center">
       <div className="eyebrow text-signal">Fehler</div>
