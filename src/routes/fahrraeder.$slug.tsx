@@ -80,7 +80,29 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
         ratingCount: 1,
       };
     }
-    const scripts: any[] = [{ type: "application/ld+json", children: JSON.stringify(product) }];
+    const modified = b.updated_at ?? b.published_at ?? undefined;
+    const published = b.published_at ?? b.updated_at ?? undefined;
+    if (modified) product.dateModified = modified;
+    if (published) product.releaseDate = published;
+    product.sku = b.slug;
+    product.mpn = `${b.brand}-${b.model}${b.year ? `-${b.year}` : ""}`
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, "-");
+    product.url = url;
+    const catUrl = "https://radmap.de/fahrraeder";
+    const breadcrumb = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Start", item: "https://radmap.de/" },
+        { "@type": "ListItem", position: 2, name: "Fahrräder", item: catUrl },
+        { "@type": "ListItem", position: 3, name: `${b.brand} ${b.model}`, item: url },
+      ],
+    };
+    const scripts: any[] = [
+      { type: "application/ld+json", children: JSON.stringify(product) },
+      { type: "application/ld+json", children: JSON.stringify(breadcrumb) },
+    ];
     if ((b.faq ?? []).length > 0) {
       scripts.push({
         type: "application/ld+json",
@@ -102,16 +124,27 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: desc },
         { property: "og:image", content: og },
+        { property: "og:image:alt", content: `${b.brand} ${b.model}` },
         { property: "og:url", content: url },
         { property: "og:type", content: "product" },
+        { property: "og:site_name", content: "radmap.de" },
+        { property: "og:locale", content: "de_DE" },
         { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:site", content: "@radmap_de" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: desc },
         { name: "twitter:image", content: og },
         ...(b.keywords?.length ? [{ name: "keywords", content: b.keywords.join(", ") }] : []),
       ],
-      links: [{ rel: "canonical", href: url }],
+      links: [
+        { rel: "canonical", href: url },
+        { rel: "alternate", hrefLang: "de-DE", href: url },
+        { rel: "alternate", hrefLang: "x-default", href: url },
+      ],
       scripts,
     };
   },
+
   errorComponent: ({ error }) => (
     <div className="pt-32 px-6 text-center">
       <h1 className="font-display text-3xl font-black">Fehler</h1>
