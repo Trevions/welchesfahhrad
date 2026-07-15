@@ -107,9 +107,7 @@ export const Route = createFileRoute("/artikel/$slug")({
         { name: "description", content: description },
         ...(seo?.seo_keywords ? [{ name: "keywords", content: seo.seo_keywords }] : []),
         { name: "author", content: "Redaktion radmap.de" },
-        { name: "article:published_time", content: published ?? "" },
-        { name: "article:modified_time", content: modified ?? "" },
-        { name: "article:section", content: a.category },
+
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "article" },
