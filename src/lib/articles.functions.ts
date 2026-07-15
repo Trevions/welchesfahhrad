@@ -99,6 +99,10 @@ export const getPublicArticleBySlug = createServerFn({ method: "POST" })
         seo_description: (row as any).seo_description as string | null,
         seo_keywords: (row as any).seo_keywords as string | null,
         og_image: ((row as any).og_image as string | null) || article.image,
+        published_at: ((row as any).published_at as string | null) ?? null,
+        updated_at: ((row as any).updated_at as string | null) ?? null,
+        created_at: ((row as any).created_at as string | null) ?? null,
       },
     };
   });
+
