@@ -132,6 +132,45 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children:
           "document.addEventListener('DOMContentLoaded',function(){var l=document.querySelectorAll('link[rel=\"stylesheet\"][media=\"print\"]');l.forEach(function(x){x.media='all'});});",
       },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "@id": "https://radmap.de#website",
+          name: "radmap.de",
+          alternateName: "RADMAP",
+          url: "https://radmap.de",
+          inLanguage: "de-DE",
+          publisher: { "@id": "https://radmap.de#organization" },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: "https://radmap.de/suche?q={search_term_string}",
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "@id": "https://radmap.de#organization",
+          name: "radmap.de",
+          url: "https://radmap.de",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://radmap.de/icons/icon-192.png",
+            width: 192,
+            height: 192,
+          },
+          foundingDate: "2025",
+          areaServed: "DE",
+        }),
+      },
     ],
 
   }),
