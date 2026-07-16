@@ -537,6 +537,57 @@ export type Database = {
         }
         Relationships: []
       }
+      lexikon_terms: {
+        Row: {
+          body: string
+          category: string
+          created_at: string
+          id: string
+          related_article_slugs: string[]
+          related_term_slugs: string[]
+          seo_description: string | null
+          seo_title: string | null
+          short_definition: string
+          slug: string
+          status: string
+          synonyms: string[]
+          term: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          category?: string
+          created_at?: string
+          id?: string
+          related_article_slugs?: string[]
+          related_term_slugs?: string[]
+          seo_description?: string | null
+          seo_title?: string | null
+          short_definition: string
+          slug: string
+          status?: string
+          synonyms?: string[]
+          term: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          related_article_slugs?: string[]
+          related_term_slugs?: string[]
+          seo_description?: string | null
+          seo_title?: string | null
+          short_definition?: string
+          slug?: string
+          status?: string
+          synonyms?: string[]
+          term?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       newsletter_deliveries: {
         Row: {
           attempts: number
