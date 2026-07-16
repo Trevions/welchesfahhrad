@@ -1,41 +1,45 @@
-План за поправка на импорта на един велосипед от JSON/YAML/MD файл:
+План за прилагане на SEO мастерплана. Планът е разделен на 3 фази — първо ще направя Фаза 1 (техническия фундамент), после ще питам за приоритетите на Фаза 2/3, защото част от тях изискват създаване на много ново съдържание (Lexikon, Pillar Pages).
 
-1. Да стабилизирам парсването на файловете
-- Да заменя текущия крехък YAML/frontmatter parser с по-надеждно четене за `.json`, `.yaml/.yml`, `.md/.txt` с frontmatter.
-- Markdown body-то да се използва като `description`, ако няма отделно поле.
-- Да показва ясна грешка, ако файлът е валиден като текст, но няма разпознаваеми данни за велосипед.
+---
 
-2. Да разширя мапинга на полетата
-- Да добавя много повече alias-и за немски/английски/български имена: `uvp`, `preis_ab`, `rahmenmaterial`, `gewicht`, `motor`, `akku`, `bremsen`, `schaltung`, `reifen`, `reichweite`, `geometrie`, `seo`, `faq`, `ki`, `bilder`, `galerie` и др.
-- Да нормализирам вложени структури като `technical_specs`, `specifications`, `components`, `e_bike_system`, `pros_cons`, `media`, `seo` към реалните полета в редактора.
-- Да поддържа и плоски файлове, и професионални nested JSON/YAML структури.
+## Какво вече е готово (проверих преди плана)
 
-3. Да нормализирам стойностите правилно
-- Числа с единици да се разчитат коректно: `2.999 €`, `23,5 kg`, `85 Nm`, `750 Wh`, `25 km/h`.
-- Масиви да работят и като списък, и като текст с разделители: запетая, точка и запетая, нов ред.
-- Категорията да се разпознава автоматично като `bike` или `ebike`, включително по мотор/акумулатор данни.
-- Типът да се нормализира към разрешените типове: City, Trekking, Gravel, Rennrad, Mountainbike, Cargo, Falt, Fitness, BMX, Kinder.
+- Meta/OG/Twitter/canonical/hreflang за статии и велосипеди — готово (последно обновяване).
+- `NewsArticle`, `Product`, `BreadcrumbList`, `FAQPage` (Tools), `SoftwareApplication` schema — готово.
+- `sitemap.xml` + `news-sitemap.xml` + `robots.txt` + IndexNow + GSC ping — готово.
+- Canonical/OG:URL self-reference, ISO дати, `article:published/modified_time` — готово.
+- Core Web Vitals (LCP preload, lazy, font-display swap, size-adjust, code-splitting) — готово.
+- Tools имат eigene URLs, H1, SEO текст, FAQ schema, "Zuletzt geprüft", Redaktion badge — готово.
 
-4. Да попълвам редактора професионално, без измислени технически данни
-- Да се попълнят всички реално налични полета: основни данни, съдържание, specs, e-bike, ratings, suitability, performance, geometry, costs, safety, accessories, awards, videos, FAQ, SEO.
-- Автоматично да се генерират безопасни производни полета: `slug`, `meta_title`, `meta_description`, `excerpt`, `og_image_url` fallback, когато има достатъчно входни данни.
-- Да не се измислят технически характеристики, които не присъстват във файла.
+## Фаза 1 — Sofort (в тази сесия)
 
-5. Да направя import UI-то професионално
-- След качване да показва ясно: разпознати полета, попълнени секции, липсващи важни секции, проблемни стойности.
-- Да има по-чист визуален layout вместо сегашното дълго “Попълнени: field · field · field”.
-- Да добавя “quality/completeness” индикатор за модела преди запазване.
+1. **Global WebSite + Organization + SearchAction JSON-LD** в `__root.tsx` (sitewide), със `sameAs` (ще ги оставя празни докато не ми дадеш соц. профилите).
+2. **BreadcrumbList schema** на артикулната страница `artikel.$slug.tsx` (Start → Kategorie → Artikel) — засега липсва, само на bike и tools го има.
+3. **HowTo schema** — автоматично разпознаване на "Anleitung"/"Ratgeber" статии с номерирани стъпки в тялото и генериране на `HowTo` JSON-LD (opt-in чрез frontmatter поле `howto_steps`).
+4. **`max-image-preview:large`** в root robots meta (за Discover/News rich results).
+5. **Autor-Box + "Zuletzt aktualisiert"** видимо под всяка статия (E-E-A-T).
+6. **"Weiterlesen"-Box** в края на статия — 3 свързани артикула по категория (използвам съществуващия `recommendations.ts`).
+7. **Sichtbare Breadcrumbs** на артикулните страници (Start → Kategorie → Titel), matching JSON-LD.
+8. **Alt-текст quality gate** — в `ArticleEditor` warning ако alt е празен, "bild", или само keyword-stuffing pattern.
 
-6. Да оправя грозното показване след публикуване
-- На публичната страница на велосипеда да не изглеждат празни/слаби секции непрофесионално.
-- Секции без данни да се скриват или да се показват с чист, редакционен fallback само където е логично.
-- Важните първи екрани — снимка, заглавие, цена, рейтинг, кратко описание, quick facts — да изглеждат добре дори когато файлът е непълен.
+## Фаза 2 — Тази/следващата сесия (изисква съгласие)
 
-7. Да добавя вътрешен примерен формат
-- В админ import панела да има кратък пример/шаблон за правилен JSON/YAML/MD файл за един велосипед.
-- Това ще намали бъдещи грешки при качване и ще показва кои полета се поддържат.
+9. **Lexikon секция** (`/lexikon/`, `/lexikon/$slug`) с `DefinedTerm` schema, template страница, sitemap интеграция. Ще започна с ~30 термина от списъка ти. **Пита:** искаш ли AI да генерира първоначалните дефиниции, или ще ги подадеш?
+10. **Pillar Pages** за 3-те най-силни клъстъра (Akku, Kaufberatung, Sicherheit) — редакционни hub страници с интро + линкове към cluster статиите + FAQ. **Пита:** изчакваме ли докато има повече cluster статии, или създаваме pillar-ите сега като "hub" с наличното?
+11. **Vergleichsseiten** (`/vergleich/bosch-vs-shimano` и т.н.) — 6 страници с Product comparison schema.
 
-Технически детайли:
-- Основни файлове за промяна: `BikeFileImport.tsx`, `BikeEditor.tsx`, евентуално помощен `bike-import` модул, и публичната страница `fahrraeder.$slug.tsx` за по-професионални празни състояния.
-- Не планирам промени в базата данни, защото таблицата вече има нужните полета.
-- Ще запазя single-bike flow: файлът попълва текущия редактор, не създава масов импорт.
+## Фаза 3 — Content pipeline (не е код-задача)
+
+12. Писане на 60+ клъстърни статии по списъка — това е редакционна работа, не мога да я направя автоматично без да наруша качеството. Мога да ти направя админ инструмент "Cluster Planner" който показва кои от планираните заглавия още липсват в базата.
+
+---
+
+## Технически детайли (за референция)
+
+- Файлове за Фаза 1: `src/routes/__root.tsx`, `src/routes/artikel.$slug.tsx`, `src/components/admin/ArticleEditor.tsx`, нов `src/components/articles/Breadcrumbs.tsx`, нов `src/components/articles/AuthorBox.tsx`, нов `src/components/articles/RelatedArticles.tsx`.
+- Lexikon (Фаза 2): нов `src/routes/lexikon.index.tsx` + `src/routes/lexikon.$slug.tsx`, нова таблица `lexikon_terms` в Cloud DB с GRANT+RLS, sitemap entry.
+- Няма да пипам вече готовите tools/bike SEO блокове.
+
+---
+
+Ако одобриш, изпълнявам **Фаза 1** веднага и след това ще те попитам конкретно за Фаза 2 (Lexikon initial content + Pillar strategy).

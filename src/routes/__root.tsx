@@ -99,10 +99,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Tagesaktuelle Nachrichten, Tests, Ratgeber und Kaufberatung rund um Fahrräder, E-Bikes und Radsport in Deutschland. Unabhängig und kompetent.",
       },
       { name: "author", content: "radmap.de" },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "google-site-verification", content: "_6gLgomav_z_dTAtMUX9TdQzBXEmmx_IiEx_lW1vvoM" },
       { property: "og:site_name", content: "radmap.de" },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "de_DE" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@radmap_de" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -128,6 +131,45 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         children:
           "document.addEventListener('DOMContentLoaded',function(){var l=document.querySelectorAll('link[rel=\"stylesheet\"][media=\"print\"]');l.forEach(function(x){x.media='all'});});",
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "@id": "https://radmap.de#website",
+          name: "radmap.de",
+          alternateName: "RADMAP",
+          url: "https://radmap.de",
+          inLanguage: "de-DE",
+          publisher: { "@id": "https://radmap.de#organization" },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: "https://radmap.de/suche?q={search_term_string}",
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "@id": "https://radmap.de#organization",
+          name: "radmap.de",
+          url: "https://radmap.de",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://radmap.de/icons/icon-192.png",
+            width: 192,
+            height: 192,
+          },
+          foundingDate: "2025",
+          areaServed: "DE",
+        }),
       },
     ],
 
