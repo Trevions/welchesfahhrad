@@ -204,6 +204,28 @@ function ArticlePage() {
       </div>
 
       <header className="mx-auto max-w-[1100px] px-6 md:px-8 pt-10 md:pt-20 pb-10">
+        <nav aria-label="Breadcrumb" className="mb-6 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <li><Link to="/" className="hover:text-foreground">Start</Link></li>
+            <li aria-hidden>›</li>
+            <li>
+              <Link
+                to={
+                  a.category === "Ratgeber" ? "/ratgeber"
+                  : a.category === "E-Bikes" ? "/e-bikes"
+                  : a.category === "Tests" ? "/tests"
+                  : "/nachrichten"
+                }
+                className="hover:text-foreground"
+              >
+                {a.category}
+              </Link>
+            </li>
+            <li aria-hidden>›</li>
+            <li className="text-foreground/70 truncate max-w-[60vw]" title={a.title}>{a.title}</li>
+          </ol>
+        </nav>
+
         <div className="flex items-center gap-3 animate-fade-in">
           <span className="h-px w-10 bg-signal animate-rule-grow" />
           <span className="eyebrow text-signal">{a.category}</span>
@@ -224,6 +246,17 @@ function ArticlePage() {
           <span className="text-foreground font-semibold">Von Redaktion radmap.de</span>
           <span className="h-px w-3 bg-muted-foreground/40" />
           <span>{a.date}</span>
+          {data.seo?.updated_at && data.seo?.published_at && data.seo.updated_at.slice(0, 10) !== data.seo.published_at.slice(0, 10) && (
+            <>
+              <span className="h-px w-3 bg-muted-foreground/40" />
+              <span>
+                Zuletzt aktualisiert:{" "}
+                <time dateTime={data.seo.updated_at} className="text-foreground/80">
+                  {new Date(data.seo.updated_at).toLocaleDateString("de-DE", { day: "2-digit", month: "long", year: "numeric" })}
+                </time>
+              </span>
+            </>
+          )}
           <span className="h-px w-3 bg-muted-foreground/40" />
           <span className="inline-flex items-center gap-1.5">
             <Clock className="h-3 w-3" />
