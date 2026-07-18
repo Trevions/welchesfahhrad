@@ -1,5 +1,7 @@
+import { marked } from "marked";
 import type { Bike } from "@/lib/bike-types";
 import { articleImageUrl } from "@/lib/article-image-url";
+
 
 /**
  * BikePrintSheet — A dedicated, print-only datasheet for a bike.
@@ -102,9 +104,15 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
       {/* Description */}
       {b.description && (
         <PrintSection title="Beschreibung">
-          <p className="print-body-text">{b.description}</p>
+          <div
+            className="print-prose"
+            dangerouslySetInnerHTML={{
+              __html: marked.parse(b.description, { async: false, breaks: false }) as string,
+            }}
+          />
         </PrintSection>
       )}
+
 
       {/* Ausstattung / Specs */}
       {hasAnySpec(b) && (
