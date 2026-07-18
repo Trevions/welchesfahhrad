@@ -5,6 +5,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getPublicArticleBySlug, getPublicArticles } from "@/lib/articles.functions";
 import { ShareMenu } from "@/components/ShareMenu";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { ReportArticleDialog } from "@/components/ReportArticleDialog";
 import { markArticleRead } from "@/lib/read-articles";
 
 
