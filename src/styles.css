@@ -801,6 +801,124 @@
   line-height: 1.5;
 }
 
+/* ============================================================
+   Intelligent page-break rules for print
+   - Headings never end a page alone (page-break-after: avoid)
+   - Tables never split a row; header row repeats on each page
+   - List items, KV cells, rating cells, FAQ items stay atomic
+   - Orphans/widows protect paragraphs from single dangling lines
+   - Logical grouping: title+hero, pros/cons, ratings-grid
+   ============================================================ */
+@media print {
+  /* Never orphan a heading */
+  .print-sheet h1,
+  .print-sheet h2,
+  .print-sheet h3,
+  .print-sheet h4,
+  .print-sheet .print-h1,
+  .print-sheet .print-h2,
+  .print-sheet .print-subhead {
+    page-break-after: avoid;
+    break-after: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Keep the title block glued to the hero row */
+  .print-sheet .print-title-block {
+    page-break-after: avoid;
+    break-after: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Tables: keep rows intact, repeat header on new pages */
+  .print-sheet .print-table { page-break-inside: auto; break-inside: auto; }
+  .print-sheet .print-table thead { display: table-header-group; }
+  .print-sheet .print-table tfoot { display: table-footer-group; }
+  .print-sheet .print-table tr,
+  .print-sheet .print-table th,
+  .print-sheet .print-table td {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  /* Lists — items stay atomic; keep the first two items with the heading */
+  .print-sheet ul, .print-sheet ol,
+  .print-sheet .print-list,
+  .print-sheet .print-prose ul,
+  .print-sheet .print-prose ol {
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+  .print-sheet li,
+  .print-sheet .print-list li,
+  .print-sheet .print-prose li {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    orphans: 2;
+    widows: 2;
+  }
+
+  /* Paragraphs — no single dangling lines */
+  .print-sheet p,
+  .print-sheet .print-body-text,
+  .print-sheet .print-prose p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Atomic cells */
+  .print-sheet .print-kv,
+  .print-sheet .print-rating-cell,
+  .print-sheet .print-faq-item,
+  .print-sheet .print-hero-img,
+  .print-sheet figure,
+  .print-sheet img {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Two-column blocks (Stärken/Schwächen) — try to keep together but allow
+     splitting if truly oversized. Each column keeps its own subhead+list glued. */
+  .print-sheet .print-two-col > div {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Rating grid — keep the whole set together when it fits (typ. 6 cells) */
+  .print-sheet .print-grid-4 {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Hero row stays as one visual unit */
+  .print-sheet .print-hero-row {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Footer disclaimer never splits */
+  .print-sheet .print-footer-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Prose headings pull following content with them */
+  .print-sheet .print-prose h2,
+  .print-sheet .print-prose h3,
+  .print-sheet .print-prose h4 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  .print-sheet .print-prose blockquote,
+  .print-sheet .print-prose pre {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+
 .print-sheet .print-footer-block {
   margin-top: 14pt;
   padding-top: 6pt;
