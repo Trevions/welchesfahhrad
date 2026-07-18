@@ -83,6 +83,7 @@ import { Route as AuthenticatedMnvUsersRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMnvNewsletterRouteImport } from './routes/_authenticated/mnv.newsletter'
 import { Route as AuthenticatedMnvMessagesRouteImport } from './routes/_authenticated/mnv.messages'
 import { Route as AuthenticatedMnvMediaRouteImport } from './routes/_authenticated/mnv.media'
+import { Route as AuthenticatedMnvLexikonRouteImport } from './routes/_authenticated/mnv.lexikon'
 import { Route as AuthenticatedMnvBikesRouteImport } from './routes/_authenticated/mnv.bikes'
 import { Route as AuthenticatedMnvAutoArticlesRouteImport } from './routes/_authenticated/mnv.auto-articles'
 import { Route as AuthenticatedMnvArticlesRouteImport } from './routes/_authenticated/mnv.articles'
@@ -92,6 +93,8 @@ import { Route as ApiPublicNewsletterDispatchRouteImport } from './routes/api.pu
 import { Route as ApiPublicHooksLexikonChangedRouteImport } from './routes/api.public.hooks.lexikon-changed'
 import { Route as ApiPublicArticlesAutoGenerateRouteImport } from './routes/api.public.articles.auto-generate'
 import { Route as ApiPublicArticleImagePathRouteImport } from './routes/api.public.article-image.$path'
+import { Route as AuthenticatedMnvLexikonNewRouteImport } from './routes/_authenticated/mnv.lexikon_.new'
+import { Route as AuthenticatedMnvLexikonIdRouteImport } from './routes/_authenticated/mnv.lexikon_.$id'
 import { Route as AuthenticatedMnvBikesNewRouteImport } from './routes/_authenticated/mnv.bikes_.new'
 import { Route as AuthenticatedMnvBikesIdRouteImport } from './routes/_authenticated/mnv.bikes_.$id'
 import { Route as AuthenticatedMnvArticlesNewRouteImport } from './routes/_authenticated/mnv.articles_.new'
@@ -473,6 +476,11 @@ const AuthenticatedMnvMediaRoute = AuthenticatedMnvMediaRouteImport.update({
   path: '/media',
   getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
+const AuthenticatedMnvLexikonRoute = AuthenticatedMnvLexikonRouteImport.update({
+  id: '/lexikon',
+  path: '/lexikon',
+  getParentRoute: () => AuthenticatedMnvRoute,
+} as any)
 const AuthenticatedMnvBikesRoute = AuthenticatedMnvBikesRouteImport.update({
   id: '/bikes',
   path: '/bikes',
@@ -525,6 +533,18 @@ const ApiPublicArticleImagePathRoute =
     id: '/api/public/article-image/$path',
     path: '/api/public/article-image/$path',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedMnvLexikonNewRoute =
+  AuthenticatedMnvLexikonNewRouteImport.update({
+    id: '/lexikon_/new',
+    path: '/lexikon/new',
+    getParentRoute: () => AuthenticatedMnvRoute,
+  } as any)
+const AuthenticatedMnvLexikonIdRoute =
+  AuthenticatedMnvLexikonIdRouteImport.update({
+    id: '/lexikon_/$id',
+    path: '/lexikon/$id',
+    getParentRoute: () => AuthenticatedMnvRoute,
   } as any)
 const AuthenticatedMnvBikesNewRoute =
   AuthenticatedMnvBikesNewRouteImport.update({
@@ -622,6 +642,7 @@ export interface FileRoutesByFullPath {
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/mnv/bikes': typeof AuthenticatedMnvBikesRoute
+  '/mnv/lexikon': typeof AuthenticatedMnvLexikonRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
@@ -631,6 +652,8 @@ export interface FileRoutesByFullPath {
   '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
   '/mnv/bikes/$id': typeof AuthenticatedMnvBikesIdRoute
   '/mnv/bikes/new': typeof AuthenticatedMnvBikesNewRoute
+  '/mnv/lexikon/$id': typeof AuthenticatedMnvLexikonIdRoute
+  '/mnv/lexikon/new': typeof AuthenticatedMnvLexikonNewRoute
   '/api/public/article-image/$path': typeof ApiPublicArticleImagePathRoute
   '/api/public/articles/auto-generate': typeof ApiPublicArticlesAutoGenerateRoute
   '/api/public/hooks/lexikon-changed': typeof ApiPublicHooksLexikonChangedRoute
@@ -708,6 +731,7 @@ export interface FileRoutesByTo {
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/mnv/bikes': typeof AuthenticatedMnvBikesRoute
+  '/mnv/lexikon': typeof AuthenticatedMnvLexikonRoute
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
@@ -717,6 +741,8 @@ export interface FileRoutesByTo {
   '/mnv/articles/new': typeof AuthenticatedMnvArticlesNewRoute
   '/mnv/bikes/$id': typeof AuthenticatedMnvBikesIdRoute
   '/mnv/bikes/new': typeof AuthenticatedMnvBikesNewRoute
+  '/mnv/lexikon/$id': typeof AuthenticatedMnvLexikonIdRoute
+  '/mnv/lexikon/new': typeof AuthenticatedMnvLexikonNewRoute
   '/api/public/article-image/$path': typeof ApiPublicArticleImagePathRoute
   '/api/public/articles/auto-generate': typeof ApiPublicArticlesAutoGenerateRoute
   '/api/public/hooks/lexikon-changed': typeof ApiPublicHooksLexikonChangedRoute
@@ -798,6 +824,7 @@ export interface FileRoutesById {
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/_authenticated/mnv/bikes': typeof AuthenticatedMnvBikesRoute
+  '/_authenticated/mnv/lexikon': typeof AuthenticatedMnvLexikonRoute
   '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/_authenticated/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/_authenticated/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
@@ -807,6 +834,8 @@ export interface FileRoutesById {
   '/_authenticated/mnv/articles_/new': typeof AuthenticatedMnvArticlesNewRoute
   '/_authenticated/mnv/bikes_/$id': typeof AuthenticatedMnvBikesIdRoute
   '/_authenticated/mnv/bikes_/new': typeof AuthenticatedMnvBikesNewRoute
+  '/_authenticated/mnv/lexikon_/$id': typeof AuthenticatedMnvLexikonIdRoute
+  '/_authenticated/mnv/lexikon_/new': typeof AuthenticatedMnvLexikonNewRoute
   '/api/public/article-image/$path': typeof ApiPublicArticleImagePathRoute
   '/api/public/articles/auto-generate': typeof ApiPublicArticlesAutoGenerateRoute
   '/api/public/hooks/lexikon-changed': typeof ApiPublicHooksLexikonChangedRoute
@@ -888,6 +917,7 @@ export interface FileRouteTypes {
     | '/mnv/articles'
     | '/mnv/auto-articles'
     | '/mnv/bikes'
+    | '/mnv/lexikon'
     | '/mnv/media'
     | '/mnv/messages'
     | '/mnv/newsletter'
@@ -897,6 +927,8 @@ export interface FileRouteTypes {
     | '/mnv/articles/new'
     | '/mnv/bikes/$id'
     | '/mnv/bikes/new'
+    | '/mnv/lexikon/$id'
+    | '/mnv/lexikon/new'
     | '/api/public/article-image/$path'
     | '/api/public/articles/auto-generate'
     | '/api/public/hooks/lexikon-changed'
@@ -974,6 +1006,7 @@ export interface FileRouteTypes {
     | '/mnv/articles'
     | '/mnv/auto-articles'
     | '/mnv/bikes'
+    | '/mnv/lexikon'
     | '/mnv/media'
     | '/mnv/messages'
     | '/mnv/newsletter'
@@ -983,6 +1016,8 @@ export interface FileRouteTypes {
     | '/mnv/articles/new'
     | '/mnv/bikes/$id'
     | '/mnv/bikes/new'
+    | '/mnv/lexikon/$id'
+    | '/mnv/lexikon/new'
     | '/api/public/article-image/$path'
     | '/api/public/articles/auto-generate'
     | '/api/public/hooks/lexikon-changed'
@@ -1063,6 +1098,7 @@ export interface FileRouteTypes {
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/auto-articles'
     | '/_authenticated/mnv/bikes'
+    | '/_authenticated/mnv/lexikon'
     | '/_authenticated/mnv/media'
     | '/_authenticated/mnv/messages'
     | '/_authenticated/mnv/newsletter'
@@ -1072,6 +1108,8 @@ export interface FileRouteTypes {
     | '/_authenticated/mnv/articles_/new'
     | '/_authenticated/mnv/bikes_/$id'
     | '/_authenticated/mnv/bikes_/new'
+    | '/_authenticated/mnv/lexikon_/$id'
+    | '/_authenticated/mnv/lexikon_/new'
     | '/api/public/article-image/$path'
     | '/api/public/articles/auto-generate'
     | '/api/public/hooks/lexikon-changed'
@@ -1643,6 +1681,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMnvMediaRouteImport
       parentRoute: typeof AuthenticatedMnvRoute
     }
+    '/_authenticated/mnv/lexikon': {
+      id: '/_authenticated/mnv/lexikon'
+      path: '/lexikon'
+      fullPath: '/mnv/lexikon'
+      preLoaderRoute: typeof AuthenticatedMnvLexikonRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
     '/_authenticated/mnv/bikes': {
       id: '/_authenticated/mnv/bikes'
       path: '/bikes'
@@ -1706,6 +1751,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicArticleImagePathRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/mnv/lexikon_/new': {
+      id: '/_authenticated/mnv/lexikon_/new'
+      path: '/lexikon/new'
+      fullPath: '/mnv/lexikon/new'
+      preLoaderRoute: typeof AuthenticatedMnvLexikonNewRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
+    '/_authenticated/mnv/lexikon_/$id': {
+      id: '/_authenticated/mnv/lexikon_/$id'
+      path: '/lexikon/$id'
+      fullPath: '/mnv/lexikon/$id'
+      preLoaderRoute: typeof AuthenticatedMnvLexikonIdRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
     '/_authenticated/mnv/bikes_/new': {
       id: '/_authenticated/mnv/bikes_/new'
       path: '/bikes/new'
@@ -1741,6 +1800,7 @@ interface AuthenticatedMnvRouteChildren {
   AuthenticatedMnvArticlesRoute: typeof AuthenticatedMnvArticlesRoute
   AuthenticatedMnvAutoArticlesRoute: typeof AuthenticatedMnvAutoArticlesRoute
   AuthenticatedMnvBikesRoute: typeof AuthenticatedMnvBikesRoute
+  AuthenticatedMnvLexikonRoute: typeof AuthenticatedMnvLexikonRoute
   AuthenticatedMnvMediaRoute: typeof AuthenticatedMnvMediaRoute
   AuthenticatedMnvMessagesRoute: typeof AuthenticatedMnvMessagesRoute
   AuthenticatedMnvNewsletterRoute: typeof AuthenticatedMnvNewsletterRoute
@@ -1750,12 +1810,15 @@ interface AuthenticatedMnvRouteChildren {
   AuthenticatedMnvArticlesNewRoute: typeof AuthenticatedMnvArticlesNewRoute
   AuthenticatedMnvBikesIdRoute: typeof AuthenticatedMnvBikesIdRoute
   AuthenticatedMnvBikesNewRoute: typeof AuthenticatedMnvBikesNewRoute
+  AuthenticatedMnvLexikonIdRoute: typeof AuthenticatedMnvLexikonIdRoute
+  AuthenticatedMnvLexikonNewRoute: typeof AuthenticatedMnvLexikonNewRoute
 }
 
 const AuthenticatedMnvRouteChildren: AuthenticatedMnvRouteChildren = {
   AuthenticatedMnvArticlesRoute: AuthenticatedMnvArticlesRoute,
   AuthenticatedMnvAutoArticlesRoute: AuthenticatedMnvAutoArticlesRoute,
   AuthenticatedMnvBikesRoute: AuthenticatedMnvBikesRoute,
+  AuthenticatedMnvLexikonRoute: AuthenticatedMnvLexikonRoute,
   AuthenticatedMnvMediaRoute: AuthenticatedMnvMediaRoute,
   AuthenticatedMnvMessagesRoute: AuthenticatedMnvMessagesRoute,
   AuthenticatedMnvNewsletterRoute: AuthenticatedMnvNewsletterRoute,
@@ -1765,6 +1828,8 @@ const AuthenticatedMnvRouteChildren: AuthenticatedMnvRouteChildren = {
   AuthenticatedMnvArticlesNewRoute: AuthenticatedMnvArticlesNewRoute,
   AuthenticatedMnvBikesIdRoute: AuthenticatedMnvBikesIdRoute,
   AuthenticatedMnvBikesNewRoute: AuthenticatedMnvBikesNewRoute,
+  AuthenticatedMnvLexikonIdRoute: AuthenticatedMnvLexikonIdRoute,
+  AuthenticatedMnvLexikonNewRoute: AuthenticatedMnvLexikonNewRoute,
 }
 
 const AuthenticatedMnvRouteWithChildren =
