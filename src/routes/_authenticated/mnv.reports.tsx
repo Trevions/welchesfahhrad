@@ -6,11 +6,24 @@ import {
   listArticleReports,
   updateArticleReportStatus,
   deleteArticleReport,
+  replyToArticleReport,
 } from "@/lib/article-reports.functions";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Flag,
   Mail,
@@ -20,9 +33,12 @@ import {
   Search as SearchIcon,
   ArrowLeft,
   ExternalLink,
+  Loader2,
+  Send,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/_authenticated/mnv/reports")({
   component: ReportsPage,
