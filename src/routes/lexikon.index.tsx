@@ -313,7 +313,6 @@ function LexikonIndex() {
                 ) : (
                   <ul className="max-h-[70vh] overflow-y-auto divide-y divide-border">
                     {suggestions.map((s, i) => {
-                      const catHref = categoryHref(s.category);
                       const artCount = (s.related_article_slugs ?? []).length;
                       return (
                         <li key={s.slug}>
