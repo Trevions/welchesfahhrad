@@ -802,8 +802,14 @@ function SpecsSection({ b }: { b: Bike }) {
                   <Accordion type="multiple" className={`${simple.length > 0 ? "mt-6" : ""} space-y-2`}>
                     {complex.map(([k, v]) => (
                       <AccordionItem key={k} value={k} className="border border-border bg-muted/20 rounded-none">
-                        <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                        <AccordionTrigger className="px-4 py-3 hover:no-underline group hover:bg-muted/40 transition-colors">
                           <span className="eyebrow text-signal">{humanizeKey(k)}</span>
+                          <span className="ml-auto mr-2 text-[11px] uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors hidden group-data-[state=closed]:inline sm:inline">
+                            Details anzeigen
+                          </span>
+                          <span className="ml-auto mr-2 text-[11px] uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors hidden group-data-[state=open]:inline sm:inline">
+                            Details ausblenden
+                          </span>
                         </AccordionTrigger>
                         <AccordionContent className="px-4 pb-4">
                           <SmartValue value={v} />
