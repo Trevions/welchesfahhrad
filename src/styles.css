@@ -497,9 +497,14 @@
   }
 
   /* Hide chrome that shouldn't appear on paper */
-  header nav, footer, [role="banner"] nav, [data-lov-hidden-in-print] {
+  /* Hide site chrome (header, mobile header, footer, bottom nav, toasts) on print.
+     The bike detail article itself is hidden via Tailwind `print:hidden`. */
+  header, footer, nav,
+  [data-sonner-toaster], [data-radix-popper-content-wrapper],
+  [data-lov-hidden-in-print] {
     display: none !important;
   }
+
 }
 
 /* Print sheet styles (also scoped via `.print-sheet`, so they are inert on screen
