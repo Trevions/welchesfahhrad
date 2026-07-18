@@ -1,5 +1,7 @@
+import { marked } from "marked";
 import type { Bike } from "@/lib/bike-types";
 import { articleImageUrl } from "@/lib/article-image-url";
+
 
 /**
  * BikePrintSheet — A dedicated, print-only datasheet for a bike.
