@@ -111,6 +111,29 @@ function ReportsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const replyMut = useMutation({
+    mutationFn: (vars: { id: string; subject: string; message: string; markResolved: boolean }) =>
+      sendReply({ data: vars }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["article-reports"] });
+      qc.invalidateQueries({ queryKey: ["reports-unread"] });
+      setReplyOpen(false);
+      setReplyMessage("");
+      toast.success("Antwort gesendet");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const openReply = () => {
+    if (!selected) return;
+    setReplySubject(`Re: Deine Meldung zu „${selected.article_title ?? selected.article_slug}"`);
+    setReplyMessage(
+      `vielen Dank für deine Rückmeldung zu unserem Artikel. Wir haben deinen Hinweis geprüft und möchten dir Folgendes mitteilen:\n\n\n\nFalls du weitere Fragen hast, antworte einfach direkt auf diese E-Mail.`,
+    );
+    setReplyResolve(true);
+    setReplyOpen(true);
+  };
+
   const openReport = (m: Report) => {
     setSelectedId(m.id);
     if (m.status === "new") {
