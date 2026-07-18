@@ -82,6 +82,10 @@ function ConsentPage() {
   }, [session, authorization_id]);
 
   async function decide(approve: boolean) {
+    if (approve && !isAdmin) {
+      setDecisionError("Nur Admins dürfen MCP-Zugriff gewähren.");
+      return;
+    }
     setBusy(true);
     setDecisionError(null);
     const api = oauth();
@@ -93,6 +97,7 @@ function ConsentPage() {
     if (!target) { setBusy(false); setDecisionError("Keine Weiterleitung erhalten."); return; }
     window.location.href = target;
   }
+
 
   if (checking) {
     return (
