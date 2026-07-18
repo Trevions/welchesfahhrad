@@ -88,6 +88,8 @@ function ReportsPage() {
   const [replyResolve, setReplyResolve] = useState(true);
 
 
+  const fetchMessages = useServerFn(listArticleReportMessages);
+
   const { data, isLoading } = useQuery({
     queryKey: ["article-reports", filter, search],
     queryFn: () =>
@@ -105,6 +107,14 @@ function ReportsPage() {
     () => reports.find((m) => m.id === selectedId) ?? null,
     [reports, selectedId],
   );
+
+  const { data: threadData } = useQuery({
+    queryKey: ["article-report-messages", selectedId],
+    queryFn: () => fetchMessages({ data: { report_id: selectedId! } }),
+    enabled: !!selectedId,
+    refetchInterval: selectedId ? 20_000 : false,
+  });
+  const messages: ThreadMessage[] = (threadData?.messages ?? []) as ThreadMessage[];
 
   const statusMut = useMutation({
     mutationFn: (vars: { id: string; status: Report["status"] }) =>
