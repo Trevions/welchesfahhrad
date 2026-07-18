@@ -109,7 +109,12 @@ export const Route = createFileRoute("/lexikon/$slug")({
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
       ],
-      links: [{ rel: "canonical", href: url }],
+      links: [
+        { rel: "canonical", href: url },
+        { rel: "alternate", hrefLang: "de", href: url },
+        { rel: "alternate", hrefLang: "de-DE", href: url },
+        { rel: "alternate", hrefLang: "x-default", href: url },
+      ],
       scripts: [
         { type: "application/ld+json", children: JSON.stringify(definedTerm) },
         { type: "application/ld+json", children: JSON.stringify(article) },
