@@ -132,10 +132,20 @@ function ConsentPage() {
         {loadError && <div className="text-sm text-rose-400">{loadError}</div>}
         {decisionError && <div role="alert" className="text-sm text-rose-400">{decisionError}</div>}
 
+        {isAdmin === false && (
+          <div className="rounded-lg border border-rose-900/60 bg-rose-950/40 p-3 text-sm text-rose-200">
+            Dein Konto hat keine Admin-Rolle. Nur Admins dürfen externe MCP-Clients
+            mit radmap.de verbinden. Bitte kontaktiere einen Administrator.
+          </div>
+        )}
+        {isAdmin === null && session && (
+          <div className="text-xs text-zinc-500">Prüfe Admin-Berechtigung…</div>
+        )}
+
         <div className="flex gap-3">
           <Button
-            className="flex-1 bg-[#FF6A1A] text-black hover:bg-[#ff7f38]"
-            disabled={busy || !!loadError || !details}
+            className="flex-1 bg-[#FF6A1A] text-black hover:bg-[#ff7f38] disabled:opacity-40"
+            disabled={busy || !!loadError || !details || isAdmin !== true}
             onClick={() => decide(true)}
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Zugriff erlauben"}
@@ -149,6 +159,7 @@ function ConsentPage() {
             Ablehnen
           </Button>
         </div>
+
 
         <p className="text-[11px] text-zinc-600">
           Aktionen werden mit deinen Admin-Rechten ausgeführt. Du kannst den Zugriff
