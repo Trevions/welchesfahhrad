@@ -1089,8 +1089,8 @@ function MaintenanceSection({ b }: { b: Bike }) {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
         {Object.entries(m).filter(([_, v]) => hasDisplayValue(v)).map(([k, v]) => (
           <div key={k} className="border border-border p-4 bg-card">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.replace(/_/g, " ")}</div>
-            <div className="font-display text-base font-black mt-1">{formatDisplayValue(v)}</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">{humanizeKey(k)}</div>
+            <div className="text-sm"><SmartValue value={v} /></div>
           </div>
         ))}
       </div>
