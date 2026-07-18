@@ -554,3 +554,91 @@ function ReportsPage() {
   );
 }
 
+function stripHtml(html: string | null | undefined): string {
+  if (!html) return "";
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
+function MessageBubble({
+  direction,
+  from,
+  fromName,
+  subject,
+  body,
+  createdAt,
+  isOriginal,
+}: {
+  direction: "inbound" | "outbound" | "auto_reply";
+  from: string;
+  fromName: string;
+  subject: string | null;
+  body: string;
+  createdAt: string;
+  isOriginal?: boolean;
+}) {
+  const isOutbound = direction === "outbound" || direction === "auto_reply";
+  const label =
+    direction === "auto_reply"
+      ? "Automatische Antwort"
+      : direction === "outbound"
+      ? "Redaktion → Leser"
+      : isOriginal
+      ? "Ursprüngliche Meldung"
+      : "Antwort vom Leser";
+
+  return (
+    <div
+      className={cn(
+        "rounded-lg border p-4",
+        isOutbound
+          ? "bg-[#FF6A1A]/5 border-[#FF6A1A]/20 ml-6"
+          : "bg-zinc-900/60 border-zinc-800 mr-6",
+      )}
+    >
+      <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+        <div className="flex items-center gap-2 min-w-0">
+          <Badge
+            variant="outline"
+            className={cn(
+              "text-[9px] uppercase tracking-wider border px-1.5 py-0",
+              isOutbound
+                ? "border-[#FF6A1A]/40 text-[#FF6A1A] bg-[#FF6A1A]/5"
+                : "border-zinc-700 text-zinc-400 bg-zinc-950",
+            )}
+          >
+            {label}
+          </Badge>
+          <span className="text-[11px] text-zinc-500 truncate">
+            {fromName} · {from}
+          </span>
+        </div>
+        <span className="text-[10px] text-zinc-600 tabular-nums shrink-0">
+          {new Date(createdAt).toLocaleString("de-DE", {
+            dateStyle: "short",
+            timeStyle: "short",
+          })}
+        </span>
+      </div>
+      {subject && (
+        <div className="text-[12px] font-medium text-zinc-200 mb-2 truncate">
+          {subject}
+        </div>
+      )}
+      <pre className="whitespace-pre-wrap font-sans text-[13px] text-zinc-200 leading-relaxed break-words">
+        {body}
+      </pre>
+    </div>
+  );
+}
+
