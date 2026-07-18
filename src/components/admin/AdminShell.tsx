@@ -15,12 +15,14 @@ import {
   Sparkles,
   Bike,
   BookOpen,
+  Flag,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyAccess } from "@/lib/admin.functions";
 import { getUnreadContactCount } from "@/lib/contact.functions";
+import { getUnreadArticleReportCount } from "@/lib/article-reports.functions";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -32,6 +34,7 @@ const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: bo
   { to: "/mnv/lexikon", label: "Lexikon", icon: BookOpen },
   { to: "/mnv/auto-articles", label: "Auto-Artikel", icon: Sparkles },
   { to: "/mnv/messages", label: "Nachrichten", icon: Inbox, key: "messages" },
+  { to: "/mnv/reports", label: "Meldungen", icon: Flag, key: "reports" },
   { to: "/mnv/newsletter", label: "Newsletter", icon: Mail },
   { to: "/mnv/media", label: "Medien", icon: ImageIcon },
   { to: "/mnv/users", label: "Benutzer", icon: Users },
@@ -66,6 +69,15 @@ export function AdminShell({
     refetchInterval: 30_000,
   });
   const unread = unreadData?.unread ?? 0;
+
+  const fetchReportsUnread = useServerFn(getUnreadArticleReportCount);
+  const { data: reportsUnreadData } = useQuery({
+    queryKey: ["reports-unread"],
+    queryFn: () => fetchReportsUnread(),
+    enabled: !!access && (access.isAdmin || access.isEditor),
+    refetchInterval: 30_000,
+  });
+  const reportsUnread = reportsUnreadData?.unread ?? 0;
 
   useEffect(() => {
     if (!isLoading && access && !access.isAdmin && !access.isEditor) {
@@ -124,6 +136,11 @@ export function AdminShell({
                 {item.key === "messages" && unread > 0 && (
                   <span className="ml-auto bg-[#FF6A1A] text-zinc-950 text-[10px] font-bold tabular-nums px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                     {unread > 99 ? "99+" : unread}
+                  </span>
+                )}
+                {item.key === "reports" && reportsUnread > 0 && (
+                  <span className="ml-auto bg-[#FF6A1A] text-zinc-950 text-[10px] font-bold tabular-nums px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                    {reportsUnread > 99 ? "99+" : reportsUnread}
                   </span>
                 )}
               </Link>

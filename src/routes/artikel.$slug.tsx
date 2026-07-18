@@ -339,9 +339,17 @@ function ArticlePage() {
                 </p>
               ),
             )}
+
+            <div className="mt-12 pt-6 border-t border-border flex items-center justify-between gap-4">
+              <p className="text-xs text-muted-foreground">
+                Etwas stimmt nicht mit diesem Artikel?
+              </p>
+              <ReportArticleDialog articleSlug={a.slug} articleTitle={a.title} />
+            </div>
           </div>
         </div>
       </div>
+
 
       {related.length > 0 && (
         <section className="border-t border-border bg-card">
