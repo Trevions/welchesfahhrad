@@ -191,3 +191,75 @@ export const deleteArticleReport = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const replyToArticleReport = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    z.object({
+      id: z.string().uuid(),
+      subject: z.string().trim().min(3).max(200),
+      message: z.string().trim().min(5).max(10000),
+      markResolved: z.boolean().optional().default(false),
+    }),
+  )
+  .handler(async ({ data, context }) => {
+    await assertStaff(context);
+
+    const { data: report, error: fetchErr } = await context.supabase
+      .from("article_reports")
+      .select("id, article_slug, article_title, reporter_name, reporter_email, reason, description")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (fetchErr) throw new Error(fetchErr.message);
+    if (!report) throw new Error("Meldung nicht gefunden");
+
+    const lovableKey = process.env.LOVABLE_API_KEY;
+    const resendKey = process.env.RESEND_API_KEY;
+    if (!lovableKey || !resendKey) {
+      throw new Error("E-Mail-Versand ist nicht konfiguriert");
+    }
+
+    const html = buildReplyEmailHtml({
+      recipientName: report.reporter_name,
+      message: data.message,
+      articleTitle: report.article_title,
+      articleSlug: report.article_slug,
+      originalReason: report.reason,
+      originalDescription: report.description,
+    });
+
+    const text =
+      `Hallo ${report.reporter_name},\n\n${data.message}\n\n` +
+      `Viele Grüße\nDie Radmap.de Redaktion\n\n` +
+      `— Bezug: ${report.article_title ?? report.article_slug}\n` +
+      `${SITE_URL}/artikel/${report.article_slug}\n`;
+
+    const resp = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": resendKey,
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [report.reporter_email],
+        reply_to: REPLY_TO,
+        subject: data.subject,
+        html,
+        text,
+      }),
+    });
+
+    if (!resp.ok) {
+      const body = await resp.text();
+      throw new Error(`E-Mail-Versand fehlgeschlagen [${resp.status}]: ${body}`);
+    }
+
+    await context.supabase
+      .from("article_reports")
+      .update({ status: data.markResolved ? "resolved" : "read" })
+      .eq("id", data.id);
+
+    return { ok: true };
+  });
