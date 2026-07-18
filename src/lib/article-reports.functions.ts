@@ -3,8 +3,8 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const FROM_EMAIL = "Radmap.de Redaktion <hallo@radmap.de>";
-const REPLY_TO = "hallo@radmap.de";
+const FROM_EMAIL = "Radmap.de Redaktion <redaktion@radmap.de>";
+const REPLY_TO = "redaktion@radmap.de";
 const SITE_URL = "https://radmap.de";
 
 function escapeHtml(s: string) {
