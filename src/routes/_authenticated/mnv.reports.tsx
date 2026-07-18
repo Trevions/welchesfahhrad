@@ -62,10 +62,16 @@ function ReportsPage() {
   const fetchList = useServerFn(listArticleReports);
   const setStatus = useServerFn(updateArticleReportStatus);
   const removeRep = useServerFn(deleteArticleReport);
+  const sendReply = useServerFn(replyToArticleReport);
 
   const [filter, setFilter] = useState<"all" | "new" | "read" | "resolved" | "archived">("all");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [replySubject, setReplySubject] = useState("");
+  const [replyMessage, setReplyMessage] = useState("");
+  const [replyResolve, setReplyResolve] = useState(true);
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["article-reports", filter, search],
