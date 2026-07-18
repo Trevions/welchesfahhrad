@@ -496,19 +496,22 @@
     print-color-adjust: exact;
   }
 
-  /* Hide chrome that shouldn't appear on paper */
-  /* Hide site chrome (header, mobile header, footer, bottom nav, toasts) on print.
-     The bike detail article itself is hidden via Tailwind `print:hidden`.
-     Elements inside .print-sheet are excluded via :not(). */
-  body > header, body > footer, body > nav,
-  .site-header, .site-footer, .site-bottom-nav,
-  [data-sonner-toaster], [data-radix-popper-content-wrapper],
-  [data-lov-hidden-in-print] {
-    display: none !important;
+  /* Hide EVERYTHING, then re-show the print sheet. This is the only reliable
+     way to strip out arbitrary chrome (Header, MobileHeader, Footer, MobileNav,
+     Cookie banner, toasts, modals) that lives outside our route. */
+  body * { visibility: hidden !important; }
+  .print-sheet, .print-sheet * { visibility: visible !important; }
+  .print-sheet {
+    display: block !important;
+    position: absolute !important;
+    left: 0; top: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    background: #ffffff !important;
   }
-
-
 }
+
 
 /* Print sheet styles (also scoped via `.print-sheet`, so they are inert on screen
    because the element itself is `hidden print:block`). */
