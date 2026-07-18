@@ -37,6 +37,7 @@ import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ToolsIndexRouteImport } from './routes/tools.index'
+import { Route as LexikonIndexRouteImport } from './routes/lexikon.index'
 import { Route as FahrraederIndexRouteImport } from './routes/fahrraeder.index'
 import { Route as ToolsWerkzeugListeRouteImport } from './routes/tools.werkzeug-liste'
 import { Route as ToolsWartungsintervalleRouteImport } from './routes/tools.wartungsintervalle'
@@ -73,6 +74,7 @@ import { Route as ToolsDiebstahlschutzRouteImport } from './routes/tools.diebsta
 import { Route as ToolsBussgeldRouteImport } from './routes/tools.bussgeld'
 import { Route as NewsletterBestaetigenRouteImport } from './routes/newsletter.bestaetigen'
 import { Route as NewsletterAbmeldenRouteImport } from './routes/newsletter.abmelden'
+import { Route as LexikonSlugRouteImport } from './routes/lexikon.$slug'
 import { Route as FahrraederSlugRouteImport } from './routes/fahrraeder.$slug'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AuthenticatedMnvRouteImport } from './routes/_authenticated/mnv'
@@ -232,6 +234,11 @@ const ToolsIndexRoute = ToolsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ToolsRoute,
+} as any)
+const LexikonIndexRoute = LexikonIndexRouteImport.update({
+  id: '/lexikon/',
+  path: '/lexikon/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const FahrraederIndexRoute = FahrraederIndexRouteImport.update({
   id: '/fahrraeder/',
@@ -418,6 +425,11 @@ const NewsletterAbmeldenRoute = NewsletterAbmeldenRouteImport.update({
   path: '/newsletter/abmelden',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LexikonSlugRoute = LexikonSlugRouteImport.update({
+  id: '/lexikon/$slug',
+  path: '/lexikon/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FahrraederSlugRoute = FahrraederSlugRouteImport.update({
   id: '/fahrraeder/$slug',
   path: '/fahrraeder/$slug',
@@ -561,6 +573,7 @@ export interface FileRoutesByFullPath {
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/fahrraeder/$slug': typeof FahrraederSlugRoute
+  '/lexikon/$slug': typeof LexikonSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
@@ -597,6 +610,7 @@ export interface FileRoutesByFullPath {
   '/tools/wartungsintervalle': typeof ToolsWartungsintervalleRoute
   '/tools/werkzeug-liste': typeof ToolsWerkzeugListeRoute
   '/fahrraeder/': typeof FahrraederIndexRoute
+  '/lexikon/': typeof LexikonIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
@@ -644,6 +658,7 @@ export interface FileRoutesByTo {
   '/vergleich': typeof VergleichRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/fahrraeder/$slug': typeof FahrraederSlugRoute
+  '/lexikon/$slug': typeof LexikonSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
@@ -680,6 +695,7 @@ export interface FileRoutesByTo {
   '/tools/wartungsintervalle': typeof ToolsWartungsintervalleRoute
   '/tools/werkzeug-liste': typeof ToolsWerkzeugListeRoute
   '/fahrraeder': typeof FahrraederIndexRoute
+  '/lexikon': typeof LexikonIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
@@ -731,6 +747,7 @@ export interface FileRoutesById {
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/fahrraeder/$slug': typeof FahrraederSlugRoute
+  '/lexikon/$slug': typeof LexikonSlugRoute
   '/newsletter/abmelden': typeof NewsletterAbmeldenRoute
   '/newsletter/bestaetigen': typeof NewsletterBestaetigenRoute
   '/tools/bussgeld': typeof ToolsBussgeldRoute
@@ -767,6 +784,7 @@ export interface FileRoutesById {
   '/tools/wartungsintervalle': typeof ToolsWartungsintervalleRoute
   '/tools/werkzeug-liste': typeof ToolsWerkzeugListeRoute
   '/fahrraeder/': typeof FahrraederIndexRoute
+  '/lexikon/': typeof LexikonIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
@@ -818,6 +836,7 @@ export interface FileRouteTypes {
     | '/mnv'
     | '/artikel/$slug'
     | '/fahrraeder/$slug'
+    | '/lexikon/$slug'
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
@@ -854,6 +873,7 @@ export interface FileRouteTypes {
     | '/tools/wartungsintervalle'
     | '/tools/werkzeug-liste'
     | '/fahrraeder/'
+    | '/lexikon/'
     | '/tools/'
     | '/mnv/articles'
     | '/mnv/auto-articles'
@@ -901,6 +921,7 @@ export interface FileRouteTypes {
     | '/vergleich'
     | '/artikel/$slug'
     | '/fahrraeder/$slug'
+    | '/lexikon/$slug'
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
@@ -937,6 +958,7 @@ export interface FileRouteTypes {
     | '/tools/wartungsintervalle'
     | '/tools/werkzeug-liste'
     | '/fahrraeder'
+    | '/lexikon'
     | '/tools'
     | '/mnv/articles'
     | '/mnv/auto-articles'
@@ -987,6 +1009,7 @@ export interface FileRouteTypes {
     | '/_authenticated/mnv'
     | '/artikel/$slug'
     | '/fahrraeder/$slug'
+    | '/lexikon/$slug'
     | '/newsletter/abmelden'
     | '/newsletter/bestaetigen'
     | '/tools/bussgeld'
@@ -1023,6 +1046,7 @@ export interface FileRouteTypes {
     | '/tools/wartungsintervalle'
     | '/tools/werkzeug-liste'
     | '/fahrraeder/'
+    | '/lexikon/'
     | '/tools/'
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/auto-articles'
@@ -1073,9 +1097,11 @@ export interface RootRouteChildren {
   VergleichRoute: typeof VergleichRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
   FahrraederSlugRoute: typeof FahrraederSlugRoute
+  LexikonSlugRoute: typeof LexikonSlugRoute
   NewsletterAbmeldenRoute: typeof NewsletterAbmeldenRoute
   NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
   FahrraederIndexRoute: typeof FahrraederIndexRoute
+  LexikonIndexRoute: typeof LexikonIndexRoute
   ApiPublicArticleImagePathRoute: typeof ApiPublicArticleImagePathRoute
   ApiPublicArticlesAutoGenerateRoute: typeof ApiPublicArticlesAutoGenerateRoute
   ApiPublicNewsletterDispatchRoute: typeof ApiPublicNewsletterDispatchRoute
@@ -1280,6 +1306,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tools/'
       preLoaderRoute: typeof ToolsIndexRouteImport
       parentRoute: typeof ToolsRoute
+    }
+    '/lexikon/': {
+      id: '/lexikon/'
+      path: '/lexikon'
+      fullPath: '/lexikon/'
+      preLoaderRoute: typeof LexikonIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/fahrraeder/': {
       id: '/fahrraeder/'
@@ -1531,6 +1564,13 @@ declare module '@tanstack/react-router' {
       path: '/newsletter/abmelden'
       fullPath: '/newsletter/abmelden'
       preLoaderRoute: typeof NewsletterAbmeldenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lexikon/$slug': {
+      id: '/lexikon/$slug'
+      path: '/lexikon/$slug'
+      fullPath: '/lexikon/$slug'
+      preLoaderRoute: typeof LexikonSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fahrraeder/$slug': {
@@ -1826,9 +1866,11 @@ const rootRouteChildren: RootRouteChildren = {
   VergleichRoute: VergleichRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
   FahrraederSlugRoute: FahrraederSlugRoute,
+  LexikonSlugRoute: LexikonSlugRoute,
   NewsletterAbmeldenRoute: NewsletterAbmeldenRoute,
   NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
   FahrraederIndexRoute: FahrraederIndexRoute,
+  LexikonIndexRoute: LexikonIndexRoute,
   ApiPublicArticleImagePathRoute: ApiPublicArticleImagePathRoute,
   ApiPublicArticlesAutoGenerateRoute: ApiPublicArticlesAutoGenerateRoute,
   ApiPublicNewsletterDispatchRoute: ApiPublicNewsletterDispatchRoute,

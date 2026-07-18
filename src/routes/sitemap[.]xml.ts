@@ -17,12 +17,20 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data } = await supabaseAdmin
-          .from("articles")
-          .select("slug, published_at, updated_at")
-          .eq("status", "published")
-          .order("published_at", { ascending: false })
-          .limit(5000);
+        const [{ data }, { data: lexikon }] = await Promise.all([
+          supabaseAdmin
+            .from("articles")
+            .select("slug, published_at, updated_at")
+            .eq("status", "published")
+            .order("published_at", { ascending: false })
+            .limit(5000),
+          supabaseAdmin
+            .from("lexikon_terms")
+            .select("slug, updated_at")
+            .eq("status", "published")
+            .limit(5000),
+        ]);
+
 
         const now = new Date().toISOString();
         const staticEntries: Array<{
@@ -76,7 +84,9 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/nutzungsbedingungen", changefreq: "yearly", priority: "0.2", lastmod: now },
           { path: "/barrierefreiheit", changefreq: "yearly", priority: "0.2", lastmod: now },
           { path: "/bildnachweise", changefreq: "monthly", priority: "0.2", lastmod: now },
+          { path: "/lexikon", changefreq: "weekly", priority: "0.8", lastmod: now },
           { path: "/mediadaten", changefreq: "monthly", priority: "0.3", lastmod: now },
+
         ];
 
         const staticXml = staticEntries
@@ -95,7 +105,16 @@ export const Route = createFileRoute("/sitemap.xml")({
           })
           .join("\n");
 
-        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${staticXml}\n${articleXml}\n</urlset>`;
+        const lexikonXml = (lexikon ?? [])
+          .map((l: any) => {
+            const lastmod = l.updated_at ?? now;
+            const loc = `${BASE_URL}/lexikon/${xmlEscape(l.slug)}`;
+            return `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`;
+          })
+          .join("\n");
+
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${staticXml}\n${articleXml}\n${lexikonXml}\n</urlset>`;
+
 
         return new Response(xml, {
           headers: {
