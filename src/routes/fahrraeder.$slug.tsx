@@ -1160,8 +1160,8 @@ function EnvironmentSection({ b }: { b: Bike }) {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {entries.map(([k, v]) => (
           <div key={k} className="border border-emerald-500/30 bg-emerald-500/5 p-3">
-            <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400">{ICONS[k] ?? k.replace(/_/g, " ")}</div>
-            <div className="font-display text-lg font-black mt-1 tabular-nums">{formatDisplayValue(v)}</div>
+            <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">{ICONS[k] ?? humanizeKey(k)}</div>
+            <div className="text-sm"><SmartValue value={v} /></div>
           </div>
         ))}
       </div>
