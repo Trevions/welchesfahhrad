@@ -71,12 +71,66 @@ export type Database = {
         }
         Relationships: []
       }
+      article_report_messages: {
+        Row: {
+          body_html: string | null
+          body_text: string | null
+          created_at: string
+          direction: string
+          from_email: string
+          id: string
+          meta: Json
+          provider_message_id: string | null
+          report_id: string | null
+          subject: string | null
+          thread_token: string
+          to_email: string
+        }
+        Insert: {
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          direction: string
+          from_email: string
+          id?: string
+          meta?: Json
+          provider_message_id?: string | null
+          report_id?: string | null
+          subject?: string | null
+          thread_token: string
+          to_email: string
+        }
+        Update: {
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          direction?: string
+          from_email?: string
+          id?: string
+          meta?: Json
+          provider_message_id?: string | null
+          report_id?: string | null
+          subject?: string | null
+          thread_token?: string
+          to_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_report_messages_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "article_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       article_reports: {
         Row: {
           article_slug: string
           article_title: string | null
           consent_at: string
           created_at: string
+          deleted_at: string | null
           description: string
           id: string
           ip_hash: string | null
@@ -84,6 +138,7 @@ export type Database = {
           reporter_email: string
           reporter_name: string
           status: string
+          thread_token: string
           updated_at: string
           user_agent: string | null
         }
@@ -92,6 +147,7 @@ export type Database = {
           article_title?: string | null
           consent_at?: string
           created_at?: string
+          deleted_at?: string | null
           description: string
           id?: string
           ip_hash?: string | null
@@ -99,6 +155,7 @@ export type Database = {
           reporter_email: string
           reporter_name: string
           status?: string
+          thread_token?: string
           updated_at?: string
           user_agent?: string | null
         }
@@ -107,6 +164,7 @@ export type Database = {
           article_title?: string | null
           consent_at?: string
           created_at?: string
+          deleted_at?: string | null
           description?: string
           id?: string
           ip_hash?: string | null
@@ -114,6 +172,7 @@ export type Database = {
           reporter_email?: string
           reporter_name?: string
           status?: string
+          thread_token?: string
           updated_at?: string
           user_agent?: string | null
         }
