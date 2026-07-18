@@ -341,7 +341,7 @@ export const replyToArticleReport = createServerFn({ method: "POST" })
       from_email: `${FROM_LOCAL}@${FROM_DOMAIN}`,
       to_email: report.reporter_email,
       subject: data.subject,
-      body_text: data.message,
+      body_text: text,
       body_html: html,
       provider_message_id: providerId,
       meta: { reply_to: replyTo },
