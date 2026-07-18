@@ -799,14 +799,18 @@ function SpecsSection({ b }: { b: Bike }) {
                   </dl>
                 )}
                 {complex.length > 0 && (
-                  <div className={`${simple.length > 0 ? "mt-6" : ""} space-y-5`}>
+                  <Accordion type="multiple" className={`${simple.length > 0 ? "mt-6" : ""} space-y-2`}>
                     {complex.map(([k, v]) => (
-                      <div key={k} className="border border-border bg-muted/20 p-4">
-                        <div className="eyebrow text-signal mb-3">{humanizeKey(k)}</div>
-                        <SmartValue value={v} />
-                      </div>
+                      <AccordionItem key={k} value={k} className="border border-border bg-muted/20 rounded-none">
+                        <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                          <span className="eyebrow text-signal">{humanizeKey(k)}</span>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-4 pb-4">
+                          <SmartValue value={v} />
+                        </AccordionContent>
+                      </AccordionItem>
                     ))}
-                  </div>
+                  </Accordion>
                 )}
               </AccordionContent>
             </AccordionItem>
