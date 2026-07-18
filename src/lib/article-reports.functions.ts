@@ -30,6 +30,8 @@ function buildReplyEmailHtml(opts: {
 }) {
   const paragraphs = opts.message
     .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0)
     .map((p) => `<p style="margin:0 0 16px;line-height:1.65;color:#27272a;font-size:15px;">${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
     .join("");
 
@@ -47,8 +49,10 @@ function buildReplyEmailHtml(opts: {
 </td></tr>
 <tr><td style="padding:32px;">
 <p style="margin:0 0 20px;font-size:15px;color:#27272a;">Hallo ${escapeHtml(opts.recipientName)},</p>
+<p style="margin:0 0 20px;line-height:1.65;color:#27272a;font-size:15px;">vielen Dank für deine Rückmeldung zu unserem Artikel. Wir haben deinen Hinweis geprüft und möchten dir Folgendes mitteilen:</p>
 ${paragraphs}
-<p style="margin:24px 0 0;font-size:15px;color:#27272a;line-height:1.6;">Viele Grüße<br><strong>Die Radmap.de Redaktion</strong></p>
+<p style="margin:24px 0 0;font-size:14px;color:#52525b;line-height:1.6;">Falls du weitere Fragen hast, antworte einfach direkt auf diese E-Mail.</p>
+<p style="margin:16px 0 0;font-size:15px;color:#27272a;line-height:1.6;">Viele Grüße<br><strong>Die Radmap.de Redaktion</strong></p>
 </td></tr>
 <tr><td style="padding:20px 32px;background:#fafafa;border-top:1px solid #f4f4f5;">
 <div style="font-size:11px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Bezug: Deine Meldung</div>
