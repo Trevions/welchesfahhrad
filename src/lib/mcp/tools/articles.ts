@@ -4,7 +4,7 @@ import { jsonResult, requireAdmin, textResult } from "../helpers";
 
 const ART_COLS = "id, slug, title, excerpt, category, status, source, read_time, view_count, published_at, updated_at, cover_image";
 const CATEGORY = z.enum(["Nachrichten", "Ratgeber", "E-Bikes", "Tests"]);
-const STATUS = z.enum(["draft", "published", "archived"]);
+const STATUS = z.enum(["draft", "published"]);
 
 export const listArticles = defineTool({
   name: "list_articles",

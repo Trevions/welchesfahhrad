@@ -14,17 +14,18 @@ export function supabaseForUser(ctx: ToolContext): SupabaseClient<Database> {
 }
 
 export async function requireAdmin(ctx: ToolContext) {
-  if (!ctx.isAuthenticated()) {
+  const userId = ctx.getUserId();
+  if (!ctx.isAuthenticated() || !userId) {
     return { error: "Nicht angemeldet." as const };
   }
   const sb = supabaseForUser(ctx);
   const { data, error } = await sb.rpc("has_role", {
-    _user_id: ctx.getUserId()!,
+    _user_id: userId,
     _role: "admin",
   });
   if (error) return { error: `Rollencheck fehlgeschlagen: ${error.message}` };
   if (!data) return { error: "Zugriff verweigert: Admin-Rolle erforderlich." };
-  return { sb };
+  return { sb, userId };
 }
 
 export function textResult(text: string, isError = false) {
