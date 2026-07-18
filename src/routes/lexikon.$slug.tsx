@@ -283,6 +283,34 @@ function LexikonTermPage() {
           </section>
         )}
 
+        {autoRelatedTerms.length > 0 && (
+          <section className="mt-12 pt-8 border-t border-border">
+            <h2 className="font-display font-bold text-2xl mb-1">Ähnliche Begriffe</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Automatisch vorgeschlagen auf Basis thematischer Überschneidungen im Lexikon.
+            </p>
+            <ul className="flex flex-wrap gap-2">
+              {autoRelatedTerms.map((r) => (
+                <li key={r.slug}>
+                  <Link
+                    to="/lexikon/$slug"
+                    params={{ slug: r.slug }}
+                    title={r.short_definition}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-card hover:border-signal hover:text-signal transition-colors text-sm"
+                  >
+                    <span className="font-semibold">{r.term}</span>
+                    {r.category && (
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {r.category}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {term.category && CATEGORY_ARTICLE_SLUG[term.category] && (
           <div className="mt-10 text-sm text-muted-foreground">
             Alle Artikel zum Thema{" "}
