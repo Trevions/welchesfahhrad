@@ -12,6 +12,7 @@ import { getPublicBikeBySlug } from "@/lib/bikes.functions";
 import { articleImageUrl } from "@/lib/article-image-url";
 import { BikeRatingRadar } from "@/components/bikes/BikeRatingRadar";
 import { BikeImageLightbox } from "@/components/bikes/BikeImageLightbox";
+import { BikePrintSheet } from "@/components/bikes/BikePrintSheet";
 import { compareStore, subscribeCompare } from "@/lib/bike-compare";
 import { BikeFavoriteButton } from "@/components/bikes/BikeFavoriteButton";
 import { ShareMenu } from "@/components/ShareMenu";
@@ -244,7 +245,9 @@ function BikeDetailPage() {
   }, [query]);
 
   return (
-    <article className="bg-background">
+    <>
+    <article className="bg-background print:hidden">
+
       {/* HERO */}
       <header id="overview" className="border-b border-border bg-card scroll-mt-24">
         <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-6 md:py-10 border-x border-border">
@@ -415,8 +418,11 @@ function BikeDetailPage() {
         />
       )}
     </article>
+    <BikePrintSheet bike={b} />
+    </>
   );
 }
+
 
 // ---------- subcomponents ----------
 
