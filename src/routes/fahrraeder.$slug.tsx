@@ -418,8 +418,11 @@ function BikeDetailPage() {
         />
       )}
     </article>
+    <BikePrintSheet bike={b} />
+    </>
   );
 }
+
 
 // ---------- subcomponents ----------
 
