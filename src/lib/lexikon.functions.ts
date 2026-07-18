@@ -19,18 +19,34 @@ export type LexikonTerm = {
 export type LexikonListItem = Pick<
   LexikonTerm,
   "slug" | "term" | "short_definition" | "category" | "synonyms"
->;
+> & { related_article_slugs: string[]; related_term_slugs: string[] };
+
+export type LexikonArticleRef = { slug: string; title: string; category: string | null };
 
 export const getLexikonTerms = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("lexikon_terms")
-    .select("slug, term, short_definition, category, synonyms")
+    .select("slug, term, short_definition, category, synonyms, related_article_slugs, related_term_slugs")
     .eq("status", "published")
     .order("term", { ascending: true })
     .limit(2000);
   if (error) throw new Error(error.message);
-  return { terms: (data ?? []) as LexikonListItem[] };
+  const terms = (data ?? []) as LexikonListItem[];
+
+  const articleSlugs = Array.from(
+    new Set(terms.flatMap((t) => t.related_article_slugs ?? []).filter(Boolean)),
+  );
+  let articles: LexikonArticleRef[] = [];
+  if (articleSlugs.length) {
+    const { data: arts } = await supabaseAdmin
+      .from("articles")
+      .select("slug, title, category")
+      .in("slug", articleSlugs)
+      .eq("status", "published");
+    articles = (arts ?? []) as LexikonArticleRef[];
+  }
+  return { terms, articles };
 });
 
 export const getLexikonTermBySlug = createServerFn({ method: "POST" })
