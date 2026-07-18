@@ -27,7 +27,7 @@ function EditLexikonTerm() {
         short_definition: term.short_definition,
         body: term.body,
         category: term.category,
-        status: term.status,
+        status: term.status === "published" ? "published" : "draft",
         synonyms: term.synonyms ?? [],
         related_article_slugs: term.related_article_slugs ?? [],
         related_term_slugs: term.related_term_slugs ?? [],
