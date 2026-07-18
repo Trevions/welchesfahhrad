@@ -62,9 +62,10 @@ export const runReadSql = defineTool({
       return textResult("Verändernde Statements nicht erlaubt.", true);
     }
     const wrapped = `select * from (${q}) as _q limit ${input.limit ?? 200}`;
-    // Falls RPC 'exec_read_sql' nicht existiert, PostgREST-Fehler zurückgeben.
-    const { data, error } = await gate.sb.rpc("exec_read_sql" as never, { _sql: wrapped } as never);
-    if (error) return textResult(`SQL: ${error.message}. Hinweis: RPC exec_read_sql muss existieren (Admin-only).`, true);
+    // Admin wurde bereits verifiziert -> Aufruf mit Service-Role (RPC ist nur für service_role freigegeben).
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.rpc("exec_read_sql" as never, { _sql: wrapped } as never);
+    if (error) return textResult(`SQL: ${error.message}`, true);
     return jsonResult({ rows: data });
   },
 });
