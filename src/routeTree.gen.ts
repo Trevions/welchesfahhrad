@@ -24,6 +24,7 @@ import { Route as NachrichtenRouteImport } from './routes/nachrichten'
 import { Route as MerklisteRouteImport } from './routes/merkliste'
 import { Route as MeinRadRouteImport } from './routes/mein-rad'
 import { Route as MediadatenRouteImport } from './routes/mediadaten'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as KarteRouteImport } from './routes/karte'
 import { Route as ImpressumRouteImport } from './routes/impressum'
@@ -78,6 +79,8 @@ import { Route as LexikonSlugRouteImport } from './routes/lexikon.$slug'
 import { Route as FahrraederSlugRouteImport } from './routes/fahrraeder.$slug'
 import { Route as ArtikelSlugRouteImport } from './routes/artikel.$slug'
 import { Route as AuthenticatedMnvRouteImport } from './routes/_authenticated/mnv'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedMnvIndexRouteImport } from './routes/_authenticated/mnv.index'
 import { Route as AuthenticatedMnvUsersRouteImport } from './routes/_authenticated/mnv.users'
 import { Route as AuthenticatedMnvNewsletterRouteImport } from './routes/_authenticated/mnv.newsletter'
@@ -87,6 +90,8 @@ import { Route as AuthenticatedMnvLexikonRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMnvBikesRouteImport } from './routes/_authenticated/mnv.bikes'
 import { Route as AuthenticatedMnvAutoArticlesRouteImport } from './routes/_authenticated/mnv.auto-articles'
 import { Route as AuthenticatedMnvArticlesRouteImport } from './routes/_authenticated/mnv.articles'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicNewsletterUnsubscribeRouteImport } from './routes/api.public.newsletter.unsubscribe'
 import { Route as ApiPublicNewsletterDispatchRouteImport } from './routes/api.public.newsletter.dispatch'
@@ -173,6 +178,11 @@ const MeinRadRoute = MeinRadRouteImport.update({
 const MediadatenRoute = MediadatenRouteImport.update({
   id: '/mediadaten',
   path: '/mediadaten',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KontaktRoute = KontaktRouteImport.update({
@@ -449,6 +459,18 @@ const AuthenticatedMnvRoute = AuthenticatedMnvRouteImport.update({
   path: '/mnv',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedMnvIndexRoute = AuthenticatedMnvIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -498,6 +520,17 @@ const AuthenticatedMnvArticlesRoute =
     path: '/articles',
     getParentRoute: () => AuthenticatedMnvRoute,
   } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -582,6 +615,7 @@ export interface FileRoutesByFullPath {
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
+  '/mcp': typeof McpRoute
   '/mediadaten': typeof MediadatenRoute
   '/mein-rad': typeof MeinRadRoute
   '/merkliste': typeof MerklisteRoute
@@ -597,6 +631,8 @@ export interface FileRoutesByFullPath {
   '/tools': typeof ToolsRouteWithChildren
   '/ueber-uns': typeof UeberUnsRoute
   '/vergleich': typeof VergleichRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/fahrraeder/$slug': typeof FahrraederSlugRoute
@@ -639,6 +675,8 @@ export interface FileRoutesByFullPath {
   '/fahrraeder/': typeof FahrraederIndexRoute
   '/lexikon/': typeof LexikonIndexRoute
   '/tools/': typeof ToolsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/mnv/bikes': typeof AuthenticatedMnvBikesRoute
@@ -673,6 +711,7 @@ export interface FileRoutesByTo {
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
+  '/mcp': typeof McpRoute
   '/mediadaten': typeof MediadatenRoute
   '/mein-rad': typeof MeinRadRoute
   '/merkliste': typeof MerklisteRoute
@@ -687,6 +726,8 @@ export interface FileRoutesByTo {
   '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/vergleich': typeof VergleichRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/fahrraeder/$slug': typeof FahrraederSlugRoute
   '/lexikon/$slug': typeof LexikonSlugRoute
@@ -728,6 +769,8 @@ export interface FileRoutesByTo {
   '/fahrraeder': typeof FahrraederIndexRoute
   '/lexikon': typeof LexikonIndexRoute
   '/tools': typeof ToolsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/mnv/bikes': typeof AuthenticatedMnvBikesRoute
@@ -764,6 +807,7 @@ export interface FileRoutesById {
   '/impressum': typeof ImpressumRoute
   '/karte': typeof KarteRoute
   '/kontakt': typeof KontaktRoute
+  '/mcp': typeof McpRoute
   '/mediadaten': typeof MediadatenRoute
   '/mein-rad': typeof MeinRadRoute
   '/merkliste': typeof MerklisteRoute
@@ -779,6 +823,8 @@ export interface FileRoutesById {
   '/tools': typeof ToolsRouteWithChildren
   '/ueber-uns': typeof UeberUnsRoute
   '/vergleich': typeof VergleichRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/mnv': typeof AuthenticatedMnvRouteWithChildren
   '/artikel/$slug': typeof ArtikelSlugRoute
   '/fahrraeder/$slug': typeof FahrraederSlugRoute
@@ -821,6 +867,8 @@ export interface FileRoutesById {
   '/fahrraeder/': typeof FahrraederIndexRoute
   '/lexikon/': typeof LexikonIndexRoute
   '/tools/': typeof ToolsIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/mnv/articles': typeof AuthenticatedMnvArticlesRoute
   '/_authenticated/mnv/auto-articles': typeof AuthenticatedMnvAutoArticlesRoute
   '/_authenticated/mnv/bikes': typeof AuthenticatedMnvBikesRoute
@@ -857,6 +905,7 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/karte'
     | '/kontakt'
+    | '/mcp'
     | '/mediadaten'
     | '/mein-rad'
     | '/merkliste'
@@ -872,6 +921,8 @@ export interface FileRouteTypes {
     | '/tools'
     | '/ueber-uns'
     | '/vergleich'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/mnv'
     | '/artikel/$slug'
     | '/fahrraeder/$slug'
@@ -914,6 +965,8 @@ export interface FileRouteTypes {
     | '/fahrraeder/'
     | '/lexikon/'
     | '/tools/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/mnv/articles'
     | '/mnv/auto-articles'
     | '/mnv/bikes'
@@ -948,6 +1001,7 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/karte'
     | '/kontakt'
+    | '/mcp'
     | '/mediadaten'
     | '/mein-rad'
     | '/merkliste'
@@ -962,6 +1016,8 @@ export interface FileRouteTypes {
     | '/tests'
     | '/ueber-uns'
     | '/vergleich'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/artikel/$slug'
     | '/fahrraeder/$slug'
     | '/lexikon/$slug'
@@ -1003,6 +1059,8 @@ export interface FileRouteTypes {
     | '/fahrraeder'
     | '/lexikon'
     | '/tools'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/mnv/articles'
     | '/mnv/auto-articles'
     | '/mnv/bikes'
@@ -1038,6 +1096,7 @@ export interface FileRouteTypes {
     | '/impressum'
     | '/karte'
     | '/kontakt'
+    | '/mcp'
     | '/mediadaten'
     | '/mein-rad'
     | '/merkliste'
@@ -1053,6 +1112,8 @@ export interface FileRouteTypes {
     | '/tools'
     | '/ueber-uns'
     | '/vergleich'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/mnv'
     | '/artikel/$slug'
     | '/fahrraeder/$slug'
@@ -1095,6 +1156,8 @@ export interface FileRouteTypes {
     | '/fahrraeder/'
     | '/lexikon/'
     | '/tools/'
+    | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/mnv/articles'
     | '/_authenticated/mnv/auto-articles'
     | '/_authenticated/mnv/bikes'
@@ -1131,6 +1194,7 @@ export interface RootRouteChildren {
   ImpressumRoute: typeof ImpressumRoute
   KarteRoute: typeof KarteRoute
   KontaktRoute: typeof KontaktRoute
+  McpRoute: typeof McpRoute
   MediadatenRoute: typeof MediadatenRoute
   MeinRadRoute: typeof MeinRadRoute
   MerklisteRoute: typeof MerklisteRoute
@@ -1146,6 +1210,8 @@ export interface RootRouteChildren {
   ToolsRoute: typeof ToolsRouteWithChildren
   UeberUnsRoute: typeof UeberUnsRoute
   VergleichRoute: typeof VergleichRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ArtikelSlugRoute: typeof ArtikelSlugRoute
   FahrraederSlugRoute: typeof FahrraederSlugRoute
   LexikonSlugRoute: typeof LexikonSlugRoute
@@ -1153,6 +1219,8 @@ export interface RootRouteChildren {
   NewsletterBestaetigenRoute: typeof NewsletterBestaetigenRoute
   FahrraederIndexRoute: typeof FahrraederIndexRoute
   LexikonIndexRoute: typeof LexikonIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicArticleImagePathRoute: typeof ApiPublicArticleImagePathRoute
   ApiPublicArticlesAutoGenerateRoute: typeof ApiPublicArticlesAutoGenerateRoute
   ApiPublicHooksLexikonChangedRoute: typeof ApiPublicHooksLexikonChangedRoute
@@ -1266,6 +1334,13 @@ declare module '@tanstack/react-router' {
       path: '/mediadaten'
       fullPath: '/mediadaten'
       preLoaderRoute: typeof MediadatenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kontakt': {
@@ -1646,6 +1721,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMnvRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/mnv/': {
       id: '/_authenticated/mnv/'
       path: '/'
@@ -1708,6 +1797,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/mnv/articles'
       preLoaderRoute: typeof AuthenticatedMnvArticlesRouteImport
       parentRoute: typeof AuthenticatedMnvRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -1935,6 +2038,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImpressumRoute: ImpressumRoute,
   KarteRoute: KarteRoute,
   KontaktRoute: KontaktRoute,
+  McpRoute: McpRoute,
   MediadatenRoute: MediadatenRoute,
   MeinRadRoute: MeinRadRoute,
   MerklisteRoute: MerklisteRoute,
@@ -1950,6 +2054,9 @@ const rootRouteChildren: RootRouteChildren = {
   ToolsRoute: ToolsRouteWithChildren,
   UeberUnsRoute: UeberUnsRoute,
   VergleichRoute: VergleichRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ArtikelSlugRoute: ArtikelSlugRoute,
   FahrraederSlugRoute: FahrraederSlugRoute,
   LexikonSlugRoute: LexikonSlugRoute,
@@ -1957,6 +2064,8 @@ const rootRouteChildren: RootRouteChildren = {
   NewsletterBestaetigenRoute: NewsletterBestaetigenRoute,
   FahrraederIndexRoute: FahrraederIndexRoute,
   LexikonIndexRoute: LexikonIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicArticleImagePathRoute: ApiPublicArticleImagePathRoute,
   ApiPublicArticlesAutoGenerateRoute: ApiPublicArticlesAutoGenerateRoute,
   ApiPublicHooksLexikonChangedRoute: ApiPublicHooksLexikonChangedRoute,
