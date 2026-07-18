@@ -142,6 +142,7 @@ function ReportsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["article-reports"] });
       qc.invalidateQueries({ queryKey: ["reports-unread"] });
+      qc.invalidateQueries({ queryKey: ["article-report-messages"] });
       setReplyOpen(false);
       setReplyMessage("");
       toast.success("Antwort gesendet");
