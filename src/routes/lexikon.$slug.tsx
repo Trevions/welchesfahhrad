@@ -41,7 +41,15 @@ export const Route = createFileRoute("/lexikon/$slug")({
       t.seo_description ||
       t.short_definition ||
       `${t.term} einfach erklärt im Fahrrad-Lexikon von radmap.de.`;
+    const published = t.created_at ?? t.updated_at ?? undefined;
     const modified = t.updated_at ?? t.created_at ?? undefined;
+    const keywords = [
+      t.term,
+      ...(t.synonyms ?? []),
+      ...(t.category ? [t.category] : []),
+      "Fahrrad-Lexikon",
+    ];
+    const wordCount = t.body ? t.body.trim().split(/\s+/).length : undefined;
 
     const definedTerm = {
       "@context": "https://schema.org",
@@ -50,25 +58,40 @@ export const Route = createFileRoute("/lexikon/$slug")({
       name: t.term,
       description: t.short_definition,
       url,
+      inLanguage: "de-DE",
       inDefinedTermSet: {
         "@type": "DefinedTermSet",
         name: "Fahrrad-Lexikon von radmap.de",
         url: `${SITE}/lexikon`,
+        inLanguage: "de-DE",
       },
       ...(t.synonyms?.length ? { alternateName: t.synonyms } : {}),
       ...(t.category ? { termCode: t.category } : {}),
+      ...(published ? { datePublished: published } : {}),
       ...(modified ? { dateModified: modified } : {}),
     };
 
     const article = {
       "@context": "https://schema.org",
       "@type": "Article",
+      "@id": `${url}#article`,
       headline: title,
+      name: t.term,
       description,
       url,
       inLanguage: "de-DE",
+      isPartOf: { "@type": "WebSite", "@id": `${SITE}#website`, name: "radmap.de", url: SITE },
       mainEntityOfPage: { "@type": "WebPage", "@id": url },
-      author: { "@type": "Organization", name: "Redaktion radmap.de", url: `${SITE}/redaktion` },
+      mainEntity: { "@id": `${url}#term` },
+      about: { "@id": `${url}#term` },
+      keywords: keywords.join(", "),
+      ...(t.category ? { articleSection: t.category } : {}),
+      ...(wordCount ? { wordCount } : {}),
+      author: {
+        "@type": "Organization",
+        name: "Redaktion radmap.de",
+        url: `${SITE}/redaktion`,
+      },
       publisher: {
         "@type": "Organization",
         name: "radmap.de",
@@ -80,9 +103,10 @@ export const Route = createFileRoute("/lexikon/$slug")({
           height: 192,
         },
       },
-      ...(modified ? { dateModified: modified, datePublished: t.created_at ?? modified } : {}),
-      about: { "@id": `${url}#term` },
+      ...(published ? { datePublished: published } : {}),
+      ...(modified ? { dateModified: modified } : {}),
     };
+
 
     const breadcrumb = {
       "@context": "https://schema.org",
