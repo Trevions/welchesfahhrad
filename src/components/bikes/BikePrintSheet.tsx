@@ -104,9 +104,15 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
       {/* Description */}
       {b.description && (
         <PrintSection title="Beschreibung">
-          <p className="print-body-text">{b.description}</p>
+          <div
+            className="print-prose"
+            dangerouslySetInnerHTML={{
+              __html: marked.parse(b.description, { async: false, breaks: false }) as string,
+            }}
+          />
         </PrintSection>
       )}
+
 
       {/* Ausstattung / Specs */}
       {hasAnySpec(b) && (
