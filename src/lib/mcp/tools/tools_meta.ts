@@ -51,7 +51,7 @@ export const analyzeToolTraffic = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     const needle = `/tools/${input.slug}`;
     const [refs, lex] = await Promise.all([
       gate.sb

@@ -11,7 +11,7 @@ export const analyticsSummary = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (_input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     const sb = gate.sb;
 
     const [articlesTotal, articlesPub, bikesTotal, bikesPub, lex, subs, msgs, topArticles, topBikes] = await Promise.all([
@@ -54,7 +54,7 @@ export const runReadSql = defineTool({
   annotations: { readOnlyHint: true, openWorldHint: false },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     const q = input.query.trim().replace(/;+\s*$/g, "");
     if (/;/.test(q)) return textResult("Nur ein Statement erlaubt.", true);
     if (!/^\s*(select|with)\b/i.test(q)) return textResult("Nur SELECT/WITH erlaubt.", true);

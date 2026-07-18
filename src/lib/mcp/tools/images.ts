@@ -25,7 +25,7 @@ export const uploadImage = defineTool({
   },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.data_url) return textResult("data_url erforderlich.", true);
 
     let bytes: Uint8Array;

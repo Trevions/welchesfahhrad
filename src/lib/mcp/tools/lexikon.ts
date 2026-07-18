@@ -18,7 +18,7 @@ export const listLexikonTerms = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     let q = gate.sb.from("lexikon_terms").select(COLS).order("term").limit(input.limit ?? 100);
     if (input.status) q = q.eq("status", input.status);
     if (input.category) q = q.eq("category", input.category);
@@ -37,7 +37,7 @@ export const getLexikonTerm = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     let q = gate.sb.from("lexikon_terms").select("*").limit(1);
     q = input.id ? q.eq("id", input.id) : q.eq("slug", input.slug!);
@@ -69,7 +69,7 @@ export const createLexikonTerm = defineTool({
   inputSchema: mutable,
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     const { data, error } = await gate.sb.from("lexikon_terms").insert(input as never).select("id, slug").single();
     if (error) return textResult(error.message, true);
     return jsonResult({ ok: true, term: data });
@@ -87,7 +87,7 @@ export const updateLexikonTerm = defineTool({
   },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     let q = gate.sb.from("lexikon_terms").update(input.patch as never);
     q = input.id ? q.eq("id", input.id) : q.eq("slug", input.slug!);
@@ -109,7 +109,7 @@ export const deleteLexikonTerm = defineTool({
   annotations: { destructiveHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     let q = gate.sb.from("lexikon_terms").delete();
     q = input.id ? q.eq("id", input.id) : q.eq("slug", input.slug!);

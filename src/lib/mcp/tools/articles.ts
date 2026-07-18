@@ -19,7 +19,7 @@ export const listArticles = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     let q = gate.sb.from("articles").select(ART_COLS).order("updated_at", { ascending: false }).limit(input.limit ?? 50);
     if (input.category) q = q.eq("category", input.category);
     if (input.status) q = q.eq("status", input.status);
@@ -38,7 +38,7 @@ export const getArticle = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     let q = gate.sb.from("articles").select("*").limit(1);
     q = input.id ? q.eq("id", input.id) : q.eq("slug", input.slug!);
@@ -75,7 +75,7 @@ export const createArticle = defineTool({
   inputSchema: artMutable,
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     const row = { ...input, author_id: ctx.getUserId() };
     const { data, error } = await gate.sb.from("articles").insert(row as never).select("id, slug, status").single();
     if (error) return textResult(error.message, true);
@@ -94,7 +94,7 @@ export const updateArticle = defineTool({
   },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     let q = gate.sb.from("articles").update(input.patch as never);
     q = input.id ? q.eq("id", input.id) : q.eq("slug", input.slug!);
@@ -115,7 +115,7 @@ export const publishArticle = defineTool({
   },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     const patch: Record<string, unknown> = { status: input.status };
     if (input.status === "published") patch.published_at = new Date().toISOString();
@@ -139,7 +139,7 @@ export const deleteArticle = defineTool({
   annotations: { destructiveHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     let q = gate.sb.from("articles").delete();
     q = input.id ? q.eq("id", input.id) : q.eq("slug", input.slug!);

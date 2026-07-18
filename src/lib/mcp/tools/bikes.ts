@@ -20,7 +20,7 @@ export const listBikes = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     let q = gate.sb.from("bikes").select(BIKE_COLUMNS).order("updated_at", { ascending: false }).limit(input.limit ?? 50);
     if (input.category) q = q.eq("category", input.category);
     if (input.brand) q = q.ilike("brand", input.brand);
@@ -43,7 +43,7 @@ export const getBike = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     let q = gate.sb.from("bikes").select("*").limit(1);
     q = input.id ? q.eq("id", input.id) : q.eq("slug", input.slug!);
@@ -112,7 +112,7 @@ export const createBike = defineTool({
   annotations: { destructiveHint: false },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     const { data, error } = await gate.sb.from("bikes").insert(input as never).select("id, slug").single();
     if (error) return textResult(error.message, true);
     return jsonResult({ ok: true, bike: data });
@@ -130,7 +130,7 @@ export const updateBike = defineTool({
   },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     let q = gate.sb.from("bikes").update(input.patch as never);
     q = input.id ? q.eq("id", input.id) : q.eq("slug", input.slug!);
@@ -151,7 +151,7 @@ export const publishBike = defineTool({
   },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     const patch: Record<string, unknown> = { published: input.published };
     if (input.published) patch.published_at = new Date().toISOString();
@@ -175,7 +175,7 @@ export const deleteBike = defineTool({
   annotations: { destructiveHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     if (!input.id && !input.slug) return textResult("id oder slug erforderlich.", true);
     let q = gate.sb.from("bikes").delete();
     q = input.id ? q.eq("id", input.id) : q.eq("slug", input.slug!);

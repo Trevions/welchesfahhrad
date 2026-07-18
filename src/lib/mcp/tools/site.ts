@@ -10,7 +10,7 @@ export const listContactMessages = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     const { data, error } = await gate.sb
       .from("contact_messages")
       .select("*")
@@ -29,7 +29,7 @@ export const newsletterStatus = defineTool({
   annotations: { readOnlyHint: true },
   handler: async (_input, ctx) => {
     const gate = await requireAdmin(ctx);
-    if ("error" in gate) return textResult(gate.error, true);
+    if (!gate.ok) return textResult(gate.error, true);
     const [subs, issues] = await Promise.all([
       gate.sb.from("newsletter_subscribers").select("id", { count: "exact", head: true }),
       gate.sb.from("newsletter_issues").select("id, subject, status, scheduled_for, sent_at").order("created_at", { ascending: false }).limit(10),
