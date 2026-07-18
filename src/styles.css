@@ -801,6 +801,42 @@
   line-height: 1.5;
 }
 
+.print-sheet .print-subsection {
+  margin-top: 6pt;
+  break-inside: avoid;
+}
+.print-sheet .print-chip-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap;
+  gap: 3pt 4pt;
+  font-size: 9pt;
+}
+.print-sheet .print-chip-list li {
+  border: 0.4pt solid #ccc;
+  border-radius: 3pt;
+  padding: 1pt 5pt;
+  background: #fafafa;
+  color: #222;
+}
+.print-sheet .print-array {
+  display: flex; flex-direction: column; gap: 4pt;
+}
+.print-sheet .print-array-item {
+  border-left: 1.5pt solid #ea6a1a;
+  padding: 2pt 0 2pt 6pt;
+  break-inside: avoid;
+}
+.print-sheet .print-table-wide {
+  font-size: 8.5pt;
+}
+.print-sheet .print-table-wide th,
+.print-sheet .print-table-wide td {
+  padding: 2pt 4pt;
+}
+
+
+
 /* ============================================================
    Intelligent page-break rules for print
    - Headings never end a page alone (page-break-after: avoid)

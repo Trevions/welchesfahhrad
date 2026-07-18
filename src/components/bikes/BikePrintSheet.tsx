@@ -2,20 +2,12 @@ import { marked } from "marked";
 import type { Bike } from "@/lib/bike-types";
 import { articleImageUrl } from "@/lib/article-image-url";
 
-
 /**
  * BikePrintSheet — A dedicated, print-only datasheet for a bike.
  *
- * Rendered hidden on screen and only visible when the user prints the page.
- * The rest of the page is hidden via `print:hidden`.
- *
- * Design goals:
- *  - Clean, readable, black-on-white A4 datasheet.
- *  - All key facts (identity, price, ratings, specs, geometry, e-bike,
- *    ranges, performance, maintenance, costs, safety, pros/cons, FAQ)
- *    grouped into scannable sections.
- *  - Header on first page, compact footer with source URL on every page
- *    (via @page rules in styles.css).
+ * Automatically renders every populated field of the bike record,
+ * including nested/dynamic data (configuration, by_size geometry,
+ * wheelset, cockpit, ranges, costs, environmental, safety …).
  */
 export function BikePrintSheet({ bike }: { bike: Bike }) {
   const b = bike;
@@ -30,7 +22,6 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
 
   return (
     <div className="print-sheet hidden print:block" aria-hidden>
-      {/* Page header */}
       <header className="print-header">
         <div className="print-brand">
           Radmap<span>.DE</span>
@@ -41,7 +32,6 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </div>
       </header>
 
-      {/* Title block */}
       <section className="print-title-block">
         <div className="print-eyebrow">
           {b.brand}
@@ -53,11 +43,9 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         {b.excerpt && <p className="print-excerpt">{b.excerpt}</p>}
       </section>
 
-      {/* Hero row: image + key facts */}
       <section className="print-hero-row">
         {heroSrc && (
           <div className="print-hero-img">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={heroSrc} alt={title} />
           </div>
         )}
@@ -84,7 +72,6 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </div>
       </section>
 
-      {/* Ratings */}
       {hasAnyRating(b) && (
         <PrintSection title="Bewertungen">
           <div className="print-grid-4">
@@ -101,7 +88,6 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </PrintSection>
       )}
 
-      {/* Description */}
       {b.description && (
         <PrintSection title="Beschreibung">
           <div
@@ -113,8 +99,6 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </PrintSection>
       )}
 
-
-      {/* Ausstattung / Specs */}
       {hasAnySpec(b) && (
         <PrintSection title="Ausstattung">
           <PrintTable
@@ -140,7 +124,6 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </PrintSection>
       )}
 
-      {/* Geometrie */}
       {hasAnyGeo(b) && (
         <PrintSection title="Geometrie">
           <PrintTable
@@ -155,10 +138,32 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
               ["Max. Fahrergewicht", fmtNum(b.geometry?.max_rider_weight_kg, "kg")],
             ]}
           />
+          {b.geometry && "by_size" in (b.geometry as any) && (
+            <BySizeTable data={(b.geometry as any).by_size} />
+          )}
+          {b.geometry &&
+            Object.entries(b.geometry as any)
+              .filter(
+                ([k, v]) =>
+                  ![
+                    "wheelbase_mm",
+                    "stack_mm",
+                    "reach_mm",
+                    "seat_tube_mm",
+                    "head_tube_mm",
+                    "bottom_bracket_mm",
+                    "frame_weight_kg",
+                    "max_rider_weight_kg",
+                    "by_size",
+                  ].includes(k) &&
+                  isNonEmpty(v),
+              )
+              .map(([k, v]) => (
+                <SmartField key={k} label={humanize(k)} value={v} />
+              ))}
         </PrintSection>
       )}
 
-      {/* E-Bike Antrieb */}
       {b.category === "ebike" && b.ebike && (
         <PrintSection title="E-Bike-System">
           <PrintTable
@@ -181,7 +186,39 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </PrintSection>
       )}
 
-      {/* Pros / Cons */}
+      {/* Auto-rendered extended sections */}
+      <DynamicSection title="Cockpit" data={b.cockpit} />
+      <DynamicSection title="Laufradsatz" data={b.wheelset} />
+      <DynamicSection title="Antrieb — Details" data={b.drivetrain_detail} />
+      <DynamicSection title="Bremsen — Details" data={b.brakes_detail} />
+      <DynamicSection title="E-Bike — Details" data={b.ebike_detail} />
+      <DynamicSection title="Konfiguration & Optionen" data={pickConfig(b)} />
+      <DynamicSection title="Reichweiten-Matrix" data={b.range_matrix} />
+      <DynamicSection title="Performance-Profil" data={b.performance} />
+      <DynamicSection title="Eignung" data={b.suitability} />
+      <DynamicSection title="Wartung" data={b.maintenance} />
+      <DynamicSection title="Betriebskosten" data={b.costs} />
+      <DynamicSection title="Umwelt & Nachhaltigkeit" data={b.environmental} />
+      <DynamicSection title="Sicherheitsmerkmale" data={b.safety_features} />
+
+      {b.accessories && b.accessories.length > 0 && (
+        <PrintSection title="Zubehör">
+          <ChipList items={b.accessories} />
+        </PrintSection>
+      )}
+
+      {b.intended_use && b.intended_use.length > 0 && (
+        <PrintSection title="Einsatzbereich">
+          <ChipList items={b.intended_use} />
+        </PrintSection>
+      )}
+
+      {b.terrain && b.terrain.length > 0 && (
+        <PrintSection title="Terrain">
+          <ChipList items={b.terrain} />
+        </PrintSection>
+      )}
+
       {(b.highlights?.pros?.length || b.highlights?.cons?.length) && (
         <PrintSection title="Stärken & Schwächen">
           <div className="print-two-col">
@@ -207,7 +244,6 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </PrintSection>
       )}
 
-      {/* AI Summary */}
       {b.ai_summary && (b.ai_summary.best_for || b.ai_summary.avoid_if) && (
         <PrintSection title="Für wen ist dieses Rad geeignet?">
           {b.ai_summary.best_for && (
@@ -231,7 +267,6 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </PrintSection>
       )}
 
-      {/* Awards */}
       {b.awards && b.awards.length > 0 && (
         <PrintSection title="Auszeichnungen">
           <ul className="print-list">
@@ -246,7 +281,21 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </PrintSection>
       )}
 
-      {/* FAQ */}
+      <DynamicSection title="Modell-Historie" data={b.model_history} />
+
+      {b.videos && b.videos.length > 0 && (
+        <PrintSection title="Videos">
+          <ul className="print-list">
+            {b.videos.map((v, i) => (
+              <li key={i}>
+                {v.title ? `${v.title} — ` : ""}
+                {v.url}
+              </li>
+            ))}
+          </ul>
+        </PrintSection>
+      )}
+
       {b.faq && b.faq.length > 0 && (
         <PrintSection title="Häufige Fragen">
           <dl className="print-faq">
@@ -260,7 +309,6 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
         </PrintSection>
       )}
 
-      {/* Footer */}
       <footer className="print-footer-block">
         <div>
           Quelle: <strong>{url}</strong>
@@ -274,7 +322,150 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
   );
 }
 
+// ---------- generic renderers ----------
+
+function DynamicSection({ title, data }: { title: string; data: unknown }) {
+  if (!isNonEmpty(data)) return null;
+  return (
+    <PrintSection title={title}>
+      <SmartValue value={data} />
+    </PrintSection>
+  );
+}
+
+function SmartField({ label, value }: { label: string; value: unknown }) {
+  if (!isNonEmpty(value)) return null;
+  if (isPrimitive(value)) {
+    return (
+      <table className="print-table">
+        <tbody>
+          <tr>
+            <th>{label}</th>
+            <td>{formatPrimitive(value)}</td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  }
+  return (
+    <div className="print-subsection">
+      <div className="print-subhead">{label}</div>
+      <SmartValue value={value} />
+    </div>
+  );
+}
+
+function SmartValue({ value }: { value: unknown }) {
+  if (!isNonEmpty(value)) return <span className="print-muted">—</span>;
+  if (isPrimitive(value)) return <span>{formatPrimitive(value)}</span>;
+
+  if (Array.isArray(value)) {
+    if (value.every(isPrimitive)) {
+      return <ChipList items={value.map(formatPrimitive)} />;
+    }
+    return (
+      <div className="print-array">
+        {value.map((item, i) => (
+          <div key={i} className="print-array-item">
+            {isPrimitive(item) ? (
+              <span>{formatPrimitive(item)}</span>
+            ) : (
+              <ObjectTable obj={item as Record<string, unknown>} />
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return <ObjectTable obj={value as Record<string, unknown>} />;
+}
+
+function ObjectTable({ obj }: { obj: Record<string, unknown> }) {
+  const entries = Object.entries(obj).filter(([, v]) => isNonEmpty(v));
+  if (entries.length === 0) return <span className="print-muted">—</span>;
+
+  const primEntries = entries.filter(([, v]) => isPrimitive(v));
+  const complexEntries = entries.filter(([, v]) => !isPrimitive(v));
+
+  return (
+    <>
+      {primEntries.length > 0 && (
+        <table className="print-table">
+          <tbody>
+            {primEntries.map(([k, v]) => (
+              <tr key={k}>
+                <th>{humanize(k)}</th>
+                <td>{formatPrimitive(v)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {complexEntries.map(([k, v]) => (
+        <SmartField key={k} label={humanize(k)} value={v} />
+      ))}
+    </>
+  );
+}
+
+function BySizeTable({ data }: { data: unknown }) {
+  if (!isNonEmpty(data) || typeof data !== "object") return null;
+  const entries = Object.entries(data as Record<string, any>).filter(([, v]) => isNonEmpty(v));
+  if (entries.length === 0) return null;
+  const cols = new Set<string>();
+  entries.forEach(([, row]) => {
+    if (row && typeof row === "object") Object.keys(row).forEach((k) => cols.add(k));
+  });
+  const colList = Array.from(cols);
+  if (colList.length === 0) return null;
+  return (
+    <div className="print-subsection">
+      <div className="print-subhead">Geometrie nach Rahmengröße</div>
+      <table className="print-table print-table-wide">
+        <thead>
+          <tr>
+            <th>Größe</th>
+            {colList.map((c) => (
+              <th key={c}>{humanize(c)}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {entries.map(([size, row]) => (
+            <tr key={size}>
+              <th>{size}</th>
+              {colList.map((c) => (
+                <td key={c}>{formatPrimitive((row as any)?.[c])}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ChipList({ items }: { items: Array<string | number> }) {
+  return (
+    <ul className="print-chip-list">
+      {items.map((it, i) => (
+        <li key={i}>{String(it)}</li>
+      ))}
+    </ul>
+  );
+}
+
 // ---------- helpers ----------
+
+function pickConfig(b: Bike): Record<string, unknown> | null {
+  const raw = b as unknown as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  for (const key of ["configuration", "options", "config", "variants"]) {
+    if (isNonEmpty(raw[key])) out[key] = raw[key];
+  }
+  return Object.keys(out).length ? out : null;
+}
 
 function PrintSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -309,6 +500,36 @@ function PrintTable({ rows }: { rows: Array<[string, any]> }) {
       </tbody>
     </table>
   );
+}
+
+function isPrimitive(v: unknown): v is string | number | boolean {
+  return v === null || ["string", "number", "boolean"].includes(typeof v);
+}
+
+function isNonEmpty(v: unknown): boolean {
+  if (v === undefined || v === null || v === "") return false;
+  if (Array.isArray(v)) return v.length > 0;
+  if (typeof v === "object") return Object.keys(v as object).length > 0;
+  return true;
+}
+
+function formatPrimitive(v: unknown): string {
+  if (v === null || v === undefined || v === "") return "—";
+  if (typeof v === "boolean") return v ? "Ja" : "Nein";
+  if (typeof v === "number") return v.toLocaleString("de-DE");
+  return String(v);
+}
+
+function humanize(key: string): string {
+  return key
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/\bmm\b/gi, "mm")
+    .replace(/\bwh\b/gi, "Wh")
+    .replace(/\bkm\b/gi, "km")
+    .replace(/\bkg\b/gi, "kg")
+    .replace(/\bnm\b/gi, "Nm")
+    .replace(/^./, (c) => c.toUpperCase());
 }
 
 function fmtNum(n: number | null | undefined, unit: string) {
