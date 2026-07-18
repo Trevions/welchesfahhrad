@@ -225,7 +225,13 @@ function LexikonIndex() {
   }
 
   const setCategoryFilter = (cat: string | null) => {
-    navigate({ search: (prev) => ({ ...prev, category: cat ?? undefined }), replace: true });
+    navigate({
+      search: (prev: { q?: string; category?: string }) => ({
+        ...prev,
+        category: cat ?? undefined,
+      }),
+      replace: true,
+    });
   };
 
   return (
