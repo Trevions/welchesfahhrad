@@ -42,7 +42,12 @@ export const Route = createFileRoute("/lexikon/")({
         { property: "og:locale", content: "de_DE" },
         { name: "twitter:card", content: "summary_large_image" },
       ],
-      links: [{ rel: "canonical", href: url }],
+      links: [
+        { rel: "canonical", href: url },
+        { rel: "alternate", hrefLang: "de", href: url },
+        { rel: "alternate", hrefLang: "de-DE", href: url },
+        { rel: "alternate", hrefLang: "x-default", href: url },
+      ],
       scripts: [
         {
           type: "application/ld+json",
