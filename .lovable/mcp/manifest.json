@@ -1,0 +1,1241 @@
+{
+  "version": 1,
+  "sdk_version": "0.23.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://ihzityhvcktxcvfrebjl.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "radmap-mcp",
+      "version": "0.1.0",
+      "title": "radmap.de – Admin MCP"
+    },
+    "tools": [
+      {
+        "name": "whoami",
+        "title": "Angemeldeter Nutzer",
+        "description": "Zeigt den angemeldeten Nutzer, E-Mail und Admin-Status.",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_articles",
+        "title": "Artikel auflisten",
+        "description": "Listet Artikel (radmap.de). Filter: status, category, Suche. Max 100.",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "search": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "Nachrichten",
+                "Ratgeber",
+                "E-Bikes",
+                "Tests"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_article",
+        "title": "Artikel abrufen",
+        "description": "Kompletter Artikel per ID oder Slug (inkl. body Markdown).",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_article",
+        "title": "Artikel anlegen",
+        "description": "Erstellt einen Artikel. Body ist Markdown. Standardstatus: draft.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "excerpt": {
+              "type": "string"
+            },
+            "body": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Markdown-Text"
+            },
+            "cover_image": {
+              "type": "string"
+            },
+            "cover_image_caption": {
+              "type": "string"
+            },
+            "cover_image_credit": {
+              "type": "string"
+            },
+            "cover_image_is_ai": {
+              "type": "boolean"
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "Nachrichten",
+                "Ratgeber",
+                "E-Bikes",
+                "Tests"
+              ]
+            },
+            "source": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ],
+              "default": "draft"
+            },
+            "read_time": {
+              "type": "string"
+            },
+            "seo_title": {
+              "type": "string"
+            },
+            "seo_description": {
+              "type": "string"
+            },
+            "seo_keywords": {
+              "type": "string"
+            },
+            "og_image": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "slug",
+            "title",
+            "body",
+            "category"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_article",
+        "title": "Artikel aktualisieren",
+        "description": "Aktualisiert einzelne Felder eines Artikels.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "patch": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "excerpt": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Markdown-Text"
+                },
+                "cover_image": {
+                  "type": "string"
+                },
+                "cover_image_caption": {
+                  "type": "string"
+                },
+                "cover_image_credit": {
+                  "type": "string"
+                },
+                "cover_image_is_ai": {
+                  "type": "boolean"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "Nachrichten",
+                    "Ratgeber",
+                    "E-Bikes",
+                    "Tests"
+                  ]
+                },
+                "source": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "draft",
+                    "published"
+                  ],
+                  "default": "draft"
+                },
+                "read_time": {
+                  "type": "string"
+                },
+                "seo_title": {
+                  "type": "string"
+                },
+                "seo_description": {
+                  "type": "string"
+                },
+                "seo_keywords": {
+                  "type": "string"
+                },
+                "og_image": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "patch"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "publish_article",
+        "title": "Artikel veröffentlichen",
+        "description": "Setzt status='published' und published_at. Optional wieder auf draft/archived.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ],
+              "default": "published"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "delete_article",
+        "title": "Artikel löschen",
+        "description": "Löscht einen Artikel endgültig.",
+        "annotations": {
+          "destructiveHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "confirm": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "confirm"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_bikes",
+        "title": "Fahrräder auflisten",
+        "description": "Listet Fahrräder (radmap.de). Filter: Kategorie, Marke, Suchtext, publiziert. Max 100.",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "search": {
+              "type": "string",
+              "description": "Marke, Modell oder Slug enthält…"
+            },
+            "category": {
+              "type": "string"
+            },
+            "brand": {
+              "type": "string"
+            },
+            "published": {
+              "type": "boolean"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_bike",
+        "title": "Fahrrad abrufen",
+        "description": "Vollständige Daten eines Fahrrads (per ID oder Slug).",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_bike",
+        "title": "Fahrrad anlegen",
+        "description": "Erstellt ein neues Fahrrad (radmap.de). Slug muss eindeutig sein.",
+        "annotations": {
+          "destructiveHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1
+            },
+            "brand": {
+              "type": "string",
+              "minLength": 1
+            },
+            "model": {
+              "type": "string",
+              "minLength": 1
+            },
+            "year": {
+              "type": "integer"
+            },
+            "category": {
+              "type": "string",
+              "minLength": 1
+            },
+            "bike_type": {
+              "type": "string"
+            },
+            "price_eur": {
+              "type": "integer"
+            },
+            "image_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "manufacturer_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "excerpt": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "gallery": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "highlights": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "intended_use": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "terrain": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "keywords": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "specs": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                {
+                  "type": "array",
+                  "items": {}
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "ebike": {
+              "$ref": "#/properties/specs"
+            },
+            "ratings": {
+              "$ref": "#/properties/specs"
+            },
+            "geometry": {
+              "$ref": "#/properties/specs"
+            },
+            "cockpit": {
+              "$ref": "#/properties/specs"
+            },
+            "wheelset": {
+              "$ref": "#/properties/specs"
+            },
+            "drivetrain_detail": {
+              "$ref": "#/properties/specs"
+            },
+            "brakes_detail": {
+              "$ref": "#/properties/specs"
+            },
+            "ebike_detail": {
+              "$ref": "#/properties/specs"
+            },
+            "suitability": {
+              "$ref": "#/properties/specs"
+            },
+            "performance": {
+              "$ref": "#/properties/specs"
+            },
+            "range_matrix": {
+              "$ref": "#/properties/specs"
+            },
+            "maintenance": {
+              "$ref": "#/properties/specs"
+            },
+            "costs": {
+              "$ref": "#/properties/specs"
+            },
+            "environmental": {
+              "$ref": "#/properties/specs"
+            },
+            "safety_features": {
+              "$ref": "#/properties/specs"
+            },
+            "accessories": {
+              "$ref": "#/properties/specs"
+            },
+            "awards": {
+              "$ref": "#/properties/specs"
+            },
+            "model_history": {
+              "$ref": "#/properties/specs"
+            },
+            "videos": {
+              "$ref": "#/properties/specs"
+            },
+            "faq": {
+              "$ref": "#/properties/specs"
+            },
+            "ai_summary": {
+              "$ref": "#/properties/specs"
+            },
+            "availability": {
+              "type": "string"
+            },
+            "expert_rating": {
+              "type": "number"
+            },
+            "meta_title": {
+              "type": "string"
+            },
+            "meta_description": {
+              "type": "string"
+            },
+            "og_image_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "featured": {
+              "type": "boolean"
+            },
+            "published": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "slug",
+            "brand",
+            "model",
+            "category"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_bike",
+        "title": "Fahrrad aktualisieren",
+        "description": "Aktualisiert Felder eines Fahrrads (per ID oder Slug).",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "patch": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "brand": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "model": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "year": {
+                  "type": "integer"
+                },
+                "category": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bike_type": {
+                  "type": "string"
+                },
+                "price_eur": {
+                  "type": "integer"
+                },
+                "image_url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "manufacturer_url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "excerpt": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "gallery": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "highlights": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "intended_use": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "terrain": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "keywords": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "specs": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": {}
+                    },
+                    {
+                      "type": "array",
+                      "items": {}
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ebike": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "ratings": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "geometry": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "cockpit": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "wheelset": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "drivetrain_detail": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "brakes_detail": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "ebike_detail": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "suitability": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "performance": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "range_matrix": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "maintenance": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "costs": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "environmental": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "safety_features": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "accessories": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "awards": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "model_history": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "videos": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "faq": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "ai_summary": {
+                  "$ref": "#/properties/patch/properties/specs"
+                },
+                "availability": {
+                  "type": "string"
+                },
+                "expert_rating": {
+                  "type": "number"
+                },
+                "meta_title": {
+                  "type": "string"
+                },
+                "meta_description": {
+                  "type": "string"
+                },
+                "og_image_url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "featured": {
+                  "type": "boolean"
+                },
+                "published": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "patch"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "publish_bike",
+        "title": "Fahrrad publizieren",
+        "description": "Setzt published=true/false. published_at wird gesetzt bei true.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "published": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "delete_bike",
+        "title": "Fahrrad löschen",
+        "description": "Löscht ein Fahrrad endgültig. Nicht umkehrbar.",
+        "annotations": {
+          "destructiveHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "confirm": {
+              "type": "boolean",
+              "const": true,
+              "description": "Muss true sein zur Bestätigung."
+            }
+          },
+          "required": [
+            "confirm"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_lexikon_terms",
+        "title": "Lexikon-Begriffe auflisten",
+        "description": "Listet Lexikon-Einträge mit Filter.",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "search": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "category": {
+              "type": "string"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_lexikon_term",
+        "title": "Lexikon-Eintrag abrufen",
+        "description": "Vollständiger Lexikon-Eintrag per ID oder Slug.",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_lexikon_term",
+        "title": "Lexikon-Begriff anlegen",
+        "description": "Erstellt einen neuen Lexikon-Eintrag.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1
+            },
+            "term": {
+              "type": "string",
+              "minLength": 1
+            },
+            "short_definition": {
+              "type": "string",
+              "minLength": 1
+            },
+            "body": {
+              "type": "string",
+              "minLength": 1
+            },
+            "category": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ],
+              "default": "draft"
+            },
+            "synonyms": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "related_article_slugs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "related_term_slugs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "seo_title": {
+              "type": "string"
+            },
+            "seo_description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "slug",
+            "term",
+            "short_definition",
+            "body",
+            "category"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_lexikon_term",
+        "title": "Lexikon-Begriff aktualisieren",
+        "description": "Aktualisiert Felder eines Lexikon-Eintrags.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "patch": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "term": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "short_definition": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "category": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "draft",
+                    "published"
+                  ],
+                  "default": "draft"
+                },
+                "synonyms": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "related_article_slugs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "related_term_slugs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "seo_title": {
+                  "type": "string"
+                },
+                "seo_description": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "patch"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "delete_lexikon_term",
+        "title": "Lexikon-Begriff löschen",
+        "description": "Löscht einen Lexikon-Eintrag endgültig.",
+        "annotations": {
+          "destructiveHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "confirm": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "confirm"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "upload_image",
+        "title": "Bild hochladen",
+        "description": "Lädt ein Bild in den Storage-Bucket 'article-images' und liefert eine öffentliche URL (radmap.de/api/public/article-image/…). Als data-URL (base64) oder Remote-URL.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "data_url": {
+              "type": "string",
+              "description": "data:image/…;base64,… oder https-URL zum Herunterladen"
+            },
+            "filename": {
+              "type": "string",
+              "description": "Optionaler Dateiname (ohne Pfad)."
+            },
+            "folder": {
+              "type": "string",
+              "default": "mcp",
+              "description": "Unterordner im Bucket, z. B. 'articles/2026'."
+            },
+            "content_type": {
+              "type": "string",
+              "description": "Nur nötig, wenn nicht aus data-URL / Response ableitbar."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_tool_pages",
+        "title": "Tools von radmap.de auflisten",
+        "description": "Übersicht aller Tool-Seiten (Slug + URL) unter /tools.",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "analyze_tool_traffic",
+        "title": "Tools analysieren (Redaktions-Sicht)",
+        "description": "Grobe Nutzungssignale je Tool aus internen Bezügen: Artikel, die das Tool verlinken oder erwähnen, und Anzahl verwandter Lexikon-Begriffe.",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Tool-Slug, z. B. 'reifendruck-rechner'."
+            }
+          },
+          "required": [
+            "slug"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_analytics_summary",
+        "title": "Analyse-Übersicht",
+        "description": "Kennzahlen: Anzahl Artikel/Fahrräder/Lexikon nach Status, Top-Artikel nach view_count, Newsletter-Abonnenten, offene Kontaktnachrichten.",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "run_read_sql",
+        "title": "SQL (nur Lesen) ausführen",
+        "description": "Führt ein einzelnes SELECT-Statement gegen die Datenbank aus (RLS als angemeldeter Admin). Kein INSERT/UPDATE/DELETE/DDL.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 6,
+              "description": "Nur SELECT/WITH-Statements. Ein Statement."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 200
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_contact_messages",
+        "title": "Kontaktnachrichten auflisten",
+        "description": "Letzte Kontaktnachrichten (radmap.de/kontakt).",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "newsletter_status",
+        "title": "Newsletter-Status",
+        "description": "Anzahl Abonnenten und letzte Ausgaben.",
+        "annotations": {
+          "readOnlyHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
