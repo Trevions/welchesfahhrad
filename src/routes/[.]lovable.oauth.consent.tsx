@@ -39,8 +39,9 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
 
 function ConsentPage() {
   const { authorization_id } = Route.useSearch();
-  const [session, setSession] = useState<null | { user: { email?: string | null } }>(null);
+  const [session, setSession] = useState<null | { user: { id: string; email?: string | null } }>(null);
   const [checking, setChecking] = useState(true);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [details, setDetails] = useState<AuthzDetails | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -49,14 +50,22 @@ function ConsentPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session ? { user: { email: data.session.user.email ?? null } } : null);
+      setSession(data.session ? { user: { id: data.session.user.id, email: data.session.user.email ?? null } } : null);
       setChecking(false);
     });
     const sub = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s ? { user: { email: s.user.email ?? null } } : null);
+      setSession(s ? { user: { id: s.user.id, email: s.user.email ?? null } } : null);
     });
     return () => sub.data.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!session) { setIsAdmin(null); return; }
+    supabase.rpc("has_role", { _user_id: session.user.id, _role: "admin" }).then(({ data, error }) => {
+      setIsAdmin(!error && data === true);
+    });
+  }, [session]);
+
 
   useEffect(() => {
     if (!session || !authorization_id) return;
