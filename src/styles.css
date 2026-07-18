@@ -613,8 +613,9 @@
 
 .print-sheet .print-section {
   margin-top: 10pt;
-  break-inside: avoid;
-  page-break-inside: avoid;
+  /* Do NOT force the whole section on one page — long sections (Beschreibung,
+     FAQ, Ausstattung) legitimately span pages. Instead we keep the heading
+     glued to its first content block and protect atomic children below. */
 }
 .print-sheet .print-h2 {
   font-family: "DM Serif Display", Georgia, serif;
@@ -623,7 +624,12 @@
   padding-bottom: 3pt;
   margin: 0 0 8pt 0;
   color: #0a0a0a;
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
+
 
 .print-sheet .print-body-text {
   font-size: 10.5pt;
