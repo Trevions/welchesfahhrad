@@ -56,6 +56,20 @@ type Report = {
   status: "new" | "read" | "resolved" | "archived";
   created_at: string;
   updated_at: string;
+  thread_token?: string;
+  deleted_at?: string | null;
+};
+
+type ThreadMessage = {
+  id: string;
+  direction: "inbound" | "outbound" | "auto_reply";
+  from_email: string;
+  to_email: string;
+  subject: string | null;
+  body_text: string | null;
+  body_html: string | null;
+  created_at: string;
+  meta?: Record<string, unknown>;
 };
 
 function ReportsPage() {
