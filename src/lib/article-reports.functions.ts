@@ -3,6 +3,63 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+const FROM_EMAIL = "Radmap.de Redaktion <hallo@radmap.de>";
+const REPLY_TO = "hallo@radmap.de";
+const SITE_URL = "https://radmap.de";
+
+function escapeHtml(s: string) {
+  return s.replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
+  );
+}
+
+function buildReplyEmailHtml(opts: {
+  recipientName: string;
+  message: string;
+  articleTitle: string | null;
+  articleSlug: string;
+  originalReason: string | null;
+  originalDescription: string;
+}) {
+  const paragraphs = opts.message
+    .split(/\n{2,}/)
+    .map((p) => `<p style="margin:0 0 16px;line-height:1.65;color:#27272a;font-size:15px;">${escapeHtml(p).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+
+  const articleUrl = `${SITE_URL}/artikel/${opts.articleSlug}`;
+  const title = opts.articleTitle || opts.articleSlug;
+
+  return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Antwort von Radmap.de</title></head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:32px 16px;">
+<tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+<tr><td style="padding:28px 32px;border-bottom:1px solid #f4f4f5;">
+<div style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#18181b;letter-spacing:-0.01em;">Radmap<span style="color:#FF6A1A;">.</span>de</div>
+<div style="font-size:11px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">Antwort der Redaktion</div>
+</td></tr>
+<tr><td style="padding:32px;">
+<p style="margin:0 0 20px;font-size:15px;color:#27272a;">Hallo ${escapeHtml(opts.recipientName)},</p>
+${paragraphs}
+<p style="margin:24px 0 0;font-size:15px;color:#27272a;line-height:1.6;">Viele Grüße<br><strong>Die Radmap.de Redaktion</strong></p>
+</td></tr>
+<tr><td style="padding:20px 32px;background:#fafafa;border-top:1px solid #f4f4f5;">
+<div style="font-size:11px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Bezug: Deine Meldung</div>
+<a href="${articleUrl}" style="color:#18181b;font-size:14px;font-weight:600;text-decoration:none;line-height:1.4;display:block;margin-bottom:6px;">${escapeHtml(title)}</a>
+${opts.originalReason ? `<div style="font-size:11px;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Grund: ${escapeHtml(opts.originalReason)}</div>` : ""}
+<div style="font-size:13px;color:#52525b;line-height:1.55;padding:10px 12px;background:#ffffff;border-left:3px solid #e4e4e7;border-radius:2px;white-space:pre-wrap;">${escapeHtml(opts.originalDescription.slice(0, 400))}${opts.originalDescription.length > 400 ? "…" : ""}</div>
+</td></tr>
+<tr><td style="padding:20px 32px;background:#18181b;color:#a1a1aa;font-size:11px;line-height:1.6;text-align:center;">
+<a href="${SITE_URL}" style="color:#FF6A1A;text-decoration:none;font-weight:600;">radmap.de</a> · Dein Rad-Magazin<br>
+<span style="color:#71717a;">Antworte einfach auf diese E-Mail, um mit der Redaktion zu sprechen.</span>
+</td></tr>
+</table>
+</td></tr></table>
+</body></html>`;
+}
+
+
+
 const statusEnum = z.enum(["new", "read", "resolved", "archived"]);
 
 const submitInput = z.object({
@@ -132,5 +189,77 @@ export const deleteArticleReport = createServerFn({ method: "POST" })
       .delete()
       .eq("id", data.id);
     if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const replyToArticleReport = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    z.object({
+      id: z.string().uuid(),
+      subject: z.string().trim().min(3).max(200),
+      message: z.string().trim().min(5).max(10000),
+      markResolved: z.boolean().optional().default(false),
+    }),
+  )
+  .handler(async ({ data, context }) => {
+    await assertStaff(context);
+
+    const { data: report, error: fetchErr } = await context.supabase
+      .from("article_reports")
+      .select("id, article_slug, article_title, reporter_name, reporter_email, reason, description")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (fetchErr) throw new Error(fetchErr.message);
+    if (!report) throw new Error("Meldung nicht gefunden");
+
+    const lovableKey = process.env.LOVABLE_API_KEY;
+    const resendKey = process.env.RESEND_API_KEY;
+    if (!lovableKey || !resendKey) {
+      throw new Error("E-Mail-Versand ist nicht konfiguriert");
+    }
+
+    const html = buildReplyEmailHtml({
+      recipientName: report.reporter_name,
+      message: data.message,
+      articleTitle: report.article_title,
+      articleSlug: report.article_slug,
+      originalReason: report.reason,
+      originalDescription: report.description,
+    });
+
+    const text =
+      `Hallo ${report.reporter_name},\n\n${data.message}\n\n` +
+      `Viele Grüße\nDie Radmap.de Redaktion\n\n` +
+      `— Bezug: ${report.article_title ?? report.article_slug}\n` +
+      `${SITE_URL}/artikel/${report.article_slug}\n`;
+
+    const resp = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${lovableKey}`,
+        "X-Connection-Api-Key": resendKey,
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [report.reporter_email],
+        reply_to: REPLY_TO,
+        subject: data.subject,
+        html,
+        text,
+      }),
+    });
+
+    if (!resp.ok) {
+      const body = await resp.text();
+      throw new Error(`E-Mail-Versand fehlgeschlagen [${resp.status}]: ${body}`);
+    }
+
+    await context.supabase
+      .from("article_reports")
+      .update({ status: data.markResolved ? "resolved" : "read" })
+      .eq("id", data.id);
+
     return { ok: true };
   });

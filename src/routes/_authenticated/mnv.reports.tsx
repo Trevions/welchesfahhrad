@@ -6,11 +6,24 @@ import {
   listArticleReports,
   updateArticleReportStatus,
   deleteArticleReport,
+  replyToArticleReport,
 } from "@/lib/article-reports.functions";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Flag,
   Mail,
@@ -20,9 +33,12 @@ import {
   Search as SearchIcon,
   ArrowLeft,
   ExternalLink,
+  Loader2,
+  Send,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/_authenticated/mnv/reports")({
   component: ReportsPage,
@@ -46,10 +62,16 @@ function ReportsPage() {
   const fetchList = useServerFn(listArticleReports);
   const setStatus = useServerFn(updateArticleReportStatus);
   const removeRep = useServerFn(deleteArticleReport);
+  const sendReply = useServerFn(replyToArticleReport);
 
   const [filter, setFilter] = useState<"all" | "new" | "read" | "resolved" | "archived">("all");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [replySubject, setReplySubject] = useState("");
+  const [replyMessage, setReplyMessage] = useState("");
+  const [replyResolve, setReplyResolve] = useState(true);
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["article-reports", filter, search],
@@ -88,6 +110,29 @@ function ReportsPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  const replyMut = useMutation({
+    mutationFn: (vars: { id: string; subject: string; message: string; markResolved: boolean }) =>
+      sendReply({ data: vars }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["article-reports"] });
+      qc.invalidateQueries({ queryKey: ["reports-unread"] });
+      setReplyOpen(false);
+      setReplyMessage("");
+      toast.success("Antwort gesendet");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const openReply = () => {
+    if (!selected) return;
+    setReplySubject(`Re: Deine Meldung zu „${selected.article_title ?? selected.article_slug}"`);
+    setReplyMessage(
+      `vielen Dank für deine Rückmeldung zu unserem Artikel. Wir haben deinen Hinweis geprüft und möchten dir Folgendes mitteilen:\n\n\n\nFalls du weitere Fragen hast, antworte einfach direkt auf diese E-Mail.`,
+    );
+    setReplyResolve(true);
+    setReplyOpen(true);
+  };
 
   const openReport = (m: Report) => {
     setSelectedId(m.id);
@@ -346,17 +391,106 @@ function ReportsPage() {
                     ? "Erledigt"
                     : "Archiviert"}
                 </div>
-                <a
-                  href={`mailto:${selected.reporter_email}?subject=${encodeURIComponent("Re: Deine Meldung zu " + (selected.article_title ?? selected.article_slug))}`}
+                <button
+                  onClick={openReply}
                   className="inline-flex items-center gap-2 bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950 text-xs font-medium px-4 py-2 rounded transition"
                 >
                   <Mail className="h-3.5 w-3.5" /> Antworten
-                </a>
+                </button>
               </div>
             </>
           )}
         </div>
       </div>
+
+      <Dialog open={replyOpen} onOpenChange={setReplyOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl">Antwort senden</DialogTitle>
+            <DialogDescription>
+              {selected && (
+                <>
+                  An <span className="text-foreground font-medium">{selected.reporter_name}</span>{" "}
+                  &lt;{selected.reporter_email}&gt; · Absender:{" "}
+                  <span className="text-foreground">hallo@radmap.de</span>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="rep-subject">Betreff</Label>
+              <Input
+                id="rep-subject"
+                value={replySubject}
+                onChange={(e) => setReplySubject(e.target.value)}
+                maxLength={200}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="rep-message">Nachricht</Label>
+              <Textarea
+                id="rep-message"
+                rows={12}
+                value={replyMessage}
+                onChange={(e) => setReplyMessage(e.target.value)}
+                maxLength={10000}
+                placeholder="Hallo…"
+                className="font-sans leading-relaxed"
+              />
+              <div className="text-[11px] text-muted-foreground text-right tabular-nums">
+                {replyMessage.length}/10000
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Checkbox
+                checked={replyResolve}
+                onCheckedChange={(v) => setReplyResolve(v === true)}
+              />
+              Meldung nach dem Senden als <span className="text-foreground font-medium">Erledigt</span> markieren
+            </label>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setReplyOpen(false)}
+              disabled={replyMut.isPending}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              onClick={() =>
+                selected &&
+                replyMut.mutate({
+                  id: selected.id,
+                  subject: replySubject,
+                  message: replyMessage,
+                  markResolved: replyResolve,
+                })
+              }
+              disabled={
+                replyMut.isPending ||
+                replySubject.trim().length < 3 ||
+                replyMessage.trim().length < 5
+              }
+              className="bg-[#FF6A1A] hover:bg-[#e85d10] text-zinc-950"
+            >
+              {replyMut.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Wird gesendet…
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" /> Antwort senden
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminShell>
   );
 }
+
