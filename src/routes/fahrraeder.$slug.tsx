@@ -595,16 +595,121 @@ function hasDisplayValue(value: any): boolean {
   return true;
 }
 
-function formatDisplayValue(value: any): string {
-  if (Array.isArray(value)) return value.map(formatDisplayValue).filter(Boolean).join(", ");
-  if (value && typeof value === "object") {
-    return Object.entries(value)
-      .filter(([_, v]) => hasDisplayValue(v))
-      .map(([k, v]) => `${k.replace(/_/g, " ")}: ${formatDisplayValue(v)}`)
-      .join(" · ");
+function humanizeKey(k: string): string {
+  return k
+    .replace(/_/g, " ")
+    .replace(/\b([a-z])/g, (m) => m.toUpperCase())
+    .replace(/\bMm\b/g, "mm")
+    .replace(/\bCm\b/g, "cm")
+    .replace(/\bKg\b/g, "kg")
+    .replace(/\bKmh\b/g, "km/h")
+    .replace(/\bWh\b/g, "Wh")
+    .replace(/\bNm\b/g, "Nm");
+}
+
+function formatPrimitive(v: any): string {
+  if (typeof v === "boolean") return v ? "Ja" : "Nein";
+  return String(v);
+}
+
+/** Render any value cleanly: primitive, list of primitives, list of objects, or nested object. */
+function SmartValue({ value }: { value: any }) {
+  if (!hasDisplayValue(value)) return <span className="text-muted-foreground">—</span>;
+
+  // Array
+  if (Array.isArray(value)) {
+    const clean = value.filter(hasDisplayValue);
+    const allPrim = clean.every((v) => typeof v !== "object" || v == null);
+    if (allPrim) {
+      return (
+        <div className="flex flex-wrap gap-1.5">
+          {clean.map((v, i) => (
+            <span
+              key={i}
+              className="inline-block text-xs bg-muted/60 border border-border px-2 py-0.5 rounded-sm"
+            >
+              {formatPrimitive(v)}
+            </span>
+          ))}
+        </div>
+      );
+    }
+    // Array of objects — render compact rows
+    return (
+      <ul className="space-y-1.5">
+        {clean.map((item, i) => (
+          <li
+            key={i}
+            className="text-sm border-l-2 border-signal/40 pl-2.5 py-0.5"
+          >
+            <ObjectInline value={item} />
+          </li>
+        ))}
+      </ul>
+    );
   }
-  if (typeof value === "boolean") return value ? "Ja" : "Nein";
-  return String(value);
+
+  // Object
+  if (typeof value === "object") {
+    return (
+      <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm">
+        {Object.entries(value)
+          .filter(([, v]) => hasDisplayValue(v))
+          .map(([k, v]) => (
+            <div key={k} className="flex justify-between gap-3 py-1 border-b border-border/60">
+              <dt className="text-muted-foreground">{humanizeKey(k)}</dt>
+              <dd className="text-right font-medium">
+                {typeof v === "object" ? <SmartValue value={v} /> : formatPrimitive(v)}
+              </dd>
+            </div>
+          ))}
+      </dl>
+    );
+  }
+
+  return <span>{formatPrimitive(value)}</span>;
+}
+
+/** Compact one-line rendering of an object: bold name + light key:val chips */
+function ObjectInline({ value }: { value: any }) {
+  if (value == null || typeof value !== "object") return <span>{formatPrimitive(value)}</span>;
+  const entries = Object.entries(value).filter(([, v]) => hasDisplayValue(v));
+  const nameEntry = entries.find(([k]) => /^(name|title|label)$/i.test(k));
+  const rest = entries.filter(([k]) => k !== nameEntry?.[0]);
+  return (
+    <div>
+      {nameEntry && <span className="font-medium">{formatPrimitive(nameEntry[1])}</span>}
+      {rest.length > 0 && (
+        <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+          {rest.map(([k, v]) => (
+            <span key={k}>
+              <span className="uppercase tracking-wider text-[10px]">{humanizeKey(k)}:</span>{" "}
+              <span className="text-foreground/80">
+                {typeof v === "object" ? formatPrimitiveList(v) : formatPrimitive(v)}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function formatPrimitiveList(v: any): string {
+  if (Array.isArray(v)) return v.map((x) => (typeof x === "object" ? "…" : formatPrimitive(x))).join(", ");
+  if (typeof v === "object" && v != null)
+    return Object.entries(v)
+      .filter(([, x]) => hasDisplayValue(x))
+      .map(([k, x]) => `${humanizeKey(k)}: ${formatPrimitive(x)}`)
+      .join(" · ");
+  return formatPrimitive(v);
+}
+
+function isComplex(v: any): boolean {
+  if (v == null) return false;
+  if (Array.isArray(v)) return v.some((x) => x && typeof x === "object");
+  if (typeof v === "object") return true;
+  return false;
 }
 
 function QuickFactsSection({ b }: { b: Bike }) {
@@ -675,21 +780,38 @@ function SpecsSection({ b }: { b: Bike }) {
   return (
     <Section id="specs" title="Vollständige Spezifikationen" icon={Wrench}>
       <Accordion type="multiple" defaultValue={["g0"]} className="border border-border">
-        {groups.map((g, i) => (
-          <AccordionItem key={i} value={`g${i}`} className="border-b border-border last:border-b-0">
-            <AccordionTrigger className="px-4 hover:no-underline">{g.title}</AccordionTrigger>
-            <AccordionContent className="px-4 pb-4">
-              <dl className="grid sm:grid-cols-2 gap-x-8">
-                {Object.entries(g.data).filter(([_, v]) => hasDisplayValue(v)).map(([k, v]) => (
-                  <div key={k} className="flex justify-between gap-4 py-2 border-b border-border text-sm">
-                    <dt className="text-muted-foreground capitalize">{String(k).replace(/_/g, " ")}</dt>
-                    <dd className="text-right font-medium">{formatDisplayValue(v)}</dd>
+        {groups.map((g, i) => {
+          const entries = Object.entries(g.data).filter(([, v]) => hasDisplayValue(v));
+          const simple = entries.filter(([, v]) => !isComplex(v));
+          const complex = entries.filter(([, v]) => isComplex(v));
+          return (
+            <AccordionItem key={i} value={`g${i}`} className="border-b border-border last:border-b-0">
+              <AccordionTrigger className="px-4 hover:no-underline">{g.title}</AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                {simple.length > 0 && (
+                  <dl className="grid sm:grid-cols-2 gap-x-8">
+                    {simple.map(([k, v]) => (
+                      <div key={k} className="flex justify-between gap-4 py-2 border-b border-border text-sm">
+                        <dt className="text-muted-foreground">{humanizeKey(k)}</dt>
+                        <dd className="text-right font-medium">{formatPrimitive(v)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+                {complex.length > 0 && (
+                  <div className={`${simple.length > 0 ? "mt-6" : ""} space-y-5`}>
+                    {complex.map(([k, v]) => (
+                      <div key={k} className="border border-border bg-muted/20 p-4">
+                        <div className="eyebrow text-signal mb-3">{humanizeKey(k)}</div>
+                        <SmartValue value={v} />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </dl>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
     </Section>
   );
@@ -698,19 +820,88 @@ function SpecsSection({ b }: { b: Bike }) {
 function GeometrySection({ b }: { b: Bike }) {
   const g: Record<string, any> = (b.geometry as any) || {};
   if (!Object.values(g).some(hasDisplayValue)) return null;
+  const entries = Object.entries(g).filter(([, v]) => hasDisplayValue(v));
+  const simple = entries.filter(([, v]) => !isComplex(v));
+  const complex = entries.filter(([, v]) => isComplex(v));
+
+  // Detect by-size arrays (array of objects with a `size*` field)
+  const bySizeEntry = complex.find(
+    ([, v]) => Array.isArray(v) && v.length > 0 && typeof v[0] === "object" && Object.keys(v[0]).some((k) => /^size/i.test(k)),
+  );
+
   return (
     <Section id="geometry" title="Geometrie" icon={Activity}>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {Object.entries(g).filter(([_, v]) => hasDisplayValue(v)).map(([k, v]) => (
-          <div key={k} className="border border-border p-3">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.replace(/_/g, " ")}</div>
-            <div className="font-display text-lg font-black mt-1 tabular-nums">{formatDisplayValue(v)}</div>
-          </div>
-        ))}
-      </div>
+      {simple.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {simple.map(([k, v]) => (
+            <div key={k} className="border border-border p-3">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{humanizeKey(k)}</div>
+              <div className="font-display text-lg font-black mt-1 tabular-nums">{formatPrimitive(v)}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {bySizeEntry && (
+        <div className="mt-6 border border-border overflow-x-auto">
+          <div className="eyebrow text-signal px-4 pt-3">{humanizeKey(bySizeEntry[0])}</div>
+          <GeometryBySizeTable rows={bySizeEntry[1] as Record<string, any>[]} />
+        </div>
+      )}
+
+      {complex.filter((e) => e !== bySizeEntry).length > 0 && (
+        <div className="mt-6 space-y-4">
+          {complex.filter((e) => e !== bySizeEntry).map(([k, v]) => (
+            <div key={k} className="border border-border bg-muted/20 p-4">
+              <div className="eyebrow text-signal mb-3">{humanizeKey(k)}</div>
+              <SmartValue value={v} />
+            </div>
+          ))}
+        </div>
+      )}
     </Section>
   );
 }
+
+function GeometryBySizeTable({ rows }: { rows: Record<string, any>[] }) {
+  const cols = Array.from(
+    rows.reduce<Set<string>>((set, r) => {
+      Object.keys(r).forEach((k) => hasDisplayValue(r[k]) && set.add(k));
+      return set;
+    }, new Set()),
+  );
+  // Move size column to front
+  const sizeKey = cols.find((c) => /^size/i.test(c));
+  const ordered = sizeKey ? [sizeKey, ...cols.filter((c) => c !== sizeKey)] : cols;
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-t border-b border-border bg-muted/30">
+          {ordered.map((c) => (
+            <th
+              key={c}
+              className="text-left font-semibold text-[10px] uppercase tracking-wider text-muted-foreground px-3 py-2 whitespace-nowrap"
+            >
+              {humanizeKey(c)}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r, i) => (
+          <tr key={i} className="border-b border-border last:border-b-0">
+            {ordered.map((c) => (
+              <td key={c} className="px-3 py-2 tabular-nums whitespace-nowrap">
+                {hasDisplayValue(r[c]) ? formatPrimitive(r[c]) : "—"}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 
 function EbikeSystemSection({ b }: { b: Bike }) {
   const e = b.ebike ?? {};
@@ -898,8 +1089,8 @@ function MaintenanceSection({ b }: { b: Bike }) {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
         {Object.entries(m).filter(([_, v]) => hasDisplayValue(v)).map(([k, v]) => (
           <div key={k} className="border border-border p-4 bg-card">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k.replace(/_/g, " ")}</div>
-            <div className="font-display text-base font-black mt-1">{formatDisplayValue(v)}</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">{humanizeKey(k)}</div>
+            <div className="text-sm"><SmartValue value={v} /></div>
           </div>
         ))}
       </div>
@@ -969,8 +1160,8 @@ function EnvironmentSection({ b }: { b: Bike }) {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {entries.map(([k, v]) => (
           <div key={k} className="border border-emerald-500/30 bg-emerald-500/5 p-3">
-            <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400">{ICONS[k] ?? k.replace(/_/g, " ")}</div>
-            <div className="font-display text-lg font-black mt-1 tabular-nums">{formatDisplayValue(v)}</div>
+            <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">{ICONS[k] ?? humanizeKey(k)}</div>
+            <div className="text-sm"><SmartValue value={v} /></div>
           </div>
         ))}
       </div>
