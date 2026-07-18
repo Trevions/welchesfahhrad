@@ -7,6 +7,7 @@ import {
   updateArticleReportStatus,
   deleteArticleReport,
   replyToArticleReport,
+  listArticleReportMessages,
 } from "@/lib/article-reports.functions";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,20 @@ type Report = {
   status: "new" | "read" | "resolved" | "archived";
   created_at: string;
   updated_at: string;
+  thread_token?: string;
+  deleted_at?: string | null;
+};
+
+type ThreadMessage = {
+  id: string;
+  direction: "inbound" | "outbound" | "auto_reply";
+  from_email: string;
+  to_email: string;
+  subject: string | null;
+  body_text: string | null;
+  body_html: string | null;
+  created_at: string;
+  meta?: Record<string, unknown>;
 };
 
 function ReportsPage() {
@@ -73,6 +88,8 @@ function ReportsPage() {
   const [replyResolve, setReplyResolve] = useState(true);
 
 
+  const fetchMessages = useServerFn(listArticleReportMessages);
+
   const { data, isLoading } = useQuery({
     queryKey: ["article-reports", filter, search],
     queryFn: () =>
@@ -90,6 +107,14 @@ function ReportsPage() {
     () => reports.find((m) => m.id === selectedId) ?? null,
     [reports, selectedId],
   );
+
+  const { data: threadData } = useQuery({
+    queryKey: ["article-report-messages", selectedId],
+    queryFn: () => fetchMessages({ data: { report_id: selectedId! } }),
+    enabled: !!selectedId,
+    refetchInterval: selectedId ? 20_000 : false,
+  });
+  const messages: ThreadMessage[] = (threadData?.messages ?? []) as ThreadMessage[];
 
   const statusMut = useMutation({
     mutationFn: (vars: { id: string; status: Report["status"] }) =>
@@ -117,6 +142,7 @@ function ReportsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["article-reports"] });
       qc.invalidateQueries({ queryKey: ["reports-unread"] });
+      qc.invalidateQueries({ queryKey: ["article-report-messages"] });
       setReplyOpen(false);
       setReplyMessage("");
       toast.success("Antwort gesendet");
@@ -374,11 +400,45 @@ function ReportsPage() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6">
-                <pre className="whitespace-pre-wrap font-sans text-sm text-zinc-200 leading-relaxed">
-                  {selected.description}
-                </pre>
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 bg-zinc-950/40">
+                {/* Original report always first */}
+                <MessageBubble
+                  direction="inbound"
+                  from={selected.reporter_email}
+                  fromName={selected.reporter_name}
+                  subject={selected.reason ? `Meldung: ${selected.reason}` : "Artikel-Meldung"}
+                  body={selected.description}
+                  createdAt={selected.created_at}
+                  isOriginal
+                />
+                {messages
+                  .filter((m) => {
+                    // Skip duplicate of the original submission (same body as description)
+                    if (
+                      m.direction === "inbound" &&
+                      (m.meta as any)?.origin === "web_form"
+                    )
+                      return false;
+                    return true;
+                  })
+                  .map((m) => (
+                    <MessageBubble
+                      key={m.id}
+                      direction={m.direction}
+                      from={m.from_email}
+                      fromName={m.direction === "outbound" || m.direction === "auto_reply" ? "Redaktion" : selected.reporter_name}
+                      subject={m.subject}
+                      body={m.body_text || stripHtml(m.body_html) || ""}
+                      createdAt={m.created_at}
+                    />
+                  ))}
+                {messages.length === 0 && (
+                  <p className="text-center text-[11px] text-zinc-600 pt-4">
+                    Noch keine Antworten in dieser Konversation.
+                  </p>
+                )}
               </div>
+
 
               <div className="p-4 border-t border-zinc-800 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-500">
@@ -491,6 +551,94 @@ function ReportsPage() {
         </DialogContent>
       </Dialog>
     </AdminShell>
+  );
+}
+
+function stripHtml(html: string | null | undefined): string {
+  if (!html) return "";
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
+function MessageBubble({
+  direction,
+  from,
+  fromName,
+  subject,
+  body,
+  createdAt,
+  isOriginal,
+}: {
+  direction: "inbound" | "outbound" | "auto_reply";
+  from: string;
+  fromName: string;
+  subject: string | null;
+  body: string;
+  createdAt: string;
+  isOriginal?: boolean;
+}) {
+  const isOutbound = direction === "outbound" || direction === "auto_reply";
+  const label =
+    direction === "auto_reply"
+      ? "Automatische Antwort"
+      : direction === "outbound"
+      ? "Redaktion → Leser"
+      : isOriginal
+      ? "Ursprüngliche Meldung"
+      : "Antwort vom Leser";
+
+  return (
+    <div
+      className={cn(
+        "rounded-lg border p-4",
+        isOutbound
+          ? "bg-[#FF6A1A]/5 border-[#FF6A1A]/20 ml-6"
+          : "bg-zinc-900/60 border-zinc-800 mr-6",
+      )}
+    >
+      <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+        <div className="flex items-center gap-2 min-w-0">
+          <Badge
+            variant="outline"
+            className={cn(
+              "text-[9px] uppercase tracking-wider border px-1.5 py-0",
+              isOutbound
+                ? "border-[#FF6A1A]/40 text-[#FF6A1A] bg-[#FF6A1A]/5"
+                : "border-zinc-700 text-zinc-400 bg-zinc-950",
+            )}
+          >
+            {label}
+          </Badge>
+          <span className="text-[11px] text-zinc-500 truncate">
+            {fromName} · {from}
+          </span>
+        </div>
+        <span className="text-[10px] text-zinc-600 tabular-nums shrink-0">
+          {new Date(createdAt).toLocaleString("de-DE", {
+            dateStyle: "short",
+            timeStyle: "short",
+          })}
+        </span>
+      </div>
+      {subject && (
+        <div className="text-[12px] font-medium text-zinc-200 mb-2 truncate">
+          {subject}
+        </div>
+      )}
+      <pre className="whitespace-pre-wrap font-sans text-[13px] text-zinc-200 leading-relaxed break-words">
+        {body}
+      </pre>
+    </div>
   );
 }
 

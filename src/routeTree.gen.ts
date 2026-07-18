@@ -96,6 +96,7 @@ import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicNewsletterUnsubscribeRouteImport } from './routes/api.public.newsletter.unsubscribe'
 import { Route as ApiPublicNewsletterDispatchRouteImport } from './routes/api.public.newsletter.dispatch'
+import { Route as ApiPublicInboundResendRouteImport } from './routes/api/public/inbound.resend'
 import { Route as ApiPublicHooksLexikonChangedRouteImport } from './routes/api.public.hooks.lexikon-changed'
 import { Route as ApiPublicArticlesAutoGenerateRouteImport } from './routes/api.public.articles.auto-generate'
 import { Route as ApiPublicArticleImagePathRouteImport } from './routes/api.public.article-image.$path'
@@ -555,6 +556,11 @@ const ApiPublicNewsletterDispatchRoute =
     path: '/api/public/newsletter/dispatch',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicInboundResendRoute = ApiPublicInboundResendRouteImport.update({
+  id: '/api/public/inbound/resend',
+  path: '/api/public/inbound/resend',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksLexikonChangedRoute =
   ApiPublicHooksLexikonChangedRouteImport.update({
     id: '/api/public/hooks/lexikon-changed',
@@ -702,6 +708,7 @@ export interface FileRoutesByFullPath {
   '/api/public/article-image/$path': typeof ApiPublicArticleImagePathRoute
   '/api/public/articles/auto-generate': typeof ApiPublicArticlesAutoGenerateRoute
   '/api/public/hooks/lexikon-changed': typeof ApiPublicHooksLexikonChangedRoute
+  '/api/public/inbound/resend': typeof ApiPublicInboundResendRoute
   '/api/public/newsletter/dispatch': typeof ApiPublicNewsletterDispatchRoute
   '/api/public/newsletter/unsubscribe': typeof ApiPublicNewsletterUnsubscribeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -797,6 +804,7 @@ export interface FileRoutesByTo {
   '/api/public/article-image/$path': typeof ApiPublicArticleImagePathRoute
   '/api/public/articles/auto-generate': typeof ApiPublicArticlesAutoGenerateRoute
   '/api/public/hooks/lexikon-changed': typeof ApiPublicHooksLexikonChangedRoute
+  '/api/public/inbound/resend': typeof ApiPublicInboundResendRoute
   '/api/public/newsletter/dispatch': typeof ApiPublicNewsletterDispatchRoute
   '/api/public/newsletter/unsubscribe': typeof ApiPublicNewsletterUnsubscribeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -896,6 +904,7 @@ export interface FileRoutesById {
   '/api/public/article-image/$path': typeof ApiPublicArticleImagePathRoute
   '/api/public/articles/auto-generate': typeof ApiPublicArticlesAutoGenerateRoute
   '/api/public/hooks/lexikon-changed': typeof ApiPublicHooksLexikonChangedRoute
+  '/api/public/inbound/resend': typeof ApiPublicInboundResendRoute
   '/api/public/newsletter/dispatch': typeof ApiPublicNewsletterDispatchRoute
   '/api/public/newsletter/unsubscribe': typeof ApiPublicNewsletterUnsubscribeRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -995,6 +1004,7 @@ export interface FileRouteTypes {
     | '/api/public/article-image/$path'
     | '/api/public/articles/auto-generate'
     | '/api/public/hooks/lexikon-changed'
+    | '/api/public/inbound/resend'
     | '/api/public/newsletter/dispatch'
     | '/api/public/newsletter/unsubscribe'
     | '/lovable/email/queue/process'
@@ -1090,6 +1100,7 @@ export interface FileRouteTypes {
     | '/api/public/article-image/$path'
     | '/api/public/articles/auto-generate'
     | '/api/public/hooks/lexikon-changed'
+    | '/api/public/inbound/resend'
     | '/api/public/newsletter/dispatch'
     | '/api/public/newsletter/unsubscribe'
     | '/lovable/email/queue/process'
@@ -1188,6 +1199,7 @@ export interface FileRouteTypes {
     | '/api/public/article-image/$path'
     | '/api/public/articles/auto-generate'
     | '/api/public/hooks/lexikon-changed'
+    | '/api/public/inbound/resend'
     | '/api/public/newsletter/dispatch'
     | '/api/public/newsletter/unsubscribe'
     | '/lovable/email/queue/process'
@@ -1236,6 +1248,7 @@ export interface RootRouteChildren {
   ApiPublicArticleImagePathRoute: typeof ApiPublicArticleImagePathRoute
   ApiPublicArticlesAutoGenerateRoute: typeof ApiPublicArticlesAutoGenerateRoute
   ApiPublicHooksLexikonChangedRoute: typeof ApiPublicHooksLexikonChangedRoute
+  ApiPublicInboundResendRoute: typeof ApiPublicInboundResendRoute
   ApiPublicNewsletterDispatchRoute: typeof ApiPublicNewsletterDispatchRoute
   ApiPublicNewsletterUnsubscribeRoute: typeof ApiPublicNewsletterUnsubscribeRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -1852,6 +1865,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicNewsletterDispatchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/inbound/resend': {
+      id: '/api/public/inbound/resend'
+      path: '/api/public/inbound/resend'
+      fullPath: '/api/public/inbound/resend'
+      preLoaderRoute: typeof ApiPublicInboundResendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/lexikon-changed': {
       id: '/api/public/hooks/lexikon-changed'
       path: '/api/public/hooks/lexikon-changed'
@@ -2090,6 +2110,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicArticleImagePathRoute: ApiPublicArticleImagePathRoute,
   ApiPublicArticlesAutoGenerateRoute: ApiPublicArticlesAutoGenerateRoute,
   ApiPublicHooksLexikonChangedRoute: ApiPublicHooksLexikonChangedRoute,
+  ApiPublicInboundResendRoute: ApiPublicInboundResendRoute,
   ApiPublicNewsletterDispatchRoute: ApiPublicNewsletterDispatchRoute,
   ApiPublicNewsletterUnsubscribeRoute: ApiPublicNewsletterUnsubscribeRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,

@@ -3,9 +3,16 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const FROM_EMAIL = "Radmap.de Redaktion <redaktion@radmap.de>";
-const REPLY_TO = "redaktion@radmap.de";
+const FROM_NAME = "Radmap.de Redaktion";
+const FROM_LOCAL = "redaktion";
+const FROM_DOMAIN = "radmap.de";
 const SITE_URL = "https://radmap.de";
+const CONTACT_URL = `${SITE_URL}/kontakt`;
+
+function replyToFor(threadToken: string) {
+  // Plus-addressed reply-to so inbound webhooks can link replies back
+  return `${FROM_LOCAL}+r-${threadToken}@${FROM_DOMAIN}`;
+}
 
 function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) =>
@@ -58,8 +65,6 @@ ${opts.originalReason ? `<div style="font-size:11px;color:#a1a1aa;text-transform
 </body></html>`;
 }
 
-
-
 const statusEnum = z.enum(["new", "read", "resolved", "archived"]);
 
 const submitInput = z.object({
@@ -107,17 +112,35 @@ export const submitArticleReport = createServerFn({ method: "POST" })
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("article_reports").insert({
-      article_slug: data.article_slug,
-      article_title: data.article_title || null,
-      reporter_name: data.reporter_name,
-      reporter_email: data.reporter_email,
-      reason: data.reason || null,
-      description: data.description,
-      user_agent: ua,
-      ip_hash: ipHash,
-    });
+    const { data: inserted, error } = await supabaseAdmin
+      .from("article_reports")
+      .insert({
+        article_slug: data.article_slug,
+        article_title: data.article_title || null,
+        reporter_name: data.reporter_name,
+        reporter_email: data.reporter_email,
+        reason: data.reason || null,
+        description: data.description,
+        user_agent: ua,
+        ip_hash: ipHash,
+      } as any)
+      .select("id, thread_token")
+      .maybeSingle();
     if (error) throw new Error(error.message);
+
+    // Log the original submission as the first inbound message
+    if (inserted) {
+      await supabaseAdmin.from("article_report_messages").insert({
+        report_id: (inserted as any).id,
+        thread_token: (inserted as any).thread_token,
+        direction: "inbound",
+        from_email: data.reporter_email,
+        to_email: `${FROM_LOCAL}@${FROM_DOMAIN}`,
+        subject: data.reason ? `Meldung: ${data.reason}` : "Artikel-Meldung",
+        body_text: data.description,
+        meta: { origin: "web_form" },
+      } as any);
+    }
     return { ok: true };
   });
 
@@ -128,6 +151,7 @@ export const listArticleReports = createServerFn({ method: "POST" })
       .object({
         status: statusEnum.optional(),
         search: z.string().max(200).optional(),
+        includeDeleted: z.boolean().optional(),
       })
       .optional(),
   )
@@ -136,9 +160,10 @@ export const listArticleReports = createServerFn({ method: "POST" })
     let q = context.supabase
       .from("article_reports")
       .select(
-        "id, article_slug, article_title, reporter_name, reporter_email, reason, description, status, created_at, updated_at",
+        "id, article_slug, article_title, reporter_name, reporter_email, reason, description, status, created_at, updated_at, deleted_at, thread_token",
       )
       .order("created_at", { ascending: false });
+    if (!data?.includeDeleted) q = q.is("deleted_at", null);
     if (data?.status) q = q.eq("status", data.status);
     if (data?.search) q = q.or(
       `article_title.ilike.%${data.search}%,article_slug.ilike.%${data.search}%,reporter_name.ilike.%${data.search}%,reporter_email.ilike.%${data.search}%`,
@@ -149,6 +174,7 @@ export const listArticleReports = createServerFn({ method: "POST" })
     const { count: unread } = await context.supabase
       .from("article_reports")
       .select("id", { count: "exact", head: true })
+      .is("deleted_at", null)
       .eq("status", "new");
 
     return { reports: rows ?? [], unread: unread ?? 0 };
@@ -161,6 +187,7 @@ export const getUnreadArticleReportCount = createServerFn({ method: "GET" })
     const { count } = await context.supabase
       .from("article_reports")
       .select("id", { count: "exact", head: true })
+      .is("deleted_at", null)
       .eq("status", "new");
     return { unread: count ?? 0 };
   });
@@ -178,6 +205,7 @@ export const updateArticleReportStatus = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// Soft-delete (keeps correspondence and enables closed-case auto-reply)
 export const deleteArticleReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(z.object({ id: z.string().uuid() }))
@@ -186,10 +214,38 @@ export const deleteArticleReport = createServerFn({ method: "POST" })
     if (role !== "admin") throw new Error("Forbidden: admins only");
     const { error } = await context.supabase
       .from("article_reports")
-      .delete()
+      .update({ deleted_at: new Date().toISOString() } as any)
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+export const restoreArticleReport = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ id: z.string().uuid() }))
+  .handler(async ({ data, context }) => {
+    const role = await assertStaff(context);
+    if (role !== "admin") throw new Error("Forbidden: admins only");
+    const { error } = await context.supabase
+      .from("article_reports")
+      .update({ deleted_at: null } as any)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const listArticleReportMessages = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ report_id: z.string().uuid() }))
+  .handler(async ({ data, context }) => {
+    await assertStaff(context);
+    const { data: rows, error } = await context.supabase
+      .from("article_report_messages")
+      .select("id, direction, from_email, to_email, subject, body_text, body_html, created_at, meta")
+      .eq("report_id", data.report_id)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return { messages: rows ?? [] };
   });
 
 export const replyToArticleReport = createServerFn({ method: "POST" })
@@ -207,17 +263,22 @@ export const replyToArticleReport = createServerFn({ method: "POST" })
 
     const { data: report, error: fetchErr } = await context.supabase
       .from("article_reports")
-      .select("id, article_slug, article_title, reporter_name, reporter_email, reason, description")
+      .select("id, article_slug, article_title, reporter_name, reporter_email, reason, description, thread_token, deleted_at")
       .eq("id", data.id)
       .maybeSingle();
     if (fetchErr) throw new Error(fetchErr.message);
     if (!report) throw new Error("Meldung nicht gefunden");
+    if ((report as any).deleted_at) throw new Error("Diese Meldung ist gelöscht.");
 
     const lovableKey = process.env.LOVABLE_API_KEY;
     const resendKey = process.env.RESEND_API_KEY;
     if (!lovableKey || !resendKey) {
       throw new Error("E-Mail-Versand ist nicht konfiguriert");
     }
+
+    const threadToken = (report as any).thread_token as string;
+    const replyTo = replyToFor(threadToken);
+    const fromEmail = `${FROM_NAME} <${FROM_LOCAL}@${FROM_DOMAIN}>`;
 
     const html = buildReplyEmailHtml({
       recipientName: report.reporter_name,
@@ -242,12 +303,13 @@ export const replyToArticleReport = createServerFn({ method: "POST" })
         "X-Connection-Api-Key": resendKey,
       },
       body: JSON.stringify({
-        from: FROM_EMAIL,
+        from: fromEmail,
         to: [report.reporter_email],
-        reply_to: REPLY_TO,
+        reply_to: replyTo,
         subject: data.subject,
         html,
         text,
+        headers: { "X-Radmap-Thread": threadToken },
       }),
     });
 
@@ -255,6 +317,28 @@ export const replyToArticleReport = createServerFn({ method: "POST" })
       const body = await resp.text();
       throw new Error(`E-Mail-Versand fehlgeschlagen [${resp.status}]: ${body}`);
     }
+
+    let providerId: string | null = null;
+    try {
+      const j = await resp.json();
+      providerId = j?.id ?? null;
+    } catch {
+      /* ignore */
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("article_report_messages").insert({
+      report_id: data.id,
+      thread_token: threadToken,
+      direction: "outbound",
+      from_email: `${FROM_LOCAL}@${FROM_DOMAIN}`,
+      to_email: report.reporter_email,
+      subject: data.subject,
+      body_text: data.message,
+      body_html: html,
+      provider_message_id: providerId,
+      meta: { reply_to: replyTo },
+    } as any);
 
     await context.supabase
       .from("article_reports")
