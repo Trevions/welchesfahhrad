@@ -294,7 +294,10 @@ export const replyToArticleReport = createServerFn({ method: "POST" })
     });
 
     const text =
-      `Hallo ${report.reporter_name},\n\n${data.message}\n\n` +
+      `Hallo ${report.reporter_name},\n\n` +
+      `vielen Dank für deine Rückmeldung zu unserem Artikel. Wir haben deinen Hinweis geprüft und möchten dir Folgendes mitteilen:\n\n` +
+      `${data.message.trim()}\n\n` +
+      `Falls du weitere Fragen hast, antworte einfach direkt auf diese E-Mail.\n\n` +
       `Viele Grüße\nDie Radmap.de Redaktion\n\n` +
       `— Bezug: ${report.article_title ?? report.article_slug}\n` +
       `${SITE_URL}/artikel/${report.article_slug}\n`;
