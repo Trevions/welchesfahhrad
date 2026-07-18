@@ -71,6 +71,54 @@ export type Database = {
         }
         Relationships: []
       }
+      article_reports: {
+        Row: {
+          article_slug: string
+          article_title: string | null
+          consent_at: string
+          created_at: string
+          description: string
+          id: string
+          ip_hash: string | null
+          reason: string | null
+          reporter_email: string
+          reporter_name: string
+          status: string
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          article_slug: string
+          article_title?: string | null
+          consent_at?: string
+          created_at?: string
+          description: string
+          id?: string
+          ip_hash?: string | null
+          reason?: string | null
+          reporter_email: string
+          reporter_name: string
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          article_slug?: string
+          article_title?: string | null
+          consent_at?: string
+          created_at?: string
+          description?: string
+          id?: string
+          ip_hash?: string | null
+          reason?: string | null
+          reporter_email?: string
+          reporter_name?: string
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       article_sources: {
         Row: {
           article_id: string | null

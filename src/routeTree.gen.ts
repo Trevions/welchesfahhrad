@@ -83,6 +83,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedMnvIndexRouteImport } from './routes/_authenticated/mnv.index'
 import { Route as AuthenticatedMnvUsersRouteImport } from './routes/_authenticated/mnv.users'
+import { Route as AuthenticatedMnvReportsRouteImport } from './routes/_authenticated/mnv.reports'
 import { Route as AuthenticatedMnvNewsletterRouteImport } from './routes/_authenticated/mnv.newsletter'
 import { Route as AuthenticatedMnvMessagesRouteImport } from './routes/_authenticated/mnv.messages'
 import { Route as AuthenticatedMnvMediaRouteImport } from './routes/_authenticated/mnv.media'
@@ -481,6 +482,11 @@ const AuthenticatedMnvUsersRoute = AuthenticatedMnvUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AuthenticatedMnvRoute,
 } as any)
+const AuthenticatedMnvReportsRoute = AuthenticatedMnvReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthenticatedMnvRoute,
+} as any)
 const AuthenticatedMnvNewsletterRoute =
   AuthenticatedMnvNewsletterRouteImport.update({
     id: '/newsletter',
@@ -684,6 +690,7 @@ export interface FileRoutesByFullPath {
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
+  '/mnv/reports': typeof AuthenticatedMnvReportsRoute
   '/mnv/users': typeof AuthenticatedMnvUsersRoute
   '/mnv/': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
@@ -778,6 +785,7 @@ export interface FileRoutesByTo {
   '/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
+  '/mnv/reports': typeof AuthenticatedMnvReportsRoute
   '/mnv/users': typeof AuthenticatedMnvUsersRoute
   '/mnv': typeof AuthenticatedMnvIndexRoute
   '/mnv/articles/$id': typeof AuthenticatedMnvArticlesIdRoute
@@ -876,6 +884,7 @@ export interface FileRoutesById {
   '/_authenticated/mnv/media': typeof AuthenticatedMnvMediaRoute
   '/_authenticated/mnv/messages': typeof AuthenticatedMnvMessagesRoute
   '/_authenticated/mnv/newsletter': typeof AuthenticatedMnvNewsletterRoute
+  '/_authenticated/mnv/reports': typeof AuthenticatedMnvReportsRoute
   '/_authenticated/mnv/users': typeof AuthenticatedMnvUsersRoute
   '/_authenticated/mnv/': typeof AuthenticatedMnvIndexRoute
   '/_authenticated/mnv/articles_/$id': typeof AuthenticatedMnvArticlesIdRoute
@@ -974,6 +983,7 @@ export interface FileRouteTypes {
     | '/mnv/media'
     | '/mnv/messages'
     | '/mnv/newsletter'
+    | '/mnv/reports'
     | '/mnv/users'
     | '/mnv/'
     | '/mnv/articles/$id'
@@ -1068,6 +1078,7 @@ export interface FileRouteTypes {
     | '/mnv/media'
     | '/mnv/messages'
     | '/mnv/newsletter'
+    | '/mnv/reports'
     | '/mnv/users'
     | '/mnv'
     | '/mnv/articles/$id'
@@ -1165,6 +1176,7 @@ export interface FileRouteTypes {
     | '/_authenticated/mnv/media'
     | '/_authenticated/mnv/messages'
     | '/_authenticated/mnv/newsletter'
+    | '/_authenticated/mnv/reports'
     | '/_authenticated/mnv/users'
     | '/_authenticated/mnv/'
     | '/_authenticated/mnv/articles_/$id'
@@ -1749,6 +1761,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMnvUsersRouteImport
       parentRoute: typeof AuthenticatedMnvRoute
     }
+    '/_authenticated/mnv/reports': {
+      id: '/_authenticated/mnv/reports'
+      path: '/reports'
+      fullPath: '/mnv/reports'
+      preLoaderRoute: typeof AuthenticatedMnvReportsRouteImport
+      parentRoute: typeof AuthenticatedMnvRoute
+    }
     '/_authenticated/mnv/newsletter': {
       id: '/_authenticated/mnv/newsletter'
       path: '/newsletter'
@@ -1907,6 +1926,7 @@ interface AuthenticatedMnvRouteChildren {
   AuthenticatedMnvMediaRoute: typeof AuthenticatedMnvMediaRoute
   AuthenticatedMnvMessagesRoute: typeof AuthenticatedMnvMessagesRoute
   AuthenticatedMnvNewsletterRoute: typeof AuthenticatedMnvNewsletterRoute
+  AuthenticatedMnvReportsRoute: typeof AuthenticatedMnvReportsRoute
   AuthenticatedMnvUsersRoute: typeof AuthenticatedMnvUsersRoute
   AuthenticatedMnvIndexRoute: typeof AuthenticatedMnvIndexRoute
   AuthenticatedMnvArticlesIdRoute: typeof AuthenticatedMnvArticlesIdRoute
@@ -1925,6 +1945,7 @@ const AuthenticatedMnvRouteChildren: AuthenticatedMnvRouteChildren = {
   AuthenticatedMnvMediaRoute: AuthenticatedMnvMediaRoute,
   AuthenticatedMnvMessagesRoute: AuthenticatedMnvMessagesRoute,
   AuthenticatedMnvNewsletterRoute: AuthenticatedMnvNewsletterRoute,
+  AuthenticatedMnvReportsRoute: AuthenticatedMnvReportsRoute,
   AuthenticatedMnvUsersRoute: AuthenticatedMnvUsersRoute,
   AuthenticatedMnvIndexRoute: AuthenticatedMnvIndexRoute,
   AuthenticatedMnvArticlesIdRoute: AuthenticatedMnvArticlesIdRoute,
