@@ -105,15 +105,25 @@ export const Route = createFileRoute("/sitemap.xml")({
           })
           .join("\n");
 
+        const lexikonIndexAlt = `    <xhtml:link rel="alternate" hreflang="de" href="${BASE_URL}/lexikon" />\n    <xhtml:link rel="alternate" hreflang="de-DE" href="${BASE_URL}/lexikon" />\n    <xhtml:link rel="alternate" hreflang="x-default" href="${BASE_URL}/lexikon" />`;
+
         const lexikonXml = (lexikon ?? [])
           .map((l: any) => {
             const lastmod = l.updated_at ?? now;
             const loc = `${BASE_URL}/lexikon/${xmlEscape(l.slug)}`;
-            return `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`;
+            const alt = `    <xhtml:link rel="alternate" hreflang="de" href="${loc}" />\n    <xhtml:link rel="alternate" hreflang="de-DE" href="${loc}" />\n    <xhtml:link rel="alternate" hreflang="x-default" href="${loc}" />`;
+            return `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n${alt}\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`;
           })
           .join("\n");
 
-        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${staticXml}\n${articleXml}\n${lexikonXml}\n</urlset>`;
+        // Inject hreflang into the /lexikon index entry within staticXml
+        const staticXmlWithAlt = staticXml.replace(
+          `<loc>${BASE_URL}/lexikon</loc>\n    <lastmod>${now}</lastmod>`,
+          `<loc>${BASE_URL}/lexikon</loc>\n    <lastmod>${now}</lastmod>\n${lexikonIndexAlt}`,
+        );
+
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${staticXmlWithAlt}\n${articleXml}\n${lexikonXml}\n</urlset>`;
+
 
 
         return new Response(xml, {
