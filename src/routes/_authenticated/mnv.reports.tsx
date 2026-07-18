@@ -153,9 +153,7 @@ function ReportsPage() {
   const openReply = () => {
     if (!selected) return;
     setReplySubject(`Re: Deine Meldung zu „${selected.article_title ?? selected.article_slug}"`);
-    setReplyMessage(
-      `vielen Dank für deine Rückmeldung zu unserem Artikel. Wir haben deinen Hinweis geprüft und möchten dir Folgendes mitteilen:\n\n\n\nFalls du weitere Fragen hast, antworte einfach direkt auf diese E-Mail.`,
-    );
+    setReplyMessage("");
     setReplyResolve(true);
     setReplyOpen(true);
   };
@@ -472,7 +470,7 @@ function ReportsPage() {
                 <>
                   An <span className="text-foreground font-medium">{selected.reporter_name}</span>{" "}
                   &lt;{selected.reporter_email}&gt; · Absender:{" "}
-                  <span className="text-foreground">hallo@radmap.de</span>
+                  <span className="text-foreground">redaktion@radmap.de</span>
                 </>
               )}
             </DialogDescription>
@@ -489,18 +487,20 @@ function ReportsPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="rep-message">Nachricht</Label>
+              <Label htmlFor="rep-message">Deine Nachricht</Label>
               <Textarea
                 id="rep-message"
-                rows={12}
+                rows={10}
                 value={replyMessage}
                 onChange={(e) => setReplyMessage(e.target.value)}
                 maxLength={10000}
-                placeholder="Hallo…"
+                placeholder="Schreibe hier nur den Kern deiner Antwort – Anrede, Einleitung, Abschluss und Signatur werden automatisch ergänzt."
                 className="font-sans leading-relaxed"
+                autoFocus
               />
-              <div className="text-[11px] text-muted-foreground text-right tabular-nums">
-                {replyMessage.length}/10000
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                <span>Wird eingebettet zwischen „Hallo {selected?.reporter_name}, …" und „Viele Grüße, Die Radmap.de Redaktion".</span>
+                <span className="tabular-nums shrink-0 pl-3">{replyMessage.length}/10000</span>
               </div>
             </div>
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
