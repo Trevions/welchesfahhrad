@@ -84,3 +84,12 @@ export async function notifyNewArticle(slug: string): Promise<void> {
     submitSitemapToGoogle(),
   ]);
 }
+
+export async function notifyLexikonChange(slug: string): Promise<void> {
+  const url = `https://${HOST}/lexikon/${slug}`;
+  await Promise.all([
+    pingIndexNow([url, `https://${HOST}/lexikon`]),
+    submitSitemapToGoogle(),
+  ]);
+}
+
