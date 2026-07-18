@@ -400,11 +400,45 @@ function ReportsPage() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6">
-                <pre className="whitespace-pre-wrap font-sans text-sm text-zinc-200 leading-relaxed">
-                  {selected.description}
-                </pre>
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 bg-zinc-950/40">
+                {/* Original report always first */}
+                <MessageBubble
+                  direction="inbound"
+                  from={selected.reporter_email}
+                  fromName={selected.reporter_name}
+                  subject={selected.reason ? `Meldung: ${selected.reason}` : "Artikel-Meldung"}
+                  body={selected.description}
+                  createdAt={selected.created_at}
+                  isOriginal
+                />
+                {messages
+                  .filter((m) => {
+                    // Skip duplicate of the original submission (same body as description)
+                    if (
+                      m.direction === "inbound" &&
+                      (m.meta as any)?.origin === "web_form"
+                    )
+                      return false;
+                    return true;
+                  })
+                  .map((m) => (
+                    <MessageBubble
+                      key={m.id}
+                      direction={m.direction}
+                      from={m.from_email}
+                      fromName={m.direction === "outbound" || m.direction === "auto_reply" ? "Redaktion" : selected.reporter_name}
+                      subject={m.subject}
+                      body={m.body_text || stripHtml(m.body_html) || ""}
+                      createdAt={m.created_at}
+                    />
+                  ))}
+                {messages.length === 0 && (
+                  <p className="text-center text-[11px] text-zinc-600 pt-4">
+                    Noch keine Antworten in dieser Konversation.
+                  </p>
+                )}
               </div>
+
 
               <div className="p-4 border-t border-zinc-800 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-500">
