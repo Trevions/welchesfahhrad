@@ -184,7 +184,7 @@ function formatDate(iso?: string | null): string {
 
 function LexikonTermPage() {
   const { data } = useSuspenseQuery(termQuery(Route.useParams().slug));
-  const { term, relatedArticles, relatedTerms } = data;
+  const { term, relatedArticles, relatedTerms, autoRelatedTerms } = data;
   if (!term) return null;
   const paragraphs = bodyToParagraphs(term.body);
   const modified = formatDate(term.updated_at ?? term.created_at);
