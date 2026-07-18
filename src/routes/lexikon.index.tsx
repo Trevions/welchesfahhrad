@@ -116,7 +116,10 @@ function LexikonIndex() {
   useEffect(() => {
     const t = setTimeout(() => {
       navigate({
-        search: (prev) => ({ ...prev, q: q.trim() ? q.trim() : undefined }),
+        search: (prev: { q?: string; category?: string }) => ({
+          ...prev,
+          q: q.trim() ? q.trim() : undefined,
+        }),
         replace: true,
       });
     }, 200);
