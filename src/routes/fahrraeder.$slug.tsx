@@ -1652,14 +1652,38 @@ function FaqSection({ b }: { b: Bike }) {
 }
 
 function HistorySection({ b }: { b: Bike }) {
-  const h = b.model_history ?? {};
-  const hasAny = h.launch_year || h.whats_new || h.improvements || h.known_issues || h.common_upgrades || (Array.isArray(h.previous_generations) && h.previous_generations.length);
+  const h = (b.model_history ?? {}) as any;
+  const timeline: { year?: string | number; note: string }[] = Array.isArray(h.timeline) ? h.timeline : [];
+  const hasAny =
+    h.launch_year ||
+    h.whats_new ||
+    h.improvements ||
+    h.known_issues ||
+    h.common_upgrades ||
+    timeline.length ||
+    (Array.isArray(h.previous_generations) && h.previous_generations.length);
   if (!hasAny) return null;
   return (
     <Section id="history" title="Modell-Historie" icon={Calendar}>
+      {timeline.length > 0 && (
+        <ol className="relative border-l-2 border-signal/40 ml-2 space-y-5 mb-6">
+          {timeline.map((t, i) => (
+            <li key={i} className="pl-5 relative">
+              <span className="absolute -left-[7px] top-1.5 h-3 w-3 rounded-full bg-signal ring-4 ring-background" />
+              {t.year !== undefined && t.year !== "" && (
+                <div className="font-display font-black text-signal tabular-nums text-sm">{t.year}</div>
+              )}
+              <p className="text-sm text-foreground leading-relaxed mt-0.5">{t.note}</p>
+            </li>
+          ))}
+        </ol>
+      )}
       <div className="border-l-2 border-signal pl-5 space-y-4">
-        {h.launch_year && (
-          <div><div className="eyebrow text-signal">Markteinführung</div><div className="text-base font-bold">{h.launch_year}</div></div>
+        {h.launch_year && !timeline.length && (
+          <div>
+            <div className="eyebrow text-signal">Markteinführung</div>
+            <div className="text-base font-bold">{h.launch_year}</div>
+          </div>
         )}
         {h.whats_new && <Timeline title="Neu in dieser Generation" body={h.whats_new} />}
         {h.improvements && <Timeline title="Verbesserungen" body={h.improvements} />}
@@ -1686,6 +1710,44 @@ function Timeline({ title, body }: { title: string; body: string }) {
     </div>
   );
 }
+
+function ComparableModelsSection({ b }: { b: Bike }) {
+  const items: any[] = Array.isArray((b as any).comparable_models) ? (b as any).comparable_models : [];
+  if (!items.length) return null;
+  return (
+    <Section id="comparable" title="Vergleichbare Modelle" icon={Activity}>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((m, i) => {
+          const name = String(m?.name ?? "");
+          const slug = String(m?.slug ?? "");
+          const reason = String(m?.reason ?? "");
+          const note = String(m?.note ?? "");
+          const Card: any = slug ? Link : "div";
+          const cardProps: any = slug ? { to: "/fahrraeder/$slug", params: { slug } } : {};
+          return (
+            <Card
+              key={i}
+              {...cardProps}
+              className={`block border border-border bg-card p-4 transition-colors ${slug ? "hover:border-signal hover:bg-muted/40 cursor-pointer" : ""}`}
+            >
+              <div className="font-display font-black text-base text-foreground leading-tight">{name}</div>
+              {reason && (
+                <div className="mt-2 text-[11px] uppercase tracking-wider text-signal font-semibold">
+                  {reason}
+                </div>
+              )}
+              {note && <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{note}</p>}
+              {slug && (
+                <div className="mt-3 text-xs font-semibold text-signal">Details ansehen →</div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
 
 // ---------- Reviews ----------
 
