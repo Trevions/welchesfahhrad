@@ -171,6 +171,7 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "suitability", label: "Für wen?" },
   { id: "specs", label: "Spezifikationen" },
   { id: "geometry", label: "Geometrie" },
+  { id: "configuration", label: "Konfiguration" },
   { id: "ebike-system", label: "E-Bike System" },
   { id: "range", label: "Reichweite" },
   { id: "performance", label: "Fahrgefühl" },
@@ -184,6 +185,7 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "pros-cons", label: "Pro & Contra" },
   { id: "faq", label: "FAQ" },
   { id: "history", label: "Historie" },
+  { id: "comparable", label: "Vergleichbare" },
   { id: "reviews", label: "Bewertungen" },
 ];
 
@@ -360,6 +362,7 @@ function BikeDetailPage() {
             <SuitabilitySection b={b} />
             <SpecsSection b={b} />
             <GeometrySection b={b} />
+            <ConfigurationSection b={b} />
             {b.category === "ebike" && <EbikeSystemSection b={b} />}
             <RangeSection b={b} />
             <PerformanceSection b={b} />
@@ -373,6 +376,7 @@ function BikeDetailPage() {
             <ProsConsSection b={b} />
             <FaqSection b={b} />
             <HistorySection b={b} />
+            <ComparableModelsSection b={b} />
             <ReviewsSection bikeId={b.id} />
           </main>
         </div>
@@ -769,8 +773,10 @@ function SuitabilitySection({ b }: { b: Bike }) {
 }
 
 function SpecsSection({ b }: { b: Bike }) {
+  // Strip `configuration` — rendered as its own dedicated section below.
+  const { configuration: _cfg, ...specsRest } = (b.specs ?? {}) as Record<string, any>;
   const groups: { title: string; data: Record<string, any> }[] = [
-    { title: "Rahmen & Komponenten", data: b.specs as any },
+    { title: "Rahmen & Komponenten", data: specsRest },
     { title: "Cockpit", data: b.cockpit },
     { title: "Laufradsatz", data: b.wheelset },
     { title: "Antrieb (Detail)", data: b.drivetrain_detail },
@@ -827,23 +833,27 @@ function SpecsSection({ b }: { b: Bike }) {
   );
 }
 
+
 function GeometrySection({ b }: { b: Bike }) {
   const g: Record<string, any> = (b.geometry as any) || {};
   if (!Object.values(g).some(hasDisplayValue)) return null;
-  const entries = Object.entries(g).filter(([, v]) => hasDisplayValue(v));
-  const simple = entries.filter(([, v]) => !isComplex(v));
-  const complex = entries.filter(([, v]) => isComplex(v));
 
-  // Detect by-size arrays (array of objects with a `size*` field)
-  const bySizeEntry = complex.find(
-    ([, v]) => Array.isArray(v) && v.length > 0 && typeof v[0] === "object" && Object.keys(v[0]).some((k) => /^size/i.test(k)),
+  // Normalise by_size to array-of-objects (accepts array OR object keyed by size)
+  const bySize = normaliseBySize(g.by_size);
+
+  // Overview cards: primitive top-level values only (skip by_size + nested)
+  const overview = Object.entries(g).filter(
+    ([k, v]) => k !== "by_size" && hasDisplayValue(v) && !isComplex(v),
+  );
+  const nested = Object.entries(g).filter(
+    ([k, v]) => k !== "by_size" && hasDisplayValue(v) && isComplex(v),
   );
 
   return (
     <Section id="geometry" title="Geometrie" icon={Activity}>
-      {simple.length > 0 && (
+      {overview.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {simple.map(([k, v]) => (
+          {overview.map(([k, v]) => (
             <div key={k} className="border border-border p-3">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{humanizeKey(k)}</div>
               <div className="font-display text-lg font-black mt-1 tabular-nums">{formatPrimitive(v)}</div>
@@ -852,16 +862,18 @@ function GeometrySection({ b }: { b: Bike }) {
         </div>
       )}
 
-      {bySizeEntry && (
-        <div className="mt-6 border border-border overflow-x-auto">
-          <div className="eyebrow text-signal px-4 pt-3">{humanizeKey(bySizeEntry[0])}</div>
-          <GeometryBySizeTable rows={bySizeEntry[1] as Record<string, any>[]} />
+      {bySize.length > 0 && (
+        <div className="mt-6">
+          <GeometryBySizeMatrix rows={bySize} />
+          <p className="mt-3 text-xs text-muted-foreground italic">
+            Herstellerangaben ohne optionales Zubehör · auf dem Smartphone seitlich wischbar.
+          </p>
         </div>
       )}
 
-      {complex.filter((e) => e !== bySizeEntry).length > 0 && (
+      {nested.length > 0 && (
         <div className="mt-6 space-y-4">
-          {complex.filter((e) => e !== bySizeEntry).map(([k, v]) => (
+          {nested.map(([k, v]) => (
             <div key={k} className="border border-border bg-muted/20 p-4">
               <div className="eyebrow text-signal mb-3">{humanizeKey(k)}</div>
               <SmartValue value={v} />
@@ -873,45 +885,327 @@ function GeometrySection({ b }: { b: Bike }) {
   );
 }
 
-function GeometryBySizeTable({ rows }: { rows: Record<string, any>[] }) {
-  const cols = Array.from(
-    rows.reduce<Set<string>>((set, r) => {
-      Object.keys(r).forEach((k) => hasDisplayValue(r[k]) && set.add(k));
-      return set;
-    }, new Set()),
+function normaliseBySize(raw: any): Record<string, any>[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw.filter((r) => r && typeof r === "object");
+  if (typeof raw === "object") {
+    return Object.entries(raw)
+      .filter(([, v]) => v && typeof v === "object")
+      .map(([sizeKey, v]) => ({ size: sizeKey, ...(v as object) }));
+  }
+  return [];
+}
+
+const GEOMETRY_ROW_LABELS: Record<string, string> = {
+  body_height: "Körpergröße",
+  rider_height_cm: "Körpergröße",
+  top_tube_cm: "Oberrohr",
+  top_tube_mm: "Oberrohr",
+  reach_cm: "Reach",
+  reach_mm: "Reach",
+  stack_cm: "Stack",
+  stack_mm: "Stack",
+  wheelbase_cm: "Radstand",
+  wheelbase_mm: "Radstand",
+  standover_cm: "Überstandshöhe",
+  standover_mm: "Überstandshöhe",
+  head_tube_mm: "Steuerrohr",
+  head_tube_cm: "Steuerrohr",
+  seat_tube_mm: "Sitzrohr",
+  seat_tube_cm: "Sitzrohr",
+  overall_length_cm: "Gesamtlänge",
+  overall_length_mm: "Gesamtlänge",
+  weight_kg: "Gewicht",
+  head_angle: "Lenkwinkel",
+  seat_angle: "Sitzwinkel",
+  bb_drop_mm: "Tretlagerabsenkung",
+  chainstay_mm: "Kettenstrebe",
+};
+
+function unitFor(key: string): string {
+  if (/_mm$/.test(key)) return "mm";
+  if (/_cm$/.test(key)) return "cm";
+  if (/_kg$/.test(key)) return "kg";
+  if (/angle$/.test(key)) return "°";
+  return "";
+}
+
+function GeometryBySizeMatrix({ rows }: { rows: Record<string, any>[] }) {
+  // Detect the "size" identifier per row
+  const sizeKey =
+    Object.keys(rows[0] ?? {}).find((k) => /^size(_cm|_mm)?$|^rahmengr|^frame_size$/i.test(k)) ?? "size";
+  // Collect all measurement keys across all rows (preserve first-seen order)
+  const measureKeys: string[] = [];
+  rows.forEach((r) =>
+    Object.keys(r).forEach((k) => {
+      if (k === sizeKey) return;
+      if (!hasDisplayValue(r[k])) return;
+      if (!measureKeys.includes(k)) measureKeys.push(k);
+    }),
   );
-  // Move size column to front
-  const sizeKey = cols.find((c) => /^size/i.test(c));
-  const ordered = sizeKey ? [sizeKey, ...cols.filter((c) => c !== sizeKey)] : cols;
+  if (measureKeys.length === 0) return null;
+
   return (
-    <table className="w-full text-sm">
-      <thead>
-        <tr className="border-t border-b border-border bg-muted/30">
-          {ordered.map((c) => (
-            <th
-              key={c}
-              className="text-left font-semibold text-[10px] uppercase tracking-wider text-muted-foreground px-3 py-2 whitespace-nowrap"
-            >
-              {humanizeKey(c)}
+    <div className="border border-border overflow-x-auto -mx-4 md:mx-0" style={{ WebkitOverflowScrolling: "touch" }}>
+      <table className="w-full text-sm border-collapse min-w-[480px]">
+        <thead>
+          <tr className="bg-muted/40">
+            <th className="sticky left-0 z-10 bg-muted/40 text-left px-3 md:px-4 py-3 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold border-b-2 border-border">
+              Maß
             </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r, i) => (
-          <tr key={i} className="border-b border-border last:border-b-0">
-            {ordered.map((c) => (
-              <td key={c} className="px-3 py-2 tabular-nums whitespace-nowrap">
-                {hasDisplayValue(r[c]) ? formatPrimitive(r[c]) : "—"}
-              </td>
+            {rows.map((r, i) => (
+              <th
+                key={i}
+                className="px-3 md:px-4 py-3 text-right border-b-2 border-border whitespace-nowrap"
+              >
+                <span className="font-display font-black text-base text-foreground">
+                  {String(r[sizeKey] ?? `#${i + 1}`)}
+                </span>
+                {/_cm$/.test(sizeKey) && (
+                  <span className="text-[10px] text-muted-foreground ml-1">cm</span>
+                )}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {measureKeys.map((mk, ri) => {
+            const label = GEOMETRY_ROW_LABELS[mk] ?? humanizeKey(mk);
+            const unit = unitFor(mk);
+            const zebra = ri % 2 === 1;
+            return (
+              <tr key={mk} className={zebra ? "bg-muted/20" : ""}>
+                <td
+                  className={`sticky left-0 z-[1] px-3 md:px-4 py-2.5 text-muted-foreground whitespace-nowrap border-r border-border ${zebra ? "bg-muted/20" : "bg-background"}`}
+                >
+                  {label}
+                </td>
+                {rows.map((r, i) => (
+                  <td
+                    key={i}
+                    className="px-3 md:px-4 py-2.5 text-right tabular-nums whitespace-nowrap font-medium"
+                  >
+                    {hasDisplayValue(r[mk]) ? `${formatPrimitive(r[mk])}${unit ? " " + unit : ""}` : "—"}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
+// ---------- Configuration ----------
+
+const CONFIG_GROUP_LABELS: Record<string, string> = {
+  frame_colors: "Rahmenfarbe",
+  frame_sizes: "Rahmengröße",
+  cockpit_options: "Cockpit & Display",
+  battery_options: "Akku",
+  brake_options: "Bremsen",
+  fork_options: "Federgabel",
+  tire_options: "Reifen",
+  tail_light_options: "Rücklicht",
+  handlebar_options: "Lenker",
+  seatpost_options: "Sattelstütze",
+  additional_equipment: "Zubehör ab Werk",
+  equipment_komfort: "Zubehör · Komfort",
+  equipment_sicherheit: "Zubehör · Sicherheit",
+  equipment_transport: "Zubehör · Transport",
+};
+const CONFIG_GROUP_ORDER = [
+  "frame_colors",
+  "cockpit_options",
+  "battery_options",
+  "brake_options",
+  "fork_options",
+  "tire_options",
+  "tail_light_options",
+  "handlebar_options",
+  "seatpost_options",
+  "equipment_komfort",
+  "equipment_sicherheit",
+  "equipment_transport",
+  "additional_equipment",
+];
+
+const COLOR_SWATCHES: Record<string, string> = {
+  "black matt": "#1C1C1C",
+  black: "#1C1C1C",
+  "dark red": "#7A2320",
+  red: "#7A2320",
+  "petrol matt": "#2F5560",
+  petrol: "#2F5560",
+  white: "#EDEAE3",
+  silver: "#C7C4BC",
+  blue: "#2B4A7A",
+  green: "#3B5E3A",
+  grey: "#6E6B64",
+  gray: "#6E6B64",
+};
+function swatchFor(name: string): string | null {
+  const n = name.toLowerCase();
+  const key = Object.keys(COLOR_SWATCHES).find((k) => n.includes(k));
+  return key ? COLOR_SWATCHES[key] : null;
+}
+
+function categorizeEquipment(cfg: Record<string, any>): Record<string, any> {
+  if (!Array.isArray(cfg.additional_equipment) || cfg.equipment_komfort) return cfg;
+  const buckets: Record<string, any[]> = {
+    equipment_komfort: [],
+    equipment_sicherheit: [],
+    equipment_transport: [],
+  };
+  const rules: [RegExp, string][] = [
+    [/komfort|sattel|feder|griff/i, "equipment_komfort"],
+    [/rx|chip|schloss|lock|abs|alarm|gps/i, "equipment_sicherheit"],
+    [/träger|tasche|gepäck|transport|anhänger/i, "equipment_transport"],
+  ];
+  cfg.additional_equipment.forEach((item: any) => {
+    const name = String(item?.name ?? "");
+    const hit = rules.find(([re]) => re.test(name));
+    buckets[hit ? hit[1] : "equipment_transport"].push(item);
+  });
+  const { additional_equipment: _drop, ...rest } = cfg;
+  return { ...rest, ...buckets };
+}
+
+function ConfigOptionRow({ opt }: { opt: any }) {
+  const [open, setOpen] = useState(false);
+  const name = String(opt?.name ?? opt?.label ?? opt ?? "");
+  const surcharge: string = String(opt?.surcharge ?? opt?.price ?? "");
+  const isSerie = /serie/i.test(surcharge) || surcharge === "" || surcharge === "0" || surcharge === "0 €";
+  const stars: number | undefined = typeof opt?.stars === "number" ? opt.stars : undefined;
+  const info: string = String(opt?.info ?? opt?.description ?? "");
+  const rec: string = String(opt?.recommendation ?? "");
+  const hasDetail = !!(info || stars || rec);
+  const sw = swatchFor(name);
+
+  return (
+    <li className={`border-t border-border ${!isSerie ? "bg-amber-500/[0.04]" : ""}`}>
+      <button
+        type="button"
+        onClick={hasDetail ? () => setOpen((o) => !o) : undefined}
+        className={`w-full flex items-center justify-between gap-3 px-3 md:px-4 py-2.5 text-left ${hasDetail ? "cursor-pointer hover:bg-muted/40" : "cursor-default"}`}
+      >
+        <span className="flex items-center gap-2 min-w-0">
+          {sw && (
+            <span
+              className="w-4 h-4 rounded-sm border border-black/20 shrink-0"
+              style={{ background: sw }}
+            />
+          )}
+          <span className="text-sm text-foreground leading-snug">{name}</span>
+          {hasDetail && (
+            <ChevronDown
+              className={`h-3.5 w-3.5 text-muted-foreground shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+            />
+          )}
+        </span>
+        <span className="flex flex-col items-end gap-1 shrink-0">
+          <span
+            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap ${
+              isSerie
+                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                : "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+            }`}
+          >
+            {isSerie ? "Serie" : surcharge || "Aufpreis"}
+          </span>
+          {rec && (
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-signal/10 text-signal whitespace-nowrap">
+              {rec}
+            </span>
+          )}
+        </span>
+      </button>
+      {open && hasDetail && (
+        <div className={`px-3 md:px-4 pb-3 ${sw ? "pl-10" : ""} text-xs text-muted-foreground leading-relaxed space-y-1.5`}>
+          {typeof stars === "number" && stars > 0 && (
+            <div className="text-signal tracking-widest">
+              {"★".repeat(Math.max(0, Math.min(5, Math.round(stars))))}
+              <span className="text-border">{"★".repeat(5 - Math.max(0, Math.min(5, Math.round(stars))))}</span>
+            </div>
+          )}
+          {info && <p>{info}</p>}
+        </div>
+      )}
+    </li>
+  );
+}
+
+function ConfigGroupCard({
+  groupKey,
+  items,
+  defaultOpen,
+}: {
+  groupKey: string;
+  items: any[];
+  defaultOpen: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  if (!items?.length) return null;
+  return (
+    <div className="border border-border bg-card overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-muted/40 transition-colors"
+      >
+        <span className="font-display font-bold text-base text-foreground text-left">
+          {CONFIG_GROUP_LABELS[groupKey] ?? humanizeKey(groupKey)}
+        </span>
+        <span className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground">
+            {items.length} {items.length === 1 ? "Option" : "Optionen"}
+          </span>
+          <ChevronDown
+            className={`h-4 w-4 text-signal transition-transform ${open ? "rotate-180" : ""}`}
+          />
+        </span>
+      </button>
+      {open && (
+        <ul className="list-none m-0 p-0">
+          {items.map((opt, i) => (
+            <ConfigOptionRow key={i} opt={opt} />
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function ConfigurationSection({ b }: { b: Bike }) {
+  const raw = (b.specs as any)?.configuration;
+  if (!raw || typeof raw !== "object") return null;
+  const cfg = categorizeEquipment(raw);
+  const groups = CONFIG_GROUP_ORDER.filter((k) => Array.isArray(cfg[k]) && cfg[k].length);
+  // Include any extra list-shaped groups that weren't in our known order
+  Object.keys(cfg).forEach((k) => {
+    if (!groups.includes(k) && Array.isArray(cfg[k]) && cfg[k].length && k !== "disclaimer" && k !== "note") {
+      groups.push(k);
+    }
+  });
+  if (!groups.length) return null;
+  const note: string = cfg.note ?? "Tippe eine Option an für Details, Sternebewertung und unsere Empfehlung.";
+  const disc: string =
+    cfg.disclaimer ??
+    "Aufpreise sind Richtwerte laut Hersteller-Konfigurator und können je nach Land, Händler und Verfügbarkeit abweichen. Angaben ohne Gewähr.";
+
+  return (
+    <Section id="configuration" title="Konfiguration & Optionen" icon={Wrench}>
+      <p className="text-sm text-muted-foreground mb-4">{note}</p>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {groups.map((k, i) => (
+          <ConfigGroupCard key={k} groupKey={k} items={cfg[k]} defaultOpen={i < 2} />
+        ))}
+      </div>
+      <p className="mt-4 text-xs text-muted-foreground italic">{disc}</p>
+    </Section>
+  );
+}
 
 function EbikeSystemSection({ b }: { b: Bike }) {
   const e = b.ebike ?? {};
@@ -1158,23 +1452,38 @@ function CostCard({ label, value, sub, highlight }: { label: string; value: stri
 }
 
 function EnvironmentSection({ b }: { b: Bike }) {
-  const env = b.environmental ?? {};
-  const entries = Object.entries(env).filter(([_, v]) => hasDisplayValue(v));
-  if (!entries.length) return null;
-  const ICONS: Record<string, string> = {
-    co2_saved_kg_year: "CO₂", fuel_saved_l_year: "Benzin", money_saved_eur_year: "Ersparnis",
-    trees_equivalent: "Bäume", sustainability_score: "Score",
-  };
+  const env = (b.environmental ?? {}) as Record<string, any>;
+  const fmt = (n: any, unit: string) =>
+    typeof n === "number" ? `${n.toLocaleString("de-DE")} ${unit}` : null;
+  const cards: { label: string; value: string; sub?: string }[] = [];
+  const co2 = env.co2_saved_display ?? fmt(env.co2_saved_kg_year, "kg CO₂");
+  const fuel = env.fuel_saved_display ?? fmt(env.fuel_saved_l_year, "Liter");
+  const money = env.money_saved_display ?? fmt(env.money_saved_eur_year, "€");
+  const trees = env.trees_display ?? fmt(env.trees_equivalent, "Bäume");
+  const score = env.sustainability_score;
+  if (co2) cards.push({ label: "CO₂-Ersparnis", value: String(co2), sub: "pro Jahr" });
+  if (fuel) cards.push({ label: "Benzin gespart", value: String(fuel), sub: "pro Jahr" });
+  if (money) cards.push({ label: "Ersparnis", value: String(money), sub: "pro Jahr" });
+  if (trees) cards.push({ label: "Entspricht", value: String(trees), sub: "CO₂-Bindung" });
+  if (typeof score === "number") cards.push({ label: "Nachhaltigkeit", value: `${score}/10`, sub: "Score" });
+  if (!cards.length) return null;
+  const disc = env.disclaimer ?? "Berechnete Richtwerte — keine Herstellerangaben.";
   return (
     <Section id="environment" title="Umweltbilanz" icon={Leaf}>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-        {entries.map(([k, v]) => (
-          <div key={k} className="border border-emerald-500/30 bg-emerald-500/5 p-3">
-            <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">{ICONS[k] ?? humanizeKey(k)}</div>
-            <div className="text-sm"><SmartValue value={v} /></div>
+        {cards.map((c) => (
+          <div key={c.label} className="border border-emerald-500/30 bg-emerald-500/5 p-4">
+            <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-2">
+              {c.label}
+            </div>
+            <div className="font-display text-xl md:text-2xl font-black text-foreground leading-tight tabular-nums">
+              {c.value}
+            </div>
+            {c.sub && <div className="mt-1 text-[11px] text-muted-foreground">{c.sub}</div>}
           </div>
         ))}
       </div>
+      <p className="mt-3 text-xs text-muted-foreground italic">{disc}</p>
     </Section>
   );
 }
@@ -1343,14 +1652,38 @@ function FaqSection({ b }: { b: Bike }) {
 }
 
 function HistorySection({ b }: { b: Bike }) {
-  const h = b.model_history ?? {};
-  const hasAny = h.launch_year || h.whats_new || h.improvements || h.known_issues || h.common_upgrades || (Array.isArray(h.previous_generations) && h.previous_generations.length);
+  const h = (b.model_history ?? {}) as any;
+  const timeline: { year?: string | number; note: string }[] = Array.isArray(h.timeline) ? h.timeline : [];
+  const hasAny =
+    h.launch_year ||
+    h.whats_new ||
+    h.improvements ||
+    h.known_issues ||
+    h.common_upgrades ||
+    timeline.length ||
+    (Array.isArray(h.previous_generations) && h.previous_generations.length);
   if (!hasAny) return null;
   return (
     <Section id="history" title="Modell-Historie" icon={Calendar}>
+      {timeline.length > 0 && (
+        <ol className="relative border-l-2 border-signal/40 ml-2 space-y-5 mb-6">
+          {timeline.map((t, i) => (
+            <li key={i} className="pl-5 relative">
+              <span className="absolute -left-[7px] top-1.5 h-3 w-3 rounded-full bg-signal ring-4 ring-background" />
+              {t.year !== undefined && t.year !== "" && (
+                <div className="font-display font-black text-signal tabular-nums text-sm">{t.year}</div>
+              )}
+              <p className="text-sm text-foreground leading-relaxed mt-0.5">{t.note}</p>
+            </li>
+          ))}
+        </ol>
+      )}
       <div className="border-l-2 border-signal pl-5 space-y-4">
-        {h.launch_year && (
-          <div><div className="eyebrow text-signal">Markteinführung</div><div className="text-base font-bold">{h.launch_year}</div></div>
+        {h.launch_year && !timeline.length && (
+          <div>
+            <div className="eyebrow text-signal">Markteinführung</div>
+            <div className="text-base font-bold">{h.launch_year}</div>
+          </div>
         )}
         {h.whats_new && <Timeline title="Neu in dieser Generation" body={h.whats_new} />}
         {h.improvements && <Timeline title="Verbesserungen" body={h.improvements} />}
@@ -1377,6 +1710,44 @@ function Timeline({ title, body }: { title: string; body: string }) {
     </div>
   );
 }
+
+function ComparableModelsSection({ b }: { b: Bike }) {
+  const items: any[] = Array.isArray((b as any).comparable_models) ? (b as any).comparable_models : [];
+  if (!items.length) return null;
+  return (
+    <Section id="comparable" title="Vergleichbare Modelle" icon={Activity}>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((m, i) => {
+          const name = String(m?.name ?? "");
+          const slug = String(m?.slug ?? "");
+          const reason = String(m?.reason ?? "");
+          const note = String(m?.note ?? "");
+          const Card: any = slug ? Link : "div";
+          const cardProps: any = slug ? { to: "/fahrraeder/$slug", params: { slug } } : {};
+          return (
+            <Card
+              key={i}
+              {...cardProps}
+              className={`block border border-border bg-card p-4 transition-colors ${slug ? "hover:border-signal hover:bg-muted/40 cursor-pointer" : ""}`}
+            >
+              <div className="font-display font-black text-base text-foreground leading-tight">{name}</div>
+              {reason && (
+                <div className="mt-2 text-[11px] uppercase tracking-wider text-signal font-semibold">
+                  {reason}
+                </div>
+              )}
+              {note && <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{note}</p>}
+              {slug && (
+                <div className="mt-3 text-xs font-semibold text-signal">Details ansehen →</div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
 
 // ---------- Reviews ----------
 
