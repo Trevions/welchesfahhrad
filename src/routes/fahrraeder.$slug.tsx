@@ -1452,23 +1452,38 @@ function CostCard({ label, value, sub, highlight }: { label: string; value: stri
 }
 
 function EnvironmentSection({ b }: { b: Bike }) {
-  const env = b.environmental ?? {};
-  const entries = Object.entries(env).filter(([_, v]) => hasDisplayValue(v));
-  if (!entries.length) return null;
-  const ICONS: Record<string, string> = {
-    co2_saved_kg_year: "CO₂", fuel_saved_l_year: "Benzin", money_saved_eur_year: "Ersparnis",
-    trees_equivalent: "Bäume", sustainability_score: "Score",
-  };
+  const env = (b.environmental ?? {}) as Record<string, any>;
+  const fmt = (n: any, unit: string) =>
+    typeof n === "number" ? `${n.toLocaleString("de-DE")} ${unit}` : null;
+  const cards: { label: string; value: string; sub?: string }[] = [];
+  const co2 = env.co2_saved_display ?? fmt(env.co2_saved_kg_year, "kg CO₂");
+  const fuel = env.fuel_saved_display ?? fmt(env.fuel_saved_l_year, "Liter");
+  const money = env.money_saved_display ?? fmt(env.money_saved_eur_year, "€");
+  const trees = env.trees_display ?? fmt(env.trees_equivalent, "Bäume");
+  const score = env.sustainability_score;
+  if (co2) cards.push({ label: "CO₂-Ersparnis", value: String(co2), sub: "pro Jahr" });
+  if (fuel) cards.push({ label: "Benzin gespart", value: String(fuel), sub: "pro Jahr" });
+  if (money) cards.push({ label: "Ersparnis", value: String(money), sub: "pro Jahr" });
+  if (trees) cards.push({ label: "Entspricht", value: String(trees), sub: "CO₂-Bindung" });
+  if (typeof score === "number") cards.push({ label: "Nachhaltigkeit", value: `${score}/10`, sub: "Score" });
+  if (!cards.length) return null;
+  const disc = env.disclaimer ?? "Berechnete Richtwerte — keine Herstellerangaben.";
   return (
     <Section id="environment" title="Umweltbilanz" icon={Leaf}>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-        {entries.map(([k, v]) => (
-          <div key={k} className="border border-emerald-500/30 bg-emerald-500/5 p-3">
-            <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">{ICONS[k] ?? humanizeKey(k)}</div>
-            <div className="text-sm"><SmartValue value={v} /></div>
+        {cards.map((c) => (
+          <div key={c.label} className="border border-emerald-500/30 bg-emerald-500/5 p-4">
+            <div className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-2">
+              {c.label}
+            </div>
+            <div className="font-display text-xl md:text-2xl font-black text-foreground leading-tight tabular-nums">
+              {c.value}
+            </div>
+            {c.sub && <div className="mt-1 text-[11px] text-muted-foreground">{c.sub}</div>}
           </div>
         ))}
       </div>
+      <p className="mt-3 text-xs text-muted-foreground italic">{disc}</p>
     </Section>
   );
 }
