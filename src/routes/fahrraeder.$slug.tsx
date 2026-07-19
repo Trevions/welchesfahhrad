@@ -171,6 +171,7 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "suitability", label: "Für wen?" },
   { id: "specs", label: "Spezifikationen" },
   { id: "geometry", label: "Geometrie" },
+  { id: "configuration", label: "Konfiguration" },
   { id: "ebike-system", label: "E-Bike System" },
   { id: "range", label: "Reichweite" },
   { id: "performance", label: "Fahrgefühl" },
@@ -184,6 +185,7 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "pros-cons", label: "Pro & Contra" },
   { id: "faq", label: "FAQ" },
   { id: "history", label: "Historie" },
+  { id: "comparable", label: "Vergleichbare" },
   { id: "reviews", label: "Bewertungen" },
 ];
 
