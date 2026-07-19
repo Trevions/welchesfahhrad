@@ -362,6 +362,7 @@ function BikeDetailPage() {
             <SuitabilitySection b={b} />
             <SpecsSection b={b} />
             <GeometrySection b={b} />
+            <ConfigurationSection b={b} />
             {b.category === "ebike" && <EbikeSystemSection b={b} />}
             <RangeSection b={b} />
             <PerformanceSection b={b} />
@@ -375,6 +376,7 @@ function BikeDetailPage() {
             <ProsConsSection b={b} />
             <FaqSection b={b} />
             <HistorySection b={b} />
+            <ComparableModelsSection b={b} />
             <ReviewsSection bikeId={b.id} />
           </main>
         </div>
