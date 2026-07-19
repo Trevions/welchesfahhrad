@@ -773,8 +773,10 @@ function SuitabilitySection({ b }: { b: Bike }) {
 }
 
 function SpecsSection({ b }: { b: Bike }) {
+  // Strip `configuration` — rendered as its own dedicated section below.
+  const { configuration: _cfg, ...specsRest } = (b.specs ?? {}) as Record<string, any>;
   const groups: { title: string; data: Record<string, any> }[] = [
-    { title: "Rahmen & Komponenten", data: b.specs as any },
+    { title: "Rahmen & Komponenten", data: specsRest },
     { title: "Cockpit", data: b.cockpit },
     { title: "Laufradsatz", data: b.wheelset },
     { title: "Antrieb (Detail)", data: b.drivetrain_detail },
