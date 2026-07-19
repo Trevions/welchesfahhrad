@@ -833,17 +833,6 @@ function SpecsSection({ b }: { b: Bike }) {
   );
 }
 
-function GeometrySection({ b }: { b: Bike }) {
-  const g: Record<string, any> = (b.geometry as any) || {};
-  if (!Object.values(g).some(hasDisplayValue)) return null;
-  const entries = Object.entries(g).filter(([, v]) => hasDisplayValue(v));
-  const simple = entries.filter(([, v]) => !isComplex(v));
-  const complex = entries.filter(([, v]) => isComplex(v));
-
-  // Detect by-size arrays (array of objects with a `size*` field)
-  const bySizeEntry = complex.find(
-    ([, v]) => Array.isArray(v) && v.length > 0 && typeof v[0] === "object" && Object.keys(v[0]).some((k) => /^size/i.test(k)),
-  );
 
 function GeometrySection({ b }: { b: Bike }) {
   const g: Record<string, any> = (b.geometry as any) || {};
