@@ -26,11 +26,9 @@ export function CompareFloatingBar() {
   if (!mounted || count === 0 || pathname === "/vergleich") return null;
 
   return (
-    <div
-      className="fixed inset-x-0 z-40 pointer-events-none px-3 sm:px-6"
-      style={{ bottom: "calc(env(safe-area-inset-bottom) + 4.5rem)" }}
-    >
-      <div className="md:!bottom-4 pointer-events-auto mx-auto max-w-[1100px] bg-background/95 backdrop-blur-xl border border-border shadow-2xl">
+    <div className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] md:bottom-4 z-40 pointer-events-none px-3 sm:px-6">
+      <div className="pointer-events-auto mx-auto max-w-[1100px] bg-background/95 backdrop-blur-xl border border-border shadow-2xl">
+
         <div className="flex items-center gap-3 p-3">
           <div className="hidden sm:flex items-center gap-2 shrink-0">
             <Scale className="h-4 w-4 text-signal" />
