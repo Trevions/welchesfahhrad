@@ -3,6 +3,8 @@ import type { Bike } from "@/lib/bike-types";
 import { articleImageUrl } from "@/lib/article-image-url";
 import { Zap } from "lucide-react";
 import { BikeFavoriteButton } from "@/components/bikes/BikeFavoriteButton";
+import { BikeCompareButton } from "@/components/bikes/BikeCompareButton";
+
 
 export function BikeCard({ bike }: { bike: Bike }) {
   const img = articleImageUrl(bike.image_url ?? "") || bike.image_url || "/og.jpg";
@@ -21,6 +23,8 @@ export function BikeCard({ bike }: { bike: Bike }) {
           priceEur: bike.price_eur ?? null,
         }}
       />
+      <BikeCompareButton slug={bike.slug} variant="card" />
+
       <Link
         to="/fahrraeder/$slug"
         params={{ slug: bike.slug }}
