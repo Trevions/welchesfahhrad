@@ -19,6 +19,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { MotionLayer } from "@/components/MotionLayer";
 import { CookieConsentBanner } from "@/components/CookieConsent";
 import { InstallAppBanner } from "@/components/InstallAppBanner";
+import { CompareFloatingBar } from "@/components/bikes/CompareFloatingBar";
+
 
 function NotFoundComponent() {
   return (
@@ -211,6 +213,8 @@ function RootComponent() {
           <MobileNav />
           <CookieConsentBanner />
           <InstallAppBanner />
+          <CompareFloatingBar />
+
         </div>
       </ThemeProvider>
     </QueryClientProvider>
