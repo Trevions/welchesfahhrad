@@ -298,6 +298,11 @@ function BikeDetailPage() {
                     <div className="font-display text-xl md:text-2xl font-black tabular-nums">
                       {b.price_eur.toLocaleString("de-DE")} €
                     </div>
+                    {b.price_date && (
+                      <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Stand: {new Date(b.price_date).toLocaleDateString("de-DE")}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -1403,6 +1408,9 @@ function MaintenanceSection({ b }: { b: Bike }) {
 }
 
 function CostsSection({ b }: { b: Bike }) {
+  // Der Kosten-Rechner ist auf E-Bikes zugeschnitten (Strom, Ladezyklen).
+  // Für Muskelräder blenden wir die Sektion komplett aus.
+  if (b.category !== "ebike") return null;
   const c = b.costs ?? {};
   const [kwh, setKwh] = useState<number>(Number(c.electricity_kwh_price ?? 0.35));
   const [km, setKm] = useState<number>(2500);
