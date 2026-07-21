@@ -399,32 +399,59 @@ function buildRows(bikes: Bike[]) {
         ),
         makeRow(bikes, "Drehmoment", (b) => b.ebike?.motor_nm ?? null, { best: "high", unit: "Nm" }),
         makeRow(bikes, "Akku", (b) => b.ebike?.battery_wh ?? null, { best: "high", unit: "Wh" }),
-        makeRow(bikes, "Reichweite Eco", (b) => num(b.range_matrix?.eco_km) ?? b.ebike?.range_eco_km ?? null, {
-          best: "high",
-          unit: "km",
-        }),
-        makeRow(bikes, "Reichweite Tour", (b) => b.ebike?.range_tour_km ?? null, {
-          best: "high",
-          unit: "km",
-        }),
-        makeRow(bikes, "Reichweite Turbo", (b) => num(b.range_matrix?.turbo_km) ?? b.ebike?.range_turbo_km ?? null, {
-          best: "high",
-          unit: "km",
-        }),
-        makeRow(bikes, "Ladezeit", (b) => b.ebike?.charge_time_h ?? null, { best: "low", unit: "h" }),
+        makeRow(
+          bikes,
+          "Reichweite Eco",
+          (b) => num(b.range_matrix?.eco_km) ?? b.ebike?.range_eco_km ?? null,
+          { best: "high", unit: "km" },
+        ),
+        makeRow(
+          bikes,
+          "Reichweite Tour",
+          (b) => num(b.range_matrix?.tour_km) ?? b.ebike?.range_tour_km ?? null,
+          { best: "high", unit: "km" },
+        ),
+        makeRow(
+          bikes,
+          "Reichweite Turbo",
+          (b) => num(b.range_matrix?.turbo_km) ?? b.ebike?.range_turbo_km ?? null,
+          { best: "high", unit: "km" },
+        ),
+        // Ladezeit: entweder als Text in maintenance.charge_time, sonst numerisch aus ebike
+        {
+          label: "Ladezeit",
+          values: bikes.map((b) => {
+            const t = (b.maintenance as any)?.charge_time;
+            if (typeof t === "string" && t.trim()) return t;
+            if (typeof t === "number" && Number.isFinite(t)) return `${t} h`;
+            if (b.ebike?.charge_time_h != null) return `${b.ebike.charge_time_h} h`;
+            return null;
+          }),
+        },
         textRow(bikes, "Display", (b) => b.ebike?.display),
       ],
     },
     {
       group: "Zielgruppen (0–10)",
       rows: [
-        makeRow(bikes, "Einsteiger", (b) => b.suitability?.beginner ?? null, { best: "high" }),
-        makeRow(bikes, "Pendeln", (b) => b.suitability?.commuting ?? null, { best: "high" }),
-        makeRow(bikes, "Touring", (b) => b.suitability?.touring ?? null, { best: "high" }),
-        makeRow(bikes, "Gravel", (b) => b.suitability?.gravel ?? null, { best: "high" }),
-        makeRow(bikes, "MTB", (b) => b.suitability?.mountain ?? null, { best: "high" }),
-        makeRow(bikes, "Stadt", (b) => b.suitability?.city ?? null, { best: "high" }),
+        makeRow(bikes, "Einsteiger", (b) => suitVal(b, ["einsteiger", "beginner"]), { best: "high" }),
+        makeRow(bikes, "Pendeln", (b) => suitVal(b, ["pendeln", "commuting"]), { best: "high" }),
+        makeRow(bikes, "Touren", (b) => suitVal(b, ["touren", "touring"]), { best: "high" }),
+        makeRow(bikes, "Gravel", (b) => suitVal(b, ["gravel"]), { best: "high" }),
+        makeRow(bikes, "MTB", (b) => suitVal(b, ["mtb", "mountain"]), { best: "high" }),
+        makeRow(bikes, "Stadt", (b) => suitVal(b, ["stadt", "city"]), { best: "high" }),
+        makeRow(bikes, "Gelände", (b) => suitVal(b, ["gelaende", "gelände", "offroad"]), { best: "high" }),
+        makeRow(bikes, "Vielfahrer", (b) => suitVal(b, ["vielfahrer", "longdistance", "bikepacking"]), { best: "high" }),
       ],
     },
   ];
+}
+
+function suitVal(b: Bike, keys: string[]): number | null {
+  const s = (b.suitability ?? {}) as Record<string, unknown>;
+  for (const k of keys) {
+    const v = s[k];
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+  }
+  return null;
 }

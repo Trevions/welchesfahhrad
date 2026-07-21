@@ -54,7 +54,38 @@ export const getBike = defineTool({
   },
 });
 
-const jsonish = z.union([z.record(z.unknown()), z.array(z.unknown()), z.string(), z.number(), z.boolean(), z.null()]);
+// Coerce JSON-string inputs into real objects/arrays so JSONB columns don't
+// receive doubly-serialized strings (Fix 1).
+const jsonish = z.preprocess((v) => {
+  if (typeof v === "string") {
+    const s = v.trim();
+    if (s.startsWith("{") || s.startsWith("[")) {
+      try {
+        return JSON.parse(s);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  return v;
+}, z.union([z.record(z.unknown()), z.array(z.unknown()), z.string(), z.number(), z.boolean(), z.null()]));
+
+// highlights: accept legacy string[] OR {pros, cons} object (Fix 2).
+// Always normalise to { pros, cons } before storage.
+const highlightsSchema = z.preprocess(
+  (v) => {
+    if (Array.isArray(v)) return { pros: v.filter((x) => typeof x === "string"), cons: [] };
+    if (v && typeof v === "object") {
+      const o = v as Record<string, unknown>;
+      return {
+        pros: Array.isArray(o.pros) ? o.pros.filter((x) => typeof x === "string") : [],
+        cons: Array.isArray(o.cons) ? o.cons.filter((x) => typeof x === "string") : [],
+      };
+    }
+    return v;
+  },
+  z.object({ pros: z.array(z.string()).default([]), cons: z.array(z.string()).default([]) }),
+);
 
 const bikeMutable = {
   slug: z.string().min(1),
@@ -64,12 +95,17 @@ const bikeMutable = {
   category: z.string().min(1),
   bike_type: z.string().optional(),
   price_eur: z.number().int().optional(),
+  price_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Format: JJJJ-MM-TT")
+    .optional()
+    .describe("Datum der Preis-Prüfung (JJJJ-MM-TT)"),
   image_url: z.string().url().optional(),
   manufacturer_url: z.string().url().optional(),
   excerpt: z.string().optional(),
   description: z.string().optional(),
   gallery: z.array(z.string()).optional(),
-  highlights: z.array(z.string()).optional(),
+  highlights: highlightsSchema.optional(),
   intended_use: z.array(z.string()).optional(),
   terrain: z.array(z.string()).optional(),
   keywords: z.array(z.string()).optional(),
