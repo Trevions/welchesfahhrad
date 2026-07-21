@@ -1,0 +1,1 @@
+ALTER TABLE public.bikes ADD COLUMN IF NOT EXISTS price_date date;

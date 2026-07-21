@@ -396,6 +396,7 @@ export type Database = {
           model_history: Json
           og_image_url: string | null
           performance: Json
+          price_date: string | null
           price_eur: number | null
           published: boolean
           published_at: string | null
@@ -447,6 +448,7 @@ export type Database = {
           model_history?: Json
           og_image_url?: string | null
           performance?: Json
+          price_date?: string | null
           price_eur?: number | null
           published?: boolean
           published_at?: string | null
@@ -498,6 +500,7 @@ export type Database = {
           model_history?: Json
           og_image_url?: string | null
           performance?: Json
+          price_date?: string | null
           price_eur?: number | null
           published?: boolean
           published_at?: string | null
