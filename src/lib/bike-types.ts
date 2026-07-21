@@ -123,6 +123,7 @@ export type Bike = {
   category: BikeCategory;
   bike_type: string | null;
   price_eur: number | null;
+  price_date: string | null;
   image_url: string | null;
   gallery: string[];
   manufacturer_url: string | null;
