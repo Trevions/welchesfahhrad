@@ -265,11 +265,11 @@ function CompareTable({ bikes }: { bikes: Bike[] }) {
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
-                    <div className="aspect-[4/3] bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-black overflow-hidden mb-3 flex items-center justify-center p-2">
+                    <div className="h-28 md:h-32 bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-950 dark:to-black overflow-hidden mb-3 flex items-center justify-center p-1.5">
                       <img
                         src={resolveImage(b.image_url)}
                         alt={`${b.brand} ${b.model}`}
-                        className="max-h-full max-w-full object-contain"
+                        className="h-full w-full object-contain"
                         loading="lazy"
                       />
                     </div>

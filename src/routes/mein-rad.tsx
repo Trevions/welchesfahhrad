@@ -18,6 +18,8 @@ import {
   clearBikeProfile,
   summarizeProfile,
 } from "@/lib/bike-profile";
+import { getPublicArticles } from "@/lib/articles.functions";
+import { markManyArticlesRead } from "@/lib/read-articles";
 
 export const Route = createFileRoute("/mein-rad")({
   head: () => ({
@@ -107,9 +109,20 @@ function MeinRad() {
     else commit();
   }
 
-  function commit() {
+  async function commit() {
+    const wasFirstTime = !existing;
     saveBikeProfile(draft);
     setSaved(true);
+    // Fresh start: hide all currently-published articles from the "Für dich" feed
+    // so it only surfaces genuinely new matches from now on.
+    if (wasFirstTime) {
+      try {
+        const res = await getPublicArticles();
+        markManyArticlesRead((res.articles ?? []).map((a) => a.slug).filter(Boolean));
+      } catch {
+        /* non-critical */
+      }
+    }
     setTimeout(() => navigate({ to: "/" }), 900);
   }
 

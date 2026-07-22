@@ -309,6 +309,9 @@ function BikeDetailPage() {
                 )}
               </div>
 
+              {/* Match zum RadProfil */}
+              <BikeMatchCard bike={b} />
+
               {/* Actions */}
               <ActionBar bike={b} />
 
