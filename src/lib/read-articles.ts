@@ -31,6 +31,20 @@ export function markArticleRead(slug: string) {
   write(map);
 }
 
+export function markManyArticlesRead(slugs: string[]) {
+  if (typeof window === "undefined" || slugs.length === 0) return;
+  const map = read();
+  const now = Date.now();
+  let changed = false;
+  for (const s of slugs) {
+    if (s && !map[s]) {
+      map[s] = now;
+      changed = true;
+    }
+  }
+  if (changed) write(map);
+}
+
 export function unmarkArticleRead(slug: string) {
   if (typeof window === "undefined" || !slug) return;
   const map = read();

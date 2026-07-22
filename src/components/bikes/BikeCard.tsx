@@ -1,13 +1,26 @@
 import { Link } from "@tanstack/react-router";
 import type { Bike } from "@/lib/bike-types";
 import { articleImageUrl } from "@/lib/article-image-url";
-import { Zap } from "lucide-react";
+import { Zap, Sparkles } from "lucide-react";
 import { BikeFavoriteButton } from "@/components/bikes/BikeFavoriteButton";
 import { BikeCompareButton } from "@/components/bikes/BikeCompareButton";
 
-
-export function BikeCard({ bike }: { bike: Bike }) {
+export function BikeCard({
+  bike,
+  matchPercent = null,
+}: {
+  bike: Bike;
+  matchPercent?: number | null;
+}) {
   const img = articleImageUrl(bike.image_url ?? "") || bike.image_url || "/og.jpg";
+  const matchTone =
+    matchPercent == null
+      ? ""
+      : matchPercent >= 80
+        ? "bg-emerald-500 text-white"
+        : matchPercent >= 60
+          ? "bg-signal text-signal-foreground"
+          : "bg-amber-500 text-white";
   return (
     <div className="group relative bg-card border border-border overflow-hidden hover:border-signal transition-colors">
       <BikeFavoriteButton
@@ -41,10 +54,17 @@ export function BikeCard({ bike }: { bike: Bike }) {
               height={450}
               className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-[1.04] drop-shadow-[0_10px_20px_rgba(0,0,0,0.15)]"
             />
-
           </div>
+          {matchPercent != null && (
+            <span
+              className={`absolute top-2.5 left-2.5 inline-flex items-center gap-1 ${matchTone} text-[10px] uppercase tracking-wider font-black px-1.5 py-1 shadow-sm tabular-nums`}
+              title="Match zu deinem RadProfil"
+            >
+              <Sparkles className="h-2.5 w-2.5" /> {matchPercent}%
+            </span>
+          )}
           {bike.category === "ebike" && (
-            <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 bg-signal text-[#050505] text-[10px] uppercase tracking-wider font-bold px-2 py-1 shadow-sm">
+            <span className={`absolute ${matchPercent != null ? "top-9" : "top-2.5"} left-2.5 inline-flex items-center gap-1 bg-signal text-[#050505] text-[10px] uppercase tracking-wider font-bold px-2 py-1 shadow-sm`}>
               <Zap className="h-2.5 w-2.5" /> E-Bike
             </span>
           )}

@@ -15,6 +15,7 @@ import { BikeImageLightbox } from "@/components/bikes/BikeImageLightbox";
 import { BikePrintSheet } from "@/components/bikes/BikePrintSheet";
 import { compareStore, subscribeCompare } from "@/lib/bike-compare";
 import { BikeFavoriteButton } from "@/components/bikes/BikeFavoriteButton";
+import { BikeMatchCard } from "@/components/bikes/BikeMatchCard";
 import { ShareMenu } from "@/components/ShareMenu";
 import { listBikeReviews, submitBikeReview, type BikeReview } from "@/lib/bike-reviews.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -308,6 +309,9 @@ function BikeDetailPage() {
                   </div>
                 )}
               </div>
+
+              {/* Match zum RadProfil */}
+              <BikeMatchCard bike={b} />
 
               {/* Actions */}
               <ActionBar bike={b} />
