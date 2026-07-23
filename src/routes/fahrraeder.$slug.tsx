@@ -181,7 +181,6 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "environment", label: "Umwelt" },
   { id: "safety", label: "Sicherheit" },
   { id: "accessories", label: "Zubehör" },
-  { id: "calculators", label: "Smart-Rechner" },
   { id: "ai-analysis", label: "KI-Analyse" },
   { id: "pros-cons", label: "Pro & Contra" },
   { id: "faq", label: "FAQ" },
