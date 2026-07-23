@@ -51,10 +51,10 @@ export const categoryMeta: Record<
     tagline: "Strom auf zwei Rädern",
   },
   Tests: {
-    slug: "/tests",
-    title: "Fahrrad-Tests & Komponenten-Reviews",
+    slug: "/fahrraeder",
+    title: "Fahrrad-Tests & Modelle",
     description:
-      "Unabhängige Langzeittests von Rennrädern, MTBs, Komponenten, Navigationsgeräten und Zubehör. Mit Messdaten, Praxis-Kilometern und ehrlichen Urteilen.",
+      "Alle geprüften Fahrräder und E-Bikes mit Spezifikationen, Bewertungen und Kaufberatung.",
     eyebrow: "Tests",
     tagline: "Geprüft. Gefahren. Beurteilt.",
   },

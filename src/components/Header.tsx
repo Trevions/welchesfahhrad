@@ -8,11 +8,10 @@ import { useBookmarks } from "@/hooks/use-bookmarks";
 
 const nav = [
   { to: "/", label: "Startseite", exact: true },
-  { to: "/ratgeber", label: "Ratgeber" },
-  { to: "/e-bikes", label: "E-Bikes" },
-  { to: "/tests", label: "Tests" },
   { to: "/fahrraeder", label: "Fahrräder" },
-  { to: "/lexikon", label: "Lexikon" },
+  { to: "/e-bikes", label: "E-Bikes" },
+  { to: "/ratgeber", label: "Ratgeber" },
+  { to: "/vergleich", label: "Vergleich" },
 ];
 
 export function Header() {

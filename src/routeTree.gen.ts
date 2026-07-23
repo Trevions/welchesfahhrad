@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VergleichRouteImport } from './routes/vergleich'
 import { Route as UeberUnsRouteImport } from './routes/ueber-uns'
-import { Route as TestsRouteImport } from './routes/tests'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SicherheitRouteImport } from './routes/sicherheit'
 import { Route as RedaktionRouteImport } from './routes/redaktion'
@@ -77,11 +76,6 @@ const VergleichRoute = VergleichRouteImport.update({
 const UeberUnsRoute = UeberUnsRouteImport.update({
   id: '/ueber-uns',
   path: '/ueber-uns',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestsRoute = TestsRouteImport.update({
-  id: '/tests',
-  path: '/tests',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -403,7 +397,6 @@ export interface FileRoutesByFullPath {
   '/redaktion': typeof RedaktionRoute
   '/sicherheit': typeof SicherheitRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/vergleich': typeof VergleichRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -463,7 +456,6 @@ export interface FileRoutesByTo {
   '/redaktion': typeof RedaktionRoute
   '/sicherheit': typeof SicherheitRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/vergleich': typeof VergleichRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -524,7 +516,6 @@ export interface FileRoutesById {
   '/redaktion': typeof RedaktionRoute
   '/sicherheit': typeof SicherheitRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/tests': typeof TestsRoute
   '/ueber-uns': typeof UeberUnsRoute
   '/vergleich': typeof VergleichRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -586,7 +577,6 @@ export interface FileRouteTypes {
     | '/redaktion'
     | '/sicherheit'
     | '/sitemap.xml'
-    | '/tests'
     | '/ueber-uns'
     | '/vergleich'
     | '/.mcp/list-tools'
@@ -646,7 +636,6 @@ export interface FileRouteTypes {
     | '/redaktion'
     | '/sicherheit'
     | '/sitemap.xml'
-    | '/tests'
     | '/ueber-uns'
     | '/vergleich'
     | '/.mcp/list-tools'
@@ -706,7 +695,6 @@ export interface FileRouteTypes {
     | '/redaktion'
     | '/sicherheit'
     | '/sitemap.xml'
-    | '/tests'
     | '/ueber-uns'
     | '/vergleich'
     | '/.mcp/list-tools'
@@ -768,7 +756,6 @@ export interface RootRouteChildren {
   RedaktionRoute: typeof RedaktionRoute
   SicherheitRoute: typeof SicherheitRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  TestsRoute: typeof TestsRoute
   UeberUnsRoute: typeof UeberUnsRoute
   VergleichRoute: typeof VergleichRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
@@ -805,13 +792,6 @@ declare module '@tanstack/react-router' {
       path: '/ueber-uns'
       fullPath: '/ueber-uns'
       preLoaderRoute: typeof UeberUnsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tests': {
-      id: '/tests'
-      path: '/tests'
-      fullPath: '/tests'
-      preLoaderRoute: typeof TestsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -1283,7 +1263,6 @@ const rootRouteChildren: RootRouteChildren = {
   RedaktionRoute: RedaktionRoute,
   SicherheitRoute: SicherheitRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  TestsRoute: TestsRoute,
   UeberUnsRoute: UeberUnsRoute,
   VergleichRoute: VergleichRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
