@@ -295,7 +295,7 @@ function Index() {
             </h2>
           </div>
           <Link
-            to="/nachrichten"
+            to="/ratgeber"
             className="inline-flex items-center gap-2 eyebrow border-b border-foreground pb-1 hover:text-signal hover:border-signal transition-colors"
           >
             Alle Beiträge <ArrowRight className="h-3 w-3" />

@@ -1562,29 +1562,6 @@ function AccessoriesSection({ b }: { b: Bike }) {
   );
 }
 
-function CalculatorsSection() {
-  const links = [
-    { to: "/tools/rahmengroesse", label: "Rahmengröße" },
-    { to: "/tools/reifendruck", label: "Reifendruck" },
-    { to: "/tools/ebike-reichweite", label: "Reichweite" },
-    { to: "/tools/kalorien", label: "Kalorien" },
-    { to: "/tools/foerderung", label: "Förderung" },
-    { to: "/tools/eco-route", label: "Eco Route" },
-  ];
-  return (
-    <Section id="calculators" title="Smart-Rechner" icon={Activity}>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-        {links.map((l) => (
-          <Link key={l.to} to={l.to as any}
-            className="border border-border bg-card hover:border-signal hover:text-signal transition-colors p-3 text-center text-xs uppercase tracking-wider font-bold">
-            {l.label}
-          </Link>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
 function AiAnalysisSection({ b }: { b: Bike }) {
   const a = b.ai_summary ?? {};
   const hasAny = (a.strengths?.length || a.weaknesses?.length || a.best_for || a.avoid_if || a.alternatives?.length);
