@@ -31,7 +31,6 @@ import { Route as BildnachweiseRouteImport } from './routes/bildnachweise'
 import { Route as BarrierefreiheitRouteImport } from './routes/barrierefreiheit'
 import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as LexikonIndexRouteImport } from './routes/lexikon.index'
 import { Route as FahrraederIndexRouteImport } from './routes/fahrraeder.index'
 import { Route as NewsletterBestaetigenRouteImport } from './routes/newsletter.bestaetigen'
@@ -175,11 +174,6 @@ const AgbRoute = AgbRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LexikonIndexRoute = LexikonIndexRouteImport.update({
@@ -377,7 +371,7 @@ const AuthenticatedMnvArticlesIdRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AuthenticatedRouteRouteWithChildren
   '/agb': typeof AgbRoute
   '/barrierefreiheit': typeof BarrierefreiheitRoute
   '/bildnachweise': typeof BildnachweiseRoute
@@ -436,7 +430,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof AuthenticatedRouteRouteWithChildren
   '/agb': typeof AgbRoute
   '/barrierefreiheit': typeof BarrierefreiheitRoute
   '/bildnachweise': typeof BildnachweiseRoute
@@ -495,7 +489,6 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/agb': typeof AgbRoute
   '/barrierefreiheit': typeof BarrierefreiheitRoute
@@ -674,7 +667,6 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
   id:
     | '__root__'
-    | '/'
     | '/_authenticated'
     | '/agb'
     | '/barrierefreiheit'
@@ -735,7 +727,6 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AgbRoute: typeof AgbRoute
   BarrierefreiheitRoute: typeof BarrierefreiheitRoute
@@ -932,13 +923,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lexikon/': {
@@ -1242,7 +1226,6 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AgbRoute: AgbRoute,
   BarrierefreiheitRoute: BarrierefreiheitRoute,
