@@ -43,11 +43,11 @@ export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(publicArticlesQuery),
   head: () => ({
     meta: [
-      { title: "radmap.de — Das Magazin für Fahrräder, E-Bikes & Radsport" },
+      { title: "radmap.de — Magazin für Fahrräder, E-Bikes & Radsport" },
       {
         name: "description",
         content:
-          "Tagesaktuelle Fahrrad-News, E-Bike-Tests und Ratgeber für Radfahrer in Deutschland. Premium-Magazin mit Leidenschaft für den Radsport.",
+          "Tagesaktuelle Fahrrad-News, E-Bike-Tests und Ratgeber für Radfahrer in Deutschland. Unabhängiges Magazin mit Leidenschaft für den Radsport.",
       },
       { property: "og:title", content: "radmap.de — Das Magazin für Fahrräder & E-Bikes" },
       {
