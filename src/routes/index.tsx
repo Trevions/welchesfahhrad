@@ -1,5 +1,5 @@
 import { createFileRoute, Link, ClientOnly } from "@tanstack/react-router";
-import { ArrowRight, Wrench, Gauge, CloudSun, Scale, Sparkles, Map } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { lazy, Suspense } from "react";
 import hero from "@/assets/hero-bike.jpg";
@@ -9,12 +9,6 @@ import { getPublicArticles } from "@/lib/articles.functions";
 
 // Heavy / client-driven components — code-split so their JS doesn't block
 // initial parse/render on mobile. Each has a fixed-height fallback to keep CLS at 0.
-const BikeWeatherBar = lazy(() =>
-  import("@/components/BikeWeatherBar").then((m) => ({ default: m.BikeWeatherBar })),
-);
-const RadelScoreBadge = lazy(() =>
-  import("@/components/RadelScoreBadge").then((m) => ({ default: m.RadelScoreBadge })),
-);
 const ForYouStrip = lazy(() =>
   import("@/components/ForYouStrip").then((m) => ({ default: m.ForYouStrip })),
 );
@@ -22,10 +16,6 @@ const BikeShowcase = lazy(() =>
   import("@/components/bikes/BikeShowcase").then((m) => ({ default: m.BikeShowcase })),
 );
 
-const WEATHER_BAR_FALLBACK = (
-  <div className="border-b border-border bg-card" style={{ minHeight: 56 }} aria-hidden />
-);
-const RADEL_BADGE_FALLBACK = <div style={{ minWidth: 90, minHeight: 40 }} aria-hidden />;
 const STRIP_FALLBACK = (
   <div className="border-b border-border bg-card" style={{ minHeight: 96 }} aria-hidden />
 );
