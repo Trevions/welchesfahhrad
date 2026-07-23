@@ -100,40 +100,6 @@ function Index() {
 
   return (
     <>
-      {/* FAHRRAD-WETTER BAR — client-only lazy */}
-      <ClientOnly fallback={WEATHER_BAR_FALLBACK}>
-        <Suspense fallback={WEATHER_BAR_FALLBACK}>
-          <BikeWeatherBar />
-        </Suspense>
-      </ClientOnly>
-
-      {/* ECO ROUTE PLANNER PROMO — button only */}
-      <section className="border-b border-border bg-[#050505] relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage:
-              "radial-gradient(700px 300px at 20% -20%, color-mix(in oklch, var(--signal) 40%, transparent), transparent 60%)",
-          }}
-        />
-        <div className="relative mx-auto max-w-[1400px] px-4 md:px-8 py-5 md:py-6 flex items-center justify-end gap-2 md:gap-3 flex-nowrap">
-          <ClientOnly fallback={RADEL_BADGE_FALLBACK}>
-            <Suspense fallback={RADEL_BADGE_FALLBACK}>
-              <RadelScoreBadge />
-            </Suspense>
-          </ClientOnly>
-          <Link
-            to="/tools/eco-route"
-            className="inline-flex items-center gap-2 border border-white/60 bg-signal/10 px-5 py-2.5 text-white transition-colors duration-300 hover:bg-white/10 hover:border-white/60"
-          >
-            <Map className="h-4 w-4" strokeWidth={1.75} />
-            <span className="eyebrow-sm">Eco Route Planner</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      </section>
-
       {/* SPLIT HERO */}
       {featured && (
       <section className="border-b border-border">
