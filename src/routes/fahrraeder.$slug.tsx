@@ -381,7 +381,6 @@ function BikeDetailPage() {
             <EnvironmentSection b={b} />
             <SafetySection b={b} />
             <AccessoriesSection b={b} />
-            <CalculatorsSection />
             <AiAnalysisSection b={b} />
             <ProsConsSection b={b} />
             <FaqSection b={b} />
