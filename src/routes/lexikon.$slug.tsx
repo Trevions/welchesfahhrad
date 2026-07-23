@@ -6,7 +6,7 @@ import { getLexikonTermBySlug } from "@/lib/lexikon.functions";
 const SITE = "https://radmap.de";
 
 const CATEGORY_ARTICLE_SLUG: Record<string, string> = {
-  Nachrichten: "/nachrichten",
+  Nachrichten: "/",
   Ratgeber: "/ratgeber",
   "E-Bikes": "/e-bikes",
   Tests: "/tests",

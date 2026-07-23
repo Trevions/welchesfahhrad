@@ -5,7 +5,6 @@ import { createBike, deleteBike, getBike, listBikes, publishBike, updateBike } f
 import { createLexikonTerm, deleteLexikonTerm, getLexikonTerm, listLexikonTerms, updateLexikonTerm } from "./tools/lexikon";
 import { uploadImage } from "./tools/images";
 import { analyticsSummary, runReadSql } from "./tools/analytics";
-import { analyzeToolTraffic, listToolPages } from "./tools/tools_meta";
 import { listContactMessages, newsletterStatus, whoami } from "./tools/site";
 
 // Direct Supabase host (not the .lovable.cloud proxy) — required for OAuth issuer validation.
@@ -36,8 +35,6 @@ export default defineMcp({
     listLexikonTerms, getLexikonTerm, createLexikonTerm, updateLexikonTerm, deleteLexikonTerm,
     // Media
     uploadImage,
-    // Tools meta
-    listToolPages, analyzeToolTraffic,
     // Analytics
     analyticsSummary, runReadSql,
     // Site

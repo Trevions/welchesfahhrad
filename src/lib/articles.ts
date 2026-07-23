@@ -27,7 +27,7 @@ export const categoryMeta: Record<
   { slug: string; title: string; description: string; eyebrow: string; tagline: string }
 > = {
   Nachrichten: {
-    slug: "/nachrichten",
+    slug: "/",
     title: "Fahrrad-Nachrichten aus Deutschland & der Welt",
     description:
       "Tagesaktuelle Meldungen, Politik, Infrastruktur und Branchenneuigkeiten rund um Fahrrad, E-Bike und Radsport — kuratiert aus über 80 Fachquellen.",

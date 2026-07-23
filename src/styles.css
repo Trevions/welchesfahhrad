@@ -69,41 +69,11 @@
   --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* DARK (default) — Cinematic Noir */
-:root {
-  --radius: 0.25rem;
-  --background: oklch(0.04 0.002 250);            /* #050505 noir */
-  --foreground: oklch(0.96 0.005 80);             /* warm bone */
-  --card: oklch(0.08 0.003 250);                  /* zinc-950 */
-  --card-foreground: oklch(0.96 0.005 80);
-  --popover: oklch(0.08 0.003 250);
-  --popover-foreground: oklch(0.96 0.005 80);
-  --primary: oklch(0.96 0.005 80);
-  --primary-foreground: oklch(0.04 0.002 250);
-  --secondary: oklch(0.14 0.005 250);
-  --secondary-foreground: oklch(0.96 0.005 80);
-  --muted: oklch(0.12 0.004 250);
-  --muted-foreground: oklch(0.58 0.01 250);       /* zinc-500 */
-  --accent: oklch(0.16 0.005 250);
-  --accent-foreground: oklch(0.96 0.005 80);
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(0.98 0.005 80);
-  --border: oklch(0.22 0.005 250 / 0.5);          /* zinc-800/50 */
-  --input: oklch(0.22 0.005 250 / 0.6);
-  --ring: oklch(0.68 0.2 45);
-  --signal: oklch(0.7 0.2 45);                    /* #FF6A1A vivid orange */
-  --signal-foreground: oklch(0.05 0.002 250);
-  --surface: oklch(0.08 0.003 250 / 0.55);
-  --surface-elevated: oklch(0.10 0.003 250 / 0.85);
-}
-
+/* LIGHT (only theme) — Warm Paper */
+:root,
+.light,
 .dark {
-  --background: oklch(0.04 0.002 250);
-  --foreground: oklch(0.96 0.005 80);
-}
-
-/* LIGHT — Warm Paper */
-.light {
+  --radius: 0.25rem;
   --background: oklch(0.97 0.012 75);             /* warm paper */
   --foreground: oklch(0.14 0.005 250);            /* near-black ink */
   --card: oklch(1 0 0);

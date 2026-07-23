@@ -66,7 +66,7 @@ function AboutPage() {
       <Section title="Themenwelten">
         <p>
           Unsere Berichterstattung gliedert sich in vier feste Ressorts:{" "}
-          <Link to="/nachrichten" className="text-signal hover:underline">Nachrichten</Link>{" "}
+          <Link to="/" className="text-signal hover:underline">Nachrichten</Link>{" "}
           (Politik, Branche, Infrastruktur),{" "}
           <Link to="/ratgeber" className="text-signal hover:underline">Ratgeber</Link>{" "}
           (Kauf, Wartung, Recht),{" "}

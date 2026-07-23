@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Search, Bookmark } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
 import { SearchOverlay } from "./SearchOverlay";
 import { BikeProfileBadge } from "./BikeProfileBadge";
 import { useBookmarks } from "@/hooks/use-bookmarks";
@@ -9,11 +8,11 @@ import { useBookmarks } from "@/hooks/use-bookmarks";
 
 const nav = [
   { to: "/", label: "Startseite", exact: true },
-  { to: "/nachrichten", label: "Nachrichten" },
   { to: "/ratgeber", label: "Ratgeber" },
-  { to: "/karte", label: "Karte" },
+  { to: "/e-bikes", label: "E-Bikes" },
+  { to: "/tests", label: "Tests" },
   { to: "/fahrraeder", label: "Fahrräder" },
-  { to: "/tools", label: "Tools" },
+  { to: "/lexikon", label: "Lexikon" },
 ];
 
 export function Header() {
@@ -104,8 +103,6 @@ export function Header() {
               )}
             </Link>
             <BikeProfileBadge />
-            <ThemeToggle />
-
           </div>
         </div>
       </div>
