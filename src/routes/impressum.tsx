@@ -20,7 +20,7 @@ function ImpressumPage() {
     <LegalPage
       eyebrow="Recht"
       title="Impressum"
-      lead="Anbieterkennzeichnung gemäß § 5 Telemediengesetz (TMG) und § 18 Abs. 2 Medienstaatsvertrag (MStV)."
+      lead="Anbieterkennzeichnung gemäß § 5 Digitale-Dienste-Gesetz (DDG) und § 18 Abs. 2 Medienstaatsvertrag (MStV)."
     >
       <Section title="Anbieter">
         <p>
@@ -39,7 +39,7 @@ function ImpressumPage() {
         </p>
         <p className="text-sm text-muted-foreground">
           Eine schnelle elektronische Kontaktaufnahme ist über die oben
-          genannte E-Mail-Adresse jederzeit möglich (§ 5 Abs. 1 Nr. 2 TMG;
+          genannte E-Mail-Adresse jederzeit möglich (§ 5 Abs. 1 Nr. 2 DDG;
           EuGH, Urteil v. 16.10.2008, C-298/07 — eine Telefonnummer ist nicht
           zwingend erforderlich, sofern ein weiterer schneller Kommunikations­weg
           zur Verfügung steht).
@@ -48,7 +48,8 @@ function ImpressumPage() {
 
       <Section title="Redaktionell verantwortlich (§ 18 Abs. 2 MStV)">
         <p>
-          Verantwortlich für die journalistisch-redaktionellen Inhalte:<br />
+          Verantwortlich für die journalistisch-redaktionellen Inhalte
+          nach § 18 Abs. 2 MStV:<br />
           <strong className="text-foreground">DigiMarket Bulgaria</strong><br />
           6400 Dimitrovgrad, Bulgarien<br />
           E-Mail:{" "}
@@ -84,9 +85,9 @@ function ImpressumPage() {
 
       <Section title="Haftung für Inhalte">
         <p>
-          Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte
+          Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte
           auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach
-          §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht
+          §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht
           verpflichtet, übermittelte oder gespeicherte fremde Informationen zu
           überwachen oder nach Umständen zu forschen, die auf eine
           rechtswidrige Tätigkeit hinweisen.

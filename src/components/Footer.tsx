@@ -166,8 +166,8 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-5 max-w-md text-sm text-muted-foreground font-light leading-relaxed">
-              Das führende deutsche Magazin für Fahrräder, E-Bikes und alles rund
-              um den Radsport. Tagesaktuell. Unabhängig. Mit Leidenschaft für jeden Kilometer.
+              Unabhängiges deutsches Magazin für Fahrräder, E-Bikes und alles rund
+              um den Radsport. Tagesaktuell. Mit Leidenschaft für jeden Kilometer.
             </p>
             <div className="mt-6 flex items-center gap-3">
               <span className="h-px w-8 bg-signal" />

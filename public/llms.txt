@@ -1,6 +1,6 @@
 # radmap.de
 
-> Das deutsche Premium-Magazin für Fahrräder, E-Bikes und Radsport. Tagesaktuelle Nachrichten, unabhängige Tests und Ratgeber für Radfahrer in Deutschland.
+> Unabhängiges deutsches Magazin für Fahrräder, E-Bikes und Radsport. Tagesaktuelle Nachrichten, Tests und Ratgeber für Radfahrer in Deutschland.
 
 ## Hauptseiten
 
