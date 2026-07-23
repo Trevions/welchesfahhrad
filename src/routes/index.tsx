@@ -1,5 +1,5 @@
 import { createFileRoute, Link, ClientOnly } from "@tanstack/react-router";
-import { ArrowRight, Wrench, Gauge, CloudSun, Scale, Sparkles, Map } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { lazy, Suspense } from "react";
 import hero from "@/assets/hero-bike.jpg";
@@ -9,12 +9,6 @@ import { getPublicArticles } from "@/lib/articles.functions";
 
 // Heavy / client-driven components — code-split so their JS doesn't block
 // initial parse/render on mobile. Each has a fixed-height fallback to keep CLS at 0.
-const BikeWeatherBar = lazy(() =>
-  import("@/components/BikeWeatherBar").then((m) => ({ default: m.BikeWeatherBar })),
-);
-const RadelScoreBadge = lazy(() =>
-  import("@/components/RadelScoreBadge").then((m) => ({ default: m.RadelScoreBadge })),
-);
 const ForYouStrip = lazy(() =>
   import("@/components/ForYouStrip").then((m) => ({ default: m.ForYouStrip })),
 );
@@ -22,10 +16,6 @@ const BikeShowcase = lazy(() =>
   import("@/components/bikes/BikeShowcase").then((m) => ({ default: m.BikeShowcase })),
 );
 
-const WEATHER_BAR_FALLBACK = (
-  <div className="border-b border-border bg-card" style={{ minHeight: 56 }} aria-hidden />
-);
-const RADEL_BADGE_FALLBACK = <div style={{ minWidth: 90, minHeight: 40 }} aria-hidden />;
 const STRIP_FALLBACK = (
   <div className="border-b border-border bg-card" style={{ minHeight: 96 }} aria-hidden />
 );
@@ -110,40 +100,6 @@ function Index() {
 
   return (
     <>
-      {/* FAHRRAD-WETTER BAR — client-only lazy */}
-      <ClientOnly fallback={WEATHER_BAR_FALLBACK}>
-        <Suspense fallback={WEATHER_BAR_FALLBACK}>
-          <BikeWeatherBar />
-        </Suspense>
-      </ClientOnly>
-
-      {/* ECO ROUTE PLANNER PROMO — button only */}
-      <section className="border-b border-border bg-[#050505] relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage:
-              "radial-gradient(700px 300px at 20% -20%, color-mix(in oklch, var(--signal) 40%, transparent), transparent 60%)",
-          }}
-        />
-        <div className="relative mx-auto max-w-[1400px] px-4 md:px-8 py-5 md:py-6 flex items-center justify-end gap-2 md:gap-3 flex-nowrap">
-          <ClientOnly fallback={RADEL_BADGE_FALLBACK}>
-            <Suspense fallback={RADEL_BADGE_FALLBACK}>
-              <RadelScoreBadge />
-            </Suspense>
-          </ClientOnly>
-          <Link
-            to="/tools/eco-route"
-            className="inline-flex items-center gap-2 border border-white/60 bg-signal/10 px-5 py-2.5 text-white transition-colors duration-300 hover:bg-white/10 hover:border-white/60"
-          >
-            <Map className="h-4 w-4" strokeWidth={1.75} />
-            <span className="eyebrow-sm">Eco Route Planner</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      </section>
-
       {/* SPLIT HERO */}
       {featured && (
       <section className="border-b border-border">
@@ -339,7 +295,7 @@ function Index() {
             </h2>
           </div>
           <Link
-            to="/nachrichten"
+            to="/ratgeber"
             className="inline-flex items-center gap-2 eyebrow border-b border-foreground pb-1 hover:text-signal hover:border-signal transition-colors"
           >
             Alle Beiträge <ArrowRight className="h-3 w-3" />
@@ -430,69 +386,6 @@ function Index() {
           </div>
         </section>
       )}
-
-      {/* TOOLS TEASER — premium hub showcase */}
-      <section className="relative border-t border-border bg-[#050505] text-zinc-100 overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.25]"
-          style={{
-            backgroundImage:
-              "radial-gradient(900px 420px at 85% -10%, color-mix(in oklch, var(--signal) 70%, transparent), transparent 60%), radial-gradient(700px 360px at -5% 110%, color-mix(in oklch, var(--signal) 50%, transparent), transparent 70%)",
-          }}
-        />
-        <div className="relative mx-auto max-w-[1400px] px-6 md:px-8 py-16 md:py-24 border-x border-border/40">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-end">
-            <div className="lg:col-span-5">
-              <div className="flex items-center gap-3">
-                <span className="h-px w-10 bg-signal" />
-                <span className="eyebrow text-signal">Neu · Werkzeuge</span>
-              </div>
-              <h2 className="mt-5 font-display text-4xl md:text-6xl font-black italic leading-[0.92] tracking-tight">
-                Tools, die <br />
-                <span className="text-signal">mitfahren.</span>
-              </h2>
-              <p className="mt-6 text-zinc-400 font-light leading-relaxed max-w-md">
-                Rechner, Planungs- und Wartungs-Tools — entwickelt von der radmap.de Redaktion.
-                Vom Reifendruck bis zur Reichweite, vom Wetter bis zur Bußgeld-Tabelle.
-              </p>
-              <Link
-                to="/tools"
-                className="mt-8 inline-flex items-center gap-3 border border-zinc-700 px-6 py-3 hover:border-zinc-100 hover:bg-zinc-100 hover:text-[#050505] transition-all duration-500 glow-signal"
-              >
-                <Wrench className="h-4 w-4" strokeWidth={1.75} />
-                <span className="eyebrow">Alle Tools öffnen</span>
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-
-            <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              {[
-                { icon: Gauge, label: "Reifendruck", sub: "Rechner", to: "/tools/reifendruck" },
-                { icon: CloudSun, label: "Fahrrad-Wetter", sub: "Planung", to: "/tools/fahrrad-wetter" },
-                { icon: Scale, label: "StVO & Bußgeld", sub: "Recht", to: "/tools/bussgeld" },
-                { icon: Sparkles, label: "Kaufberater", sub: "Quiz", to: "/tools/kaufberater" },
-              ].map(({ icon: Icon, label, sub, to }) => (
-                <Link
-                  key={label}
-                  to={to}
-                  className="group relative overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950/60 p-5 transition-all duration-300 hover:border-signal/60 hover:-translate-y-0.5 hover:bg-zinc-900/80"
-                >
-                  <div className="grid h-11 w-11 place-items-center rounded-xl border border-zinc-800 bg-black/40 text-signal transition-colors group-hover:border-signal/50">
-                    <Icon className="h-5 w-5" strokeWidth={1.75} />
-                  </div>
-                  <div className="mt-5 font-display text-base font-bold tracking-tight text-zinc-100">
-                    {label}
-                  </div>
-                  <div className="mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-                    {sub}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* BIKE SHOWCASE — replaces old Tests block */}
       <Suspense fallback={SHOWCASE_FALLBACK}>

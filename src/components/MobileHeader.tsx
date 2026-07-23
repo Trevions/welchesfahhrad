@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Search, Bookmark, Bike } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
 import { SearchOverlay } from "./SearchOverlay";
 import { useBookmarks } from "@/hooks/use-bookmarks";
 import { useBikeProfile } from "@/lib/bike-profile";
@@ -30,7 +29,6 @@ export function MobileHeader() {
             </span>
           </Link>
           <div className="flex items-center gap-1">
-            <ThemeToggle />
             <Link
               to={hasMatches ? "/passt-zu-dir" : "/mein-rad"}
               aria-label={hasMatches ? `${matchCount} passende Artikel` : "Mein RadProfil"}

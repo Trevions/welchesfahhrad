@@ -178,7 +178,6 @@ export function Footer() {
           <div className="md:col-span-2">
             <h4 className="eyebrow text-foreground">Rubriken</h4>
             <ul className="mt-5 space-y-2.5 text-sm">
-              <li><Link to="/nachrichten" className="text-muted-foreground hover:text-signal transition-colors">Nachrichten</Link></li>
               <li><Link to="/ratgeber" className="text-muted-foreground hover:text-signal transition-colors">Ratgeber</Link></li>
               <li><Link to="/e-bikes" className="text-muted-foreground hover:text-signal transition-colors">E-Bikes</Link></li>
               <li><Link to="/tests" className="text-muted-foreground hover:text-signal transition-colors">Tests</Link></li>

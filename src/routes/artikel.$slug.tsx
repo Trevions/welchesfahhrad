@@ -42,12 +42,12 @@ export const Route = createFileRoute("/artikel/$slug")({
     const published = seo?.published_at ?? seo?.created_at ?? undefined;
     const modified = seo?.updated_at ?? published;
     const categorySlugMap: Record<string, string> = {
-      Nachrichten: "/nachrichten",
+      Nachrichten: "/",
       Ratgeber: "/ratgeber",
       "E-Bikes": "/e-bikes",
       Tests: "/tests",
     };
-    const catUrl = abs(categorySlugMap[a.category] ?? "/nachrichten");
+    const catUrl = abs(categorySlugMap[a.category] ?? "/");
     const wordCount = (a.body ?? []).reduce(
       (n, p) => n + (typeof p === "string" ? p.trim().split(/\s+/).length : 0),
       0,
@@ -215,7 +215,7 @@ function ArticlePage() {
                   a.category === "Ratgeber" ? "/ratgeber"
                   : a.category === "E-Bikes" ? "/e-bikes"
                   : a.category === "Tests" ? "/tests"
-                  : "/nachrichten"
+                  : "/"
                 }
                 className="hover:text-foreground"
               >

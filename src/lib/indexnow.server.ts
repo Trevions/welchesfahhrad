@@ -80,7 +80,7 @@ export async function submitSitemapToGoogle(): Promise<void> {
 export async function notifyNewArticle(slug: string): Promise<void> {
   const url = `https://${HOST}/artikel/${slug}`;
   await Promise.all([
-    pingIndexNow([url, `https://${HOST}/`, `https://${HOST}/nachrichten`]),
+    pingIndexNow([url, `https://${HOST}/`]),
     submitSitemapToGoogle(),
   ]);
 }

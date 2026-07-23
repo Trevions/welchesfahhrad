@@ -1,13 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Newspaper, BookOpen, Bike, Wrench, Map } from "lucide-react";
+import { Home, BookOpen, Bike, BookMarked, Zap } from "lucide-react";
 
 const items = [
   { to: "/", label: "Start", Icon: Home },
-  { to: "/nachrichten", label: "News", Icon: Newspaper },
   { to: "/ratgeber", label: "Ratgeber", Icon: BookOpen },
-  { to: "/fahrraeder", label: "Räder", Icon: Bike },
-  { to: "/karte", label: "Karte", Icon: Map, featured: true },
-  { to: "/tools", label: "Tools", Icon: Wrench },
+  { to: "/fahrraeder", label: "Räder", Icon: Bike, featured: true },
+  { to: "/e-bikes", label: "E-Bikes", Icon: Zap },
+  { to: "/lexikon", label: "Lexikon", Icon: BookMarked },
 ];
 
 export function MobileNav() {

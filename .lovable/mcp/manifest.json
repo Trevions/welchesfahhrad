@@ -1156,44 +1156,6 @@
         "outputSchema": null
       },
       {
-        "name": "list_tool_pages",
-        "title": "Tools von radmap.de auflisten",
-        "description": "Übersicht aller Tool-Seiten (Slug + URL) unter /tools.",
-        "annotations": {
-          "readOnlyHint": true
-        },
-        "inputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
-          "type": "object",
-          "properties": {}
-        },
-        "outputSchema": null
-      },
-      {
-        "name": "analyze_tool_traffic",
-        "title": "Tools analysieren (Redaktions-Sicht)",
-        "description": "Grobe Nutzungssignale je Tool aus internen Bezügen: Artikel, die das Tool verlinken oder erwähnen, und Anzahl verwandter Lexikon-Begriffe.",
-        "annotations": {
-          "readOnlyHint": true
-        },
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "slug": {
-              "type": "string",
-              "minLength": 2,
-              "description": "Tool-Slug, z. B. 'reifendruck-rechner'."
-            }
-          },
-          "required": [
-            "slug"
-          ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
-        },
-        "outputSchema": null
-      },
-      {
         "name": "get_analytics_summary",
         "title": "Analyse-Übersicht",
         "description": "Kennzahlen: Anzahl Artikel/Fahrräder/Lexikon nach Status, Top-Artikel nach view_count, Newsletter-Abonnenten, offene Kontaktnachrichten.",

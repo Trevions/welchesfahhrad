@@ -143,10 +143,10 @@ function PasstZuDirPage() {
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <Link
-                  to="/nachrichten"
+                  to="/ratgeber"
                   className="inline-flex items-center gap-2 border border-border px-4 py-2 eyebrow-sm hover:border-foreground transition-colors"
                 >
-                  Alle Nachrichten <ArrowRight className="h-3 w-3" />
+                  Alle Ratgeber <ArrowRight className="h-3 w-3" />
                 </Link>
                 <Link
                   to="/mein-rad"

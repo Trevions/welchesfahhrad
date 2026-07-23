@@ -181,7 +181,6 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "environment", label: "Umwelt" },
   { id: "safety", label: "Sicherheit" },
   { id: "accessories", label: "Zubehör" },
-  { id: "calculators", label: "Smart-Rechner" },
   { id: "ai-analysis", label: "KI-Analyse" },
   { id: "pros-cons", label: "Pro & Contra" },
   { id: "faq", label: "FAQ" },
@@ -382,7 +381,6 @@ function BikeDetailPage() {
             <EnvironmentSection b={b} />
             <SafetySection b={b} />
             <AccessoriesSection b={b} />
-            <CalculatorsSection />
             <AiAnalysisSection b={b} />
             <ProsConsSection b={b} />
             <FaqSection b={b} />
@@ -1558,29 +1556,6 @@ function AccessoriesSection({ b }: { b: Bike }) {
       <div className="flex flex-wrap gap-2">
         {b.accessories.map((a, i) => (
           <span key={i} className="border border-border bg-card px-3 py-1.5 text-sm">{a}</span>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function CalculatorsSection() {
-  const links = [
-    { to: "/tools/rahmengroesse", label: "Rahmengröße" },
-    { to: "/tools/reifendruck", label: "Reifendruck" },
-    { to: "/tools/ebike-reichweite", label: "Reichweite" },
-    { to: "/tools/kalorien", label: "Kalorien" },
-    { to: "/tools/foerderung", label: "Förderung" },
-    { to: "/tools/eco-route", label: "Eco Route" },
-  ];
-  return (
-    <Section id="calculators" title="Smart-Rechner" icon={Activity}>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-        {links.map((l) => (
-          <Link key={l.to} to={l.to as any}
-            className="border border-border bg-card hover:border-signal hover:text-signal transition-colors p-3 text-center text-xs uppercase tracking-wider font-bold">
-            {l.label}
-          </Link>
         ))}
       </div>
     </Section>
