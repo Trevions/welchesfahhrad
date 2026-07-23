@@ -176,21 +176,28 @@ export function Footer() {
           </div>
 
           <div className="md:col-span-2">
-            <h4 className="eyebrow text-foreground">Rubriken</h4>
+            <h4 className="eyebrow text-foreground">Kategorien</h4>
             <ul className="mt-5 space-y-2.5 text-sm">
-              <li><Link to="/ratgeber" className="text-muted-foreground hover:text-signal transition-colors">Ratgeber</Link></li>
+              <li><Link to="/fahrraeder" search={{ type: "Mountainbike" } as any} className="text-muted-foreground hover:text-signal transition-colors">Mountainbike</Link></li>
+              <li><Link to="/fahrraeder" search={{ type: "Trekkingbike" } as any} className="text-muted-foreground hover:text-signal transition-colors">Trekkingbike</Link></li>
+              <li><Link to="/fahrraeder" search={{ type: "Gravel" } as any} className="text-muted-foreground hover:text-signal transition-colors">Gravel Bike</Link></li>
+              <li><Link to="/fahrraeder" search={{ type: "Rennrad" } as any} className="text-muted-foreground hover:text-signal transition-colors">Rennrad</Link></li>
+              <li><Link to="/fahrraeder" search={{ type: "Citybike" } as any} className="text-muted-foreground hover:text-signal transition-colors">City Bike</Link></li>
               <li><Link to="/e-bikes" className="text-muted-foreground hover:text-signal transition-colors">E-Bikes</Link></li>
-              <li><Link to="/tests" className="text-muted-foreground hover:text-signal transition-colors">Tests</Link></li>
+              <li><Link to="/fahrraeder" search={{ type: "Lastenrad" } as any} className="text-muted-foreground hover:text-signal transition-colors">Lastenrad</Link></li>
             </ul>
           </div>
 
           <div className="md:col-span-2">
-            <h4 className="eyebrow text-foreground">Verlag</h4>
+            <h4 className="eyebrow text-foreground">Beliebte Marken</h4>
             <ul className="mt-5 space-y-2.5 text-sm">
-              <li><Link to="/ueber-uns" className="text-muted-foreground hover:text-signal transition-colors">Über uns</Link></li>
-              <li><Link to="/redaktion" className="text-muted-foreground hover:text-signal transition-colors">Redaktion</Link></li>
-              <li><Link to="/mediadaten" className="text-muted-foreground hover:text-signal transition-colors">Mediadaten</Link></li>
-              <li><Link to="/kontakt" className="text-muted-foreground hover:text-signal transition-colors">Kontakt</Link></li>
+              <li><Link to="/fahrraeder" search={{ brand: "Cube" } as any} className="text-muted-foreground hover:text-signal transition-colors">Cube</Link></li>
+              <li><Link to="/fahrraeder" search={{ brand: "Canyon" } as any} className="text-muted-foreground hover:text-signal transition-colors">Canyon</Link></li>
+              <li><Link to="/fahrraeder" search={{ brand: "Trek" } as any} className="text-muted-foreground hover:text-signal transition-colors">Trek</Link></li>
+              <li><Link to="/fahrraeder" search={{ brand: "Specialized" } as any} className="text-muted-foreground hover:text-signal transition-colors">Specialized</Link></li>
+              <li><Link to="/fahrraeder" search={{ brand: "Scott" } as any} className="text-muted-foreground hover:text-signal transition-colors">Scott</Link></li>
+              <li><Link to="/fahrraeder" search={{ brand: "Haibike" } as any} className="text-muted-foreground hover:text-signal transition-colors">Haibike</Link></li>
+              <li><Link to="/ratgeber" className="text-muted-foreground hover:text-signal transition-colors">Kaufberatung</Link></li>
             </ul>
           </div>
 

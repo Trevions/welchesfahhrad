@@ -72,7 +72,7 @@ function AboutPage() {
           (Kauf, Wartung, Recht),{" "}
           <Link to="/e-bikes" className="text-signal hover:underline">E-Bikes</Link>{" "}
           (Antriebe, Akkus, Förderprogramme) und{" "}
-          <Link to="/tests" className="text-signal hover:underline">Tests</Link>{" "}
+          <Link to="/fahrraeder" className="text-signal hover:underline">Tests</Link>{" "}
           (Räder, Komponenten, Zubehör).
         </p>
       </Section>
