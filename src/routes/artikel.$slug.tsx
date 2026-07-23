@@ -45,7 +45,7 @@ export const Route = createFileRoute("/artikel/$slug")({
       Nachrichten: "/",
       Ratgeber: "/ratgeber",
       "E-Bikes": "/e-bikes",
-      Tests: "/tests",
+      Tests: "/fahrraeder",
     };
     const catUrl = abs(categorySlugMap[a.category] ?? "/");
     const wordCount = (a.body ?? []).reduce(
@@ -214,7 +214,7 @@ function ArticlePage() {
                 to={
                   a.category === "Ratgeber" ? "/ratgeber"
                   : a.category === "E-Bikes" ? "/e-bikes"
-                  : a.category === "Tests" ? "/tests"
+                  : a.category === "Tests" ? "/fahrraeder"
                   : "/"
                 }
                 className="hover:text-foreground"

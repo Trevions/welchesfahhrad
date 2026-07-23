@@ -69,32 +69,32 @@
   --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* LIGHT (only theme) — Warm Paper */
+/* LIGHT (only theme) — Pure White, Lime Signal */
 :root,
 .light,
 .dark {
-  --radius: 0.25rem;
-  --background: oklch(0.97 0.012 75);             /* warm paper */
-  --foreground: oklch(0.14 0.005 250);            /* near-black ink */
+  --radius: 1rem;
+  --background: oklch(1 0 0);                     /* pure white */
+  --foreground: oklch(0.14 0 0);                  /* near-black */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.14 0.005 250);
+  --card-foreground: oklch(0.14 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.14 0.005 250);
-  --primary: oklch(0.14 0.005 250);
-  --primary-foreground: oklch(0.97 0.012 75);
-  --secondary: oklch(0.93 0.012 75);
-  --secondary-foreground: oklch(0.14 0.005 250);
-  --muted: oklch(0.93 0.01 75);
-  --muted-foreground: oklch(0.42 0.01 250);
-  --accent: oklch(0.91 0.012 75);
-  --accent-foreground: oklch(0.14 0.005 250);
+  --popover-foreground: oklch(0.14 0 0);
+  --primary: oklch(0.14 0 0);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.965 0 0);
+  --secondary-foreground: oklch(0.14 0 0);
+  --muted: oklch(0.965 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.95 0 0);
+  --accent-foreground: oklch(0.14 0 0);
   --destructive: oklch(0.55 0.22 25);
-  --destructive-foreground: oklch(0.97 0.012 75);
-  --border: oklch(0.14 0.005 250 / 0.14);
-  --input: oklch(0.14 0.005 250 / 0.1);
-  --ring: oklch(0.62 0.2 40);
-  --signal: oklch(0.62 0.2 40);                   /* same orange, deeper */
-  --signal-foreground: oklch(0.97 0.012 75);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.14 0 0 / 0.10);
+  --input: oklch(0.14 0 0 / 0.08);
+  --ring: #c8ff00;
+  --signal: #c8ff00;                              /* Lime green accent */
+  --signal-foreground: #050505;                   /* Black on lime */
   --surface: oklch(1 0 0 / 0.7);
   --surface-elevated: oklch(1 0 0 / 0.92);
 }
