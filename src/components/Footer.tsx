@@ -160,14 +160,14 @@ export function Footer() {
       <div className="mx-auto max-w-[1400px] px-6 md:px-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:gap-12 md:grid-cols-12">
           <div className="col-span-2 md:col-span-5">
-            <Link to="/" className="flex items-baseline">
+            <Link to="/" className="flex items-baseline whitespace-nowrap">
               <span className="font-display text-3xl font-black italic">
-                Welches Fahrrad<span className="text-signal">.</span>
+                WelchesFahrrad<span className="text-signal">.</span>DE
               </span>
             </Link>
             <p className="mt-5 max-w-md text-sm text-muted-foreground font-light leading-relaxed">
-              Unabhängiges deutsches Magazin für Fahrräder, E-Bikes und alles rund
-              um den Radsport. Tagesaktuell. Mit Leidenschaft für jeden Kilometer.
+              Welches Fahrrad passt zu dir? Deutschlands großes Vergleichsportal
+              für Fahrräder und E-Bikes – mit Tests, Ratgebern und Kaufberatung.
             </p>
             <div className="mt-6 flex items-center gap-3">
               <span className="h-px w-8 bg-signal" />
