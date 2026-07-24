@@ -1,7 +1,7 @@
 {
-  "name": "Welches Fahrrad",
-  "short_name": "Welches Fahrrad",
-  "description": "Das deutsche Magazin für Fahrräder & E-Bikes",
+  "name": "WelchesFahrrad.de – Fahrrad-Vergleich",
+  "short_name": "WelchesFahrrad",
+  "description": "Welches Fahrrad passt zu dir? Deutschlands Vergleichsportal für Fahrräder und E-Bikes.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
