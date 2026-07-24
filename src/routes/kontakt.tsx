@@ -9,13 +9,13 @@ import { submitContactMessage } from "@/lib/contact.functions";
 export const Route = createFileRoute("/kontakt")({
   head: () => ({
     meta: [
-      { title: "Kontakt — radmap.de" },
-      { name: "description", content: "Kontaktiere die Redaktion von radmap.de: Tipps, Pressemitteilungen, Werbeanfragen und Feedback." },
-      { property: "og:title", content: "Kontakt — radmap.de" },
+      { title: "Kontakt — welchesfahrrad.de" },
+      { name: "description", content: "Kontaktiere die Redaktion von welchesfahrrad.de: Tipps, Pressemitteilungen, Werbeanfragen und Feedback." },
+      { property: "og:title", content: "Kontakt — welchesfahrrad.de" },
       { property: "og:description", content: "Schreib uns: Redaktion, Presse, Werbung, Feedback." },
-      { property: "og:url", content: "https://radmap.de/kontakt" },
+      { property: "og:url", content: "https://welchesfahrrad.de/kontakt" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/kontakt" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/kontakt" }],
   }),
   component: ContactPage,
 });
@@ -66,10 +66,10 @@ function ContactPage() {
             <Mail className="h-4 w-4 text-signal" />
             <div className="mt-3 eyebrow-sm text-muted-foreground">E-Mail</div>
             <a
-              href="mailto:support@radmap.de"
+              href="mailto:support@welchesfahrrad.de"
               className="mt-1 inline-block text-sm text-foreground hover:text-signal transition-colors"
             >
-              support@radmap.de
+              support@welchesfahrrad.de
             </a>
           </div>
           <div className="border border-border bg-card p-5">
@@ -223,8 +223,8 @@ function ContactPage() {
 
         <InfoBox>
           Alternativ erreichst du uns jederzeit per E-Mail an{" "}
-          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
-            support@radmap.de
+          <a href="mailto:support@welchesfahrrad.de" className="text-signal hover:underline">
+            support@welchesfahrrad.de
           </a>.
         </InfoBox>
 

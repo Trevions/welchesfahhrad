@@ -4,12 +4,12 @@ import { LegalPage, Section, SubSection, InfoBox } from "@/components/LegalPage"
 export const Route = createFileRoute("/cookies")({
   head: () => ({
     meta: [
-      { title: "Cookie-Richtlinie — radmap.de" },
-      { name: "description", content: "Cookie-Richtlinie nach § 25 TDDDG (vormals TTDSG), ePrivacy-Richtlinie 2002/58/EG und DSGVO. Übersicht aller auf radmap.de eingesetzten Technologien." },
-      { property: "og:title", content: "Cookie-Richtlinie — radmap.de" },
-      { property: "og:url", content: "https://radmap.de/cookies" },
+      { title: "Cookie-Richtlinie — welchesfahrrad.de" },
+      { name: "description", content: "Cookie-Richtlinie nach § 25 TDDDG (vormals TTDSG), ePrivacy-Richtlinie 2002/58/EG und DSGVO. Übersicht aller auf welchesfahrrad.de eingesetzten Technologien." },
+      { property: "og:title", content: "Cookie-Richtlinie — welchesfahrrad.de" },
+      { property: "og:url", content: "https://welchesfahrrad.de/cookies" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/cookies" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/cookies" }],
   }),
   component: CookiePage,
 });
@@ -30,11 +30,11 @@ function CookiePage() {
     <LegalPage
       eyebrow="Recht"
       title="Cookie-Richtlinie"
-      lead="Diese Richtlinie erläutert, welche Cookies und vergleichbaren Technologien (lokaler Speicher) wir auf radmap.de einsetzen — nach § 25 TDDDG (vormals TTDSG), der ePrivacy-Richtlinie 2002/58/EG und der DSGVO (Verordnung (EU) 2016/679)."
+      lead="Diese Richtlinie erläutert, welche Cookies und vergleichbaren Technologien (lokaler Speicher) wir auf welchesfahrrad.de einsetzen — nach § 25 TDDDG (vormals TTDSG), der ePrivacy-Richtlinie 2002/58/EG und der DSGVO (Verordnung (EU) 2016/679)."
       updated="13. Juni 2026"
     >
       <InfoBox tone="signal">
-        radmap.de setzt <strong className="text-foreground">keine Werbe-,
+        welchesfahrrad.de setzt <strong className="text-foreground">keine Werbe-,
         Marketing- oder Tracking-Cookies</strong> ein. Es findet kein
         Cross-Site-Tracking statt. Wir verwenden ausschließlich technisch
         notwendigen lokalen Speicher, der unbedingt erforderlich ist
@@ -104,13 +104,13 @@ function CookiePage() {
               </thead>
               <tbody className="font-light">
                 <tr className="border-b border-border align-top">
-                  <td className="p-3 font-mono text-xs">radmap-theme</td>
+                  <td className="p-3 font-mono text-xs">welchesfahrrad-theme</td>
                   <td className="p-3">localStorage</td>
                   <td className="p-3">Speichert die gewählte Darstellung (hell/dunkel/System).</td>
                   <td className="p-3 whitespace-nowrap">dauerhaft, bis manuell gelöscht</td>
                 </tr>
                 <tr className="border-b border-border align-top">
-                  <td className="p-3 font-mono text-xs">radmap:bookmarks:v1</td>
+                  <td className="p-3 font-mono text-xs">welchesfahrrad:bookmarks:v1</td>
                   <td className="p-3">localStorage</td>
                   <td className="p-3">Speichert deine persönliche Merkliste lokal in deinem Browser.</td>
                   <td className="p-3 whitespace-nowrap">dauerhaft, bis manuell gelöscht</td>

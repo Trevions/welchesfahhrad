@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-const STORAGE_KEY = "radmap-geo-consent";
-const COORDS_KEY = "radmap-geo-coords";
+const STORAGE_KEY = "welchesfahrrad-geo-consent";
+const COORDS_KEY = "welchesfahrrad-geo-coords";
 
 export type WeatherCurrent = {
   temperature: number;

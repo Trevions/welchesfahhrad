@@ -3,10 +3,10 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const FROM_NAME = "Radmap.de Redaktion";
+const FROM_NAME = "WelchesFahrrad.de Redaktion";
 const FROM_LOCAL = "redaktion";
-const FROM_DOMAIN = "radmap.de";
-const SITE_URL = "https://radmap.de";
+const FROM_DOMAIN = "welchesfahrrad.de";
+const SITE_URL = "https://welchesfahrrad.de";
 const CONTACT_URL = `${SITE_URL}/kontakt`;
 
 function replyToFor(threadToken: string) {
@@ -38,13 +38,13 @@ function buildReplyEmailHtml(opts: {
   const articleUrl = `${SITE_URL}/artikel/${opts.articleSlug}`;
   const title = opts.articleTitle || opts.articleSlug;
 
-  return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Antwort von Radmap.de</title></head>
+  return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Antwort von WelchesFahrrad.de</title></head>
 <body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:32px 16px;">
 <tr><td align="center">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
 <tr><td style="padding:28px 32px;border-bottom:1px solid #f4f4f5;">
-<div style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#18181b;letter-spacing:-0.01em;">Radmap<span style="color:#FF6A1A;">.</span>de</div>
+<div style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#18181b;letter-spacing:-0.01em;">Welches Fahrrad<span style="color:#FF6A1A;">.</span>de</div>
 <div style="font-size:11px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">Antwort der Redaktion</div>
 </td></tr>
 <tr><td style="padding:32px;">
@@ -52,7 +52,7 @@ function buildReplyEmailHtml(opts: {
 <p style="margin:0 0 20px;line-height:1.65;color:#27272a;font-size:15px;">vielen Dank für deine Rückmeldung zu unserem Artikel. Wir haben deinen Hinweis geprüft und möchten dir Folgendes mitteilen:</p>
 ${paragraphs}
 <p style="margin:24px 0 0;font-size:14px;color:#52525b;line-height:1.6;">Falls du weitere Fragen hast, antworte einfach direkt auf diese E-Mail.</p>
-<p style="margin:16px 0 0;font-size:15px;color:#27272a;line-height:1.6;">Viele Grüße<br><strong>Die Radmap.de Redaktion</strong></p>
+<p style="margin:16px 0 0;font-size:15px;color:#27272a;line-height:1.6;">Viele Grüße<br><strong>Die WelchesFahrrad.de Redaktion</strong></p>
 </td></tr>
 <tr><td style="padding:20px 32px;background:#fafafa;border-top:1px solid #f4f4f5;">
 <div style="font-size:11px;color:#71717a;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Bezug: Deine Meldung</div>
@@ -61,7 +61,7 @@ ${opts.originalReason ? `<div style="font-size:11px;color:#a1a1aa;text-transform
 <div style="font-size:13px;color:#52525b;line-height:1.55;padding:10px 12px;background:#ffffff;border-left:3px solid #e4e4e7;border-radius:2px;white-space:pre-wrap;">${escapeHtml(opts.originalDescription.slice(0, 400))}${opts.originalDescription.length > 400 ? "…" : ""}</div>
 </td></tr>
 <tr><td style="padding:20px 32px;background:#18181b;color:#a1a1aa;font-size:11px;line-height:1.6;text-align:center;">
-<a href="${SITE_URL}" style="color:#FF6A1A;text-decoration:none;font-weight:600;">radmap.de</a> · Dein Rad-Magazin<br>
+<a href="${SITE_URL}" style="color:#FF6A1A;text-decoration:none;font-weight:600;">welchesfahrrad.de</a> · Dein Rad-Magazin<br>
 <span style="color:#71717a;">Antworte einfach auf diese E-Mail, um mit der Redaktion zu sprechen.</span>
 </td></tr>
 </table>
@@ -107,7 +107,7 @@ export const submitArticleReport = createServerFn({ method: "POST" })
 
     let ipHash: string | null = null;
     if (ip) {
-      const enc = new TextEncoder().encode(ip + "|radmap");
+      const enc = new TextEncoder().encode(ip + "|welchesfahrrad");
       const buf = await crypto.subtle.digest("SHA-256", enc);
       ipHash = Array.from(new Uint8Array(buf))
         .map((b) => b.toString(16).padStart(2, "0"))
@@ -298,7 +298,7 @@ export const replyToArticleReport = createServerFn({ method: "POST" })
       `vielen Dank für deine Rückmeldung zu unserem Artikel. Wir haben deinen Hinweis geprüft und möchten dir Folgendes mitteilen:\n\n` +
       `${data.message.trim()}\n\n` +
       `Falls du weitere Fragen hast, antworte einfach direkt auf diese E-Mail.\n\n` +
-      `Viele Grüße\nDie Radmap.de Redaktion\n\n` +
+      `Viele Grüße\nDie WelchesFahrrad.de Redaktion\n\n` +
       `— Bezug: ${report.article_title ?? report.article_slug}\n` +
       `${SITE_URL}/artikel/${report.article_slug}\n`;
 
@@ -316,7 +316,7 @@ export const replyToArticleReport = createServerFn({ method: "POST" })
         subject: data.subject,
         html,
         text,
-        headers: { "X-Radmap-Thread": threadToken },
+        headers: { "X-Welches Fahrrad-Thread": threadToken },
       }),
     });
 

@@ -603,7 +603,7 @@ export function normalizeBikeImport(rawInput: Record<string, any>, body = ""): I
 
   const price = asInt(raw.price_eur);
   const titleBase = [brand, model, year].filter(Boolean).join(" ");
-  const metaTitle = asString(raw.meta_title ?? seo.meta_title ?? seo.title) || (titleBase ? `${titleBase} — Test, Specs & Preis | radmap.de` : "");
+  const metaTitle = asString(raw.meta_title ?? seo.meta_title ?? seo.title) || (titleBase ? `${titleBase} — Test, Specs & Preis | welchesfahrrad.de` : "");
   const metaDescription =
     asString(raw.meta_description ?? seo.meta_description ?? seo.description) ||
     limitText(excerpt || `${titleBase} mit technischen Daten, Ausstattung, Bewertung und Herstellerinformationen.`, 155);

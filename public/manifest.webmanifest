@@ -1,6 +1,6 @@
 {
-  "name": "RADMAP",
-  "short_name": "RADMAP",
+  "name": "Welches Fahrrad",
+  "short_name": "Welches Fahrrad",
   "description": "Das deutsche Magazin für Fahrräder & E-Bikes",
   "start_url": "/",
   "scope": "/",

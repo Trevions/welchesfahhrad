@@ -4,13 +4,13 @@ import { LegalPage, Section } from "@/components/LegalPage";
 export const Route = createFileRoute("/ueber-uns")({
   head: () => ({
     meta: [
-      { title: "Über uns — radmap.de" },
-      { name: "description", content: "radmap.de ist das unabhängige deutsche Fachmagazin für Fahrräder, E-Bikes und Radkultur. Erfahre mehr über unsere Redaktion, unsere Werte und unseren Anspruch." },
-      { property: "og:title", content: "Über uns — radmap.de" },
+      { title: "Über uns — welchesfahrrad.de" },
+      { name: "description", content: "welchesfahrrad.de ist das unabhängige deutsche Fachmagazin für Fahrräder, E-Bikes und Radkultur. Erfahre mehr über unsere Redaktion, unsere Werte und unseren Anspruch." },
+      { property: "og:title", content: "Über uns — welchesfahrrad.de" },
       { property: "og:description", content: "Das unabhängige deutsche Fachmagazin für Fahrräder, E-Bikes und Radkultur." },
-      { property: "og:url", content: "https://radmap.de/ueber-uns" },
+      { property: "og:url", content: "https://welchesfahrrad.de/ueber-uns" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/ueber-uns" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/ueber-uns" }],
   }),
   component: AboutPage,
 });
@@ -19,12 +19,12 @@ function AboutPage() {
   return (
     <LegalPage
       eyebrow="Verlag"
-      title="Über radmap.de"
+      title="Über welchesfahrrad.de"
       lead="Unabhängiges Fachmagazin für Fahrradkultur, E-Mobilität und Radsport — recherchiert in Deutschland, geschrieben für Menschen, die das Rad lieben."
     >
       <Section title="Unsere Mission">
         <p>
-          radmap.de ist ein digitales Fachmagazin für alle, die das Fahrrad als
+          welchesfahrrad.de ist ein digitales Fachmagazin für alle, die das Fahrrad als
           Sportgerät, als Verkehrsmittel und als Ausdruck eines Lebensgefühls
           verstehen. Wir berichten tagesaktuell über Branche, Technik,
           Infrastruktur und Politik — sachlich, recherchiert und ohne
@@ -79,7 +79,7 @@ function AboutPage() {
 
       <Section title="Pressekodex &amp; Standards">
         <p>
-          radmap.de orientiert sich am Pressekodex des Deutschen Presserats.
+          welchesfahrrad.de orientiert sich am Pressekodex des Deutschen Presserats.
           Wir wahren die journalistische Sorgfaltspflicht, kennzeichnen
           Werbung, achten den Persönlichkeitsschutz und korrigieren Fehler
           umgehend und transparent.

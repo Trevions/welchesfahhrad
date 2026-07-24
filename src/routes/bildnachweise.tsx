@@ -4,16 +4,16 @@ import { LegalPage, Section, InfoBox } from "@/components/LegalPage";
 export const Route = createFileRoute("/bildnachweise")({
   head: () => ({
     meta: [
-      { title: "Bildnachweise — radmap.de" },
+      { title: "Bildnachweise — welchesfahrrad.de" },
       {
         name: "description",
         content:
-          "Quellenangaben und Urheberrechtsnachweise für Bilder, Grafiken und Illustrationen auf radmap.de gemäß § 13 UrhG.",
+          "Quellenangaben und Urheberrechtsnachweise für Bilder, Grafiken und Illustrationen auf welchesfahrrad.de gemäß § 13 UrhG.",
       },
-      { property: "og:title", content: "Bildnachweise — radmap.de" },
-      { property: "og:url", content: "https://radmap.de/bildnachweise" },
+      { property: "og:title", content: "Bildnachweise — welchesfahrrad.de" },
+      { property: "og:url", content: "https://welchesfahrrad.de/bildnachweise" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/bildnachweise" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/bildnachweise" }],
   }),
   component: BildnachweisePage,
 });
@@ -23,19 +23,19 @@ function BildnachweisePage() {
     <LegalPage
       eyebrow="Recht"
       title="Bildnachweise"
-      lead="Quellenangaben und Urheberrechtsnachweise für sämtliche auf radmap.de verwendeten Bilder, Grafiken und Illustrationen gemäß § 13 UrhG (Anerkennung der Urheberschaft)."
+      lead="Quellenangaben und Urheberrechtsnachweise für sämtliche auf welchesfahrrad.de verwendeten Bilder, Grafiken und Illustrationen gemäß § 13 UrhG (Anerkennung der Urheberschaft)."
       updated="13. Juni 2026"
     >
       <InfoBox tone="signal">
         <p>
-          Wir achten die Urheberrechte Dritter. Alle auf radmap.de
+          Wir achten die Urheberrechte Dritter. Alle auf welchesfahrrad.de
           verwendeten Bildmedien stammen entweder aus eigenen Aufnahmen, sind
           lizenziert oder unterliegen freien Lizenzen (Creative Commons,
           Public Domain). Sollten Sie dennoch eine ungekennzeichnete
           Verwendung eines geschützten Werks bemerken, bitten wir um
           umgehende Mitteilung an{" "}
-          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
-            support@radmap.de
+          <a href="mailto:support@welchesfahrrad.de" className="text-signal hover:underline">
+            support@welchesfahrrad.de
           </a>
           .
         </p>
@@ -44,7 +44,7 @@ function BildnachweisePage() {
       <Section title="Eigene Aufnahmen">
         <p>
           Sofern nicht anders gekennzeichnet, stammen alle redaktionellen
-          Fotografien von Mitgliedern der Redaktion von radmap.de und
+          Fotografien von Mitgliedern der Redaktion von welchesfahrrad.de und
           unterliegen dem deutschen Urheberrecht (§§ 1 ff. UrhG). Eine
           Nutzung außerhalb des privaten Gebrauchs (§ 53 UrhG) bedarf der
           vorherigen schriftlichen Zustimmung.
@@ -173,10 +173,10 @@ function BildnachweisePage() {
           </Link>{" "}
           oder per E-Mail an{" "}
           <a
-            href="mailto:support@radmap.de?subject=Bildrechte"
+            href="mailto:support@welchesfahrrad.de?subject=Bildrechte"
             className="text-signal hover:underline"
           >
-            support@radmap.de
+            support@welchesfahrrad.de
           </a>
           . Wir prüfen jede Meldung unverzüglich und entfernen oder
           ergänzen den Nachweis nach den Grundsätzen des Notice-and-Action

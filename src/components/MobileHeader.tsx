@@ -22,7 +22,7 @@ export function MobileHeader() {
         <div className="flex h-14 items-center justify-between px-5">
           <Link to="/" className="flex items-baseline">
             <span className="font-display text-xl font-black italic leading-none">
-              Radmap<span className="text-signal">.</span>
+              Welches Fahrrad<span className="text-signal">.</span>
             </span>
             <span className="ml-1 font-display text-xl font-black italic leading-none text-signal">
               DE

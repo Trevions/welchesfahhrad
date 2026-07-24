@@ -353,7 +353,7 @@ export function buildCategoryJsonLd(category: Article["category"], items: Articl
         name: meta.title,
         description: meta.description,
         url: meta.slug,
-        isPartOf: { "@type": "WebSite", name: "radmap.de" },
+        isPartOf: { "@type": "WebSite", name: "welchesfahrrad.de" },
       }),
     },
     {

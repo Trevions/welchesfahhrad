@@ -4,16 +4,16 @@ import { LegalPage, Section, SubSection, InfoBox } from "@/components/LegalPage"
 export const Route = createFileRoute("/barrierefreiheit")({
   head: () => ({
     meta: [
-      { title: "Barrierefreiheitserklärung — radmap.de" },
+      { title: "Barrierefreiheitserklärung — welchesfahrrad.de" },
       {
         name: "description",
         content:
           "Erklärung zur digitalen Barrierefreiheit gemäß Barrierefreiheitsstärkungsgesetz (BFSG), EAA (EU 2019/882) und WCAG 2.1 AA.",
       },
-      { property: "og:title", content: "Barrierefreiheitserklärung — radmap.de" },
-      { property: "og:url", content: "https://radmap.de/barrierefreiheit" },
+      { property: "og:title", content: "Barrierefreiheitserklärung — welchesfahrrad.de" },
+      { property: "og:url", content: "https://welchesfahrrad.de/barrierefreiheit" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/barrierefreiheit" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/barrierefreiheit" }],
   }),
   component: BarrierefreiheitPage,
 });
@@ -23,7 +23,7 @@ function BarrierefreiheitPage() {
     <LegalPage
       eyebrow="Recht"
       title="Barrierefreiheitserklärung"
-      lead="Diese Erklärung beschreibt den Stand der digitalen Barrierefreiheit von radmap.de gemäß Barrierefreiheitsstärkungsgesetz (BFSG), European Accessibility Act (EU 2019/882) und WCAG 2.1 Level AA."
+      lead="Diese Erklärung beschreibt den Stand der digitalen Barrierefreiheit von welchesfahrrad.de gemäß Barrierefreiheitsstärkungsgesetz (BFSG), European Accessibility Act (EU 2019/882) und WCAG 2.1 Level AA."
       updated="13. Juni 2026"
     >
       <InfoBox tone="signal">
@@ -54,8 +54,8 @@ function BarrierefreiheitPage() {
       <Section title="1. Geltungsbereich">
         <p>
           Diese Erklärung gilt für die unter{" "}
-          <a href="https://radmap.de" className="text-signal hover:underline">
-            radmap.de
+          <a href="https://welchesfahrrad.de" className="text-signal hover:underline">
+            welchesfahrrad.de
           </a>{" "}
           veröffentlichte Website einschließlich aller Unterseiten und
           interaktiven Funktionen (Kontaktformular, Lesezeichen, Newsletter,
@@ -65,7 +65,7 @@ function BarrierefreiheitPage() {
 
       <Section title="2. Stand der Konformität">
         <p>
-          radmap.de ist mit den Anforderungen der{" "}
+          welchesfahrrad.de ist mit den Anforderungen der{" "}
           <a
             href="https://www.w3.org/TR/WCAG21/"
             target="_blank"
@@ -130,7 +130,7 @@ function BarrierefreiheitPage() {
       <Section title="4. Feedback &amp; Kontakt zur Barrierefreiheit">
         <p>
           Sind Ihnen Mängel beim barrierefreien Zugang zu Inhalten von
-          radmap.de aufgefallen? Möchten Sie Inhalte in einer zugänglichen
+          welchesfahrrad.de aufgefallen? Möchten Sie Inhalte in einer zugänglichen
           Form anfordern? Kontaktieren Sie unsere Ansprechstelle:
         </p>
         <InfoBox tone="muted">
@@ -140,10 +140,10 @@ function BarrierefreiheitPage() {
             6400 Dimitrovgrad, Bulgarien<br />
             E-Mail:{" "}
             <a
-              href="mailto:support@radmap.de?subject=Barrierefreiheit"
+              href="mailto:support@welchesfahrrad.de?subject=Barrierefreiheit"
               className="text-signal hover:underline"
             >
-              support@radmap.de
+              support@welchesfahrrad.de
             </a>
           </p>
           <p className="mt-3 text-xs">

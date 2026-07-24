@@ -4,21 +4,21 @@ import { LegalPage, Section, InfoBox } from "@/components/LegalPage";
 export const Route = createFileRoute("/sicherheit")({
   head: () => ({
     meta: [
-      { title: "Sicherheit & Vertrauen — radmap.de" },
+      { title: "Sicherheit & Vertrauen — welchesfahrrad.de" },
       {
         name: "description",
         content:
-          "Wie radmap.de Nutzerdaten schützt: Authentifizierung, Datenverarbeitung, Drittdienste und Kontakt für Sicherheitsfragen.",
+          "Wie welchesfahrrad.de Nutzerdaten schützt: Authentifizierung, Datenverarbeitung, Drittdienste und Kontakt für Sicherheitsfragen.",
       },
-      { property: "og:title", content: "Sicherheit & Vertrauen — radmap.de" },
+      { property: "og:title", content: "Sicherheit & Vertrauen — welchesfahrrad.de" },
       {
         property: "og:description",
         content:
-          "Transparenter Überblick über Sicherheit, Datenschutz und Subdienstleister bei radmap.de.",
+          "Transparenter Überblick über Sicherheit, Datenschutz und Subdienstleister bei welchesfahrrad.de.",
       },
-      { property: "og:url", content: "https://radmap.de/sicherheit" },
+      { property: "og:url", content: "https://welchesfahrrad.de/sicherheit" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/sicherheit" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/sicherheit" }],
   }),
   component: TrustPage,
 });
@@ -28,12 +28,12 @@ function TrustPage() {
     <LegalPage
       eyebrow="Vertrauen"
       title="Sicherheit & Vertrauen"
-      lead="Diese Seite wird von der Redaktion von radmap.de gepflegt und beantwortet die häufigsten Fragen zu Sicherheit, Datenschutz und Betrieb unserer Plattform. Sie ist eine sachliche Selbstauskunft — keine unabhängige Zertifizierung."
+      lead="Diese Seite wird von der Redaktion von welchesfahrrad.de gepflegt und beantwortet die häufigsten Fragen zu Sicherheit, Datenschutz und Betrieb unserer Plattform. Sie ist eine sachliche Selbstauskunft — keine unabhängige Zertifizierung."
       updated="22. Juni 2026"
     >
       <InfoBox tone="signal">
         <strong className="text-foreground">Geteilte Verantwortung:</strong>{" "}
-        radmap.de ist für den Anwendungs-Code, Inhalte und Konfiguration
+        welchesfahrrad.de ist für den Anwendungs-Code, Inhalte und Konfiguration
         verantwortlich. Hosting, Datenbank, Authentifizierung und E-Mail-Versand
         laufen über etablierte Anbieter (siehe Abschnitt „Subdienstleister"). Du
         bist für ein sicheres Passwort und den Schutz deines Zugangs
@@ -120,7 +120,7 @@ function TrustPage() {
 
       <Section title="5. Cookies & Tracking">
         <p>
-          radmap.de setzt keine Tracking-Cookies, keine Werbenetzwerke und
+          welchesfahrrad.de setzt keine Tracking-Cookies, keine Werbenetzwerke und
           kein Drittanbieter-Analytics ein. Es werden ausschließlich
           technisch notwendige Cookies und lokaler Browser-Speicher für
           Einstellungen verwendet. Details:{" "}
@@ -150,10 +150,10 @@ function TrustPage() {
           Anfragen nach Art. 15–22 DSGVO (Auskunft, Berichtigung, Löschung,
           Einschränkung, Datenübertragbarkeit, Widerspruch) richtest du an{" "}
           <a
-            href="mailto:support@radmap.de"
+            href="mailto:support@welchesfahrrad.de"
             className="text-signal hover:underline"
           >
-            support@radmap.de
+            support@welchesfahrrad.de
           </a>
           . Wir antworten innerhalb der gesetzlichen Frist.
         </p>
@@ -164,10 +164,10 @@ function TrustPage() {
           Du hast eine mögliche Schwachstelle entdeckt? Bitte melde sie
           vertraulich an{" "}
           <a
-            href="mailto:support@radmap.de"
+            href="mailto:support@welchesfahrrad.de"
             className="text-signal hover:underline"
           >
-            support@radmap.de
+            support@welchesfahrrad.de
           </a>
           . Wir bestätigen den Eingang zeitnah und arbeiten kooperativ an
           einer Lösung. Bitte führe keine destruktiven Tests gegen unsere
@@ -177,7 +177,7 @@ function TrustPage() {
 
       <Section title="9. Compliance-Hinweis">
         <p>
-          radmap.de hält die Anforderungen der DSGVO und des deutschen
+          welchesfahrrad.de hält die Anforderungen der DSGVO und des deutschen
           TDDDG ein. Diese Seite stellt jedoch keine unabhängige
           Zertifizierung (z.B. ISO 27001, SOC 2) dar. Alle Aussagen sind
           Selbstauskünfte der Redaktion.

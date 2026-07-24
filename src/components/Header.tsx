@@ -44,7 +44,7 @@ export function Header() {
           {/* Wordmark */}
           <Link to="/" className="flex items-baseline">
             <span className="font-display text-2xl font-black italic tracking-tight leading-none">
-              Radmap<span className="text-signal">.</span>
+              Welches Fahrrad<span className="text-signal">.</span>
             </span>
             <span className="ml-1 font-display text-2xl font-black italic leading-none text-signal">
               DE

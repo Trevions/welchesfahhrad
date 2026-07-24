@@ -105,7 +105,7 @@ export function AdminShell({
         <div className="h-16 px-6 flex items-center justify-between border-b border-zinc-900">
           <Link to="/mnv" className="flex items-baseline gap-1.5">
             <span className="font-display text-xl font-black italic">
-              Radmap<span className="text-[#FF6A1A]">.</span>
+              Welches Fahrrad<span className="text-[#FF6A1A]">.</span>
             </span>
             <span className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">Admin</span>
           </Link>

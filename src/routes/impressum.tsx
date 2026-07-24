@@ -5,12 +5,12 @@ import { LegalPage, Section } from "@/components/LegalPage";
 export const Route = createFileRoute("/impressum")({
   head: () => ({
     meta: [
-      { title: "Impressum — radmap.de" },
-      { name: "description", content: "Impressum und Anbieterkennzeichnung gemäß § 5 TMG und § 18 MStV für radmap.de." },
-      { property: "og:title", content: "Impressum — radmap.de" },
-      { property: "og:url", content: "https://radmap.de/impressum" },
+      { title: "Impressum — welchesfahrrad.de" },
+      { name: "description", content: "Impressum und Anbieterkennzeichnung gemäß § 5 TMG und § 18 MStV für welchesfahrrad.de." },
+      { property: "og:title", content: "Impressum — welchesfahrrad.de" },
+      { property: "og:url", content: "https://welchesfahrrad.de/impressum" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/impressum" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/impressum" }],
   }),
   component: ImpressumPage,
 });
@@ -33,8 +33,8 @@ function ImpressumPage() {
       <Section title="Kontakt">
         <p>
           E-Mail:{" "}
-          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
-            support@radmap.de
+          <a href="mailto:support@welchesfahrrad.de" className="text-signal hover:underline">
+            support@welchesfahrrad.de
           </a>
         </p>
         <p className="text-sm text-muted-foreground">
@@ -53,8 +53,8 @@ function ImpressumPage() {
           <strong className="text-foreground">DigiMarket Bulgaria</strong><br />
           6400 Dimitrovgrad, Bulgarien<br />
           E-Mail:{" "}
-          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
-            support@radmap.de
+          <a href="mailto:support@welchesfahrrad.de" className="text-signal hover:underline">
+            support@welchesfahrrad.de
           </a>
         </p>
       </Section>

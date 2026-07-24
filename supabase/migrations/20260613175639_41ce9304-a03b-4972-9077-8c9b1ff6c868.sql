@@ -9,7 +9,7 @@ DROP FUNCTION IF EXISTS public._tmp_set_dispatch_secret(text);
 
 DO $$
 DECLARE
-  v_url text := 'https://radmap.de/api/public/newsletter/dispatch';
+  v_url text := 'https://welchesfahrrad.de/api/public/newsletter/dispatch';
   v_secret text;
 BEGIN
   SELECT decrypted_secret INTO v_secret

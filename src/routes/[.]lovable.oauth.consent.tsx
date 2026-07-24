@@ -120,7 +120,7 @@ function ConsentPage() {
             {clientName} verbinden?
           </h1>
           <p className="mt-3 text-sm text-zinc-400">
-            {clientName} möchte auf radmap.de zugreifen und in deinem Namen handeln
+            {clientName} möchte auf welchesfahrrad.de zugreifen und in deinem Namen handeln
             (Artikel & Fahrräder verwalten, Bilder laden, Analysen abrufen).
           </p>
           <p className="mt-2 text-xs text-zinc-500">
@@ -135,7 +135,7 @@ function ConsentPage() {
         {isAdmin === false && (
           <div className="rounded-lg border border-rose-900/60 bg-rose-950/40 p-3 text-sm text-rose-200">
             Dein Konto hat keine Admin-Rolle. Nur Admins dürfen externe MCP-Clients
-            mit radmap.de verbinden. Bitte kontaktiere einen Administrator.
+            mit welchesfahrrad.de verbinden. Bitte kontaktiere einen Administrator.
           </div>
         )}
         {isAdmin === null && session && (

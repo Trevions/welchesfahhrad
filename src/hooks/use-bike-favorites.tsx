@@ -1,7 +1,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-const STORAGE_KEY = "radmap:bike-favorites:v1";
-const EVENT = "radmap:bike-favorites-changed";
+const STORAGE_KEY = "welchesfahrrad:bike-favorites:v1";
+const EVENT = "welchesfahrrad:bike-favorites-changed";
 
 export type BikeFavorite = {
   slug: string;

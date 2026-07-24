@@ -11,11 +11,11 @@ import { listContactMessages, newsletterStatus, whoami } from "./tools/site";
 const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
 
 export default defineMcp({
-  name: "radmap-mcp",
-  title: "radmap.de – Admin MCP",
+  name: "welchesfahrrad-mcp",
+  title: "welchesfahrrad.de – Admin MCP",
   version: "0.1.0",
   instructions: [
-    "MCP-Server für radmap.de (deutsches Fahrrad-Magazin).",
+    "MCP-Server für welchesfahrrad.de (deutsches Fahrrad-Magazin).",
     "Nach Anmeldung als Admin verfügbar: Artikel, Fahrräder, Lexikon-Begriffe",
     "vollständig CRUD verwalten, Bilder in den Storage laden, Analytics abrufen,",
     "Tools katalogisieren und Ad-hoc SELECT-Analysen fahren.",

@@ -5,8 +5,8 @@ import { useBookmarks } from "@/hooks/use-bookmarks";
 export const Route = createFileRoute("/merkliste")({
   head: () => ({
     meta: [
-      { title: "Merkliste | radmap.de" },
-      { name: "description", content: "Deine gemerkten Artikel auf radmap.de." },
+      { title: "Merkliste | welchesfahrrad.de" },
+      { name: "description", content: "Deine gemerkten Artikel auf welchesfahrrad.de." },
       { name: "robots", content: "noindex" },
     ],
   }),

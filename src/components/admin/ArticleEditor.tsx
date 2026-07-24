@@ -267,7 +267,7 @@ export function ArticleEditor({ initial }: { initial?: Partial<ArticleFormState>
           <div className="space-y-2">
             <Label htmlFor="slug">URL-Slug</Label>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-zinc-500">radmap.de/artikel/</span>
+              <span className="text-xs text-zinc-500">welchesfahrrad.de/artikel/</span>
               <Input
                 id="slug"
                 value={form.slug}

@@ -3,7 +3,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { getLexikonTermBySlug } from "@/lib/lexikon.functions";
 
-const SITE = "https://radmap.de";
+const SITE = "https://welchesfahrrad.de";
 
 const CATEGORY_ARTICLE_SLUG: Record<string, string> = {
   Nachrichten: "/",
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/lexikon/$slug")({
     if (!t) {
       return {
         meta: [
-          { title: "Begriff nicht gefunden | radmap.de" },
+          { title: "Begriff nicht gefunden | welchesfahrrad.de" },
           { name: "robots", content: "noindex" },
         ],
       };
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/lexikon/$slug")({
     const description =
       t.seo_description ||
       t.short_definition ||
-      `${t.term} einfach erklärt im Fahrrad-Lexikon von radmap.de.`;
+      `${t.term} einfach erklärt im Fahrrad-Lexikon von welchesfahrrad.de.`;
     const published = t.created_at ?? t.updated_at ?? undefined;
     const modified = t.updated_at ?? t.created_at ?? undefined;
     const keywords = [
@@ -61,7 +61,7 @@ export const Route = createFileRoute("/lexikon/$slug")({
       inLanguage: "de-DE",
       inDefinedTermSet: {
         "@type": "DefinedTermSet",
-        name: "Fahrrad-Lexikon von radmap.de",
+        name: "Fahrrad-Lexikon von welchesfahrrad.de",
         url: `${SITE}/lexikon`,
         inLanguage: "de-DE",
       },
@@ -80,7 +80,7 @@ export const Route = createFileRoute("/lexikon/$slug")({
       description,
       url,
       inLanguage: "de-DE",
-      isPartOf: { "@type": "WebSite", "@id": `${SITE}#website`, name: "radmap.de", url: SITE },
+      isPartOf: { "@type": "WebSite", "@id": `${SITE}#website`, name: "welchesfahrrad.de", url: SITE },
       mainEntityOfPage: { "@type": "WebPage", "@id": url },
       mainEntity: { "@id": `${url}#term` },
       about: { "@id": `${url}#term` },
@@ -89,12 +89,12 @@ export const Route = createFileRoute("/lexikon/$slug")({
       ...(wordCount ? { wordCount } : {}),
       author: {
         "@type": "Organization",
-        name: "Redaktion radmap.de",
+        name: "Redaktion welchesfahrrad.de",
         url: `${SITE}/redaktion`,
       },
       publisher: {
         "@type": "Organization",
-        name: "radmap.de",
+        name: "welchesfahrrad.de",
         url: SITE,
         logo: {
           "@type": "ImageObject",
@@ -120,13 +120,13 @@ export const Route = createFileRoute("/lexikon/$slug")({
 
     return {
       meta: [
-        { title: `${title} | radmap.de` },
+        { title: `${title} | welchesfahrrad.de` },
         { name: "description", content: description },
-        { name: "author", content: "Redaktion radmap.de" },
+        { name: "author", content: "Redaktion welchesfahrrad.de" },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "article" },
-        { property: "og:site_name", content: "radmap.de" },
+        { property: "og:site_name", content: "welchesfahrrad.de" },
         { property: "og:locale", content: "de_DE" },
         { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
@@ -354,7 +354,7 @@ function LexikonTermPage() {
         )}
 
         <footer className="mt-12 pt-6 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-          <span>Redaktionell geprüft von der radmap.de-Redaktion</span>
+          <span>Redaktionell geprüft von der welchesfahrrad.de-Redaktion</span>
           {modified && <span>Zuletzt aktualisiert: {modified}</span>}
         </footer>
       </article>

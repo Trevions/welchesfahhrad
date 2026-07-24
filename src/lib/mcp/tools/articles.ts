@@ -9,7 +9,7 @@ const STATUS = z.enum(["draft", "published"]);
 export const listArticles = defineTool({
   name: "list_articles",
   title: "Artikel auflisten",
-  description: "Listet Artikel (radmap.de). Filter: status, category, Suche. Max 100.",
+  description: "Listet Artikel (welchesfahrrad.de). Filter: status, category, Suche. Max 100.",
   inputSchema: {
     search: z.string().optional(),
     category: CATEGORY.optional(),

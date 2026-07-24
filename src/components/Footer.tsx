@@ -162,7 +162,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-5">
             <Link to="/" className="flex items-baseline">
               <span className="font-display text-3xl font-black italic">
-                Radmap<span className="text-signal">.</span>
+                Welches Fahrrad<span className="text-signal">.</span>
               </span>
             </Link>
             <p className="mt-5 max-w-md text-sm text-muted-foreground font-light leading-relaxed">
@@ -212,7 +212,7 @@ export function Footer() {
         </div>
 
         <div className="mt-14 pt-6 border-t border-border flex flex-wrap items-center justify-between gap-4 text-xs text-muted-foreground">
-          <div>© {new Date().getFullYear()} radmap.de — Alle Rechte vorbehalten.</div>
+          <div>© {new Date().getFullYear()} welchesfahrrad.de — Alle Rechte vorbehalten.</div>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             <Link to="/impressum" className="hover:text-foreground transition-colors">Impressum</Link>
             <Link to="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</Link>

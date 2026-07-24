@@ -13,7 +13,7 @@ export const Route = createFileRoute("/newsletter/bestaetigen")({
   }),
   head: () => ({
     meta: [
-      { title: "Newsletter-Anmeldung bestätigen — radmap.de" },
+      { title: "Newsletter-Anmeldung bestätigen — welchesfahrrad.de" },
       { name: "robots", content: "noindex" },
     ],
   }),

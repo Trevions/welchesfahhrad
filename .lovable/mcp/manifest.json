@@ -11,9 +11,9 @@
   },
   "mcp": {
     "server": {
-      "name": "radmap-mcp",
+      "name": "welchesfahrrad-mcp",
       "version": "0.1.0",
-      "title": "radmap.de – Admin MCP"
+      "title": "welchesfahrrad.de – Admin MCP"
     },
     "tools": [
       {
@@ -33,7 +33,7 @@
       {
         "name": "list_articles",
         "title": "Artikel auflisten",
-        "description": "Listet Artikel (radmap.de). Filter: status, category, Suche. Max 100.",
+        "description": "Listet Artikel (welchesfahrrad.de). Filter: status, category, Suche. Max 100.",
         "annotations": {
           "readOnlyHint": true
         },
@@ -329,7 +329,7 @@
       {
         "name": "list_bikes",
         "title": "Fahrräder auflisten",
-        "description": "Listet Fahrräder (radmap.de). Filter: Kategorie, Marke, Suchtext, publiziert. Max 100.",
+        "description": "Listet Fahrräder (welchesfahrrad.de). Filter: Kategorie, Marke, Suchtext, publiziert. Max 100.",
         "annotations": {
           "readOnlyHint": true
         },
@@ -387,7 +387,7 @@
       {
         "name": "create_bike",
         "title": "Fahrrad anlegen",
-        "description": "Erstellt ein neues Fahrrad (radmap.de). Slug muss eindeutig sein.",
+        "description": "Erstellt ein neues Fahrrad (welchesfahrrad.de). Slug muss eindeutig sein.",
         "annotations": {
           "destructiveHint": false
         },
@@ -1128,7 +1128,7 @@
       {
         "name": "upload_image",
         "title": "Bild hochladen",
-        "description": "Lädt ein Bild in den Storage-Bucket 'article-images' und liefert eine öffentliche URL (radmap.de/api/public/article-image/…). Als data-URL (base64) oder Remote-URL.",
+        "description": "Lädt ein Bild in den Storage-Bucket 'article-images' und liefert eine öffentliche URL (welchesfahrrad.de/api/public/article-image/…). Als data-URL (base64) oder Remote-URL.",
         "inputSchema": {
           "type": "object",
           "properties": {
@@ -1203,7 +1203,7 @@
       {
         "name": "list_contact_messages",
         "title": "Kontaktnachrichten auflisten",
-        "description": "Letzte Kontaktnachrichten (radmap.de/kontakt).",
+        "description": "Letzte Kontaktnachrichten (welchesfahrrad.de/kontakt).",
         "annotations": {
           "readOnlyHint": true
         },

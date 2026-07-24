@@ -4,13 +4,13 @@ import { LegalPage, Section } from "@/components/LegalPage";
 export const Route = createFileRoute("/redaktion")({
   head: () => ({
     meta: [
-      { title: "Redaktion — radmap.de" },
-      { name: "description", content: "Die Redaktion von radmap.de: Arbeitsweise, Standards, Kontakt für Tipps und Pressemitteilungen." },
-      { property: "og:title", content: "Redaktion — radmap.de" },
-      { property: "og:description", content: "Wer hinter radmap.de steckt und wie wir arbeiten." },
-      { property: "og:url", content: "https://radmap.de/redaktion" },
+      { title: "Redaktion — welchesfahrrad.de" },
+      { name: "description", content: "Die Redaktion von welchesfahrrad.de: Arbeitsweise, Standards, Kontakt für Tipps und Pressemitteilungen." },
+      { property: "og:title", content: "Redaktion — welchesfahrrad.de" },
+      { property: "og:description", content: "Wer hinter welchesfahrrad.de steckt und wie wir arbeiten." },
+      { property: "og:url", content: "https://welchesfahrrad.de/redaktion" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/redaktion" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/redaktion" }],
   }),
   component: EditorialPage,
 });
@@ -20,11 +20,11 @@ function EditorialPage() {
     <LegalPage
       eyebrow="Verlag"
       title="Die Redaktion"
-      lead="Wir sind ein digitales Redaktionsteam mit Sitz in Deutschland. Alle Inhalte auf radmap.de entstehen unter redaktioneller Verantwortung — ohne Einflussnahme durch Hersteller, Händler oder Werbekunden."
+      lead="Wir sind ein digitales Redaktionsteam mit Sitz in Deutschland. Alle Inhalte auf welchesfahrrad.de entstehen unter redaktioneller Verantwortung — ohne Einflussnahme durch Hersteller, Händler oder Werbekunden."
     >
       <Section title="Arbeitsweise">
         <p>
-          Beiträge auf radmap.de werden von der Redaktion radmap.de
+          Beiträge auf welchesfahrrad.de werden von der Redaktion welchesfahrrad.de
           verantwortet. Recherchen basieren auf offiziellen Quellen,
           eigenen Tests und Fachgesprächen mit Branchen­vertreter:innen.
           Jeder Artikel durchläuft eine fachliche Gegenprüfung vor der

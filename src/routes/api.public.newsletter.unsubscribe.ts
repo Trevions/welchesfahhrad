@@ -16,7 +16,7 @@ export const Route = createFileRoute("/api/public/newsletter/unsubscribe")({
       GET: async ({ request }) => {
         const url = new URL(request.url);
         const token = url.searchParams.get("token") ?? "";
-        const target = `https://radmap.de/newsletter/abmelden?token=${encodeURIComponent(token)}`;
+        const target = `https://welchesfahrrad.de/newsletter/abmelden?token=${encodeURIComponent(token)}`;
         return new Response(null, { status: 302, headers: { Location: target } });
       },
 

@@ -59,9 +59,9 @@ INSERT INTO public.articles (
 <p>Wer maximalen Komfort sucht und ein klassisches Trekking- oder Gravelbike fährt, kommt an der <strong>Cane Creek Thudbuster ST G4</strong> nicht vorbei. Pendler mit kleinerem Budget greifen zur <strong>Suntour NCX D</strong> — sie liefert 80 % des Komforts zu einem Drittel des Preises. Sportliche Gravel-Fahrer wählen die <strong>Redshift ShockStop PRO Race</strong>, deren 20 mm Federweg den Unterschied auf langen Schotterpassagen machen, ohne Watt zu kosten.</p>',
   'Ratgeber',
   'published',
-  'radmap.de Redaktion',
+  'welchesfahrrad.de Redaktion',
   '8 Min.',
-  'Gefederte Sattelstützen Test 2026 — Vergleich, Gewicht & Einbau | radmap.de',
+  'Gefederte Sattelstützen Test 2026 — Vergleich, Gewicht & Einbau | welchesfahrrad.de',
   'Die besten gefederten Sattelstützen 2026 im Vergleich: Cane Creek Thudbuster, Kinekt, Redshift & Suntour. Federwege, Gewichtslimits und Einbauanleitung.',
   'gefederte sattelstütze test, federstütze, suspension seatpost, cane creek thudbuster, kinekt, redshift shockstop, suntour ncx',
   now()

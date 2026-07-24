@@ -17,10 +17,10 @@ export const Route = createFileRoute("/ratgeber")({
   loader: ({ context }) => context.queryClient.ensureQueryData(articlesQuery),
   head: () => ({
     meta: [
-      { title: `${meta.title} | radmap.de` },
+      { title: `${meta.title} | welchesfahrrad.de` },
       { name: "description", content: meta.description },
       { name: "keywords", content: "Fahrrad Ratgeber, Bikefitting, Wartung, Sicherheit, Versicherung" },
-      { property: "og:title", content: `${meta.title} | radmap.de` },
+      { property: "og:title", content: `${meta.title} | welchesfahrrad.de` },
       { property: "og:description", content: meta.description },
       { property: "og:url", content: meta.slug },
       { property: "og:type", content: "website" },

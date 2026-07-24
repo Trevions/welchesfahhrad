@@ -19,9 +19,9 @@ import {
 //  - Unique constraint (issue_id, subscriber_id) prevents duplicate sends
 //  - Up to 3 send attempts per recipient; failures land in newsletter_deliveries.status='failed'
 
-const SITE = "https://radmap.de";
-const FROM_EMAIL = "Radmap.de <hallo@radmap.de>";
-const REPLY_TO = "support@radmap.de";
+const SITE = "https://welchesfahrrad.de";
+const FROM_EMAIL = "WelchesFahrrad.de <hallo@welchesfahrrad.de>";
+const REPLY_TO = "support@welchesfahrrad.de";
 
 function getBerlinHour(d: Date): number {
   const s = new Intl.DateTimeFormat("de-DE", {
@@ -75,7 +75,7 @@ async function sendOne(opts: {
         headers: {
           "List-Unsubscribe": `<${opts.oneClickUrl}>, <${opts.unsubUrl}>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-          "List-Id": "Radmap.de Wochenrückblick <updates.radmap.de>",
+          "List-Id": "WelchesFahrrad.de Wochenrückblick <updates.welchesfahrrad.de>",
           Precedence: "bulk",
           "X-Entity-Ref-ID": crypto.randomUUID(),
         },

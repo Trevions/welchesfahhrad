@@ -4,12 +4,12 @@ import { LegalPage, Section } from "@/components/LegalPage";
 export const Route = createFileRoute("/agb")({
   head: () => ({
     meta: [
-      { title: "AGB — radmap.de" },
-      { name: "description", content: "Allgemeine Geschäftsbedingungen für die Nutzung von radmap.de sowie für Werbe- und Kooperationsleistungen." },
-      { property: "og:title", content: "AGB — radmap.de" },
-      { property: "og:url", content: "https://radmap.de/agb" },
+      { title: "AGB — welchesfahrrad.de" },
+      { name: "description", content: "Allgemeine Geschäftsbedingungen für die Nutzung von welchesfahrrad.de sowie für Werbe- und Kooperationsleistungen." },
+      { property: "og:title", content: "AGB — welchesfahrrad.de" },
+      { property: "og:url", content: "https://welchesfahrrad.de/agb" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/agb" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/agb" }],
   }),
   component: AgbPage,
 });
@@ -19,7 +19,7 @@ function AgbPage() {
     <LegalPage
       eyebrow="Recht"
       title="Allgemeine Geschäftsbedingungen"
-      lead="Diese AGB regeln die Nutzung von radmap.de sowie die Erbringung von Werbe- und Kooperationsleistungen."
+      lead="Diese AGB regeln die Nutzung von welchesfahrrad.de sowie die Erbringung von Werbe- und Kooperationsleistungen."
       updated="13. Juni 2026"
     >
 
@@ -28,7 +28,7 @@ function AgbPage() {
       <Section title="§ 1 Geltungsbereich">
         <p>
           Diese Allgemeinen Geschäftsbedingungen gelten für die Nutzung der
-          Website radmap.de sowie für alle Vereinbarungen über
+          Website welchesfahrrad.de sowie für alle Vereinbarungen über
           Werbeleistungen, Kooperationen und Inhaltslizenzen zwischen dem
           im{" "}
           <Link to="/impressum" className="text-signal hover:underline">Impressum</Link>{" "}
@@ -38,7 +38,7 @@ function AgbPage() {
 
       <Section title="§ 2 Leistungen">
         <p>
-          radmap.de stellt redaktionelle Inhalte rund um Fahrräder, E-Bikes
+          welchesfahrrad.de stellt redaktionelle Inhalte rund um Fahrräder, E-Bikes
           und Radkultur kostenfrei bereit. Werbeleistungen und Kooperationen
           erfolgen auf Grundlage individueller Vereinbarungen und gemäß
           unserer{" "}
@@ -48,7 +48,7 @@ function AgbPage() {
 
       <Section title="§ 3 Nutzung der Website">
         <p>
-          Die Nutzung von radmap.de ist nur im Rahmen der geltenden Gesetze
+          Die Nutzung von welchesfahrrad.de ist nur im Rahmen der geltenden Gesetze
           und dieser AGB zulässig. Eine missbräuchliche oder
           rechts­widrige Nutzung (z. B. automatisiertes Auslesen, Umgehung
           technischer Schutz­maßnahmen, Verbreitung rechtswidriger Inhalte)
@@ -58,7 +58,7 @@ function AgbPage() {
 
       <Section title="§ 4 Urheberrecht">
         <p>
-          Alle auf radmap.de veröffentlichten Inhalte (Texte, Bilder, Grafiken,
+          Alle auf welchesfahrrad.de veröffentlichten Inhalte (Texte, Bilder, Grafiken,
           Layouts) sind urheberrechtlich geschützt. Eine Weiterverwendung
           außerhalb der gesetzlichen Schranken bedarf der vorherigen
           schriftlichen Zustimmung.

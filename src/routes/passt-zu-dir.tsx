@@ -17,7 +17,7 @@ const articlesQuery = queryOptions({
 export const Route = createFileRoute("/passt-zu-dir")({
   head: () => ({
     meta: [
-      { title: "Für dich passend — radmap.de" },
+      { title: "Für dich passend — welchesfahrrad.de" },
       {
         name: "description",
         content:

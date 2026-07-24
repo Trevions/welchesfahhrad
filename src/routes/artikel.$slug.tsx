@@ -9,7 +9,7 @@ import { ReportArticleDialog } from "@/components/ReportArticleDialog";
 import { markArticleRead } from "@/lib/read-articles";
 
 
-const SITE = "https://radmap.de";
+const SITE = "https://welchesfahrrad.de";
 const abs = (u: string) => (/^https?:\/\//i.test(u) ? u : SITE + (u.startsWith("/") ? u : "/" + u));
 
 const articleQuery = (slug: string) =>
@@ -71,12 +71,12 @@ export const Route = createFileRoute("/artikel/$slug")({
       ...(seo?.seo_keywords ? { keywords: seo.seo_keywords } : {}),
       author: {
         "@type": "Organization",
-        name: "Redaktion radmap.de",
+        name: "Redaktion welchesfahrrad.de",
         url: `${SITE}/redaktion`,
       },
       publisher: {
         "@type": "Organization",
-        name: "radmap.de",
+        name: "welchesfahrrad.de",
         url: SITE,
         logo: {
           "@type": "ImageObject",
@@ -85,7 +85,7 @@ export const Route = createFileRoute("/artikel/$slug")({
           height: 192,
         },
       },
-      isPartOf: { "@type": "WebSite", "@id": `${SITE}#website`, name: "radmap.de", url: SITE },
+      isPartOf: { "@type": "WebSite", "@id": `${SITE}#website`, name: "welchesfahrrad.de", url: SITE },
       speakable: {
         "@type": "SpeakableSpecification",
         cssSelector: ["h1", ".drop-cap"],
@@ -104,15 +104,15 @@ export const Route = createFileRoute("/artikel/$slug")({
 
     return {
       meta: [
-        { title: `${title} | radmap.de` },
+        { title: `${title} | welchesfahrrad.de` },
         { name: "description", content: description },
         ...(seo?.seo_keywords ? [{ name: "keywords", content: seo.seo_keywords }] : []),
-        { name: "author", content: "Redaktion radmap.de" },
+        { name: "author", content: "Redaktion welchesfahrrad.de" },
 
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "article" },
-        { property: "og:site_name", content: "radmap.de" },
+        { property: "og:site_name", content: "welchesfahrrad.de" },
         { property: "og:locale", content: "de_DE" },
         { property: "og:image", content: image },
         { property: "og:image:alt", content: a.title },
@@ -123,7 +123,7 @@ export const Route = createFileRoute("/artikel/$slug")({
         ...(modified ? [{ property: "article:modified_time", content: modified }] : []),
         { property: "article:section", content: a.category },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:site", content: "@radmap_de" },
+        { name: "twitter:site", content: "@welchesfahrrad_de" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
         { name: "twitter:image", content: image },
@@ -244,7 +244,7 @@ function ArticlePage() {
         </p>
 
         <div className="mt-10 flex flex-wrap items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground">
-          <span className="text-foreground font-semibold">Von Redaktion radmap.de</span>
+          <span className="text-foreground font-semibold">Von Redaktion welchesfahrrad.de</span>
           <span className="h-px w-3 bg-muted-foreground/40" />
           <span>{a.date}</span>
           {data.seo?.updated_at && data.seo?.published_at && data.seo.updated_at.slice(0, 10) !== data.seo.published_at.slice(0, 10) && (
@@ -306,7 +306,7 @@ function ArticlePage() {
             <div className="sticky top-24 space-y-6">
               <div>
                 <div className="eyebrow-sm text-muted-foreground">Autor</div>
-                <div className="mt-2 font-display text-base font-bold">Redaktion radmap.de</div>
+                <div className="mt-2 font-display text-base font-bold">Redaktion welchesfahrrad.de</div>
               </div>
               <div>
                 <div className="eyebrow-sm text-muted-foreground">Veröffentlicht</div>

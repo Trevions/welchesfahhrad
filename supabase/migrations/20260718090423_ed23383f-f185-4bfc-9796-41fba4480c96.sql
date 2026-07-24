@@ -8,7 +8,7 @@ SECURITY DEFINER
 SET search_path = public, extensions
 AS $$
 DECLARE
-  hook_url TEXT := 'https://radmap.de/api/public/hooks/lexikon-changed';
+  hook_url TEXT := 'https://welchesfahrrad.de/api/public/hooks/lexikon-changed';
   payload JSONB;
   event_kind TEXT;
   target_slug TEXT;

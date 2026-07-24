@@ -41,16 +41,16 @@ export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(homeQuery),
   head: () => ({
     meta: [
-      { title: "Radmap.de – Finde das perfekte Fahrrad. Vergleiche Tausende Modelle." },
+      { title: "WelchesFahrrad.de – Finde das perfekte Fahrrad. Vergleiche Tausende Modelle." },
       {
         name: "description",
         content:
           "Deutschlands größtes Fahrrad-Vergleichsportal. Vergleiche Tausende Fahrräder, E-Bikes und Marken. Finde mit wenigen Klicks das Fahrrad, das zu dir passt.",
       },
-      { property: "og:title", content: "Radmap.de – Finde das perfekte Fahrrad" },
+      { property: "og:title", content: "WelchesFahrrad.de – Finde das perfekte Fahrrad" },
       {
         property: "og:description",
-        content: "Vergleiche Tausende Fahrräder, E-Bikes und Marken auf Radmap.de.",
+        content: "Vergleiche Tausende Fahrräder, E-Bikes und Marken auf WelchesFahrrad.de.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
@@ -65,11 +65,11 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: "Radmap.de",
-          url: "https://radmap.de/",
+          name: "WelchesFahrrad.de",
+          url: "https://welchesfahrrad.de/",
           potentialAction: {
             "@type": "SearchAction",
-            target: "https://radmap.de/fahrraeder?q={search_term_string}",
+            target: "https://welchesfahrrad.de/fahrraeder?q={search_term_string}",
             "query-input": "required name=search_term_string",
           },
         }),
@@ -79,9 +79,9 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "Radmap.de",
-          url: "https://radmap.de/",
-          logo: "https://radmap.de/icons/icon-192.png",
+          name: "WelchesFahrrad.de",
+          url: "https://welchesfahrrad.de/",
+          logo: "https://welchesfahrrad.de/icons/icon-192.png",
           description:
             "Deutschlands Fahrrad- und E-Bike-Vergleichsplattform.",
         }),

@@ -10,7 +10,7 @@ type Props = {
   className?: string;
 };
 
-const SITE = "https://radmap.de";
+const SITE = "https://welchesfahrrad.de";
 
 function absolute(url: string) {
   if (/^https?:\/\//i.test(url)) return url;

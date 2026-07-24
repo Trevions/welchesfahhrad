@@ -85,7 +85,7 @@ function SignInPanel() {
         <div className="relative space-y-6 mt-auto">
           <div className="text-xs uppercase tracking-[0.4em] text-[#FF6A1A]">Redaktion</div>
           <h1 className="font-display text-6xl font-black italic leading-[0.9]">
-            Radmap. <span className="text-zinc-500">Cockpit.</span>
+            Welches Fahrrad. <span className="text-zinc-500">Cockpit.</span>
           </h1>
           <p className="text-zinc-400 max-w-md font-light">
             Verwalten Sie Artikel, Medien und Autoren — alles an einem Ort,
@@ -93,7 +93,7 @@ function SignInPanel() {
           </p>
         </div>
         <div className="relative text-xs text-zinc-600 uppercase tracking-[0.3em]">
-          radmap.de — Ausgabe 2026
+          welchesfahrrad.de — Ausgabe 2026
         </div>
       </div>
 
@@ -127,7 +127,7 @@ function SignInPanel() {
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">E-Mail</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="redaktion@radmap.de" />
+              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="redaktion@welchesfahrrad.de" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Passwort</Label>

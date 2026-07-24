@@ -2,8 +2,8 @@
 // Reuses the same keys as the bike-weather hook, so once the user grants
 // location for the weather widget, all other tools reuse it silently.
 
-const CONSENT_KEY = "radmap-geo-consent";
-const COORDS_KEY = "radmap-geo-coords";
+const CONSENT_KEY = "welchesfahrrad-geo-consent";
+const COORDS_KEY = "welchesfahrrad-geo-coords";
 const MAX_AGE_MS = 60 * 60 * 1000; // 1 hour
 
 export type GeoCoords = { lat: number; lon: number; t?: number };

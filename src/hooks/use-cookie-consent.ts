@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 
 export type ConsentChoice = "all" | "essential" | null;
 
-const STORAGE_KEY = "radmap:cookie-consent:v1";
+const STORAGE_KEY = "welchesfahrrad:cookie-consent:v1";
 
 interface ConsentState {
   choice: ConsentChoice;

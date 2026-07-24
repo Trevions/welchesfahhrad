@@ -4,12 +4,12 @@ import { LegalPage, Section, SubSection, InfoBox } from "@/components/LegalPage"
 export const Route = createFileRoute("/datenschutz")({
   head: () => ({
     meta: [
-      { title: "Datenschutzerklärung — radmap.de" },
-      { name: "description", content: "Datenschutzerklärung nach DSGVO (Verordnung (EU) 2016/679), BDSG, TTDSG und bulgarischem ZZLD für radmap.de." },
-      { property: "og:title", content: "Datenschutzerklärung — radmap.de" },
-      { property: "og:url", content: "https://radmap.de/datenschutz" },
+      { title: "Datenschutzerklärung — welchesfahrrad.de" },
+      { name: "description", content: "Datenschutzerklärung nach DSGVO (Verordnung (EU) 2016/679), BDSG, TTDSG und bulgarischem ZZLD für welchesfahrrad.de." },
+      { property: "og:title", content: "Datenschutzerklärung — welchesfahrrad.de" },
+      { property: "og:url", content: "https://welchesfahrrad.de/datenschutz" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/datenschutz" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/datenschutz" }],
   }),
   component: PrivacyPage,
 });
@@ -30,7 +30,7 @@ function PrivacyPage() {
     <LegalPage
       eyebrow="Recht"
       title="Datenschutzerklärung"
-      lead="Diese Erklärung informiert dich nach Art. 13 und 14 DSGVO über die Verarbeitung personenbezogener Daten auf radmap.de — auf Grundlage der Verordnung (EU) 2016/679 (DSGVO), des deutschen Telekommunikation-Digitale-Dienste-Datenschutz-Gesetzes (TDDDG, vormals TTDSG), des Bundesdatenschutz­gesetzes (BDSG) sowie des bulgarischen Gesetzes zum Schutz personenbezogener Daten (ZZLD)."
+      lead="Diese Erklärung informiert dich nach Art. 13 und 14 DSGVO über die Verarbeitung personenbezogener Daten auf welchesfahrrad.de — auf Grundlage der Verordnung (EU) 2016/679 (DSGVO), des deutschen Telekommunikation-Digitale-Dienste-Datenschutz-Gesetzes (TDDDG, vormals TTDSG), des Bundesdatenschutz­gesetzes (BDSG) sowie des bulgarischen Gesetzes zum Schutz personenbezogener Daten (ZZLD)."
       updated="13. Juni 2026"
     >
       <InfoBox tone="signal">
@@ -53,8 +53,8 @@ function PrivacyPage() {
           6400 Dimitrovgrad<br />
           Bulgarien<br />
           E-Mail:{" "}
-          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
-            support@radmap.de
+          <a href="mailto:support@welchesfahrrad.de" className="text-signal hover:underline">
+            support@welchesfahrrad.de
           </a>
         </p>
         <p className="text-sm text-muted-foreground">
@@ -91,7 +91,7 @@ function PrivacyPage() {
 
       <Section title="3. Bereitstellung der Website &amp; Server-Logfiles">
         <p>
-          Bei jedem Aufruf von radmap.de übermittelt dein Browser automatisch
+          Bei jedem Aufruf von welchesfahrrad.de übermittelt dein Browser automatisch
           technische Informationen, die der Provider in sogenannten Logfiles
           speichert. Erfasst werden:
         </p>
@@ -116,7 +116,7 @@ function PrivacyPage() {
 
       <Section title="4. Cookies, lokaler Speicher und vergleichbare Technologien">
         <p>
-          radmap.de setzt <strong className="text-foreground">keine
+          welchesfahrrad.de setzt <strong className="text-foreground">keine
           Tracking-Cookies und keine Analyse- oder Werbe-Cookies von
           Drittanbietern</strong> ein. Wir verwenden ausschließlich technisch
           notwendigen lokalen Speicher (<code className="px-1 bg-muted rounded-sm">localStorage</code>),
@@ -232,8 +232,8 @@ function PrivacyPage() {
         </ul>
         <p>
           Zur Ausübung deiner Rechte genügt eine formlose Nachricht an{" "}
-          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
-            support@radmap.de
+          <a href="mailto:support@welchesfahrrad.de" className="text-signal hover:underline">
+            support@welchesfahrrad.de
           </a>.
         </p>
       </Section>
