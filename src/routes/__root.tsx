@@ -141,7 +141,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "WebSite",
           "@id": "https://welchesfahrrad.de#website",
-          name: "welchesfahrrad.de",
+          name: "WelchesFahrrad.de",
           alternateName: "Welches Fahrrad",
           url: "https://welchesfahrrad.de",
           inLanguage: "de-DE",
@@ -162,7 +162,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "Organization",
           "@id": "https://welchesfahrrad.de#organization",
-          name: "welchesfahrrad.de",
+          name: "WelchesFahrrad.de",
           url: "https://welchesfahrrad.de",
           logo: {
             "@type": "ImageObject",
