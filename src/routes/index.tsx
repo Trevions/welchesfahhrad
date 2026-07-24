@@ -284,7 +284,7 @@ function CategoryCard({ cat }: { cat: Cat }) {
   return (
     <Link
       to="/fahrraeder"
-      className="group relative flex flex-col justify-between rounded-3xl border border-border bg-card p-5 md:p-6 aspect-[4/5] overflow-hidden hover:border-foreground hover:shadow-[0_20px_50px_-25px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 transition-all"
+      className="group relative flex flex-col justify-between rounded-2xl border border-border bg-card p-4 md:p-5 aspect-[5/4] md:aspect-[4/5] overflow-hidden hover:border-foreground hover:shadow-[0_20px_50px_-25px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 transition-all"
     >
       <div
         aria-hidden
@@ -296,22 +296,28 @@ function CategoryCard({ cat }: { cat: Cat }) {
       />
       <div className="flex items-center justify-between">
         <span
-          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
+          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
             cat.ebike
               ? "bg-signal text-signal-foreground"
               : "border border-border bg-background text-foreground"
           }`}
         >
-          {cat.ebike ? <Zap className="h-3 w-3" /> : <Bike className="h-3 w-3" />}
+          {cat.ebike ? (
+            <Zap className="h-3 w-3" />
+          ) : (
+            <span className="inline-block group-hover:animate-wheel-spin-fast">
+              <Bike className="h-3 w-3" />
+            </span>
+          )}
           {cat.ebike ? "E-Bike" : "Fahrrad"}
         </span>
         <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
       </div>
       <div>
-        <h3 className="font-display text-2xl md:text-3xl font-bold leading-tight tracking-tight">
+        <h3 className="font-display text-lg md:text-2xl font-bold leading-tight tracking-tight">
           {cat.name}
         </h3>
-        <p className="mt-1 text-xs text-muted-foreground">{cat.hint}</p>
+        <p className="mt-0.5 text-[11px] md:text-xs text-muted-foreground">{cat.hint}</p>
       </div>
     </Link>
   );
