@@ -92,9 +92,9 @@
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.14 0 0 / 0.10);
   --input: oklch(0.14 0 0 / 0.08);
-  --ring: #c8ff00;
-  --signal: #c8ff00;                              /* Lime green accent */
-  --signal-foreground: #050505;                   /* Black on lime */
+  --ring: #3d5afe;
+  --signal: #3d5afe;                              /* Electric cobalt accent */
+  --signal-foreground: #ffffff;                   /* White on cobalt */
   --surface: oklch(1 0 0 / 0.7);
   --surface-elevated: oklch(1 0 0 / 0.92);
 }
