@@ -335,6 +335,18 @@ function Home() {
   }, [data.bikes, hasProfile, profile]);
 
   const [q, setQ] = useState("");
+  const [riding, setRiding] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (riding) return;
+    setRiding(true);
+    window.setTimeout(() => {
+      const target = q.trim() ? `/fahrraeder?q=${encodeURIComponent(q.trim())}` : "/fahrraeder";
+      navigate({ to: target });
+    }, 900);
+  };
 
   const ratgeberArticles = useMemo(
     () => data.articles.filter((a: any) => a.category === "Ratgeber").slice(0, 6),
@@ -349,7 +361,7 @@ function Home() {
       {/* ============== HERO ============== */}
       <section
         aria-labelledby="hero-heading"
-        className="relative bg-background pt-8 md:pt-16 pb-10 md:pb-16"
+        className="relative bg-background pt-8 md:pt-14 pb-8 md:pb-12"
       >
         <div className="mx-auto max-w-[1280px] px-4 md:px-8">
           {/* Trust ribbon */}
@@ -368,7 +380,7 @@ function Home() {
 
           <h1
             id="hero-heading"
-            className="mt-5 font-display font-black tracking-tight leading-[1] text-[clamp(2.5rem,7.5vw,5.5rem)]"
+            className="mt-5 font-display font-black tracking-tight leading-[0.95] text-[clamp(2.25rem,6.8vw,4.75rem)]"
           >
             Finde das perfekte
             <span className="block">
@@ -376,14 +388,15 @@ function Home() {
                 <span className="relative z-10 px-1">Fahrrad</span>
                 <span
                   aria-hidden
-                  className="absolute inset-x-0 bottom-1 md:bottom-2 h-3 md:h-5 bg-signal -z-0"
+                  className="absolute inset-x-0 bottom-1 md:bottom-2 h-3 md:h-4 bg-signal -z-0"
                 />
               </span>
               .
             </span>
           </h1>
+          <div aria-hidden className="mt-4 h-[2px] w-32 md:w-48 bg-road-dash text-foreground/40 animate-road-dash" />
 
-          <p className="mt-5 max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-4 max-w-2xl text-base md:text-lg text-muted-foreground leading-relaxed">
             Vergleiche Tausende Fahrräder, E-Bikes und Marken. Finde mit wenigen
             Klicks das Fahrrad, das wirklich zu dir passt.
           </p>
@@ -392,14 +405,14 @@ function Home() {
           <form
             role="search"
             aria-label="Fahrrad-Suche"
-            className="mt-8 flex w-full items-stretch rounded-full border border-border bg-card shadow-[0_20px_50px_-25px_rgba(0,0,0,0.25)] overflow-hidden focus-within:border-foreground focus-within:shadow-[0_25px_60px_-25px_rgba(0,0,0,0.35)] transition-shadow"
-            onSubmit={(e) => e.preventDefault()}
+            className="group/search relative mt-7 flex w-full items-stretch rounded-full border border-border bg-card shadow-[0_20px_50px_-25px_rgba(0,0,0,0.25)] overflow-hidden focus-within:border-foreground focus-within:shadow-[0_25px_60px_-25px_rgba(0,0,0,0.35)] transition-shadow"
+            onSubmit={handleSearch}
           >
             <label htmlFor="hero-search" className="sr-only">
               Nach Fahrrad, Marke oder Modell suchen
             </label>
-            <span className="flex items-center pl-5 pr-2 text-muted-foreground">
-              <Search className="h-5 w-5" />
+            <span className="flex items-center pl-5 pr-2 text-foreground/70 group-focus-within/search:text-foreground transition-colors">
+              <BikeIcon spin className="h-6 w-9" />
             </span>
             <input
               id="hero-search"
@@ -410,17 +423,33 @@ function Home() {
               className="flex-1 min-w-0 bg-transparent py-4 md:py-5 text-base outline-none placeholder:text-muted-foreground/70"
               autoComplete="off"
             />
-            <Link
-              to="/fahrraeder"
-              className="hidden sm:inline-flex items-center gap-2 bg-foreground text-background px-6 md:px-8 my-1.5 mr-1.5 rounded-full text-sm font-bold hover:bg-signal hover:text-signal-foreground transition-colors"
+            <button
+              type="submit"
+              aria-label="Suchen"
+              className="group/btn inline-flex items-center gap-2 bg-foreground text-background px-5 md:px-7 my-1.5 mr-1.5 rounded-full text-sm font-bold hover:bg-signal hover:text-signal-foreground transition-colors"
             >
-              Suchen
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+              <BikeIcon spin fast className="h-5 w-8 -ml-1" />
+              <span className="hidden sm:inline">Suchen</span>
+            </button>
+            {/* Ride-across animation on submit */}
+            {riding && (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute left-0 top-1/2 text-foreground animate-bike-ride"
+              >
+                <BikeIcon spin fast className="h-7 w-11" />
+              </span>
+            )}
+            {riding && (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-6 bottom-2 h-[2px] bg-road-dash text-foreground/40 animate-road-dash"
+              />
+            )}
           </form>
 
           {/* Stats row */}
-          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
             <span>
               <span className="font-bold text-foreground tabular-nums">
                 {totalBikes.toLocaleString("de-DE")}
@@ -440,10 +469,10 @@ function Home() {
           </div>
 
           {/* Two hero category cards */}
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
             <Link
               to="/fahrraeder"
-              className="group relative flex flex-col justify-between rounded-3xl overflow-hidden border border-border bg-card min-h-[320px] md:min-h-[380px] hover:shadow-[0_30px_80px_-30px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all"
+              className="group relative flex flex-col justify-between rounded-3xl overflow-hidden border border-border bg-card min-h-[240px] md:min-h-[300px] hover:shadow-[0_30px_80px_-30px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all"
             >
               <img
                 src={heroBike}
@@ -459,19 +488,19 @@ function Home() {
                 aria-hidden
                 className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent"
               />
-              <div className="relative p-6 md:p-8">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur text-foreground text-[10px] font-bold uppercase tracking-wider px-2.5 py-1">
-                  <Bike className="h-3 w-3" /> Kategorie
+              <div className="relative p-5 md:p-7">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur text-foreground text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 group-hover:bg-white transition-colors">
+                  <span className="inline-block group-hover:animate-wheel-spin-fast"><Bike className="h-3 w-3" /></span> Kategorie
                 </span>
               </div>
-              <div className="relative p-6 md:p-8 text-white">
-                <h2 className="font-display text-3xl md:text-5xl font-black leading-none tracking-tight">
+              <div className="relative p-5 md:p-7 text-white">
+                <h2 className="font-display text-2xl md:text-4xl font-black leading-none tracking-tight">
                   Fahrräder
                 </h2>
-                <p className="mt-2 text-sm md:text-base text-white/85 max-w-md">
+                <p className="mt-2 text-xs md:text-sm text-white/85 max-w-md">
                   MTB, Gravel, Rennrad, City, Trekking, Kinder & mehr.
                 </p>
-                <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-signal text-signal-foreground text-sm font-bold px-5 py-3 group-hover:gap-3 transition-all">
+                <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-signal text-signal-foreground text-sm font-bold px-4 py-2.5 group-hover:gap-3 transition-all">
                   Alle Fahrräder
                   <ArrowRight className="h-4 w-4" />
                 </span>
@@ -480,7 +509,7 @@ function Home() {
 
             <Link
               to="/e-bikes"
-              className="group relative flex flex-col justify-between rounded-3xl overflow-hidden border border-border bg-card min-h-[320px] md:min-h-[380px] hover:shadow-[0_30px_80px_-30px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all"
+              className="group relative flex flex-col justify-between rounded-3xl overflow-hidden border border-border bg-card min-h-[240px] md:min-h-[300px] hover:shadow-[0_30px_80px_-30px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all"
             >
               <img
                 src={ebikeImg}
@@ -496,19 +525,19 @@ function Home() {
                 aria-hidden
                 className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent"
               />
-              <div className="relative p-6 md:p-8">
+              <div className="relative p-5 md:p-7">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-signal text-signal-foreground text-[10px] font-bold uppercase tracking-wider px-2.5 py-1">
                   <Zap className="h-3 w-3" /> E-Bike
                 </span>
               </div>
-              <div className="relative p-6 md:p-8 text-white">
-                <h2 className="font-display text-3xl md:text-5xl font-black leading-none tracking-tight">
+              <div className="relative p-5 md:p-7 text-white">
+                <h2 className="font-display text-2xl md:text-4xl font-black leading-none tracking-tight">
                   E-Bikes
                 </h2>
-                <p className="mt-2 text-sm md:text-base text-white/85 max-w-md">
+                <p className="mt-2 text-xs md:text-sm text-white/85 max-w-md">
                   Bosch, Shimano & Co. – vom City-Pedelec bis Premium-E-MTB.
                 </p>
-                <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-white text-foreground text-sm font-bold px-5 py-3 group-hover:gap-3 transition-all">
+                <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-white text-foreground text-sm font-bold px-4 py-2.5 group-hover:gap-3 transition-all">
                   Alle E-Bikes
                   <ArrowRight className="h-4 w-4" />
                 </span>
@@ -519,14 +548,14 @@ function Home() {
       </section>
 
       {/* ============== POPULAR CATEGORIES ============== */}
-      <section aria-labelledby="cats-heading" className="py-16 md:py-24">
+      <section aria-labelledby="cats-heading" className="py-12 md:py-16">
         <div className="mx-auto max-w-[1280px] px-4 md:px-8">
-          <div className="flex flex-wrap items-end justify-between gap-4 mb-8 md:mb-12">
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-6 md:mb-10">
             <div>
               <span className="eyebrow text-muted-foreground">Kategorien</span>
               <h2
                 id="cats-heading"
-                className="mt-2 font-display text-3xl md:text-5xl font-black tracking-tight"
+                className="mt-2 font-display text-2xl md:text-4xl font-black tracking-tight"
               >
                 Beliebte Kategorien
               </h2>
@@ -538,7 +567,7 @@ function Home() {
               Alle Kategorien <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {POPULAR_CATEGORIES.map((c) => (
               <CategoryCard key={c.slug} cat={c} />
             ))}
@@ -547,34 +576,34 @@ function Home() {
       </section>
 
       {/* ============== POPULAR BRANDS ============== */}
-      <section aria-labelledby="brands-heading" className="py-16 md:py-24 bg-secondary/50">
+      <section aria-labelledby="brands-heading" className="py-12 md:py-16 bg-secondary/50">
         <div className="mx-auto max-w-[1280px] px-4 md:px-8">
-          <div className="flex flex-wrap items-end justify-between gap-4 mb-8 md:mb-12">
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-6 md:mb-10">
             <div>
               <span className="eyebrow text-muted-foreground">Marken</span>
               <h2
                 id="brands-heading"
-                className="mt-2 font-display text-3xl md:text-5xl font-black tracking-tight"
+                className="mt-2 font-display text-2xl md:text-4xl font-black tracking-tight"
               >
                 Beliebte Marken
               </h2>
-              <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+              <p className="mt-2 max-w-xl text-sm text-muted-foreground">
                 Von Premium-Herstellern bis zu Direct-to-Consumer-Marken – alle
                 führenden Namen an einem Ort.
               </p>
             </div>
           </div>
           <ul
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4"
+            className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2.5 md:gap-3"
             role="list"
           >
             {POPULAR_BRANDS.map((b) => (
               <li key={b}>
                 <Link
                   to="/fahrraeder"
-                  className="group flex items-center justify-center rounded-2xl bg-card border border-border h-20 md:h-24 px-4 hover:border-foreground hover:shadow-[0_15px_40px_-25px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all"
+                  className="group flex items-center justify-center rounded-xl bg-card border border-border h-14 md:h-16 px-3 hover:border-foreground hover:shadow-[0_15px_40px_-25px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all"
                 >
-                  <span className="font-display text-xl md:text-2xl font-bold tracking-tight group-hover:text-signal transition-colors">
+                  <span className="font-display text-sm md:text-base font-bold tracking-tight group-hover:text-signal transition-colors text-center truncate">
                     {b}
                   </span>
                 </Link>
@@ -586,18 +615,18 @@ function Home() {
 
       {/* ============== TOP FAHRRÄDER ============== */}
       {topBikes.length > 0 && (
-        <section aria-labelledby="top-heading" className="py-16 md:py-24">
+        <section aria-labelledby="top-heading" className="py-12 md:py-16">
           <div className="mx-auto max-w-[1280px] px-4 md:px-8">
-            <div className="flex flex-wrap items-end justify-between gap-4 mb-8 md:mb-12">
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-6 md:mb-10">
               <div>
                 <span className="eyebrow text-muted-foreground">Bestenliste</span>
                 <h2
                   id="top-heading"
-                  className="mt-2 font-display text-3xl md:text-5xl font-black tracking-tight"
+                  className="mt-2 font-display text-2xl md:text-4xl font-black tracking-tight"
                 >
                   Top Fahrräder
                 </h2>
-                <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+                <p className="mt-2 max-w-xl text-sm text-muted-foreground">
                   {hasProfile
                     ? "Sortiert nach deinem RadProfil."
                     : "Ausgewählte Modelle mit den besten Bewertungen und Testergebnissen."}
@@ -611,7 +640,7 @@ function Home() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               {topBikes.map(({ bike, match }) => (
                 <BikeProductCard key={bike.id} bike={bike} match={match} />
               ))}
@@ -621,9 +650,9 @@ function Home() {
       )}
 
       {/* ============== BIKE FINDER CTA ============== */}
-      <section aria-labelledby="finder-heading" className="py-16 md:py-24">
+      <section aria-labelledby="finder-heading" className="py-12 md:py-16">
         <div className="mx-auto max-w-[1280px] px-4 md:px-8">
-          <div className="relative overflow-hidden rounded-3xl bg-foreground text-background p-8 md:p-16">
+          <div className="relative overflow-hidden rounded-3xl bg-foreground text-background p-7 md:p-12">
             <div
               aria-hidden
               className="absolute -top-24 -right-24 h-96 w-96 rounded-full blur-3xl opacity-30"
@@ -632,6 +661,9 @@ function Home() {
                   "radial-gradient(closest-side, var(--signal), transparent 70%)",
               }}
             />
+            <span aria-hidden className="pointer-events-none absolute -left-8 bottom-6 text-signal/60">
+              <BikeIcon spin fast className="h-10 w-16" />
+            </span>
             <div className="relative grid md:grid-cols-[1fr_auto] items-center gap-8">
               <div>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-signal text-signal-foreground text-[10px] font-black uppercase tracking-wider px-2.5 py-1">
@@ -639,19 +671,20 @@ function Home() {
                 </span>
                 <h2
                   id="finder-heading"
-                  className="mt-4 font-display text-3xl md:text-5xl font-black tracking-tight leading-[1.05]"
+                  className="mt-4 font-display text-2xl md:text-4xl font-black tracking-tight leading-[1.05]"
                 >
                   Welches Fahrrad passt zu dir?
                 </h2>
-                <p className="mt-4 max-w-xl text-base md:text-lg text-background/75 leading-relaxed">
+                <p className="mt-3 max-w-xl text-sm md:text-base text-background/75 leading-relaxed">
                   Beantworte ein paar kurze Fragen zu Fahrstil, Budget und Körpergröße
                   – wir finden dein perfektes Fahrrad in unter 60 Sekunden.
                 </p>
               </div>
               <Link
                 to="/mein-rad"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-signal text-signal-foreground px-8 py-4 text-base font-black uppercase tracking-wider hover:gap-3 transition-all shadow-[0_20px_50px_-15px_rgba(200,255,0,0.5)]"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-signal text-signal-foreground px-7 py-3.5 text-sm md:text-base font-black uppercase tracking-wider hover:gap-3 transition-all shadow-[0_20px_50px_-15px_color-mix(in_oklab,var(--signal)_60%,transparent)]"
               >
+                <span className="group-hover:animate-wheel-spin-fast inline-block"><BikeIcon className="h-4 w-6" /></span>
                 Jetzt Fahrrad finden
                 <ArrowRight className="h-5 w-5" />
               </Link>
@@ -661,14 +694,14 @@ function Home() {
       </section>
 
       {/* ============== RATGEBER ============== */}
-      <section aria-labelledby="guide-heading" className="py-16 md:py-24 bg-secondary/50">
+      <section aria-labelledby="guide-heading" className="py-12 md:py-16 bg-secondary/50">
         <div className="mx-auto max-w-[1280px] px-4 md:px-8">
-          <div className="flex flex-wrap items-end justify-between gap-4 mb-8 md:mb-12">
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-6 md:mb-10">
             <div>
               <span className="eyebrow text-muted-foreground">Ratgeber</span>
               <h2
                 id="guide-heading"
-                className="mt-2 font-display text-3xl md:text-5xl font-black tracking-tight"
+                className="mt-2 font-display text-2xl md:text-4xl font-black tracking-tight"
               >
                 Aktuelle Kaufberatung
               </h2>
@@ -681,7 +714,7 @@ function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {(ratgeberArticles.length >= 6
               ? ratgeberArticles.map((a: any, i) => ({
                   key: a.slug,
@@ -705,9 +738,9 @@ function Home() {
                 <Link
                   key={item.key}
                   to={item.href as any}
-                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card hover:shadow-[0_30px_70px_-30px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card hover:shadow-[0_30px_70px_-30px_rgba(0,0,0,0.35)] hover:-translate-y-0.5 transition-all"
                 >
-                  <div className="relative aspect-[16/9] overflow-hidden">
+                  <div className="relative aspect-[16/10] overflow-hidden">
                     <img
                       src={item.image}
                       alt={item.title}
@@ -725,11 +758,11 @@ function Home() {
                       <Icon className="h-3 w-3" /> {item.tag}
                     </span>
                   </div>
-                  <div className="p-6">
-                    <h3 className="font-display text-xl md:text-2xl font-bold leading-tight tracking-tight line-clamp-2 group-hover:text-signal transition-colors">
+                  <div className="p-5">
+                    <h3 className="font-display text-lg md:text-xl font-bold leading-tight tracking-tight line-clamp-2 group-hover:text-signal transition-colors">
                       {item.title}
                     </h3>
-                    <span className="mt-3 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">
+                    <span className="mt-2 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">
                       Lesen <ArrowRight className="h-3 w-3" />
                     </span>
                   </div>
