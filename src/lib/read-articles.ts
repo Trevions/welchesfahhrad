@@ -1,7 +1,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-const STORAGE_KEY = "radmap:read:v1";
-const EVENT = "radmap:read-changed";
+const STORAGE_KEY = "welchesfahrrad:read:v1";
+const EVENT = "welchesfahrrad:read-changed";
 
 type ReadMap = Record<string, number>; // slug -> timestamp
 

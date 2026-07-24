@@ -6,8 +6,8 @@ import { articleImageUrl } from "@/lib/article-image-url";
 export const Route = createFileRoute("/favoriten")({
   head: () => ({
     meta: [
-      { title: "Favoriten | radmap.de" },
-      { name: "description", content: "Deine gespeicherten Fahrräder auf radmap.de." },
+      { title: "Favoriten | welchesfahrrad.de" },
+      { name: "description", content: "Deine gespeicherten Fahrräder auf welchesfahrrad.de." },
       { name: "robots", content: "noindex" },
     ],
   }),

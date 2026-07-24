@@ -11,19 +11,19 @@ import { Input } from "@/components/ui/input";
 export const Route = createFileRoute("/vergleich")({
   head: () => ({
     meta: [
-      { title: "Fahrrad-Vergleich — bis zu 4 Räder direkt vergleichen | radmap.de" },
+      { title: "Fahrrad-Vergleich — bis zu 4 Räder direkt vergleichen | welchesfahrrad.de" },
       {
         name: "description",
         content:
           "Vergleiche bis zu vier Fahrräder Seite-an-Seite: Geometrie, Antrieb, E-Bike-System, Reichweite, Preis und Bewertung.",
       },
-      { property: "og:title", content: "Fahrrad-Vergleich | radmap.de" },
+      { property: "og:title", content: "Fahrrad-Vergleich | welchesfahrrad.de" },
       {
         property: "og:description",
         content: "Bis zu 4 Räder direkt vergleichen — mit Bestwert-Hervorhebung pro Merkmal.",
       },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/vergleich" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/vergleich" }],
   }),
   component: ComparePage,
 });
@@ -33,10 +33,10 @@ function resolveImage(url: string | null | undefined): string {
   const v = (url ?? "").trim();
   if (!v) return "";
   if (v.startsWith("http://") || v.startsWith("https://")) return articleImageUrl(v) || v;
-  if (v.startsWith("/")) return `https://radmap.de${v}`;
+  if (v.startsWith("/")) return `https://welchesfahrrad.de${v}`;
   const proxied = articleImageUrl(v);
   if (proxied) return proxied;
-  return `https://radmap.de/${v}`;
+  return `https://welchesfahrrad.de/${v}`;
 }
 
 /* ─────────────────── page ─────────────────── */

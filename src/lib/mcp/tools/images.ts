@@ -16,7 +16,7 @@ export const uploadImage = defineTool({
   name: "upload_image",
   title: "Bild hochladen",
   description:
-    "Lädt ein Bild in den Storage-Bucket 'article-images' und liefert eine öffentliche URL (radmap.de/api/public/article-image/…). Als data-URL (base64) oder Remote-URL.",
+    "Lädt ein Bild in den Storage-Bucket 'article-images' und liefert eine öffentliche URL (welchesfahrrad.de/api/public/article-image/…). Als data-URL (base64) oder Remote-URL.",
   inputSchema: {
     data_url: z.string().optional().describe("data:image/…;base64,… oder https-URL zum Herunterladen"),
     filename: z.string().optional().describe("Optionaler Dateiname (ohne Pfad)."),
@@ -60,7 +60,7 @@ export const uploadImage = defineTool({
     });
     if (error) return textResult(`Upload fehlgeschlagen: ${error.message}`, true);
 
-    const publicUrl = `https://radmap.de/api/public/article-image/${path}`;
+    const publicUrl = `https://welchesfahrrad.de/api/public/article-image/${path}`;
     return jsonResult({ ok: true, path, url: publicUrl, content_type: mime, bytes: bytes.length });
   },
 });

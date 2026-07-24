@@ -11,7 +11,7 @@ export interface IssueArticle {
   category: string;
 }
 
-const SITE = "https://radmap.de";
+const SITE = "https://welchesfahrrad.de";
 const BRAND_ORANGE = "#f97316";
 const abs = (u: string) => (/^https?:\/\//i.test(u) ? u : SITE + (u.startsWith("/") ? u : "/" + u));
 const newsletterImageUrl = (u: string | null) => (u ? abs(articleImageUrl(u)) : "");
@@ -32,7 +32,7 @@ export function renderIssueSubject(issueDate: Date): string {
     year: "numeric",
     timeZone: "Europe/Berlin",
   }).format(issueDate);
-  return `Radmap Wochenrückblick – ${fmt}`;
+  return `Welches Fahrrad Wochenrückblick – ${fmt}`;
 }
 
 export function renderIssuePreheader(articles: IssueArticle[]): string {
@@ -118,12 +118,12 @@ export function renderIssueHtml(opts: RenderOpts): string {
     .join("");
 
   return `<!DOCTYPE html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Radmap Wochenrückblick</title></head>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Welches Fahrrad Wochenrückblick</title></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#e5e5e5;padding:24px 12px;margin:0;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(opts.preheader)}</div>
   <div style="max-width:600px;margin:0 auto;background:#111111;border:1px solid #262626;border-radius:8px;overflow:hidden;">
     <div style="padding:24px 32px;border-bottom:1px solid #262626;display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-family:Georgia,serif;font-weight:900;font-style:italic;font-size:24px;color:#ffffff;">Radmap<span style="color:${BRAND_ORANGE};">.</span>de</div>
+      <div style="font-family:Georgia,serif;font-weight:900;font-style:italic;font-size:24px;color:#ffffff;">Welches Fahrrad<span style="color:${BRAND_ORANGE};">.</span>de</div>
       <div style="font-size:11px;color:#737373;letter-spacing:0.1em;text-transform:uppercase;">Wochenrückblick · ${escapeHtml(dateLabel)}</div>
     </div>
     <div style="padding:32px;">
@@ -131,11 +131,11 @@ export function renderIssueHtml(opts: RenderOpts): string {
       ${heroHtml}
       ${restHtml}
       <hr style="border:none;border-top:1px solid #262626;margin:32px 0 24px;">
-      <p style="margin:0;font-size:13px;line-height:1.6;color:#a3a3a3;">Vielen Dank, dass Sie Teil der Radmap-Community sind. Wir lesen jede Antwort – schreiben Sie uns einfach an <a href="mailto:support@radmap.de" style="color:${BRAND_ORANGE};">support@radmap.de</a>.</p>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:#a3a3a3;">Vielen Dank, dass Sie Teil der Welches Fahrrad-Community sind. Wir lesen jede Antwort – schreiben Sie uns einfach an <a href="mailto:support@welchesfahrrad.de" style="color:${BRAND_ORANGE};">support@welchesfahrrad.de</a>.</p>
     </div>
     <div style="padding:20px 32px;background:#0a0a0a;border-top:1px solid #262626;font-size:11px;line-height:1.6;color:#525252;">
       DigiMarket · <a href="${SITE}/impressum" style="color:#737373;">Impressum</a> · <a href="${SITE}/datenschutz" style="color:#737373;">Datenschutz</a><br>
-      Sie erhalten diese E-Mail, weil Sie den Radmap-Newsletter bestätigt haben.<br>
+      Sie erhalten diese E-Mail, weil Sie den Welches Fahrrad-Newsletter bestätigt haben.<br>
       <a href="${escapeHtml(opts.unsubscribeUrl)}" style="color:#737373;">Newsletter abbestellen</a>
     </div>
   </div>
@@ -151,7 +151,7 @@ export function renderIssueText(opts: RenderOpts): string {
   }).format(opts.issueDate);
 
   const lines: string[] = [
-    `Radmap Wochenrückblick – ${dateLabel}`,
+    `Welches Fahrrad Wochenrückblick – ${dateLabel}`,
     "",
     "Die wichtigsten Artikel der vergangenen Woche:",
     "",
@@ -163,7 +163,7 @@ export function renderIssueText(opts: RenderOpts): string {
     lines.push("");
   }
   lines.push("---");
-  lines.push("DigiMarket · support@radmap.de");
+  lines.push("DigiMarket · support@welchesfahrrad.de");
   lines.push(`Impressum: ${SITE}/impressum`);
   lines.push(`Newsletter abbestellen: ${opts.unsubscribeUrl}`);
   return lines.join("\n");

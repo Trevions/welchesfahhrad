@@ -7,7 +7,7 @@
 //   connector gateway, which is the only supported way to nudge a re-crawl
 //   programmatically.
 
-const HOST = "radmap.de";
+const HOST = "welchesfahrrad.de";
 const INDEXNOW_KEY = "3d26c1d64fd8793cda1f811255be3d61";
 const KEY_LOCATION = `https://${HOST}/${INDEXNOW_KEY}.txt`;
 const SITEMAP_URL = `https://${HOST}/sitemap.xml`;

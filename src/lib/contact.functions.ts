@@ -45,7 +45,7 @@ export const submitContactMessage = createServerFn({ method: "POST" })
 
     let ipHash: string | null = null;
     if (ip) {
-      const enc = new TextEncoder().encode(ip + "|radmap");
+      const enc = new TextEncoder().encode(ip + "|welchesfahrrad");
       const buf = await crypto.subtle.digest("SHA-256", enc);
       ipHash = Array.from(new Uint8Array(buf))
         .map((b) => b.toString(16).padStart(2, "0"))

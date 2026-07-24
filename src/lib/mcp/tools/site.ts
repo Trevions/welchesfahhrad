@@ -5,7 +5,7 @@ import { jsonResult, requireAdmin, textResult } from "../helpers";
 export const listContactMessages = defineTool({
   name: "list_contact_messages",
   title: "Kontaktnachrichten auflisten",
-  description: "Letzte Kontaktnachrichten (radmap.de/kontakt).",
+  description: "Letzte Kontaktnachrichten (welchesfahrrad.de/kontakt).",
   inputSchema: { limit: z.number().int().min(1).max(100).optional().default(30) },
   annotations: { readOnlyHint: true },
   handler: async (input, ctx) => {

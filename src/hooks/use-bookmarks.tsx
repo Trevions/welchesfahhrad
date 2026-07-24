@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 
-const STORAGE_KEY = "radmap:bookmarks:v1";
-const EVENT = "radmap:bookmarks-changed";
+const STORAGE_KEY = "welchesfahrrad:bookmarks:v1";
+const EVENT = "welchesfahrrad:bookmarks-changed";
 
 export type Bookmark = {
   slug: string;

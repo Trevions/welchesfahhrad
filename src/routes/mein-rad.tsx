@@ -24,7 +24,7 @@ import { markManyArticlesRead } from "@/lib/read-articles";
 export const Route = createFileRoute("/mein-rad")({
   head: () => ({
     meta: [
-      { title: "Mein RadProfil — radmap.de" },
+      { title: "Mein RadProfil — welchesfahrrad.de" },
       {
         name: "description",
         content:

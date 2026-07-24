@@ -45,8 +45,8 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
   },
   head: ({ params, loaderData }) => {
     const b = loaderData?.bike;
-    if (!b) return { meta: [{ title: "Fahrrad — radmap.de" }] };
-    const title = b.meta_title || `${b.brand} ${b.model}${b.year ? ` (${b.year})` : ""} — Test, Specs & Bewertung | radmap.de`;
+    if (!b) return { meta: [{ title: "Fahrrad — welchesfahrrad.de" }] };
+    const title = b.meta_title || `${b.brand} ${b.model}${b.year ? ` (${b.year})` : ""} — Test, Specs & Bewertung | welchesfahrrad.de`;
     const desc =
       b.meta_description ||
       b.excerpt ||
@@ -54,7 +54,7 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
       `Alle Specs, Geometrie, Reichweite, Wartung und Bewertungen zum ${b.brand} ${b.model}${b.year ? ` (${b.year})` : ""}.`;
     const ogRaw = b.og_image_url ?? b.image_url ?? b.gallery?.[0] ?? "";
     const og = articleImageUrl(ogRaw) || ogRaw || "/og.jpg";
-    const url = `https://radmap.de/fahrraeder/${params.slug}`;
+    const url = `https://welchesfahrrad.de/fahrraeder/${params.slug}`;
     const product: any = {
       "@context": "https://schema.org",
       "@type": "Product",
@@ -91,12 +91,12 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
       .toLowerCase()
       .replace(/[^a-z0-9-]+/g, "-");
     product.url = url;
-    const catUrl = "https://radmap.de/fahrraeder";
+    const catUrl = "https://welchesfahrrad.de/fahrraeder";
     const breadcrumb = {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Start", item: "https://radmap.de/" },
+        { "@type": "ListItem", position: 1, name: "Start", item: "https://welchesfahrrad.de/" },
         { "@type": "ListItem", position: 2, name: "Fahrräder", item: catUrl },
         { "@type": "ListItem", position: 3, name: `${b.brand} ${b.model}`, item: url },
       ],
@@ -129,10 +129,10 @@ export const Route = createFileRoute("/fahrraeder/$slug")({
         { property: "og:image:alt", content: `${b.brand} ${b.model}` },
         { property: "og:url", content: url },
         { property: "og:type", content: "product" },
-        { property: "og:site_name", content: "radmap.de" },
+        { property: "og:site_name", content: "welchesfahrrad.de" },
         { property: "og:locale", content: "de_DE" },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:site", content: "@radmap_de" },
+        { name: "twitter:site", content: "@welchesfahrrad_de" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: desc },
         { name: "twitter:image", content: og },
@@ -316,7 +316,7 @@ function BikeDetailPage() {
               <ActionBar bike={b} />
 
               <p className="mt-3 text-[10px] uppercase tracking-wider text-muted-foreground">
-                Hinweis: radmap.de verkauft keine Räder — wir verlinken zum Hersteller.
+                Hinweis: welchesfahrrad.de verkauft keine Räder — wir verlinken zum Hersteller.
               </p>
             </div>
           </div>
@@ -569,7 +569,7 @@ function ActionBar({ bike }: { bike: Bike }) {
           priceEur: bike.price_eur ?? null,
         }}
       />
-      <ShareMenu url={`https://radmap.de/fahrraeder/${bike.slug}`} title={`${bike.brand} ${bike.model}`} text={bike.excerpt ?? ""} image={bike.image_url ?? ""}
+      <ShareMenu url={`https://welchesfahrrad.de/fahrraeder/${bike.slug}`} title={`${bike.brand} ${bike.model}`} text={bike.excerpt ?? ""} image={bike.image_url ?? ""}
         className="inline-flex items-center gap-1.5 px-3 py-2 text-xs uppercase tracking-wider font-bold border border-border text-foreground hover:border-signal hover:text-signal" />
       <button onClick={() => window.print()}
         className="inline-flex items-center gap-1.5 px-3 py-2 text-xs uppercase tracking-wider font-bold border border-border text-foreground hover:border-signal hover:text-signal">

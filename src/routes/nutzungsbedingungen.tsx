@@ -4,12 +4,12 @@ import { LegalPage, Section, InfoBox } from "@/components/LegalPage";
 export const Route = createFileRoute("/nutzungsbedingungen")({
   head: () => ({
     meta: [
-      { title: "Nutzungsbedingungen — radmap.de" },
-      { name: "description", content: "Nutzungsbedingungen für radmap.de nach TMG/DDG, DSA (Verordnung (EU) 2022/2065) und Urheberrecht." },
-      { property: "og:title", content: "Nutzungsbedingungen — radmap.de" },
-      { property: "og:url", content: "https://radmap.de/nutzungsbedingungen" },
+      { title: "Nutzungsbedingungen — welchesfahrrad.de" },
+      { name: "description", content: "Nutzungsbedingungen für welchesfahrrad.de nach TMG/DDG, DSA (Verordnung (EU) 2022/2065) und Urheberrecht." },
+      { property: "og:title", content: "Nutzungsbedingungen — welchesfahrrad.de" },
+      { property: "og:url", content: "https://welchesfahrrad.de/nutzungsbedingungen" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/nutzungsbedingungen" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/nutzungsbedingungen" }],
   }),
   component: TermsPage,
 });
@@ -25,11 +25,11 @@ function TermsPage() {
     <LegalPage
       eyebrow="Recht"
       title="Nutzungsbedingungen"
-      lead="Diese Nutzungsbedingungen regeln den Zugriff auf radmap.de und die Nutzung der angebotenen Inhalte. Für entgeltliche Leistungen (Werbung, Kooperationen) gelten ergänzend unsere AGB."
+      lead="Diese Nutzungsbedingungen regeln den Zugriff auf welchesfahrrad.de und die Nutzung der angebotenen Inhalte. Für entgeltliche Leistungen (Werbung, Kooperationen) gelten ergänzend unsere AGB."
       updated="13. Juni 2026"
     >
       <InfoBox>
-        Wenn du radmap.de nutzt, erkennst du diese Bedingungen an. Bitte lies
+        Wenn du welchesfahrrad.de nutzt, erkennst du diese Bedingungen an. Bitte lies
         sie sorgfältig. Verbindlich ergänzend gelten unsere{" "}
         <Link to="/agb" className="text-signal hover:underline">AGB</Link>,
         die <Link to="/datenschutz" className="text-signal hover:underline">Datenschutzerklärung</Link>{" "}
@@ -41,13 +41,13 @@ function TermsPage() {
           Anbieter dieser Website ist <strong className="text-foreground">DigiMarket Bulgaria</strong>,
           6400 Dimitrovgrad, Bulgarien (im Folgenden „Anbieter"). Diese
           Bedingungen gelten für die kostenfreie redaktionelle Nutzung von
-          radmap.de durch Verbraucher:innen und gewerbliche Nutzer:innen.
+          welchesfahrrad.de durch Verbraucher:innen und gewerbliche Nutzer:innen.
         </p>
       </Section>
 
       <Section title="§ 2 Leistungen und Verfügbarkeit">
         <p>
-          radmap.de stellt redaktionelle Inhalte rund um Fahrräder, E-Bikes
+          welchesfahrrad.de stellt redaktionelle Inhalte rund um Fahrräder, E-Bikes
           und Radkultur kostenfrei und ohne Registrierungs­pflicht bereit. Ein
           Anspruch auf ständige Verfügbarkeit, eine bestimmte
           Erreichbarkeits­quote oder auf das Bereithalten einzelner Inhalte
@@ -57,7 +57,7 @@ function TermsPage() {
       </Section>
 
       <Section title="§ 3 Erlaubte und untersagte Nutzung">
-        <p>Du verpflichtest dich, radmap.de nur im Rahmen der geltenden Gesetze und dieser Bedingungen zu nutzen. Untersagt sind insbesondere:</p>
+        <p>Du verpflichtest dich, welchesfahrrad.de nur im Rahmen der geltenden Gesetze und dieser Bedingungen zu nutzen. Untersagt sind insbesondere:</p>
         <ul className="list-disc pl-5 space-y-1">
           <li>automatisiertes Auslesen (Scraping, Crawling) ohne ausdrückliche schriftliche Zustimmung;</li>
           <li>das Umgehen technischer Schutz­maßnahmen oder Zugangs­beschränkungen;</li>
@@ -69,7 +69,7 @@ function TermsPage() {
 
       <Section title="§ 4 Urheberrechte und Lizenz zur Nutzung">
         <p>
-          Sämtliche Inhalte auf radmap.de — Texte, Bilder, Grafiken, Layouts,
+          Sämtliche Inhalte auf welchesfahrrad.de — Texte, Bilder, Grafiken, Layouts,
           Logos, Audio- und Videoinhalte — sind urheber­rechtlich geschützt
           (§§ 1 ff. UrhG; Richtlinie 2001/29/EG). Eine Vervielfältigung,
           Bearbeitung, Verbreitung oder öffentliche Wiedergabe außerhalb der
@@ -87,7 +87,7 @@ function TermsPage() {
 
       <Section title="§ 5 Inhalte Dritter, Links und Werbung">
         <p>
-          radmap.de kann Links zu externen Angeboten enthalten. Für deren
+          welchesfahrrad.de kann Links zu externen Angeboten enthalten. Für deren
           Inhalte sind ausschließlich die jeweiligen Anbieter verantwortlich
           (§§ 7–10 TMG / DDG). Werbliche Inhalte werden als solche
           gekennzeichnet (§ 6 TMG / DDG; § 22 MStV).
@@ -96,13 +96,13 @@ function TermsPage() {
 
       <Section title="§ 6 Meldung rechtswidriger Inhalte (DSA, Verordnung (EU) 2022/2065)">
         <p>
-          radmap.de ist ein Hosting-Dienst im Sinne des Digital Services Act.
+          welchesfahrrad.de ist ein Hosting-Dienst im Sinne des Digital Services Act.
           Du kannst rechtswidrige Inhalte über folgende Kontaktstelle melden:
         </p>
         <p>
           E-Mail:{" "}
-          <a href="mailto:support@radmap.de" className="text-signal hover:underline">
-            support@radmap.de
+          <a href="mailto:support@welchesfahrrad.de" className="text-signal hover:underline">
+            support@welchesfahrrad.de
           </a>
           <br />
           <span className="text-sm text-muted-foreground">

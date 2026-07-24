@@ -470,7 +470,7 @@ function ReportsPage() {
                 <>
                   An <span className="text-foreground font-medium">{selected.reporter_name}</span>{" "}
                   &lt;{selected.reporter_email}&gt; · Absender:{" "}
-                  <span className="text-foreground">redaktion@radmap.de</span>
+                  <span className="text-foreground">redaktion@welchesfahrrad.de</span>
                 </>
               )}
             </DialogDescription>
@@ -499,7 +499,7 @@ function ReportsPage() {
                 autoFocus
               />
               <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                <span>Wird eingebettet zwischen „Hallo {selected?.reporter_name}, …" und „Viele Grüße, Die Radmap.de Redaktion".</span>
+                <span>Wird eingebettet zwischen „Hallo {selected?.reporter_name}, …" und „Viele Grüße, Die WelchesFahrrad.de Redaktion".</span>
                 <span className="tabular-nums shrink-0 pl-3">{replyMessage.length}/10000</span>
               </div>
             </div>

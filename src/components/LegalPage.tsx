@@ -43,7 +43,7 @@ export function LegalPage({ eyebrow, title, lead, children, updated }: Props) {
       <div className="mt-10 md:mt-14 grid lg:grid-cols-[1fr_3fr] gap-10 lg:gap-16">
         <aside className="hidden lg:block">
           <div className="sticky top-24 eyebrow-sm text-muted-foreground">
-            radmap.de
+            welchesfahrrad.de
             <div className="mt-2 h-px w-8 bg-signal" />
             <div className="mt-2 text-foreground">Verlag &amp; Recht</div>
           </div>

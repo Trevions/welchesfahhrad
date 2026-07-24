@@ -160,14 +160,14 @@ export function Footer() {
       <div className="mx-auto max-w-[1400px] px-6 md:px-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:gap-12 md:grid-cols-12">
           <div className="col-span-2 md:col-span-5">
-            <Link to="/" className="flex items-baseline">
+            <Link to="/" className="flex items-baseline whitespace-nowrap">
               <span className="font-display text-3xl font-black italic">
-                Radmap<span className="text-signal">.</span>
+                WelchesFahrrad<span className="text-signal">.</span>DE
               </span>
             </Link>
             <p className="mt-5 max-w-md text-sm text-muted-foreground font-light leading-relaxed">
-              Unabhängiges deutsches Magazin für Fahrräder, E-Bikes und alles rund
-              um den Radsport. Tagesaktuell. Mit Leidenschaft für jeden Kilometer.
+              Welches Fahrrad passt zu dir? Deutschlands großes Vergleichsportal
+              für Fahrräder und E-Bikes – mit Tests, Ratgebern und Kaufberatung.
             </p>
             <div className="mt-6 flex items-center gap-3">
               <span className="h-px w-8 bg-signal" />
@@ -212,7 +212,7 @@ export function Footer() {
         </div>
 
         <div className="mt-14 pt-6 border-t border-border flex flex-wrap items-center justify-between gap-4 text-xs text-muted-foreground">
-          <div>© {new Date().getFullYear()} radmap.de — Alle Rechte vorbehalten.</div>
+          <div>© {new Date().getFullYear()} welchesfahrrad.de — Alle Rechte vorbehalten.</div>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             <Link to="/impressum" className="hover:text-foreground transition-colors">Impressum</Link>
             <Link to="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</Link>

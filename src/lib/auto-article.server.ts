@@ -123,7 +123,7 @@ export async function fetchOriginalImage(candidates: string[]): Promise<FetchedI
     try {
       const resp = await fetch(url, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (compatible; RadmapBot/1.0; +https://radmap.de)",
+          "User-Agent": "Mozilla/5.0 (compatible; WelchesFahrradBot/1.0; +https://welchesfahrrad.de)",
           Accept: "image/avif,image/webp,image/png,image/jpeg,image/*;q=0.8,*/*;q=0.5",
           Referer: new URL(url).origin,
         },
@@ -157,7 +157,7 @@ const ENTITY_STOPWORDS = new Set([
   "Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag",
   "Januar","Februar","März","April","Mai","Juni","Juli","August","September",
   "Oktober","November","Dezember","Heute","Gestern","Morgen","Jahr","Jahre","Tag","Tage",
-  "Radmap","Nachrichten","Ratgeber","Tests","Foto","Fotos","Bild","Quelle","Redaktion",
+  "Welches Fahrrad","Nachrichten","Ratgeber","Tests","Foto","Fotos","Bild","Quelle","Redaktion",
 ]);
 
 function normalizeForMatch(s: string): string {
@@ -325,7 +325,7 @@ export async function discoverSources(category: Category): Promise<DiscoveredSou
   const items = parsed.items ?? [];
   return items
     .filter((it) => it.url && it.title)
-    .filter((it) => !it.url.includes("radmap.de"))
+    .filter((it) => !it.url.includes("welchesfahrrad.de"))
     .map((it) => ({ ...it, domain: domainOf(it.url) }));
 }
 
@@ -340,7 +340,7 @@ export async function rewriteArticle(
   const key = process.env.LOVABLE_API_KEY;
   if (!key) throw new Error("LOVABLE_API_KEY missing");
 
-  const system = `Du bist Senior-Redakteur:in bei radmap.de, einem deutschen Fahrrad-Magazin.
+  const system = `Du bist Senior-Redakteur:in bei welchesfahrrad.de, einem deutschen Fahrrad-Magazin.
 
 DEINE EINZIGE INFORMATIONSQUELLE ist der unten gelieferte Quelltext (QUELLTEXT). Schreibe einen eigenständigen deutschen Artikel, der AUSSCHLIESSLICH Fakten aus diesem Quelltext verwendet.
 
@@ -743,7 +743,7 @@ export async function runAutoGeneratePipeline(
               body: rewritten.body_markdown,
               cover_image: coverImage,
               category: articleCategory,
-              source: "Radmap Redaktion",
+              source: "Welches Fahrrad Redaktion",
               status: "published",
               read_time: rewritten.read_time?.slice(0, 20) ?? null,
               seo_title: rewritten.seo_title?.slice(0, 70) ?? null,
@@ -840,19 +840,19 @@ export type NewsResearchResult = {
 const RESEARCH_PROMPTS: Record<NewsResearchScope, { system: string; user: string }> = {
   de: {
     system:
-      "Du bist Recherche-Redakteur:in für ein professionelles deutsches Fahrrad-Magazin (radmap.de). Schwerpunkt liegt KLAR auf Branche, Produkten & Politik, NICHT auf Profi-Radsport-Ergebnissen. Priorisiere in dieser Reihenfolge: 1) Neue Fahrräder & E-Bike-Modelle (Marktneuheiten, Modelljahr, Launches von Herstellern wie Canyon, Cube, Riese & Müller, Bosch, Specialized, Trek, Giant, Haibike, Kalkhoff, Stevens, Rose, Focus, Bulls, Gazelle, KTM, Scott, Cannondale, Brompton), 2) Gesetze, Verordnungen, StVO-Änderungen, EU-Regulierung, Versicherungs- & Förderprogramme für Radfahrer und E-Bike-Nutzer, 3) Industrie- & Herstellermeldungen (Insolvenzen, Übernahmen, Produktion, Rückrufe, Akku-/Motor-Technik), 4) Infrastruktur & Verkehrspolitik (Radwege, Kommunen, Bund, Dienstrad/Leasing). Bevorzuge große & seriöse Medien: Spiegel, Zeit, SZ, FAZ, Handelsblatt, tagesschau.de, ARD, ZDF, n-tv, Welt, ADAC, ADFC, Stiftung Warentest, heise.de, golem.de, ecomento.de, electrive.net, sowie Fachpresse (radmarkt.de, velobiz.de, sazbike.de, ebike-news.de, pedelecs-und-e-bikes.de, velomotion.de, pd-f.de). VERMEIDE strikt reine Rennberichte und Ergebnislisten (Tour, Giro, Vuelta, Weltcup, Bundesliga, MTB-Cups, lokale Radrennen, Fahrerwechsel zwischen Teams).",
+      "Du bist Recherche-Redakteur:in für ein professionelles deutsches Fahrrad-Magazin (welchesfahrrad.de). Schwerpunkt liegt KLAR auf Branche, Produkten & Politik, NICHT auf Profi-Radsport-Ergebnissen. Priorisiere in dieser Reihenfolge: 1) Neue Fahrräder & E-Bike-Modelle (Marktneuheiten, Modelljahr, Launches von Herstellern wie Canyon, Cube, Riese & Müller, Bosch, Specialized, Trek, Giant, Haibike, Kalkhoff, Stevens, Rose, Focus, Bulls, Gazelle, KTM, Scott, Cannondale, Brompton), 2) Gesetze, Verordnungen, StVO-Änderungen, EU-Regulierung, Versicherungs- & Förderprogramme für Radfahrer und E-Bike-Nutzer, 3) Industrie- & Herstellermeldungen (Insolvenzen, Übernahmen, Produktion, Rückrufe, Akku-/Motor-Technik), 4) Infrastruktur & Verkehrspolitik (Radwege, Kommunen, Bund, Dienstrad/Leasing). Bevorzuge große & seriöse Medien: Spiegel, Zeit, SZ, FAZ, Handelsblatt, tagesschau.de, ARD, ZDF, n-tv, Welt, ADAC, ADFC, Stiftung Warentest, heise.de, golem.de, ecomento.de, electrive.net, sowie Fachpresse (radmarkt.de, velobiz.de, sazbike.de, ebike-news.de, pedelecs-und-e-bikes.de, velomotion.de, pd-f.de). VERMEIDE strikt reine Rennberichte und Ergebnislisten (Tour, Giro, Vuelta, Weltcup, Bundesliga, MTB-Cups, lokale Radrennen, Fahrerwechsel zwischen Teams).",
     user:
       "Liste 10 aktuelle Branchen-Nachrichten der letzten 7 Tage. Mindestens 8 davon zu NEUEN FAHRRÄDERN/E-BIKES, HERSTELLERN, GESETZEN/STVO oder INDUSTRIE — höchstens 1 reines Sport-Thema, NUR wenn es industrierelevant ist (z. B. Sponsoring-Deal, Markteinführung am Profi-Rad). Für JEDE Geschichte: sammle ALLE deutschsprachigen Quellen, die genau diese Meldung bringen (2–5 Links bevorzugt).",
   },
   world: {
     system:
-      "You are a research editor for a professional German cycling magazine (radmap.de). Focus is bike INDUSTRY, PRODUCTS, and POLICY — NOT pro-racing results. Priorities: 1) New bikes & e-bike launches (Specialized, Trek, Giant, Cannondale, Canyon, Cube, Bosch, Shimano, SRAM, Riese & Müller, Gazelle, Brompton, etc.), 2) Regulation & law (EU e-bike rules, US/UK helmet/road laws, safety standards, import tariffs), 3) Industry news (mergers, recalls, factory news, battery/motor tech, supply chain, retail), 4) Infrastructure & policy. Prefer large reputable outlets: Reuters, Bloomberg, BBC, Guardian, NYT, FT, WSJ, CNBC, plus trade press (bicycleretailer.com, bike-eu.com, cyclingindustry.news, electrek.co, electricbikereport.com, bikerumor.com, road.cc, bikeradar.com). STRICTLY AVOID race reports & result listicles (Tour de France, Giro, Vuelta, World Cup, criteriums, rider transfers).",
+      "You are a research editor for a professional German cycling magazine (welchesfahrrad.de). Focus is bike INDUSTRY, PRODUCTS, and POLICY — NOT pro-racing results. Priorities: 1) New bikes & e-bike launches (Specialized, Trek, Giant, Cannondale, Canyon, Cube, Bosch, Shimano, SRAM, Riese & Müller, Gazelle, Brompton, etc.), 2) Regulation & law (EU e-bike rules, US/UK helmet/road laws, safety standards, import tariffs), 3) Industry news (mergers, recalls, factory news, battery/motor tech, supply chain, retail), 4) Infrastructure & policy. Prefer large reputable outlets: Reuters, Bloomberg, BBC, Guardian, NYT, FT, WSJ, CNBC, plus trade press (bicycleretailer.com, bike-eu.com, cyclingindustry.news, electrek.co, electricbikereport.com, bikerumor.com, road.cc, bikeradar.com). STRICTLY AVOID race reports & result listicles (Tour de France, Giro, Vuelta, World Cup, criteriums, rider transfers).",
     user:
       "List 10 distinct industry news stories from the last 7 days. At least 8 about NEW BIKES/E-BIKES, MANUFACTURERS, LAWS, or INDUSTRY — max 1 pure race story, and only if industry-relevant. For EACH story: gather ALL websites that cover exactly this story (2–5 links preferred).",
   },
   all: {
     system:
-      "Du bist Recherche-Redakteur:in für ein professionelles deutsches Fahrrad-Magazin (radmap.de). Mischung deutscher UND internationaler Quellen. Schwerpunkt KLAR auf Branche, Produkten & Politik, NICHT auf Profi-Rennen. Priorisiere: 1) Neue Fahrrad- & E-Bike-Modelle (Hersteller-Launches), 2) Gesetze, Verordnungen, StVO/EU-Regulierung, Förderprogramme, 3) Industrie (Übernahmen, Insolvenzen, Rückrufe, Motor-/Akku-Technik), 4) Infrastruktur/Verkehrspolitik. Bevorzuge große seriöse Medien (Spiegel, Zeit, SZ, FAZ, Handelsblatt, tagesschau, Reuters, Bloomberg, BBC, Guardian, heise, electrive) und Branchen-Fachpresse (radmarkt.de, velobiz.de, sazbike.de, ebike-news.de, bicycleretailer.com, bike-eu.com). VERMEIDE strikt Rennberichte & Ergebnislisten.",
+      "Du bist Recherche-Redakteur:in für ein professionelles deutsches Fahrrad-Magazin (welchesfahrrad.de). Mischung deutscher UND internationaler Quellen. Schwerpunkt KLAR auf Branche, Produkten & Politik, NICHT auf Profi-Rennen. Priorisiere: 1) Neue Fahrrad- & E-Bike-Modelle (Hersteller-Launches), 2) Gesetze, Verordnungen, StVO/EU-Regulierung, Förderprogramme, 3) Industrie (Übernahmen, Insolvenzen, Rückrufe, Motor-/Akku-Technik), 4) Infrastruktur/Verkehrspolitik. Bevorzuge große seriöse Medien (Spiegel, Zeit, SZ, FAZ, Handelsblatt, tagesschau, Reuters, Bloomberg, BBC, Guardian, heise, electrive) und Branchen-Fachpresse (radmarkt.de, velobiz.de, sazbike.de, ebike-news.de, bicycleretailer.com, bike-eu.com). VERMEIDE strikt Rennberichte & Ergebnislisten.",
     user:
       "Liste 12 aktuelle Branchen-/Industrie-Meldungen der letzten 7 Tage (Mischung Deutsch + International). Mindestens 10 davon zu NEUEN BIKES/E-BIKES, HERSTELLERN, GESETZEN, INDUSTRIE — höchstens 1–2 reine Sport-Themen, nur wenn industrierelevant. Für JEDE Geschichte: alle Original-Quellen (2–5 Links).",
   },
@@ -926,7 +926,7 @@ export async function researchNewsManual(scope: NewsResearchScope): Promise<News
       summary: c.summary ?? "",
       sources: (c.sources ?? [])
         .filter((s) => s && s.url && /^https?:\/\//i.test(s.url))
-        .filter((s) => !s.url.includes("radmap.de"))
+        .filter((s) => !s.url.includes("welchesfahrrad.de"))
         .map((s) => ({ ...s, domain: domainOf(s.url) })),
     }))
     .filter((c) => c.topic_title && c.sources.length > 0);

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/newsletter/abmelden")({
   }),
   head: () => ({
     meta: [
-      { title: "Newsletter abmelden — radmap.de" },
+      { title: "Newsletter abmelden — welchesfahrrad.de" },
       { name: "robots", content: "noindex" },
     ],
   }),

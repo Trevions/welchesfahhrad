@@ -1,10 +1,11 @@
-# radmap.de
+# WelchesFahrrad.de
 
-> Unabhängiges deutsches Magazin für Fahrräder, E-Bikes und Radsport. Tagesaktuelle Nachrichten, Tests und Ratgeber für Radfahrer in Deutschland.
+> Deutschlands großes Vergleichsportal für Fahrräder und E-Bikes. Finde heraus, welches Fahrrad zu dir passt – mit Vergleichen, Tests, Ratgebern und Kaufberatung.
 
 ## Hauptseiten
 
-- [Startseite](/): Übersicht der aktuellen Top-Stories und Nachrichten
-- [E-Bikes](/e-bikes): Tests, Kaufberatung und Trends rund um E-Bikes
-- [Ratgeber](/ratgeber): Praxiswissen, Wartung, Pflege und Sicherheit
-- [Tests](/tests): Unabhängige Tests von Fahrrädern, E-Bikes und Komponenten
+- [Startseite](/): Welches Fahrrad passt zu dir? Vergleich starten
+- [Fahrräder](/fahrraeder): Alle Fahrräder im Vergleich
+- [E-Bikes](/e-bikes): E-Bikes vergleichen und finden
+- [Ratgeber](/ratgeber): Kaufberatung, Wartung und Sicherheit
+- [Vergleich](/vergleich): Modelle direkt gegenüberstellen

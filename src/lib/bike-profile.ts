@@ -4,8 +4,8 @@
 
 import { useEffect, useState } from "react";
 
-export const STORAGE_KEY = "radmap.bikeProfile.v1";
-const CHANGE_EVENT = "radmap:bikeProfile:changed";
+export const STORAGE_KEY = "welchesfahrrad.bikeProfile.v1";
+const CHANGE_EVENT = "welchesfahrrad:bikeProfile:changed";
 
 export type BikeType =
   | "road"

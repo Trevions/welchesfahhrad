@@ -9,7 +9,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.classList.remove("dark");
     root.classList.add("light");
     try {
-      localStorage.removeItem("radmap-theme");
+      localStorage.removeItem("welchesfahrrad-theme");
     } catch {}
   }, []);
   return <>{children}</>;

@@ -4,20 +4,20 @@ import { createFileRoute } from "@tanstack/react-router";
  * Resend Inbound Email webhook.
  *
  * Configure in Resend Inbound settings:
- *   Route pattern: redaktion+*@radmap.de  (and/or redaktion@radmap.de)
- *   Destination:   POST https://radmap.de/api/public/inbound/resend
- *   Header:        X-Radmap-Secret: <INBOUND_EMAIL_SECRET>   (recommended)
+ *   Route pattern: redaktion+*@welchesfahrrad.de  (and/or redaktion@welchesfahrrad.de)
+ *   Destination:   POST https://welchesfahrrad.de/api/public/inbound/resend
+ *   Header:        X-Welches Fahrrad-Secret: <INBOUND_EMAIL_SECRET>   (recommended)
  *
  * Requires MX records for the sending subdomain to point to Resend Inbound.
  */
 
-const CLOSED_CASE_HTML = (name: string, articleUrl: string | null, title: string | null) => `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Fall geschlossen · Radmap.de</title></head>
+const CLOSED_CASE_HTML = (name: string, articleUrl: string | null, title: string | null) => `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Fall geschlossen · WelchesFahrrad.de</title></head>
 <body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:32px 16px;">
 <tr><td align="center">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;">
 <tr><td style="padding:28px 32px;border-bottom:1px solid #f4f4f5;">
-<div style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#18181b;">Radmap<span style="color:#FF6A1A;">.</span>de</div>
+<div style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#18181b;">Welches Fahrrad<span style="color:#FF6A1A;">.</span>de</div>
 <div style="font-size:11px;color:#71717a;text-transform:uppercase;letter-spacing:0.12em;margin-top:4px;">Automatische Antwort</div>
 </td></tr>
 <tr><td style="padding:32px;">
@@ -29,13 +29,13 @@ vielen Dank für deine Nachricht. Dieser Vorgang wurde bereits <strong>abgeschlo
 Wenn du dein Anliegen weiter besprechen möchtest, kontaktiere uns bitte offiziell über unser Kontaktformular:
 </p>
 <p style="margin:0 0 24px;text-align:center;">
-<a href="https://radmap.de/kontakt" style="display:inline-block;background:#FF6A1A;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px;">Zum Kontaktformular →</a>
+<a href="https://welchesfahrrad.de/kontakt" style="display:inline-block;background:#FF6A1A;color:#ffffff;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:8px;font-size:15px;">Zum Kontaktformular →</a>
 </p>
 ${articleUrl ? `<p style="margin:0;font-size:13px;color:#71717a;line-height:1.6;">Bezug: <a href="${articleUrl}" style="color:#FF6A1A;text-decoration:none;">${escapeHtml(title || articleUrl)}</a></p>` : ""}
-<p style="margin:24px 0 0;font-size:15px;color:#27272a;">Viele Grüße<br><strong>Die Radmap.de Redaktion</strong></p>
+<p style="margin:24px 0 0;font-size:15px;color:#27272a;">Viele Grüße<br><strong>Die WelchesFahrrad.de Redaktion</strong></p>
 </td></tr>
 <tr><td style="padding:16px 32px;background:#18181b;color:#a1a1aa;font-size:11px;text-align:center;">
-<a href="https://radmap.de" style="color:#FF6A1A;text-decoration:none;font-weight:600;">radmap.de</a> · Dein Rad-Magazin
+<a href="https://welchesfahrrad.de" style="color:#FF6A1A;text-decoration:none;font-weight:600;">welchesfahrrad.de</a> · Dein Rad-Magazin
 </td></tr>
 </table>
 </td></tr></table>
@@ -47,9 +47,9 @@ function escapeHtml(s: string) {
   );
 }
 
-/** Extract the thread token from a plus-addressed recipient like `redaktion+r-abcd123@radmap.de`. */
+/** Extract the thread token from a plus-addressed recipient like `redaktion+r-abcd123@welchesfahrrad.de`. */
 function extractToken(addresses: string[]): string | null {
-  const re = /redaktion\+r-([a-z0-9]+)@radmap\.de/i;
+  const re = /redaktion\+r-([a-z0-9]+)@welchesfahrrad\.de/i;
   for (const raw of addresses) {
     const m = raw.match(re);
     if (m) return m[1].toLowerCase();
@@ -97,7 +97,7 @@ async function sendClosedCaseAutoReply(opts: {
   const resendKey = process.env.RESEND_API_KEY;
   if (!lovableKey || !resendKey) return { ok: false, reason: "missing_keys" };
 
-  const articleUrl = opts.articleSlug ? `https://radmap.de/artikel/${opts.articleSlug}` : null;
+  const articleUrl = opts.articleSlug ? `https://welchesfahrrad.de/artikel/${opts.articleSlug}` : null;
   const subject = opts.originalSubject
     ? `Re: ${opts.originalSubject.replace(/^\s*re:\s*/i, "")} · Fall geschlossen`
     : "Dein Anliegen · Fall geschlossen";
@@ -107,8 +107,8 @@ async function sendClosedCaseAutoReply(opts: {
     `Hallo ${opts.toName},\n\n` +
     `vielen Dank für deine Nachricht. Dieser Vorgang wurde bereits abgeschlossen und aus unserem System entfernt. ` +
     `Wir können dir auf diesem Weg leider nicht mehr antworten.\n\n` +
-    `Bitte nutze unser Kontaktformular, um uns offiziell zu erreichen:\nhttps://radmap.de/kontakt\n\n` +
-    `Viele Grüße\nDie Radmap.de Redaktion`;
+    `Bitte nutze unser Kontaktformular, um uns offiziell zu erreichen:\nhttps://welchesfahrrad.de/kontakt\n\n` +
+    `Viele Grüße\nDie WelchesFahrrad.de Redaktion`;
 
   const resp = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
     method: "POST",
@@ -118,9 +118,9 @@ async function sendClosedCaseAutoReply(opts: {
       "X-Connection-Api-Key": resendKey,
     },
     body: JSON.stringify({
-      from: "Radmap.de Redaktion <redaktion@radmap.de>",
+      from: "WelchesFahrrad.de Redaktion <redaktion@welchesfahrrad.de>",
       to: [opts.toEmail],
-      reply_to: "redaktion@radmap.de",
+      reply_to: "redaktion@welchesfahrrad.de",
       subject,
       html,
       text,
@@ -136,7 +136,7 @@ export const Route = createFileRoute("/api/public/inbound/resend")({
         // Optional shared-secret check
         const requiredSecret = process.env.INBOUND_EMAIL_SECRET;
         if (requiredSecret) {
-          const given = request.headers.get("x-radmap-secret");
+          const given = request.headers.get("x-welchesfahrrad-secret");
           if (given !== requiredSecret) {
             return new Response("Unauthorized", { status: 401 });
           }
@@ -223,7 +223,7 @@ export const Route = createFileRoute("/api/public/inbound/resend")({
             report_id: (report as any)?.id ?? null,
             thread_token: token,
             direction: "auto_reply",
-            from_email: "redaktion@radmap.de",
+            from_email: "redaktion@welchesfahrrad.de",
             to_email: fromEmail,
             subject: "Fall geschlossen",
             body_text: "Automatische Antwort: Vorgang abgeschlossen · Bitte Kontaktformular nutzen.",

@@ -10,7 +10,7 @@ import {
   type LexikonArticleRef,
 } from "@/lib/lexikon.functions";
 
-const SITE = "https://radmap.de";
+const SITE = "https://welchesfahrrad.de";
 
 const lexikonQuery = queryOptions({
   queryKey: ["lexikon-terms"],
@@ -29,11 +29,11 @@ export const Route = createFileRoute("/lexikon/")({
   head: () => {
     const title = "Fahrrad-Lexikon: Fachbegriffe rund ums Rad & E-Bike";
     const description =
-      "Verständlich erklärte Fachbegriffe rund um Fahrrad, E-Bike und Radsport – von Ausstattung über Antrieb bis Sicherheit. Kuratiert von der radmap.de-Redaktion.";
+      "Verständlich erklärte Fachbegriffe rund um Fahrrad, E-Bike und Radsport – von Ausstattung über Antrieb bis Sicherheit. Kuratiert von der welchesfahrrad.de-Redaktion.";
     const url = `${SITE}/lexikon`;
     return {
       meta: [
-        { title: `${title} | radmap.de` },
+        { title: `${title} | welchesfahrrad.de` },
         { name: "description", content: description },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
@@ -59,7 +59,7 @@ export const Route = createFileRoute("/lexikon/")({
             description,
             url,
             inLanguage: "de-DE",
-            isPartOf: { "@type": "WebSite", "@id": `${SITE}#website`, url: SITE, name: "radmap.de" },
+            isPartOf: { "@type": "WebSite", "@id": `${SITE}#website`, url: SITE, name: "welchesfahrrad.de" },
           }),
         },
         {

@@ -19,13 +19,13 @@ export const Route = createFileRoute("/fahrraeder/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(bikesQuery),
   head: () => ({
     meta: [
-      { title: "Fahrräder & E-Bikes — radmap.de" },
+      { title: "Fahrräder & E-Bikes — welchesfahrrad.de" },
       {
         name: "description",
         content:
           "Entdecke geprüfte Fahrräder und E-Bikes mit vollständigen Spezifikationen, Motor- und Akkudaten, Tests und Empfehlungen.",
       },
-      { property: "og:title", content: "Fahrräder & E-Bikes — radmap.de" },
+      { property: "og:title", content: "Fahrräder & E-Bikes — welchesfahrrad.de" },
       {
         property: "og:description",
         content: "Die Fahrrad-Datenbank für Deutschland: alle Specs, Motoren, Reichweiten, Bewertungen.",

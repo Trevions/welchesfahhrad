@@ -9,7 +9,7 @@ export const listBikes = defineTool({
   name: "list_bikes",
   title: "Fahrräder auflisten",
   description:
-    "Listet Fahrräder (radmap.de). Filter: Kategorie, Marke, Suchtext, publiziert. Max 100.",
+    "Listet Fahrräder (welchesfahrrad.de). Filter: Kategorie, Marke, Suchtext, publiziert. Max 100.",
   inputSchema: {
     search: z.string().optional().describe("Marke, Modell oder Slug enthält…"),
     category: z.string().optional(),
@@ -143,7 +143,7 @@ const bikeMutable = {
 export const createBike = defineTool({
   name: "create_bike",
   title: "Fahrrad anlegen",
-  description: "Erstellt ein neues Fahrrad (radmap.de). Slug muss eindeutig sein.",
+  description: "Erstellt ein neues Fahrrad (welchesfahrrad.de). Slug muss eindeutig sein.",
   inputSchema: bikeMutable,
   annotations: { destructiveHint: false },
   handler: async (input, ctx) => {

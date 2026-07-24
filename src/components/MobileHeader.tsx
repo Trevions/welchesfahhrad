@@ -20,11 +20,11 @@ export function MobileHeader() {
     <>
       <header className="sticky top-0 z-40 md:hidden pt-[env(safe-area-inset-top)] bg-background/90 backdrop-blur-xl border-b border-border">
         <div className="flex h-14 items-center justify-between px-5">
-          <Link to="/" className="flex items-baseline">
-            <span className="font-display text-xl font-black italic leading-none">
-              Radmap<span className="text-signal">.</span>
+          <Link to="/" className="flex items-baseline whitespace-nowrap">
+            <span className="font-display text-lg font-black italic leading-none">
+              WelchesFahrrad<span className="text-signal">.</span>
             </span>
-            <span className="ml-1 font-display text-xl font-black italic leading-none text-signal">
+            <span className="ml-1 font-display text-lg font-black italic leading-none text-signal">
               DE
             </span>
           </Link>

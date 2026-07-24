@@ -6,7 +6,7 @@ type BIPEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-const DISMISS_KEY = "radmap.install.dismissed";
+const DISMISS_KEY = "welchesfahrrad.install.dismissed";
 const DISMISS_DAYS = 7;
 
 function isStandalone() {
@@ -136,10 +136,10 @@ export function InstallAppBanner() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[10px] uppercase tracking-[0.18em] text-signal font-bold">
-                  RADMAP App
+                  Welches Fahrrad App
                 </div>
                 <div className="text-sm font-semibold text-foreground leading-tight mt-0.5 truncate">
-                  Installiere RADMAP auf dem Startbildschirm
+                  Installiere Welches Fahrrad auf dem Startbildschirm
                 </div>
               </div>
               <button
@@ -173,7 +173,7 @@ export function InstallAppBanner() {
           >
             <div className="p-5 border-b border-border flex items-start justify-between gap-4">
               <div>
-                <div className="eyebrow text-signal">RADMAP App</div>
+                <div className="eyebrow text-signal">Welches Fahrrad App</div>
                 <h3 className="mt-2 font-display text-xl font-black">
                   Auf dem iPhone installieren
                 </h3>
@@ -192,7 +192,7 @@ export function InstallAppBanner() {
                   1
                 </span>
                 <span className="pt-1">
-                  Öffne RADMAP in <strong>Safari</strong>.
+                  Öffne Welches Fahrrad in <strong>Safari</strong>.
                 </span>
               </li>
               <li className="flex items-start gap-3">

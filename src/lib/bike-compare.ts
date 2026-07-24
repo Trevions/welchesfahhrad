@@ -1,5 +1,5 @@
 // Client-only localStorage helper for bike comparison (max 4 slugs).
-const KEY = "radmap.compare.v1";
+const KEY = "welchesfahrrad.compare.v1";
 const MAX = 4;
 
 function read(): string[] {
@@ -18,7 +18,7 @@ function write(list: string[]) {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX)));
-    window.dispatchEvent(new CustomEvent("radmap-compare-change"));
+    window.dispatchEvent(new CustomEvent("welchesfahrrad-compare-change"));
   } catch {
     /* ignore */
   }
@@ -51,10 +51,10 @@ export const compareStore = {
 export function subscribeCompare(cb: () => void) {
   if (typeof window === "undefined") return () => {};
   const handler = () => cb();
-  window.addEventListener("radmap-compare-change", handler);
+  window.addEventListener("welchesfahrrad-compare-change", handler);
   window.addEventListener("storage", handler);
   return () => {
-    window.removeEventListener("radmap-compare-change", handler);
+    window.removeEventListener("welchesfahrrad-compare-change", handler);
     window.removeEventListener("storage", handler);
   };
 }

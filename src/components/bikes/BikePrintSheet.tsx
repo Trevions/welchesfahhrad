@@ -12,7 +12,7 @@ import { articleImageUrl } from "@/lib/article-image-url";
 export function BikePrintSheet({ bike }: { bike: Bike }) {
   const b = bike;
   const title = `${b.brand} ${b.model}${b.year ? ` (${b.year})` : ""}`;
-  const url = `https://radmap.de/fahrraeder/${b.slug}`;
+  const url = `https://welchesfahrrad.de/fahrraeder/${b.slug}`;
   const heroSrc = articleImageUrl(b.image_url ?? "") || b.image_url || "";
   const today = new Date().toLocaleDateString("de-DE", {
     day: "2-digit",
@@ -24,7 +24,7 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
     <div className="print-sheet hidden print:block" aria-hidden>
       <header className="print-header">
         <div className="print-brand">
-          Radmap<span>.DE</span>
+          Welches Fahrrad<span>.DE</span>
         </div>
         <div className="print-header-meta">
           <div>Fahrrad-Datenblatt</div>
@@ -314,7 +314,7 @@ export function BikePrintSheet({ bike }: { bike: Bike }) {
           Quelle: <strong>{url}</strong>
         </div>
         <div>
-          Hinweis: radmap.de verkauft keine Räder — alle Angaben ohne Gewähr.
+          Hinweis: welchesfahrrad.de verkauft keine Räder — alle Angaben ohne Gewähr.
           Preise, Ausstattung und Verfügbarkeit können abweichen. Stand: {today}.
         </div>
       </footer>

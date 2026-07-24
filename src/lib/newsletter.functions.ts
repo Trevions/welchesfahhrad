@@ -3,8 +3,8 @@ import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const FROM_EMAIL = "Radmap.de <hallo@radmap.de>";
-const REPLY_TO = "support@radmap.de";
+const FROM_EMAIL = "WelchesFahrrad.de <hallo@welchesfahrrad.de>";
+const REPLY_TO = "support@welchesfahrrad.de";
 
 const subscribeInput = z.object({
   email: z.string().trim().email().max(254),
@@ -24,7 +24,7 @@ async function assertAdmin(context: { supabase: any; userId: string }) {
 
 async function hashIp(ip: string | null): Promise<string | null> {
   if (!ip) return null;
-  const enc = new TextEncoder().encode(ip + "|radmap-newsletter");
+  const enc = new TextEncoder().encode(ip + "|welchesfahrrad-newsletter");
   const buf = await crypto.subtle.digest("SHA-256", enc);
   return Array.from(new Uint8Array(buf))
     .map((b) => b.toString(16).padStart(2, "0"))
@@ -35,7 +35,7 @@ async function hashIp(ip: string | null): Promise<string | null> {
 function getSiteUrl() {
   // Confirmation/Abmelde-Links müssen IMMER auf die Produktions-Domain zeigen,
   // unabhängig davon, von welcher Vorschau-URL die Anmeldung kam.
-  return "https://radmap.de";
+  return "https://welchesfahrrad.de";
 }
 
 async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string, oneClickUnsubUrl?: string) {
@@ -52,12 +52,12 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string,
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0a0a0a; color:#e5e5e5; padding:40px 20px; margin:0;">
   <div style="max-width:560px; margin:0 auto; background:#111; border:1px solid #262626; border-radius:8px; overflow:hidden;">
     <div style="padding:32px; border-bottom:1px solid #262626;">
-      <div style="font-family: Georgia, serif; font-weight:900; font-style:italic; font-size:28px; color:#fff;">Radmap<span style="color:#f97316;">.</span><span style="color:#fff;">de</span></div>
+      <div style="font-family: Georgia, serif; font-weight:900; font-style:italic; font-size:28px; color:#fff;">Welches Fahrrad<span style="color:#f97316;">.</span><span style="color:#fff;">de</span></div>
     </div>
     <div style="padding:32px;">
       <h1 style="font-size:22px; font-weight:700; margin:0 0 16px; color:#fff;">Newsletter-Anmeldung bestätigen</h1>
       <p style="font-size:15px; line-height:1.6; color:#a3a3a3; margin:0 0 24px;">
-        Vielen Dank für Ihr Interesse am Radmap-Newsletter. Bitte bestätigen Sie Ihre E-Mail-Adresse durch Klick auf den folgenden Button. Erst nach Bestätigung erhalten Sie unsere wöchentliche Ausgabe (Double-Opt-In gemäß § 7 UWG).
+        Vielen Dank für Ihr Interesse am Welches Fahrrad-Newsletter. Bitte bestätigen Sie Ihre E-Mail-Adresse durch Klick auf den folgenden Button. Erst nach Bestätigung erhalten Sie unsere wöchentliche Ausgabe (Double-Opt-In gemäß § 7 UWG).
       </p>
       <a href="${confirmUrl}" style="display:inline-block; background:#f97316; color:#0a0a0a; text-decoration:none; padding:14px 28px; font-weight:700; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; border-radius:4px;">Anmeldung bestätigen</a>
       <p style="font-size:13px; line-height:1.6; color:#737373; margin:24px 0 0;">
@@ -66,19 +66,19 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string,
       </p>
       <hr style="border:none; border-top:1px solid #262626; margin:32px 0;">
       <p style="font-size:12px; line-height:1.5; color:#737373; margin:0;">
-        Sie haben diese E-Mail erhalten, weil Ihre Adresse auf radmap.de zur Newsletter-Anmeldung verwendet wurde. War das nicht Sie? Ignorieren Sie diese E-Mail einfach — ohne Bestätigung wird keine Anmeldung wirksam und Ihre Daten werden nach 7 Tagen gelöscht.
+        Sie haben diese E-Mail erhalten, weil Ihre Adresse auf welchesfahrrad.de zur Newsletter-Anmeldung verwendet wurde. War das nicht Sie? Ignorieren Sie diese E-Mail einfach — ohne Bestätigung wird keine Anmeldung wirksam und Ihre Daten werden nach 7 Tagen gelöscht.
       </p>
       <p style="font-size:12px; line-height:1.5; color:#737373; margin:12px 0 0;">
         <a href="${unsubUrl}" style="color:#737373;">Sofort vollständig löschen</a>
       </p>
     </div>
     <div style="padding:20px 32px; background:#0a0a0a; border-top:1px solid #262626; font-size:11px; color:#525252;">
-      DigiMarket · support@radmap.de
+      DigiMarket · support@welchesfahrrad.de
     </div>
   </div>
 </body></html>`;
 
-  const text = `Newsletter-Anmeldung bestätigen\n\nVielen Dank für Ihr Interesse am Radmap-Newsletter.\n\nBitte bestätigen Sie Ihre E-Mail-Adresse:\n${confirmUrl}\n\nWenn Sie diese Anmeldung nicht ausgelöst haben, ignorieren Sie diese E-Mail.\n\nDigiMarket · support@radmap.de`;
+  const text = `Newsletter-Anmeldung bestätigen\n\nVielen Dank für Ihr Interesse am Welches Fahrrad-Newsletter.\n\nBitte bestätigen Sie Ihre E-Mail-Adresse:\n${confirmUrl}\n\nWenn Sie diese Anmeldung nicht ausgelöst haben, ignorieren Sie diese E-Mail.\n\nDigiMarket · support@welchesfahrrad.de`;
 
   const resp = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
     method: "POST",
@@ -98,7 +98,7 @@ async function sendDoiEmail(email: string, confirmUrl: string, unsubUrl: string,
         // RFC 2369 + RFC 8058: prefer the one-click POST endpoint, fall back to the page URL.
         "List-Unsubscribe": `<${oneClickUnsubUrl ?? unsubUrl}>, <${unsubUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-        "List-Id": "Radmap.de Updates <updates.radmap.de>",
+        "List-Id": "WelchesFahrrad.de Updates <updates.welchesfahrrad.de>",
         "Precedence": "bulk",
         "X-Entity-Ref-ID": crypto.randomUUID(),
       },
@@ -128,7 +128,7 @@ export const subscribeNewsletter = createServerFn({ method: "POST" })
     const ipHash = await hashIp(ip);
 
     const consentText =
-      "Ich möchte den Radmap-Newsletter erhalten und stimme der Verarbeitung meiner E-Mail-Adresse zum Zweck des Versands gemäß Datenschutzerklärung zu. Eine Abmeldung ist jederzeit möglich.";
+      "Ich möchte den Welches Fahrrad-Newsletter erhalten und stimme der Verarbeitung meiner E-Mail-Adresse zum Zweck des Versands gemäß Datenschutzerklärung zu. Eine Abmeldung ist jederzeit möglich.";
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -345,7 +345,7 @@ export const triggerNewsletterDispatch = createServerFn({ method: "POST" })
     const secret = process.env.NEWSLETTER_DISPATCH_SECRET;
     if (!secret) throw new Error("NEWSLETTER_DISPATCH_SECRET nicht konfiguriert");
 
-    const resp = await fetch("https://radmap.de/api/public/newsletter/dispatch", {
+    const resp = await fetch("https://welchesfahrrad.de/api/public/newsletter/dispatch", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

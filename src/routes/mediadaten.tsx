@@ -4,13 +4,13 @@ import { LegalPage, Section, InfoBox } from "@/components/LegalPage";
 export const Route = createFileRoute("/mediadaten")({
   head: () => ({
     meta: [
-      { title: "Mediadaten — radmap.de" },
-      { name: "description", content: "Werbung auf radmap.de: Reichweite, Zielgruppe, Formate und Konditionen für Display- und Content-Kooperationen." },
-      { property: "og:title", content: "Mediadaten — radmap.de" },
-      { property: "og:description", content: "Reichweite, Zielgruppe und Werbeformate auf radmap.de." },
-      { property: "og:url", content: "https://radmap.de/mediadaten" },
+      { title: "Mediadaten — welchesfahrrad.de" },
+      { name: "description", content: "Werbung auf welchesfahrrad.de: Reichweite, Zielgruppe, Formate und Konditionen für Display- und Content-Kooperationen." },
+      { property: "og:title", content: "Mediadaten — welchesfahrrad.de" },
+      { property: "og:description", content: "Reichweite, Zielgruppe und Werbeformate auf welchesfahrrad.de." },
+      { property: "og:url", content: "https://welchesfahrrad.de/mediadaten" },
     ],
-    links: [{ rel: "canonical", href: "https://radmap.de/mediadaten" }],
+    links: [{ rel: "canonical", href: "https://welchesfahrrad.de/mediadaten" }],
   }),
   component: MediadatenPage,
 });
@@ -20,7 +20,7 @@ function MediadatenPage() {
     <LegalPage
       eyebrow="Verlag"
       title="Mediadaten 2026"
-      lead="radmap.de erreicht eine engagierte Community aus Pendler:innen, Sport- und Genussradler:innen sowie Fachpublikum aus Handel und Industrie. Hier finden Sie alle Informationen für eine Kooperation."
+      lead="welchesfahrrad.de erreicht eine engagierte Community aus Pendler:innen, Sport- und Genussradler:innen sowie Fachpublikum aus Handel und Industrie. Hier finden Sie alle Informationen für eine Kooperation."
     >
       <Section title="Zielgruppe">
         <ul className="list-disc pl-5 space-y-2">
@@ -42,7 +42,7 @@ function MediadatenPage() {
 
       <Section title="Standards">
         <p>
-          Werbung wird auf radmap.de gemäß § 6 TMG und § 5a UWG eindeutig
+          Werbung wird auf welchesfahrrad.de gemäß § 6 TMG und § 5a UWG eindeutig
           gekennzeichnet. Redaktionelle Bewertungen bleiben unabhängig von
           Werbekunden. Inhalte, die im Rahmen einer Kooperation entstehen,
           sind transparent als „Anzeige", „Sponsored" oder „Werbung"
