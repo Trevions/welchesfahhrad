@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import {
-  Search,
   ArrowRight,
   Bike,
   Zap,
@@ -145,6 +144,44 @@ const RATGEBER_ITEMS = [
 ];
 
 /* --------------- helpers --------------- */
+
+/** Custom bike SVG with independently-spinnable wheels for the hero search. */
+function BikeIcon({ spin = false, fast = false, className = "" }: { spin?: boolean; fast?: boolean; className?: string }) {
+  const wheel = spin
+    ? fast
+      ? "animate-wheel-spin-fast"
+      : "animate-wheel-spin"
+    : "";
+  return (
+    <svg
+      viewBox="0 0 32 20"
+      aria-hidden
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* frame */}
+      <path d="M7 14 L14 14 L20 6 L25 14" />
+      <path d="M14 14 L18 6 L22 6" />
+      <path d="M20 6 L20 4" />
+      {/* seat + bar */}
+      <path d="M12.5 14 L14.5 14" />
+      <path d="M22 6 L23.5 6" />
+      {/* wheels — spin group */}
+      <g className={wheel} style={{ transformOrigin: "7px 14px", transformBox: "fill-box" as any }}>
+        <circle cx="7" cy="14" r="4.6" />
+        <path d="M7 9.4 L7 18.6 M2.4 14 L11.6 14 M3.7 10.7 L10.3 17.3 M3.7 17.3 L10.3 10.7" strokeWidth="0.7" opacity="0.6" />
+      </g>
+      <g className={wheel} style={{ transformOrigin: "25px 14px", transformBox: "fill-box" as any }}>
+        <circle cx="25" cy="14" r="4.6" />
+        <path d="M25 9.4 L25 18.6 M20.4 14 L29.6 14 M21.7 10.7 L28.3 17.3 M21.7 17.3 L28.3 10.7" strokeWidth="0.7" opacity="0.6" />
+      </g>
+    </svg>
+  );
+}
 
 function BikeProductCard({
   bike,
