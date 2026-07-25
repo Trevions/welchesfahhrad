@@ -32,7 +32,7 @@ function highlightMatch(text: string, query: string) {
   return (
     <>
       {before}
-      <mark className="rounded-sm bg-signal/20 px-0.5 text-foreground font-semibold">
+      <mark className="bg-signal/20 px-0.5 text-foreground font-semibold">
         {match}
       </mark>
       {after}
@@ -129,22 +129,9 @@ export function InlineSearch({
 
   return (
     <div ref={containerRef} className="relative">
-      {/* premium glow */}
       <div
-        aria-hidden
-        className={`pointer-events-none absolute -inset-px rounded-2xl opacity-0 blur-xl transition-opacity duration-500 ${
-          active ? "opacity-60" : ""
-        }`}
-        style={{
-          background:
-            "linear-gradient(120deg, color-mix(in oklch, var(--signal) 55%, transparent), transparent 60%)",
-        }}
-      />
-      <div
-        className={`group relative flex items-center gap-3 rounded-2xl border bg-card/70 px-4 py-3 backdrop-blur-md transition-all duration-300 md:px-5 md:py-4 ${
-          active
-            ? "border-signal/60 shadow-[0_20px_60px_-30px_color-mix(in_oklch,var(--signal)_60%,transparent)]"
-            : "border-border hover:border-signal/40"
+        className={`group relative flex items-center gap-3 border bg-card px-4 py-3 transition-colors md:px-5 md:py-4 ${
+          active ? "border-signal" : "border-border hover:border-foreground"
         }`}
       >
         <Search
@@ -190,13 +177,13 @@ export function InlineSearch({
               setActiveIndex(-1);
               inputRef.current?.focus();
             }}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border bg-background/60 text-muted-foreground transition-colors hover:border-signal/60 hover:text-foreground"
+            className="grid h-8 w-8 shrink-0 place-items-center border border-border bg-background text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
             aria-label="Suche zurücksetzen"
           >
             <X className="h-4 w-4" strokeWidth={2} />
           </button>
         ) : (
-          <kbd className="hidden shrink-0 rounded-md border border-border bg-background/60 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground md:inline-block">
+          <kbd className="hidden shrink-0 border border-border bg-background px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground md:inline-block">
             /
           </kbd>
         )}
@@ -207,7 +194,7 @@ export function InlineSearch({
         <div
           id="search-suggestions"
           role="listbox"
-          className="absolute z-50 mt-2 w-full overflow-hidden rounded-2xl border border-border/80 bg-card/95 backdrop-blur-xl shadow-[0_24px_64px_-16px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-top-2 duration-200"
+          className="absolute z-50 mt-1 w-full overflow-hidden border border-border bg-card shadow-elevated animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <div className="border-b border-border/50 px-4 py-2.5 flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
@@ -235,7 +222,7 @@ export function InlineSearch({
                     }`}
                   >
                     {s.icon && (
-                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-border bg-background/50 text-signal">
+                      <div className="grid h-9 w-9 shrink-0 place-items-center border border-border bg-background text-signal">
                         {s.icon}
                       </div>
                     )}
@@ -250,7 +237,7 @@ export function InlineSearch({
                       )}
                     </div>
                     {s.category && (
-                      <span className="hidden sm:inline-block shrink-0 rounded-full border border-border px-2 py-0.5 text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+                      <span className="hidden sm:inline-block shrink-0 border border-border px-2 py-0.5 text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
                         {s.category}
                       </span>
                     )}
@@ -275,7 +262,7 @@ export function InlineSearch({
                     }`}
                   >
                     {s.icon && (
-                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-border bg-background/50 text-signal">
+                      <div className="grid h-9 w-9 shrink-0 place-items-center border border-border bg-background text-signal">
                         {s.icon}
                       </div>
                     )}
@@ -290,7 +277,7 @@ export function InlineSearch({
                       )}
                     </div>
                     {s.category && (
-                      <span className="hidden sm:inline-block shrink-0 rounded-full border border-border px-2 py-0.5 text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+                      <span className="hidden sm:inline-block shrink-0 border border-border px-2 py-0.5 text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
                         {s.category}
                       </span>
                     )}
