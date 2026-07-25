@@ -75,7 +75,7 @@ function FahrraederPage() {
     <div className="bg-background">
       {/* HERO */}
       <section className="relative aurora-bg overflow-hidden">
-        <div className="mx-auto max-w-[1400px] px-4 md:px-8 py-12 md:py-20">
+        <div className="relative z-[1] mx-auto max-w-[1400px] px-4 md:px-8 py-12 md:py-20">
           <span className="inline-flex items-center gap-1.5 rounded-full glass-card !shadow-none px-3 py-1.5 eyebrow text-signal">
             Die Fahrrad-Datenbank
           </span>
