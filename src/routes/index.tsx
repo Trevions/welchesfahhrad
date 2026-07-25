@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   Bike,
@@ -13,6 +13,8 @@ import {
   Battery,
   ShieldCheck,
   BadgeEuro,
+  Search,
+  CornerDownLeft,
 } from "lucide-react";
 import { listPublicBikes } from "@/lib/bikes.functions";
 import { getPublicArticles } from "@/lib/articles.functions";
@@ -341,17 +343,96 @@ function Home() {
   }, [data.bikes, hasProfile, profile]);
 
   const [q, setQ] = useState("");
-  const [riding, setRiding] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [active, setActive] = useState(0);
   const navigate = useNavigate();
+  const searchRef = useRef<HTMLDivElement>(null);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (riding) return;
-    setRiding(true);
-    window.setTimeout(() => {
-      const target = q.trim() ? `/fahrraeder?q=${encodeURIComponent(q.trim())}` : "/fahrraeder";
-      navigate({ to: target });
-    }, 900);
+  type SearchHit =
+    | { kind: "bike"; slug: string; title: string; sub: string; image: string; eyebrow: string }
+    | { kind: "ratgeber"; slug: string; title: string; sub: string; image: string; eyebrow: string }
+    | { kind: "category"; slug: string; title: string; sub: string; eyebrow: string };
+
+  const results = useMemo<SearchHit[]>(() => {
+    const term = q.trim().toLowerCase();
+    if (!term) return [];
+    const bikeHits: SearchHit[] = data.bikes
+      .filter((b: any) =>
+        [b.brand, b.model, b.bike_type ?? "", b.category ?? ""].join(" ").toLowerCase().includes(term),
+      )
+      .slice(0, 6)
+      .map((b: any) => ({
+        kind: "bike",
+        slug: b.slug,
+        title: `${b.brand} ${b.model}`,
+        sub: [b.bike_type, b.year, b.price_eur != null ? `${b.price_eur.toLocaleString("de-DE")} €` : null]
+          .filter(Boolean)
+          .join(" · "),
+        image: articleImageUrl(b.image_url ?? "") || b.image_url || "/og.jpg",
+        eyebrow: b.category === "ebike" ? "E-Bike" : "Fahrrad",
+      }));
+    const ratgeberHits: SearchHit[] = data.articles
+      .filter((a: any) =>
+        [a.title, a.excerpt ?? "", a.category ?? ""].join(" ").toLowerCase().includes(term),
+      )
+      .slice(0, 3)
+      .map((a: any) => ({
+        kind: "ratgeber",
+        slug: a.slug,
+        title: a.title,
+        sub: a.excerpt ?? "",
+        image: articleImageUrl(a.image ?? "") || a.image || "/og.jpg",
+        eyebrow: a.category ?? "Ratgeber",
+      }));
+    const catHits: SearchHit[] = POPULAR_CATEGORIES.filter((c) =>
+      c.name.toLowerCase().includes(term),
+    )
+      .slice(0, 2)
+      .map((c) => ({
+        kind: "category",
+        slug: c.slug,
+        title: c.name,
+        sub: c.hint,
+        eyebrow: c.ebike ? "E-Bike Kategorie" : "Kategorie",
+      }));
+    return [...bikeHits, ...ratgeberHits, ...catHits];
+  }, [q, data.bikes, data.articles]);
+
+  useEffect(() => setActive(0), [q]);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (!searchRef.current) return;
+      if (!searchRef.current.contains(e.target as Node)) setFocused(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  const goToHit = (hit: SearchHit) => {
+    setFocused(false);
+    if (hit.kind === "bike") navigate({ to: "/fahrraeder/$slug", params: { slug: hit.slug } });
+    else if (hit.kind === "ratgeber") navigate({ to: "/artikel/$slug", params: { slug: hit.slug } });
+    else navigate({ to: "/fahrraeder" });
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
+      setFocused(false);
+      return;
+    }
+    if (!results.length) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActive((i) => Math.min(i + 1, results.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActive((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const hit = results[active];
+      if (hit) goToHit(hit);
+    }
   };
 
   const ratgeberArticles = useMemo(
@@ -407,52 +488,100 @@ function Home() {
             Klicks das Fahrrad, das wirklich zu dir passt.
           </p>
 
-          {/* Search */}
-          <form
-            role="search"
-            aria-label="Fahrrad-Suche"
-            className="group/search relative mt-7 flex w-full items-stretch rounded-full border border-border bg-card shadow-[0_20px_50px_-25px_rgba(0,0,0,0.25)] overflow-hidden focus-within:border-foreground focus-within:shadow-[0_25px_60px_-25px_rgba(0,0,0,0.35)] transition-shadow"
-            onSubmit={handleSearch}
-          >
-            <label htmlFor="hero-search" className="sr-only">
-              Nach Fahrrad, Marke oder Modell suchen
-            </label>
-            <span className="flex items-center pl-5 pr-2 text-foreground/70 group-focus-within/search:text-foreground transition-colors">
-              <BikeIcon spin className="h-6 w-9" />
-            </span>
-            <input
-              id="hero-search"
-              type="search"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Nach Fahrrad, Marke oder Modell suchen..."
-              className="flex-1 min-w-0 bg-transparent py-4 md:py-5 text-base outline-none placeholder:text-muted-foreground/70"
-              autoComplete="off"
-            />
-            <button
-              type="submit"
-              aria-label="Suchen"
-              className="group/btn inline-flex items-center gap-2 bg-foreground text-background px-5 md:px-7 my-1.5 mr-1.5 rounded-full text-sm font-bold hover:bg-signal hover:text-signal-foreground transition-colors"
+          {/* Search — instant results, keine Animation */}
+          <div ref={searchRef} className="relative mt-7">
+            <div
+              role="search"
+              aria-label="Fahrrad-Suche"
+              className="relative flex w-full items-stretch rounded-full border border-border bg-card shadow-[0_20px_50px_-25px_rgba(0,0,0,0.25)] overflow-hidden focus-within:border-foreground focus-within:shadow-[0_25px_60px_-25px_rgba(0,0,0,0.35)] transition-shadow"
             >
-              <BikeIcon spin fast className="h-5 w-8 -ml-1" />
-              <span className="hidden sm:inline">Suchen</span>
-            </button>
-            {/* Ride-across animation on submit */}
-            {riding && (
-              <span
-                aria-hidden
-                className="pointer-events-none absolute left-0 top-1/2 text-foreground animate-bike-ride"
-              >
-                <BikeIcon spin fast className="h-7 w-11" />
+              <label htmlFor="hero-search" className="sr-only">
+                Fahrrad, Marke, Kategorie oder Ratgeber suchen
+              </label>
+              <span className="flex items-center pl-5 pr-3 text-foreground/70">
+                <Search className="h-5 w-5" />
               </span>
-            )}
-            {riding && (
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-x-6 bottom-2 h-[2px] bg-road-dash text-foreground/40 animate-road-dash"
+              <input
+                id="hero-search"
+                type="search"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onFocus={() => setFocused(true)}
+                onKeyDown={onKeyDown}
+                placeholder="Fahrrad, Marke, Kategorie oder Ratgeber suchen…"
+                className="flex-1 min-w-0 bg-transparent py-4 md:py-5 pr-5 text-base outline-none placeholder:text-muted-foreground/70"
+                autoComplete="off"
               />
+            </div>
+
+            {focused && q.trim() && (
+              <div className="absolute left-0 right-0 top-full mt-2 z-40 rounded-2xl border border-border bg-card shadow-[0_40px_120px_-30px_rgba(0,0,0,0.35)] overflow-hidden animate-fade-in">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-border">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    {results.length > 0 ? `${results.length} Ergebnisse` : "Keine Treffer"}
+                  </span>
+                  <div className="hidden md:flex items-center gap-3 text-[10px] uppercase tracking-widest text-muted-foreground">
+                    <span>↑↓ Navigieren</span>
+                    <span className="flex items-center gap-1">
+                      <CornerDownLeft className="h-3 w-3" /> Öffnen
+                    </span>
+                  </div>
+                </div>
+                <ul className="max-h-[60vh] overflow-y-auto py-1">
+                  {results.length === 0 && (
+                    <li className="px-5 py-8 text-center text-sm text-muted-foreground">
+                      Nichts für „{q}" gefunden. Probiere eine Marke oder Kategorie.
+                    </li>
+                  )}
+                  {results.map((r, i) => (
+                    <li key={`${r.kind}-${r.slug}-${i}`}>
+                      <button
+                        type="button"
+                        onMouseEnter={() => setActive(i)}
+                        onClick={() => goToHit(r)}
+                        className={`w-full flex items-center gap-4 px-4 py-3 text-left border-l-2 transition-colors ${
+                          i === active
+                            ? "bg-accent/60 border-signal"
+                            : "border-transparent hover:bg-accent/40"
+                        }`}
+                      >
+                        {"image" in r ? (
+                          <img
+                            src={r.image}
+                            alt=""
+                            width={64}
+                            height={48}
+                            loading="lazy"
+                            className="h-12 w-16 rounded-md object-cover bg-muted shrink-0"
+                          />
+                        ) : (
+                          <span className="h-12 w-16 rounded-md bg-muted shrink-0 flex items-center justify-center text-foreground/60">
+                            <Bike className="h-5 w-5" />
+                          </span>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[10px] font-bold uppercase tracking-widest text-signal mb-0.5">
+                            {r.eyebrow}
+                          </div>
+                          <div className="font-display text-base md:text-lg font-bold leading-snug truncate">
+                            {r.title}
+                          </div>
+                          {r.sub && (
+                            <div className="text-xs text-muted-foreground truncate">{r.sub}</div>
+                          )}
+                        </div>
+                        <ArrowRight
+                          className={`h-4 w-4 shrink-0 transition-transform ${
+                            i === active ? "translate-x-1 text-signal" : "text-muted-foreground"
+                          }`}
+                        />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
-          </form>
+          </div>
 
           {/* Stats row */}
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
