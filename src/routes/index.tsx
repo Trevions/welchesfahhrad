@@ -607,80 +607,69 @@ function Home() {
             </div>
           </div>
 
-          {/* Two hero category cards */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-px bg-border border border-border">
+          {/* Two category rows — compact index tiles, not full-bleed hero banners */}
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-px bg-border border border-border">
             <Link
               to="/fahrraeder"
-              className="group relative flex flex-col justify-between overflow-hidden bg-card min-h-[240px] md:min-h-[300px]"
+              className="group relative flex items-center gap-4 bg-card p-4 md:p-5 hover:bg-foreground hover:text-background transition-colors"
             >
-              <img
-                src={heroBike}
-                alt="Mountainbike auf einem Alpentrail — Kategorie Fahrräder"
-                width={1200}
-                height={900}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                className="absolute inset-0 h-full w-full object-cover grayscale-[15%] transition-transform duration-700 group-hover:scale-[1.03]"
-              />
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"
-              />
-              <div className="relative p-5 md:p-7">
-                <span className="inline-flex items-center gap-1.5 bg-white/95 text-foreground text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 border border-white">
-                  <span className="inline-block group-hover:animate-wheel-spin-fast"><Bike className="h-3 w-3" /></span> Kategorie
-                </span>
+              <div className="relative h-16 w-16 md:h-20 md:w-20 shrink-0 overflow-hidden border border-border">
+                <img
+                  src={heroBike}
+                  alt="Mountainbike auf einem Alpentrail — Kategorie Fahrräder"
+                  width={160}
+                  height={160}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover grayscale-[30%] transition-all duration-500 group-hover:grayscale-0 group-hover:scale-[1.05]"
+                />
               </div>
-              <div className="relative p-5 md:p-7 text-white">
-                <h2 className="font-display text-2xl md:text-4xl font-black leading-none tracking-tight">
+              <div className="min-w-0 flex-1">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider opacity-60">
+                  <Bike className="h-3 w-3" /> Kategorie
+                </span>
+                <h2 className="mt-0.5 font-display text-xl md:text-2xl font-black leading-tight tracking-tight">
                   Fahrräder
                 </h2>
-                <p className="mt-2 text-xs md:text-sm text-white/85 max-w-md">
-                  MTB, Gravel, Rennrad, City, Trekking, Kinder & mehr.
+                <p className="mt-0.5 text-xs opacity-70 truncate">
+                  MTB, Gravel, Rennrad, City, Trekking & mehr
                 </p>
-                <span className="mt-4 inline-flex items-center gap-2 bg-signal text-signal-foreground text-sm font-bold px-4 py-2.5 group-hover:gap-3 transition-all">
-                  Alle Fahrräder
-                  <ArrowRight className="h-4 w-4" />
-                </span>
               </div>
+              <ArrowRight className="h-5 w-5 shrink-0 opacity-40 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
             </Link>
 
             <Link
               to="/e-bikes"
-              className="group relative flex flex-col justify-between overflow-hidden bg-card min-h-[240px] md:min-h-[300px]"
+              className="group relative flex items-center gap-4 bg-card p-4 md:p-5 hover:bg-foreground hover:text-background transition-colors"
             >
-              <img
-                src={ebikeImg}
-                alt="Premium E-Bike mit Bosch Antrieb — Kategorie E-Bikes"
-                width={1200}
-                height={900}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                className="absolute inset-0 h-full w-full object-cover grayscale-[15%] transition-transform duration-700 group-hover:scale-[1.03]"
-              />
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"
-              />
-              <div className="relative p-5 md:p-7">
-                <span className="inline-flex items-center gap-1.5 bg-signal text-signal-foreground text-[10px] font-bold uppercase tracking-wider px-2.5 py-1">
+              <div className="relative h-16 w-16 md:h-20 md:w-20 shrink-0 overflow-hidden border border-border">
+                <img
+                  src={ebikeImg}
+                  alt="Premium E-Bike mit Bosch Antrieb — Kategorie E-Bikes"
+                  width={160}
+                  height={160}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover grayscale-[30%] transition-all duration-500 group-hover:grayscale-0 group-hover:scale-[1.05]"
+                />
+                <span className="absolute bottom-1 right-1 grid h-5 w-5 place-items-center bg-signal text-signal-foreground">
+                  <Zap className="h-3 w-3" />
+                </span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider opacity-60">
                   <Zap className="h-3 w-3" /> E-Bike
                 </span>
-              </div>
-              <div className="relative p-5 md:p-7 text-white">
-                <h2 className="font-display text-2xl md:text-4xl font-black leading-none tracking-tight">
+                <h2 className="mt-0.5 font-display text-xl md:text-2xl font-black leading-tight tracking-tight">
                   E-Bikes
                 </h2>
-                <p className="mt-2 text-xs md:text-sm text-white/85 max-w-md">
-                  Bosch, Shimano & Co. – vom City-Pedelec bis Premium-E-MTB.
+                <p className="mt-0.5 text-xs opacity-70 truncate">
+                  Bosch, Shimano & Co. — Pedelec bis Premium-E-MTB
                 </p>
-                <span className="mt-4 inline-flex items-center gap-2 bg-white text-foreground text-sm font-bold px-4 py-2.5 group-hover:gap-3 transition-all">
-                  Alle E-Bikes
-                  <ArrowRight className="h-4 w-4" />
-                </span>
               </div>
+              <ArrowRight className="h-5 w-5 shrink-0 opacity-40 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
