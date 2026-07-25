@@ -178,3 +178,104 @@ Site content and admin UI copy are in German (`de-DE`/`de` locale, `lang="de"`
 on `<html>`). Article categories are a fixed enum: `Nachrichten`, `Ratgeber`,
 `E-Bikes`, `Tests`. Article/bike/lexikon statuses follow a `draft` /
 `published` pattern.
+
+## Known issues
+
+### 1. Article body is Markdown-stripped, not rendered (unresolved)
+
+`bodyToParagraphs()` in `src/lib/articles.functions.ts` does not render the
+stored Markdown — it strips it. It splits `article.body` on blank lines into
+paragraphs, then regex-removes heading markers (`^#{1,6}\s+`), bold/italic
+(`**`, `*`, `__`), and rewrites `-`/`*` list markers to a literal `• ` prefix
+inside plain text. `src/routes/artikel.$slug.tsx` then maps the resulting
+string array straight into `<p>` tags (`{a.body.map((p, i) => <p>...</p>)}`),
+with only the first paragraph getting special (`drop-cap`) styling.
+
+Net effect: any `## Subheading` an editor writes in the body ends up as a
+plain, unstyled paragraph in the DOM — there is no `<h2>`/`<h3>`, no `<ul>`/
+`<li>`, no `<strong>`/`<em>`. This flattens the article's semantic structure
+(bad for accessibility and for search engines building a document outline)
+and silently discards formatting editors may believe is being applied.
+
+`marked` + `dompurify` are both dependencies and are used elsewhere for real
+Markdown-to-sanitized-HTML rendering — `src/components/admin/ArticleEditor.tsx`
+uses them for the editor's live preview pane (`previewHtml`, "Vorschau"), and
+`src/components/bikes/BikePrintSheet.tsx` uses them for bike `description`
+text on the public bike detail page. Neither is wired into the public article
+route. So the article editor's preview does not match what actually renders
+on the published page. This is unresolved — flagging it here rather than
+silently fixing it, since switching `artikel.$slug.tsx` to
+`marked.parse` + `DOMPurify.sanitize` + `dangerouslySetInnerHTML` is a
+behavior change that touches every published article's rendering.
+
+### 2. Article category list is duplicated across ~10 places
+
+There is no single source of truth for the four-value category enum
+(`Nachrichten`, `Ratgeber`, `E-Bikes`, `Tests`). It is hand-declared
+separately in:
+
+- `supabase/migrations/20260612185513_f07778ab-2e41-45dc-86e5-7ee712587811.sql`
+  — `CREATE TYPE public.article_category AS ENUM (...)`, the actual source of
+  truth at the DB level.
+- `src/integrations/supabase/types.ts` — generated `Database["public"]["Enums"]["article_category"]`
+  (regenerate from the DB; don't hand-edit).
+- `src/lib/articles.functions.ts` — `validCat` const in `rowToArticle()`.
+- `src/lib/articles.ts` — hand-written `Article["category"]` union type.
+- `src/lib/mcp/tools/articles.ts` — `CATEGORY = z.enum([...])`.
+- `src/lib/auto-article.functions.ts` — inline `z.enum([...])` on an optional
+  field.
+- `src/lib/auto-article.server.ts` — declared **four separate times**: the
+  `Category` union type, an LLM-facing JSON-schema `enum`, the `ALL_CATEGORIES`
+  const array, and one more inline `.includes(...)` array literal.
+- `src/lib/admin.functions.ts` — `articleCategories` const, reused for both
+  Zod validation and dashboard stat bucketing.
+- `src/components/admin/ArticleEditor.tsx` — `ALLOWED_CATEGORIES` const plus
+  a duplicate hand-written union type.
+- `src/components/admin/ArticleFileImport.tsx` — same pair again
+  (`ALLOWED_CATEGORIES` const + union type).
+
+Separately, `Header.tsx` and `MobileNav.tsx` each hardcode a `nav`/`items`
+array with `{ to: "/e-bikes", label: "E-Bikes" }` and
+`{ to: "/ratgeber", label: "Ratgeber" }` entries; `artikel.$slug.tsx` has its
+own `categorySlugMap` mapping all four categories to routes (`Nachrichten` →
+`/`, `Tests` → `/fahrraeder`). These don't enumerate the category type, but
+they do hardcode category-derived labels/routes and will drift silently if a
+category is renamed.
+
+Adding, renaming, or removing a category means touching the migration (new
+migration, since the enum already has published rows), the generated types,
+and every file above, plus checking the nav files and `categorySlugMap` for
+routes that assume exactly these four values. Nothing currently enforces
+this at build time.
+
+### 3. Do not edit the same files in Lovable and Git at the same time
+
+This project is developed through both the Lovable platform (which edits
+project files directly and syncs them) and this Git repository. Editing the
+same files in the Lovable editor and via a local/CI Git workflow in the same
+window will produce conflicting writes — Lovable's sync is not a merge-aware
+Git client. Coordinate who is editing before making concurrent changes, and
+prefer letting one side finish and sync before the other starts.
+
+### 4. Bike comparison feature: reachable, not leftover
+
+Checked whether `src/components/bikes/*` and the compare route are dead code
+carried over from a template. They are not — the compare feature is fully
+wired into navigation:
+
+- `/vergleich` (`src/routes/vergleich.tsx`) is a real nav destination in both
+  `Header.tsx` (desktop nav array) and `MobileNav.tsx` (bottom nav, with its
+  own icon), plus a CTA on the homepage (`index.tsx`) and on `favoriten.tsx`.
+- `CompareFloatingBar` is mounted globally in `src/routes/__root.tsx`, so the
+  "N Räder im Vergleich" bar can appear on any page.
+- `BikeCompareButton` is used from `BikeCard.tsx` (bike grid/listing cards)
+  and directly on `index.tsx`; `fahrraeder.$slug.tsx` (bike detail page) has
+  its own inline compare toggle wired to the same `compareStore`
+  (`src/lib/bike-compare.ts`).
+- `BikeFavoriteButton`, `BikeImageLightbox`, `BikeMatchCard`, and
+  `BikeRatingRadar` are all imported and used from `fahrraeder.$slug.tsx`.
+
+Two components in that folder do appear to be genuinely unused, unlike the
+rest: **`BikeRangeChart.tsx`** and **`BikeShowcase.tsx`** have no imports
+anywhere outside their own files. Treat those two specifically as dead code
+to verify before relying on them, not the compare feature as a whole.
