@@ -7,7 +7,7 @@ interface Props {
 export function CategoryHero({ eyebrow, title, description }: Props) {
   return (
     <section className="relative aurora-bg overflow-hidden">
-      <div className="mx-auto max-w-[1400px] px-6 md:px-8 pt-12 md:pt-20 pb-10 md:pb-16">
+      <div className="relative z-[1] mx-auto max-w-[1400px] px-6 md:px-8 pt-12 md:pt-20 pb-10 md:pb-16">
         <span className="inline-flex items-center gap-1.5 rounded-full glass-card !shadow-none px-3 py-1.5 eyebrow text-signal animate-fade-in">
           {eyebrow}
         </span>

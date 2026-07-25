@@ -469,7 +469,7 @@ function Home() {
     <>
       {/* ============== HERO ============== */}
       <section aria-labelledby="hero-heading" className="relative aurora-bg overflow-hidden">
-        <div className="mx-auto max-w-[1280px] px-4 md:px-8 pt-10 md:pt-16 pb-10 md:pb-14">
+        <div className="relative z-[1] mx-auto max-w-[1280px] px-4 md:px-8 pt-10 md:pt-16 pb-10 md:pb-14">
           {/* Trust ribbon — glass pill chips */}
           <div className="flex flex-wrap items-center gap-2 animate-fade-in">
             <span className="inline-flex items-center gap-1.5 rounded-full glass-card !shadow-none px-3 py-1.5 text-[11px] font-medium text-muted-foreground">
