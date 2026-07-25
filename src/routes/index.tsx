@@ -779,9 +779,6 @@ function Home() {
       <section aria-labelledby="finder-heading" className="py-12 md:py-16 border-t border-border">
         <div className="mx-auto max-w-[1280px] px-4 md:px-8">
           <div className="corner-ticks relative overflow-hidden border border-border bg-foreground text-background p-7 md:p-12">
-            <span aria-hidden className="pointer-events-none absolute -left-8 bottom-6 text-signal/60">
-              <BikeIcon spin fast className="h-10 w-16" />
-            </span>
             <div className="relative grid md:grid-cols-[1fr_auto] items-center gap-8">
               <div>
                 <span className="inline-flex items-center gap-1.5 bg-signal text-signal-foreground text-[10px] font-black uppercase tracking-wider px-2.5 py-1">
