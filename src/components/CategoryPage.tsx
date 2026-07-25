@@ -175,7 +175,7 @@ export function CategoryPage({ category, articles, pillFilters }: Props) {
         <section className="border-b border-border">
           <div className="mx-auto max-w-[1400px] px-6 md:px-8 py-12 md:py-16 border-x border-border">
             {searched.length === 0 ? (
-              <div className="rounded-2xl border border-border bg-card/60 p-10 text-center">
+              <div className="border border-border bg-card p-10 text-center">
                 <p className="font-display text-xl font-black tracking-tight">
                   Keine Beiträge gefunden für „{q}"
                 </p>
